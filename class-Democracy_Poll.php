@@ -6,14 +6,17 @@ class Democracy_Poll {
 
 	public $ajax_url;
 
-	public $admin_access; // only access to add/edit poll and so on...
-	public $super_access; // full access to change settings and so on...
+	// only access to add/edit poll and so on...
+	public $admin_access;
+
+	// full access to change settings and so on...
+	public $super_access;
 
 	public $msg = array();
 
 	const OPT_NAME = 'democracy_options';
 
-	// теги допустимые в вопросах и ответах. Добавляются к глобальной $allowedtags
+	// The tags allowed in questions and answers. Will be added to global $allowedtags.
 	static $allowed_tags = [
 		'a'      => [ 'href' =>true, 'rel' =>true, 'name' =>true, 'target' =>true, ],
 		'b'      => [],
@@ -37,17 +40,20 @@ class Democracy_Poll {
 
 	static $inst;
 
-	static $pollid_meta_key = 'dem_poll_id'; // для Democ_Post_Metabox
+	// for Democ_Post_Metabox
+	static $pollid_meta_key = 'dem_poll_id';
 
 	static function init(){
 
-		if( ! is_null( self::$inst ) )
+		if( ! is_null( self::$inst ) ){
 			return self::$inst;
+		}
 
 		// admin part
 		if(
-			( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) ||
 			isset( $GLOBALS['democracy_activate_run'] )
+			||
+			( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) )
 		){
 			self::$inst = new Democracy_Poll_Admin();
 		}
@@ -64,21 +70,23 @@ class Democracy_Poll {
 
 		self::load_textdomain();
 
-		## Для локализации внешней части и кастомной настройки перевода
-		add_filter('gettext_with_context', array( __CLASS__, 'handle_front_l10n' ), 10, 4 );
+		// Для локализации внешней части и кастомной настройки перевода
+		add_filter( 'gettext_with_context', [ __CLASS__, 'handle_front_l10n' ], 10, 4 );
 
-		self::$allowed_tags = array_merge( $GLOBALS['allowedtags'], array_map('_wp_add_global_attributes', self::$allowed_tags) );
+		self::$allowed_tags = array_merge( $GLOBALS['allowedtags'], array_map( '_wp_add_global_attributes', self::$allowed_tags ) );
 
-		$this->ajax_url = admin_url('admin-ajax.php');
+		$this->ajax_url = admin_url( 'admin-ajax.php' );
 
 		self::$opt = $this->get_options();
 
 		// dem_init - main Democracy hooks init
 
 		// set access
-		$administrator = current_user_can('manage_options');
-		$this->super_access = apply_filters('dem_super_access', $administrator ); // access to change settings...
-		$this->admin_access = $administrator; // access to add/edit poll and so on...
+		$administrator = current_user_can( 'manage_options' );
+		// access to change settings...
+		$this->super_access = apply_filters( 'dem_super_access', $administrator );
+		// access to add/edit poll and so on...
+		$this->admin_access = $administrator;
 
 		// open admin manage access for other roles
 		if( ! $this->admin_access && ! empty( self::$opt['access_roles'] ) ){
@@ -91,27 +99,41 @@ class Democracy_Poll {
 		}
 
 		// меню в панели инструментов
-		if( !empty(self::$opt['toolbar_menu']) && $this->admin_access ) add_action('admin_bar_menu', array( $this, 'toolbar'), 99);
-
-		// hide duplicate content. For 5+ versions it's no need
-		if( isset($_GET['dem_act']) || isset($_GET['dem_action']) || isset($_GET['dem_pid']) || isset($_GET['show_addanswerfield']) || isset($_GET['dem_add_user_answer']) ){
-			add_action('wp', function(){ status_header( 404 ); });
-			add_action('wp_head', function(){ echo "\n<!--by dem-->\n".'<meta name="robots" content="noindex,nofollow">'."\n"; });
+		if( ! empty( self::$opt['toolbar_menu'] ) && $this->admin_access ){
+			add_action( 'admin_bar_menu', [ $this, 'toolbar' ], 99 );
 		}
 
+		// hide duplicate content. For 5+ versions it's no need
+		if(
+			isset( $_GET['dem_act'] )
+			|| isset( $_GET['dem_action'] )
+			|| isset( $_GET['dem_pid'] )
+			|| isset( $_GET['show_addanswerfield'] )
+			|| isset( $_GET['dem_add_user_answer'] )
+		){
+			add_action( 'wp', function(){
+				status_header( 404 );
+			} );
+
+			add_action( 'wp_head', function(){
+				echo "\n<!--by dem-->\n" . '<meta name="robots" content="noindex,nofollow">' . "\n";
+			} );
+		}
 	}
 
 	# подключаем файл перевода
 	static function load_textdomain(){
-		load_plugin_textdomain( 'democracy-poll', false, basename(DEMOC_PATH) . DEM_DOMAIN_PATH );
+		load_plugin_textdomain( 'democracy-poll', false, basename( DEMOC_PATH ) . '/languages/' );
 	}
 
 	static function handle_front_l10n( $text_translated, $text = '', $context = '', $domain = '' ){
 		static $l10n_opt;
-		if( $l10n_opt === null || $text_translated === 'clear_cache' ) $l10n_opt = get_option('democracy_l10n');
+		if( $l10n_opt === null || 'clear_cache' === $text_translated ){
+			$l10n_opt = get_option( 'democracy_l10n' );
+		}
 
-		if( $domain === 'democracy-poll' && $context == 'front' && !empty($l10n_opt[$text]) ){
-			return $l10n_opt[$text];
+		if( 'democracy-poll' === $domain && 'front' === $context && ! empty( $l10n_opt[ $text ] ) ){
+			return $l10n_opt[ $text ];
 		}
 
 		return $text_translated;
@@ -119,6 +141,7 @@ class Democracy_Poll {
 
 	# adds admin bar menu item
 	function toolbar( $toolbar ){
+
 		$toolbar->add_node( array(
 			'id'    => 'dem_settings',
 			'title' => 'Democracy',
@@ -133,8 +156,9 @@ class Democracy_Poll {
 		$list['design']           = __('Theme Settings','democracy-poll');
 		$list['l10n']             = __('Texts changes','democracy-poll');
 
-		if( ! $this->super_access )
+		if( ! $this->super_access ){
 			unset( $list['general_settings'], $list['design'], $list['l10n'] );
+		}
 
 		foreach( $list as $id => $title ){
 			$toolbar->add_node( array(
@@ -148,11 +172,15 @@ class Democracy_Poll {
 
 	# get single option from static $opt. It's wrapper function...
 	function opt( $optname = '' ){
-		if( ! $optname )
-			return self::$opt;
 
-		if( isset(self::$opt[$optname]) )
-			return self::$opt[$optname];
+		if( ! $optname ){
+			return self::$opt;
+		}
+
+		if( isset( self::$opt[ $optname ] ) ){
+			return self::$opt[ $optname ];
+		}
+
 	}
 
 	# wp_kses value with democracy allowed tags. For esc outputing strings...
@@ -160,19 +188,27 @@ class Democracy_Poll {
 		return wp_kses( $value, self::$allowed_tags );
 	}
 
-	## adds options to `self::$opt`. Update options in DB if it's not set yet.
+	/**
+	 * adds options to `self::$opt`. Update options in DB if it's not set yet.
+	 *
+	 * @return false|mixed|void
+	 */
 	function get_options(){
-		if( empty(self::$opt) )
-			self::$opt = get_option( self::OPT_NAME );
 
-		if( empty(self::$opt) && method_exists($this, 'update_options') )
-			$this->update_options('default');
+		if( empty( self::$opt ) ){
+			self::$opt = get_option( self::OPT_NAME );
+		}
+
+		if( empty( self::$opt ) && method_exists( $this, 'update_options' ) ){
+			$this->update_options( 'default' );
+		}
 
 		// append default values if need
 		foreach( $this->default_options() as $part => $options ){
 			foreach( $options as $key => $val ){
-				if( ! isset(self::$opt[$key]) )
-					self::$opt[$key] = $val;
+				if( ! isset( self::$opt[ $key ] ) ){
+					self::$opt[ $key ] = $val;
+				}
 			}
 		}
 
@@ -180,50 +216,71 @@ class Democracy_Poll {
 	}
 
 	/**
-	 * Возвращает УРЛ на главную страницу настроек плагина. Кэширует.
+	 * Returns the URL to the main page of the plugin settings.
+	 * Cache result.
+	 *
 	 * @return string URL
 	 */
 	function admin_page_url(){
-		static $url; if( ! $url ) $url = admin_url('options-general.php?page='. basename( DEMOC_PATH ) );
+		static $url;
+		if( ! $url ){
+			$url = admin_url( 'options-general.php?page=' . basename( DEMOC_PATH ) );
+		}
 
 		return $url;
 	}
 
 	/**
-	 * Ссылка на редактирование опроса.
-	 * @param  integer $poll_id ID опроса
+	 * A link to edit the poll.
+	 *
+	 * @param integer $poll_id  Poll ID
 	 * @return string URL
 	 */
 	function edit_poll_url( $poll_id ){
-		return $this->admin_page_url() .'&edit_poll='. $poll_id;
+		return $this->admin_page_url() . '&edit_poll=' . $poll_id;
 	}
 
 	/**
-	 * Проверяет используется ли страничный плагин кэширования на сайте
+	 * Проверяет, используется ли страничный плагин кэширования на сайте.
+	 *
 	 * @return boolean
 	 */
 	function is_cachegear_on(){
-		if( self::$opt['force_cachegear'] )
-			return true;
 
-		if( null !== ( $status = apply_filters( 'dem_cachegear_status', null ) ) )
+		if( self::$opt['force_cachegear'] ){
+			return true;
+		}
+
+		$status = apply_filters( 'dem_cachegear_status', null );
+
+		if( null !== $status ){
 			return $status;
+		}
 
 		// wp total cache
-		if( defined('W3TC') && \W3TC\Dispatcher::component('ModuleStatus') && \W3TC\Dispatcher::component('ModuleStatus')->is_enabled('pgcache') )
+		if(
+			defined( 'W3TC' ) && \W3TC\Dispatcher::component( 'ModuleStatus' )
+		    &&
+			\W3TC\Dispatcher::component( 'ModuleStatus' )->is_enabled( 'pgcache' )
+		){
 			return true;
+		}
 		// wp super cache
-		if( defined('WPCACHEHOME') && @ $GLOBALS['cache_enabled'] )
+		if( defined( 'WPCACHEHOME' ) && @ $GLOBALS['cache_enabled'] ){
 			return true;
+		}
 		// WordFence
-		if( defined('WORDFENCE_VERSION') && @ wfConfig::get('cacheType') == 'falcon' )
+		if( defined( 'WORDFENCE_VERSION' ) && @ wfConfig::get( 'cacheType' ) == 'falcon' ){
 			return true;
+		}
 		// WP Rocket
-		if( class_exists('HyperCache')  )
+		if( class_exists( 'HyperCache' ) ){
 			return true;
+		}
 		// Quick Cache
-		if( class_exists('quick_cache') && @ \quick_cache\plugin()->options['enable'] )
+		if( class_exists( 'quick_cache' ) && @ \quick_cache\plugin()->options['enable'] ){
 			return true;
+		}
 		// wp-fastest-cache
 		// aio-cache
 
@@ -239,10 +296,10 @@ class Democracy_Poll {
 
 		$allowed_tags = $this->admin_access ? self::$allowed_tags : 'strip';
 
-		if( is_string($data) ){
-			$data = wp_kses( trim($data), $allowed_tags );
+		if( is_string( $data ) ){
+			$data = wp_kses( trim( $data ), $allowed_tags );
 		}
-		else {
+		else{
 			foreach( $data as $key => & $val ){
 
 				if( is_string( $val ) ){
@@ -254,17 +311,17 @@ class Democracy_Poll {
 					$val = wp_kses( $val, $allowed_tags );
 				}
 				// числа
-				elseif( in_array( $key, [ 'qid','aid','votes' ] ) ){
+				elseif( in_array( $key, [ 'qid', 'aid', 'votes' ] ) ){
 					$val = (int) $val;
 				}
 				// остальное
-				else {
+				else{
 					$val = wp_kses( $val, 'strip' );
 				}
 			}
 		}
 
-		return apply_filters('dem_sanitize_answer_data', $data, $filter_type );
+		return apply_filters( 'dem_sanitize_answer_data', $data, $filter_type );
 	}
 
 	/**
@@ -275,21 +332,26 @@ class Democracy_Poll {
 
 		return array(
 			'main' => array(
-				'inline_js_css'     => 1, // встараивать стили и скрипты в HTML
-				'keep_logs'         => 1, // вести лог в БД
+				// встараивать стили и скрипты в HTML
+				'inline_js_css'     => 1,
+				// вести лог в БД
+				'keep_logs'         => 1,
 				'before_title'      => '<strong class="dem-poll-title">',
 				'after_title'       => '</strong>',
 				'force_cachegear'   => 0,
 				'archive_page_id'   => 0,
 				'order_answers'     => 'by_winner',
 				'use_widget'        => 1,
-				'hide_vote_button'  => 0, // прятать кнопку голосования где это можно, тогда голосование будет происходить по клику на ответ
+				// прятать кнопку голосования где это можно, тогда голосование будет происходить по клику на ответ
+				'hide_vote_button'  => 0,
 				'toolbar_menu'      => 1,
 				'tinymce_button'    => 1,
 				'show_copyright'    => 1,
 				'only_for_users'    => 0,
-				'dont_show_results' => 0,      // глобальная опция - не показывать результаты опроса. До закрития голосования
-				'dont_show_results_link' => 0, // глобальная опция - не показывать только ссылку на результаты. Результаты будут видын после голосования
+				// Не показывать результаты опроса. До закрытия голосования. Глобальная опция.
+				'dont_show_results' => 0,
+				// Не показывать только ссылку на результаты. Результаты будут видны после голосования. Глобальная опция.
+				'dont_show_results_link' => 0,
 				'democracy_off'     => 0,      // глобальная опция democracy
 				'revote_off'        => 0,      // глобальная опция переголосование
 				'cookie_days'       => 365,
@@ -324,6 +386,7 @@ class Democracy_Poll {
 				'btn_class'            => '',
 			)
 		);
+
 	}
 
 	/**
@@ -335,16 +398,22 @@ class Democracy_Poll {
 	 */
 	function cuser_can_edit_poll( $poll ){
 
-		if( $this->super_access )
+		if( $this->super_access ){
 			return true;
+		}
 
-		if( ! $this->admin_access )
+		if( ! $this->admin_access ){
 			return false;
+		}
 
-		if( is_numeric($poll) ) $poll = DemPoll::get_poll( $poll ); // get poll object
+		// get poll object
+		if( is_numeric( $poll ) ){
+			$poll = DemPoll::get_poll( $poll );
+		}
 
-		if( $poll && $poll->added_user == wp_get_current_user()->ID )
+		if( $poll && (int) $poll->added_user === (int) get_current_user_id() ){
 			return true;
+		}
 
 		return false;
 	}
@@ -354,14 +423,19 @@ class Democracy_Poll {
 	function front_init(){
 
 		// шоткод [democracy]
-		add_shortcode( 'democracy',          array( $this, 'poll_shortcode') );
-		add_shortcode( 'democracy_archives', array( $this, 'archives_shortcode') );
+		add_shortcode( 'democracy', [ $this, 'poll_shortcode' ] );
+		add_shortcode( 'democracy_archives', [ $this, 'archives_shortcode' ] );
 
 		//if( ! self::$opt['inline_js_css'] ) $this->add_css_once(); // подключаем стили как файл, если не инлайн
 
 		// для работы функции без AJAX
-		if( !isset($_POST['action']) || $_POST['action'] !== 'dem_ajax' )
+		if(
+			! isset( $_POST['action'] )
+			||
+			'dem_ajax' !== $_POST['action']
+		){
 			$this->not_ajax_request_handler();
+		}
 
 		// ajax request во frontend_init нельзя, потому что срабатывает только как is_admin()
 		add_action( 'wp_ajax_dem_ajax', [ $this, 'ajax_request_handler' ] );
@@ -370,61 +444,68 @@ class Democracy_Poll {
 
 	# обрабатывает запрос AJAX
 	function ajax_request_handler(){
+
 		$vars = (object) $this->_sanitize_request_vars();
 
-		if( ! $vars->act ) wp_die('error: no parameters have been sent or it is unavailable');
-		if( ! $vars->pid ) wp_die('error: id unknown');
+		if( ! $vars->act ){
+			wp_die( 'error: no parameters have been sent or it is unavailable' );
+		}
+
+		if( ! $vars->pid ){
+			wp_die( 'error: id unknown' );
+		}
 
 		// Вывод
 		$poll = new DemPoll( $vars->pid );
 
 		// switch
 		// голосуем и выводим результаты
-		if( $vars->act === 'vote' && $vars->aids ){
+		if( 'vote' === $vars->act && $vars->aids ){
 			// если пользователь голосует с другого браузера и он уже голосовал, ставим куки
 			//if( $poll->cachegear_on && $poll->votedFor ) $poll->set_cookie();
 
 			$voted = $poll->vote( $vars->aids );
 
-			if( is_wp_error($voted) ){
+			if( is_wp_error( $voted ) ){
 				echo $poll::_voted_notice( $voted->get_error_message() );
 				echo $poll->get_vote_screen();
 			}
-			else {
-				if( $poll->not_show_results )
-					echo $poll->get_vote_screen();
-				else
-					echo $poll->get_result_screen();
+			elseif( $poll->not_show_results ){
+				echo $poll->get_vote_screen();
 			}
-
+			else{
+				echo $poll->get_result_screen();
+			}
 		}
 		// удаляем результаты
-		elseif( $vars->act === 'delVoted' ){
+		elseif( 'delVoted' === $vars->act ){
 			$poll->delete_vote();
 			echo $poll->get_vote_screen();
 		}
 		// смотрим результаты
-		elseif( $vars->act === 'view' ){
-			if( $poll->not_show_results )
+		elseif( 'view' === $vars->act ){
+			if( $poll->not_show_results ){
 				echo $poll->get_vote_screen();
-			else
+			}
+			else{
 				echo $poll->get_result_screen();
+			}
 		}
 		// вернуться к голосованию
-		elseif( $vars->act === 'vote_screen' ){
+		elseif( 'vote_screen' === $vars->act ){
 			echo $poll->get_vote_screen();
 		}
-		elseif( $vars->act === 'getVotedIds' ){
+		elseif( 'getVotedIds' === $vars->act ){
 			if( $poll->votedFor ){
-				$poll->set_cookie(); // установим куки, т.к. этот запрос делается только если куки не установлены
+				$poll->set_cookie(); // Установим куки, т.к. этот запрос делается только если куки не установлены
 				echo $poll->votedFor;
 			}
 			elseif( $poll->blockForVisitor ){
 				echo 'blockForVisitor'; // чтобы вывести заметку
 			}
-			else {
-				// если не голосовал ставим куки на пол дня, чтобы не делать эту првоерку каждый раз
-				$poll->set_cookie('notVote', (time() + (DAY_IN_SECONDS/2)) );
+			else{
+				// если не голосовал ставим куки на пол дня, чтобы не делать эту проверку каждый раз
+				$poll->set_cookie( 'notVote', ( time() + ( DAY_IN_SECONDS / 2 ) ) );
 			}
 		}
 
@@ -436,18 +517,23 @@ class Democracy_Poll {
 
 		$vars = (object) $this->_sanitize_request_vars();
 
-		if( ! $vars->act || ! $vars->pid || ! isset($_SERVER['HTTP_REFERER']) ) return;
+		if( ! $vars->act || ! $vars->pid || ! isset( $_SERVER['HTTP_REFERER'] ) ){
+			return;
+		}
 
 		$poll = new DemPoll( $vars->pid );
 
-		if( $vars->act === 'vote' && $vars->aids ){
+		if( 'vote' === $vars->act && $vars->aids ){
 			$poll->vote( $vars->aids );
-			wp_redirect( remove_query_arg( array('dem_act','dem_pid'), $_SERVER['HTTP_REFERER'] ) );
+			wp_redirect( remove_query_arg( [ 'dem_act', 'dem_pid' ], $_SERVER['HTTP_REFERER'] ) );
+
 			exit;
 		}
-		elseif( $vars->act === 'delVoted' ){
+
+		if( 'delVoted' === $vars->act ){
 			$poll->delete_vote();
-			wp_redirect( remove_query_arg( array('dem_act','dem_pid'), $_SERVER['HTTP_REFERER'] ) );
+			wp_redirect( remove_query_arg( [ 'dem_act', 'dem_pid' ], $_SERVER['HTTP_REFERER'] ) );
+
 			exit;
 		}
 	}
@@ -492,62 +578,74 @@ class Democracy_Poll {
 		// для опредления к какой записи относиться опрос. проверка, если шорткод вызван не из контента...
 		$post_id = ( is_singular() && is_main_query() ) ? $GLOBALS['post'] : 0;
 
-		if( $atts['id'] === 'current' )
+		if( $atts['id'] === 'current' ){
 			$atts['id'] = (int) get_post_meta( $post_id, Democracy_Poll::$pollid_meta_key, 1 );
+		}
 
 		return '<div class="dem-poll-shortcode">'. get_democracy_poll( $atts['id'], '', '', $post_id ) .'</div>';
 	}
 
 	# добавляет стили в WP head
 	function add_css_once(){
+		static $once = 0;
+		if( $once++ ){
+			return '';
+		}
 
-		static $once; if( $once++ ) return;
-
-		$demcss = get_option('democracy_css');
+		$demcss = get_option( 'democracy_css' );
 		$minify = @ $demcss['minify'];
 
 		if( $minify ){
-			return "\n<!--democracy-->\n" .'<style type="text/css">'. $minify .'</style>'."\n";
+			return "\n<!--democracy-->\n" . '<style type="text/css">' . $minify . '</style>' . "\n";
 		}
-
 	}
 
 	# добавляет скрипты в подвал
 	function add_js_once(){
-		static $once; if( $once ) return; $once=1; // выполняем один раз!
+		static $once = 0;
+		if( $once++ ){
+			return;
+		}
 
 		// inline HTML
 		if( self::$opt['inline_js_css'] ){
-			wp_enqueue_script('jquery');
-			add_action( ( is_admin() ? 'admin_footer' : 'wp_footer' ), array( __CLASS__, '_add_js_wp_footer'), 0 );
+			wp_enqueue_script( 'jquery' );
+			add_action( ( is_admin() ? 'admin_footer' : 'wp_footer' ), [ __CLASS__, '_add_js_wp_footer' ], 0 );
 			// подключаем через фильтр, потому что иногда вылазиет баг, когда опрос добавляется прямо в контент...
 			//return "\n" .'<script type="text/javascript">'. file_get_contents( DEMOC_PATH .'js/democracy.min.js' ) .'</script>'."\n";
 		}
-		else
-			wp_enqueue_script( 'democracy', DEMOC_URL  .'js/democracy.min.js', array(), DEM_VER, true );
+		else{
+			wp_enqueue_script( 'democracy', DEMOC_URL . 'js/democracy.min.js', [], DEM_VER, true );
+		}
 	}
 
 	static function _add_js_wp_footer(){
-		echo "\n<!--democracy-->\n" .'<script type="text/javascript">'. file_get_contents( DEMOC_PATH .'js/democracy.min.js' ) .'</script>'."\n";
+		echo "\n<!--democracy-->\n" .
+		     '<script type="text/javascript">' . file_get_contents( DEMOC_PATH . 'js/democracy.min.js' ) . '</script>' . "\n";
 	}
 
 	# Сортировка массива объектов.
 	# Передаете в $array массив объектов, указываете в $args параметры
 	# сортировки и получаете отсортированный массив объектов.
-	static function objects_array_sort( $array, $args = array('votes'=>'desc') ){
-		usort( $array, function( $a, $b ) use ( $args ){
+	static function objects_array_sort( $array, $args = [ 'votes' => 'desc' ] ){
+
+		usort( $array, static function( $a, $b ) use ( $args ){
 			$res = 0;
 
-			if( is_array($a) ){
+			if( is_array( $a ) ){
 				$a = (object) $a;
 				$b = (object) $b;
 			}
 
 			foreach( $args as $k => $v ){
-				if( $a->$k == $b->$k ) continue;
+				if( $a->$k === $b->$k ){
+					continue;
+				}
 
 				$res = ( $a->$k < $b->$k ) ? -1 : 1;
-				if( $v=='desc' ) $res= -$res;
+				if( $v === 'desc' ){
+					$res = -$res;
+				}
 				break;
 			}
 
@@ -570,25 +668,34 @@ class Democracy_Poll {
 	 * Получает HTML код всех сообщений находящихся в массиве Democracy_Poll::msg
 	 */
 	function msgs_html(){
-		if( ! $this->msg ) return '';
+		if( ! $this->msg ){
+			return '';
+		}
 		$out = '';
 
-		if( isset($this->msg['error']) )
-			foreach( $this->msg['error'] as $msg )
+		if( isset( $this->msg['error'] ) ){
+			foreach( $this->msg['error'] as $msg ){
 				$out .= Democracy_Poll::msg_html( $msg, 'error' );
+			}
+		}
 
-		if( isset($this->msg['notice']) )
-			foreach( $this->msg['notice'] as $msg )
+		if( isset( $this->msg['notice'] ) ){
+			foreach( $this->msg['notice'] as $msg ){
 				$out .= Democracy_Poll::msg_html( $msg, 'notice' );
+			}
+		}
 
-		if( isset($this->msg['updated']) )
-			foreach( $this->msg['updated'] as $msg )
+		if( isset( $this->msg['updated'] ) ){
+			foreach( $this->msg['updated'] as $msg ){
 				$out .= Democracy_Poll::msg_html( $msg, 'updated' );
-
+			}
+		}
 
 		foreach( $this->msg as $k => $msg ){
-			if( in_array( $k, array('error', 'notice', 'updated'), true ) ) // $k = 0 не работает. поэтому $strict = true
+			// $k = 0 не работает. поэтому $strict = true
+			if( in_array( $k, [ 'error', 'notice', 'updated' ], true ) ){
 				continue; // === because (0 == 'foo') = true
+			}
 
 			$out .= Democracy_Poll::msg_html( $msg, 'updated' );
 		}
@@ -597,11 +704,15 @@ class Democracy_Poll {
 	}
 
 	static function msg_html( $msg, $type = 'updated' ){
-		return '<div class="'. $type .' notice is-dismissible"><p>'. $msg .'</p></div>';
+
+		return '<div class="' . $type . ' notice is-dismissible"><p>' . $msg . '</p></div>';
 	}
 
 	static function admin_notices( $msg, $type = '' ){
-		add_action('admin_notices', function() use ($msg, $type){ echo Democracy_Poll::msg_html( $msg, $type ); } );
+
+		add_action( 'admin_notices', function() use ( $msg, $type ){
+			echo Democracy_Poll::msg_html( $msg, $type );
+		} );
 	}
 
 	/**
@@ -615,12 +726,13 @@ class Democracy_Poll {
 	static function get_ip_info( $ip = NULL, $purpose = 'location' ){
 		$output = NULL;
 
-		if( filter_var($ip, FILTER_VALIDATE_IP) === FALSE )
+		if( filter_var( $ip, FILTER_VALIDATE_IP ) === false ){
 			$ip = DemPoll::get_ip();
+		}
 
-		$purpose    = str_replace( array("name", "\n", "\t", " ", "-", "_"), NULL, strtolower(trim($purpose)) );
-		$support    = array( 'country', 'countrycode', 'state', 'region', 'city', 'location', 'address' );
-		$continents = array(
+		$purpose = str_replace( [ "name", "\n", "\t", " ", "-", "_" ], null, strtolower( trim( $purpose ) ) );
+		$support = [ 'country', 'countrycode', 'state', 'region', 'city', 'location', 'address' ];
+		$continents = [
 			'AF' => 'Africa',
 			'AN' => 'Antarctica',
 			'AS' => 'Asia',
@@ -628,37 +740,40 @@ class Democracy_Poll {
 			'OC' => 'Australia (Oceania)',
 			'NA' => 'North America',
 			'SA' => 'South Americ',
-		);
+		];
 
-		if( filter_var($ip, FILTER_VALIDATE_IP) && in_array($purpose, $support) ){
+		if( filter_var( $ip, FILTER_VALIDATE_IP ) && in_array( $purpose, $support ) ){
+
 			//$ipdat = json_decode( wp_remote_retrieve_body( wp_remote_get("http://www.geoplugin.net/json.gp?ip=$ip") ) ); // wp_remote_get отдает forbiden 403 !!!
-			$ipdat = json_decode( @ file_get_contents("http://www.geoplugin.net/json.gp?ip=$ip") );
+			$ipdat = json_decode( @ file_get_contents( "http://www.geoplugin.net/json.gp?ip=$ip" ) );
 
-			if( $ipdat && @ strlen(trim($ipdat->geoplugin_countryCode)) == 2 ){
+			if( $ipdat && @ strlen( trim( $ipdat->geoplugin_countryCode ) ) == 2 ){
 				switch( $purpose ){
 					case "location":
-						$output = array(
+						$output = [
 							'city'           => @ $ipdat->geoplugin_city,
 							'state'          => @ $ipdat->geoplugin_regionName,
 							'country'        => @ $ipdat->geoplugin_countryName,
 							'country_code'   => @ $ipdat->geoplugin_countryCode,
-							'continent'      => @ $continents[strtoupper($ipdat->geoplugin_continentCode)],
-							'continent_code' => @ $ipdat->geoplugin_continentCode
-						);
+							'continent'      => @ $continents[ strtoupper( $ipdat->geoplugin_continentCode ) ],
+							'continent_code' => @ $ipdat->geoplugin_continentCode,
+						];
 						break;
 					case "address":
-						$address = array($ipdat->geoplugin_countryName);
-						if(@ strlen($ipdat->geoplugin_regionName) >= 1) $address[] = $ipdat->geoplugin_regionName;
-						if(@ strlen($ipdat->geoplugin_city) >= 1)       $address[] = $ipdat->geoplugin_city;
-						$output = implode(", ", array_reverse($address));
+						$address = [ $ipdat->geoplugin_countryName ];
+						if( @ strlen( $ipdat->geoplugin_regionName ) >= 1 ){
+							$address[] = $ipdat->geoplugin_regionName;
+						}
+						if( @ strlen( $ipdat->geoplugin_city ) >= 1 ){
+							$address[] = $ipdat->geoplugin_city;
+						}
+						$output = implode( ", ", array_reverse( $address ) );
 						break;
 					case "city":
 						$output = @ $ipdat->geoplugin_city;
 						break;
-					case "state":
-						$output = @ $ipdat->geoplugin_regionName;
-						break;
 					case "region":
+					case "state":
 						$output = @ $ipdat->geoplugin_regionName;
 						break;
 					case "country":
@@ -681,15 +796,18 @@ class Democracy_Poll {
 	 * Зависит от метода Democracy_Poll::get_ip_info()
 	 */
 	static function ip_info_format( $ip_info ){
+
 		// если передан IP
-		if( filter_var($ip_info, FILTER_VALIDATE_IP) ){
-			if( $ip_info === '127.0.0.1' )
+		if( filter_var( $ip_info, FILTER_VALIDATE_IP ) ){
+			if( $ip_info === '127.0.0.1' ){
 				$format = time() + YEAR_IN_SECONDS * 10;
-			else
+			}
+			else{
 				$ip_info = self::get_ip_info( $ip_info );
+			}
 		}
 
-		if( empty($format) ){
+		if( empty( $format ) ){
 			/*Array(
 				[city] =>
 				[state] =>
@@ -698,42 +816,48 @@ class Democracy_Poll {
 				[continent] => Asia
 				[continent_code] => AS
 			)*/
-			if( @ $ip_info['country'] && @  $ip_info['country_code'] )
-				$format = $ip_info['country'] .','. $ip_info['country_code'] .','. $ip_info['city'];
-			else
+			if( @ $ip_info['country'] && @  $ip_info['country_code'] ){
+				$format = $ip_info['country'] . ',' . $ip_info['country_code'] . ',' . $ip_info['city'];
+			}
+			else{
 				$format = time();
+			}
 		}
 
 		return $format;
 	}
 
-
 	/**
 	 * Получает объекты записей к которым прикреплен опрос (где испльзуется шорткод).
+	 *
 	 * @param  object  $poll Объект текущего опроса.
-	 * @return array/false Массив объектов записей
+	 *
+	 * @return array|false Массив объектов записей
 	 */
 	function get_in_posts_posts( $poll ){
-		if( empty($poll->in_posts) || empty($poll->id) )
-			return false;
-
 		global $wpdb;
+
+		if( empty( $poll->in_posts ) || empty( $poll->id ) ){
+			return false;
+		}
 
 		$pids = explode( ',', $poll->in_posts );
 
-		$posts = array();
-		$delete_pids = array(); // удалим ID записей которых теперь уже нет...
+		$posts = [];
+		$delete_pids = []; // удалим ID записей которых теперь уже нет...
 
 		foreach( $pids as $post_id ){
-			if( $post = get_post($post_id) )
+			if( $post = get_post( $post_id ) ){
 				$posts[] = $post;
-			else
+			}
+			else{
 				$delete_pids[] = $post_id;
+			}
 		}
 
 		if( $delete_pids ){
 			$new_in_posts = array_diff( $pids, $delete_pids );
-			$wpdb->update( $wpdb->democracy_q, array('in_posts'=> implode(',', $new_in_posts) ), array('id'=>$poll->id) );
+			$wpdb->update( $wpdb->democracy_q, [ 'in_posts' => implode( ',', $new_in_posts ) ], [ 'id' => $poll->id ] );
 		}
 
 		return $posts;

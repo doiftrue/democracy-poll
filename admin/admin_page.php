@@ -899,9 +899,11 @@ function dem_polls_design(){
 						<?php
 							$data = array();
 							foreach( glob( DEMOC_PATH . 'styles/loaders/*') as $file ){
-								if( is_dir($file) ) continue;
+								if( is_dir( $file ) ){
+									continue;
+								}
 								$fname = basename( $file );
-								$ex    = preg_replace('~.*\.~', '', $fname );
+								$ex = preg_replace('~.*\.~', '', $fname );
 								$data[ $ex ][ $fname ] = $file;
 							}
 							foreach( $data as $ex => $val ){
@@ -979,7 +981,7 @@ function dem_polls_design(){
 
 					<p><?php _e('Minified version (uses to include it in HTML)','democracy-poll'); ?></p>
 
-					<textarea onmouseup="select_kdfgu(this);" readonly="true" style="width:100%;min-height:10em;"><?php echo $demcss['minify'] ?></textarea>
+					<textarea onmouseup="select_kdfgu(this);" readonly="true" style="width:100%; min-height:10em;"><?php echo $demcss['minify'] ?></textarea>
 				</li>
 			</ul>
 
@@ -998,11 +1000,12 @@ function dem_l10n_options(){
 
 		<form method="POST" action="">
 			<?php
-			wp_nonce_field('dem_adminform', '_demnonce');
+			wp_nonce_field( 'dem_adminform', '_demnonce' );
 
 			// выводим таблицу
 
-			echo '<table class="wp-list-table widefat fixed posts">
+			echo '
+			<table class="wp-list-table widefat fixed posts">
 			<thead>
 				<tr>
 					<th>'. __('Original','democracy-poll') .'</th>
@@ -1025,11 +1028,20 @@ function dem_l10n_options(){
 			// получим все переводы из файлов
 			$strs = array();
 			foreach( glob( DEMOC_PATH .'*' ) as $file ){
-				if( is_dir( $file ) ) continue;
-				if( ! preg_match('~\.php$~', basename( $file ) ) ) continue;
 
-				preg_match_all('~_x\(\s*[\'](.*?)(?<!\\\\)[\']~', file_get_contents($file), $match );
-				if( $match[1] ) $strs = array_merge( $strs, $match[1] );
+				if(
+					is_dir( $file )
+					||
+					! preg_match( '~\.php$~', basename( $file ) )
+				){
+					continue;
+				}
+
+				preg_match_all( '~_x\(\s*[\'](.*?)(?<!\\\\)[\']~', file_get_contents( $file ), $match );
+				if( $match[1] ){
+					/** @noinspection SlowArrayOperationsInLoopInspection */
+					$strs = array_merge( $strs, $match[1] );
+				}
 			}
 			$strs = array_unique( $strs );
 

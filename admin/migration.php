@@ -69,54 +69,56 @@
 function dem_WP_Polls_migration(){
 	global $wpdb;
 
-	$migrate_data = get_option('democracy_migrated');
+	$migrate_data = get_option( 'democracy_migrated' );
 
 	// выходим, если миграция уже была...
-	if( isset($migrate_data['wp-polls']) )
-		return;
-
-	// get polls of WP Polls
-	$wppolls = $wpdb->get_results("SELECT * FROM $wpdb->pollsq");
-
-	if( ! $wppolls ){
-		democr()->msg[] = 'No WP Polls polls found.';
+	if( isset( $migrate_data['wp-polls'] ) ){
 		return;
 	}
 
-	$collation = array();
+	// get polls of WP Polls
+	$wppolls = $wpdb->get_results( "SELECT * FROM $wpdb->pollsq" );
+
+	if( ! $wppolls ){
+		democr()->msg[] = 'No WP Polls polls found.';
+
+		return;
+	}
+
+	$collation = [];
 
 	foreach( $wppolls as $wppoll ){
 		// poll
-		$wpdb->insert( $wpdb->democracy_q, array(
-			'question'      => $wppoll->pollq_question,
-			'added'         => (int) $wppoll->pollq_timestamp,
-			'users_voted'   => ($wppoll->pollq_totalvoters != $wppoll->pollq_totalvotes) ? $wppoll->pollq_totalvoters : $wppoll->pollq_totalvotes,
-			'multiple'      => $wppoll->pollq_multiple,
-			'open'          => $wppoll->pollq_active,
-			'end'           => (int) $wppoll->pollq_expiry,
+		$wpdb->insert( $wpdb->democracy_q, [
+			'question'     => $wppoll->pollq_question,
+			'added'        => (int) $wppoll->pollq_timestamp,
+			'users_voted'  => ( $wppoll->pollq_totalvoters != $wppoll->pollq_totalvotes ) ? $wppoll->pollq_totalvoters : $wppoll->pollq_totalvotes,
+			'multiple'     => $wppoll->pollq_multiple,
+			'open'         => $wppoll->pollq_active,
+			'end'          => (int) $wppoll->pollq_expiry,
 			//
-			'added_user'    => get_current_user_id(),
-			'active'        => 0,
-			'democratic'    => 0,
-			'revote'        => 0,
-			'show_results'  => 1,
-		) );
+			'added_user'   => get_current_user_id(),
+			'active'       => 0,
+			'democratic'   => 0,
+			'revote'       => 0,
+			'show_results' => 1,
+		] );
 
 		$qid = $wpdb->insert_id;
 
-		$branch = & $collation[ $wppoll->pollq_id ];
+		$branch = &$collation[ $wppoll->pollq_id ];
 
 		$branch['new_poll_id'] = $qid;
 
 		// answers
-		$wpanswers = $wpdb->get_results("SELECT * FROM $wpdb->pollsa WHERE polla_qid = ". (int) $wppoll->pollq_id );
+		$wpanswers = $wpdb->get_results( "SELECT * FROM $wpdb->pollsa WHERE polla_qid = " . (int) $wppoll->pollq_id );
 
 		foreach( $wpanswers as $wpansw ){
-			$wpdb->insert( $wpdb->democracy_a, array(
+			$wpdb->insert( $wpdb->democracy_a, [
 				'qid'    => $qid,
 				'answer' => $wpansw->polla_answers,
 				'votes'  => $wpansw->polla_votes,
-			) );
+			] );
 
 			$aid = $wpdb->insert_id;
 
@@ -130,7 +132,7 @@ function dem_WP_Polls_migration(){
 			// Так как каждый ответ в мульти логах идет на отдельной строке, придется группировать, чтобы собрать множественные ID
 			// GROUP_CONCAT(pollip_aid) - соберет ID ответов через запятую - что надо!
 			$group_col_names = 'pollip_ip, pollip_timestamp, pollip_userid';
-			$sql = "SELECT pollip_qid, GROUP_CONCAT(pollip_aid) as pollip_aid, $group_col_names FROM $wpdb->pollsip WHERE pollip_qid = ". $wppoll->pollq_id ." AND pollip_aid = ". $wpansw->polla_aid ." GROUP BY $group_col_names";
+			$sql = "SELECT pollip_qid, GROUP_CONCAT(pollip_aid) as pollip_aid, $group_col_names FROM $wpdb->pollsip WHERE pollip_qid = " . $wppoll->pollq_id . " AND pollip_aid = " . $wpansw->polla_aid . " GROUP BY $group_col_names";
 			$wpips = $wpdb->get_results( $sql );
 			//$wpips = $wpdb->get_results("SELECT * FROM $wpdb->pollsip WHERE pollip_qid = ". (int) $wppoll->pollq_id );
 
@@ -138,36 +140,37 @@ function dem_WP_Polls_migration(){
 			if( $wpips ){
 				// заменим на текущие ID
 				foreach( $wpips as $wpip ){
-					$_aids = array();
-					foreach( explode(',', $wpip->pollip_aid) as $pollip_aid )
+					$_aids = [];
+					foreach( explode( ',', $wpip->pollip_aid ) as $pollip_aid ){
 						$_aids[] = $branch['answers:old->new'][ $pollip_aid ];
+					}
 
-					$wpdb->insert( $wpdb->democracy_log, array(
+					$wpdb->insert( $wpdb->democracy_log, [
 						'ip'      => $wpip->pollip_ip, // строка - format
 						'qid'     => $qid,
-						'aids'    => implode(',', $_aids ),
+						'aids'    => implode( ',', $_aids ),
 						'userid'  => $wpip->pollip_userid,
-						'date'    => date('Y-m-d H:i:s', $wpip->pollip_timestamp ), // datatime - format
+						'date'    => date( 'Y-m-d H:i:s', $wpip->pollip_timestamp ), // datatime - format
 						'expire'  => $wpip->pollip_timestamp + YEAR_IN_SECONDS,
 						'ip_info' => '', // country, country code, city - format
-					) );
+					] );
 
 					$logid = $wpdb->insert_id;
 
 					$branch['logs_created'][] = $logid;
 				}
 			}
-
 		}
-
 	}
 
-	if( $migrate_data )
+	if( $migrate_data ){
 		$migrate_data['wp-polls'] = $collation;
-	else
-		$migrate_data = array('wp-polls'=> $collation );
+	}
+	else{
+		$migrate_data = [ 'wp-polls' => $collation ];
+	}
 
-	update_option('democracy_migrated', $migrate_data, 'no' );
+	update_option( 'democracy_migrated', $migrate_data, 'no' );
 
 	// options
 	// опции не мигрируют - лишняя работа...
