@@ -10,6 +10,7 @@
  * Text Domain: democracy-poll
  * Domain Path: /languages/
  *
+ * Requires at least: 4.6
  * Requires PHP: 5.6
  *
  * Version: 5.6.0
@@ -47,9 +48,9 @@ dem_set_dbtables();
 require_once DEMOC_PATH .'admin/upgrade-activate-funcs.php';
 require_once DEMOC_PATH .'theme-functions.php';
 
-require_once DEMOC_PATH .'class-DemPoll.php';
-require_once DEMOC_PATH .'class-Democracy_Poll.php';
-require_once DEMOC_PATH .'admin/class-Democracy_Poll_Admin.php';
+require_once DEMOC_PATH .'/classes/DemPoll.php';
+require_once DEMOC_PATH .'/classes/Democracy_Poll.php';
+require_once DEMOC_PATH .'/classes/Admin/Democracy_Poll_Admin.php';
 
 register_activation_hook( __FILE__, 'democracy_activate' );
 

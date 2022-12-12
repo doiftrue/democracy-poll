@@ -10,7 +10,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		if( $this->admin_access ){
 			add_action('admin_menu', array( &$this, 'register_option_page') );
 
-			// Cохранение настроек экрана
+			// Сохранение настроек экрана
 			add_filter('set-screen-option', function( $status, $option, $value ){
 				return in_array( $option, array('dem_polls_per_page', 'dem_logs_per_page') ) ? (int) $value : $status;
 			}, 10, 3 );
@@ -22,13 +22,13 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 
 		// TinyMCE кнопка WP2.5+
 		if( self::$opt['tinymce_button'] ){
-			require_once DEMOC_PATH . 'admin/class-Dem_Tinymce.php';
+			require_once DEMOC_PATH . '/classes/Admin/Dem_Tinymce.php';
 			new Dem_Tinymce();
 		}
 
 		// метабокс
 		if( ! self::$opt['post_metabox_off'] ){
-			require_once DEMOC_PATH . 'admin/class-Democ_Post_Metabox.php';
+			require_once DEMOC_PATH . '/classes/Admin/Democ_Post_Metabox.php';
 			Democ_Post_Metabox::init();
 		}
 
@@ -78,7 +78,8 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 
 		// datepicker
 		wp_enqueue_script('jquery-ui-datepicker');
-		wp_enqueue_style('jquery-style', DEMOC_URL . 'admin/css/jquery-ui.css', array(), DEM_VER ); //ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css
+		//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css
+		wp_enqueue_style('jquery-style', DEMOC_URL . 'admin/css/jquery-ui.css', array(), DEM_VER );
 
 		// democracy
 		wp_enqueue_script( 'democracy-scripts', DEMOC_URL . 'js/admin.js', array('jquery'/*,'ace'*/), DEM_VER, true );
@@ -182,12 +183,12 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		elseif( $sp === 'add_new' || isset($_GET['edit_poll']) ){}
 		// logs list
 		elseif( $sp === 'logs' ){
-			require_once DEMOC_PATH . 'admin/class-Dem_List_Table_Logs.php';
+			require_once DEMOC_PATH . '/classes/Admin/Dem_List_Table_Logs.php';
 			$this->list_table = new Dem_List_Table_Logs();
 		}
 		// polls list
 		else {
-			require_once DEMOC_PATH . 'admin/class-Dem_List_Table_Polls.php';
+			require_once DEMOC_PATH . '/classes/Admin/Dem_List_Table_Polls.php';
 			$this->list_table = new Dem_List_Table_Polls();
 		}
 
@@ -692,13 +693,20 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		return $actions;
 	}
 
-	## Создает страницу архива. Сохраняет УРЛ созданой страницы в опции плагина. Перед созданием проверят нет ли уже такой страницы.
+	## Создает страницу архива. Сохраняет УРЛ созданой страницы в опции плагина.
+	# Перед созданием проверят нет ли уже такой страницы.
 	## @return  УРЛ созданной страницы или false
+	/**
+	 * @return false|void
+	 */
 	function dem_create_archive_page(){
 		global $wpdb;
 
 		// Пробуем найти страницу с архивом
-		if( $page = $wpdb->get_row("SELECT * FROM $wpdb->posts WHERE post_content LIKE '[democracy_archives]' AND post_status = 'publish' LIMIT 1") ){
+		$page = $wpdb->get_row(
+			"SELECT * FROM $wpdb->posts WHERE post_content LIKE '[democracy_archives]' AND post_status = 'publish' LIMIT 1"
+		);
+		if( $page ){
 			$page_id = $page->ID;
 		}
 		// Создаем новую страницу

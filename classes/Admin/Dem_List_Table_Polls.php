@@ -1,6 +1,5 @@
 <?php
 
-
 class Dem_List_Table_Polls extends WP_List_Table{
 	static $cache;
 
