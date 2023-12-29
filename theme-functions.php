@@ -16,12 +16,15 @@ function democracy_get_poll( $poll_id ){
  *
  * @param  integer $post_id ID or object of post, attached poll of which you want to get.
  *
- * @return string  Poll HTML code.
+ * @return int
  */
 function get_post_poll_id( $post_id = 0 ){
-	$post_id = ( is_numeric($post_id) && $post_id ) ? (int) $post_id : get_post( $post_id )->ID;
 
-	return $poll_id = (int) get_post_meta( $post_id, Democracy_Poll::$pollid_meta_key, 1 );
+	$post_id = ( is_numeric( $post_id ) && $post_id )
+		? (int) $post_id
+		: get_post( $post_id )->ID;
+
+	return (int) get_post_meta( $post_id, Democracy_Poll::$pollid_meta_key, true );
 }
 
 /**
@@ -47,8 +50,9 @@ function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = ''
 
 	$poll = new DemPoll( $poll_id );
 
-	if( ! $poll->id )
+	if( ! $poll->id ){
 		return 'Poll not found';
+	}
 
 	// обновим ID записи с которой вызван опрос, если такого ID нет в данных
 	$from_post = is_object( $from_post ) ? $from_post->ID : (int) $from_post;
@@ -79,11 +83,13 @@ function get_democracy_poll_results( $poll_id = 0, $before_title = '', $after_ti
 
 	$poll = new DemPoll( $poll_id );
 
-	if( ! $poll->id )
+	if( ! $poll->id ){
 		return '';
+	}
 
-	if( $poll->open && ! $poll->show_results )
+	if( $poll->open && ! $poll->show_results ){
 		return __( 'Poll results hidden for now...', 'democracy-poll' );
+	}
 
 	return $poll->get_screen( 'voted', $before_title, $after_title );
 }
@@ -122,6 +128,15 @@ function democracy_archives( $args = [] ){
  * @return string HTML
  */
 function get_democracy_archives( $args = [] ){
+	// backward compatibility
+	$passed_args = func_get_args();
+	if( func_num_args() > 1 ){
+		$args = [
+			'active'       => $passed_args[0] ? 0 : null, // $hide_active
+			'before_title' => $passed_args[1],
+			'after_title'  => $passed_args[2] ?? '',
+		];
+	}
 
 	$dem_paged = isset( $_GET['dem_paged'] ) ? (int) $_GET['dem_paged'] : 1;
 
@@ -139,18 +154,9 @@ function get_democracy_archives( $args = [] ){
 		'return'       => 'html',
 	];
 
-	// backward compatibility
-	if( func_num_args() > 1 ){
-		$args = [
-			'active'       => ( $hide_active = func_get_arg( 0 ) ) ? 0 : null,
-			'before_title' => func_get_arg( 1 ),
-			'after_title'  => func_get_arg( 2 ),
-		];
-	}
-
 	$args = wp_parse_args( $args, $defaults );
 
-	$html = get_dem_polls( $args );
+	$html = (string) get_dem_polls( $args );
 	$found_rows = get_dem_polls( 'get_found_rows' );
 
 	// pagination
@@ -194,8 +200,9 @@ function get_dem_polls( $args = [] ){
 	global $wpdb;
 
 	static $all_found_rows;
-	if( 'get_found_rows' === $args  )
+	if( 'get_found_rows' === $args ){
 		return $all_found_rows;
+	}
 
 	$rg = (object) wp_parse_args( $args, [
 		'wrap'           => '<div class="dem-polls">%s</div>',
@@ -213,23 +220,27 @@ function get_dem_polls( $args = [] ){
 
 	// WHERE
 	$WHERE = [];
-	if( isset( $rg->active ) )
+	if( isset( $rg->active ) ){
 		$WHERE['active'] = $wpdb->prepare( 'WHERE active = %d', (int) $rg->active );
-	if( isset( $rg->open ) )
-		$WHERE['open']   = $wpdb->prepare( 'WHERE open = %d', (int) $rg->open );
+	}
+	if( isset( $rg->open ) ){
+		$WHERE['open'] = $wpdb->prepare( 'WHERE open = %d', (int) $rg->open );
+	}
 
 	// ORDER_BY
-	$esc_orderby__fn = function( $val ){
+	$esc_orderby__fn = static function( $val ){
 		return preg_replace( '/[^a-z0-9 _\-]/i', '', $val );
 	};
 
 	$ORDER_BY = [];
 	if( ! $rg->orderby ){
 
-		if( null === $rg->active )
+		if( null === $rg->active ){
 			$ORDER_BY['active'] = 'active DESC';
-		if( null === $rg->open )
+		}
+		if( null === $rg->open ){
 			$ORDER_BY['open'] = 'open DESC';
+		}
 
 		$ORDER_BY['id'] = 'id DESC';
 	}
@@ -238,12 +249,14 @@ function get_dem_polls( $args = [] ){
 		if( is_array( $rg->orderby ) ){
 			$ORDER_BY['array'] = $esc_orderby__fn( implode( ' ', $rg->orderby ) );
 		}
-		elseif( is_string($rg->orderby) ){
+		elseif( is_string( $rg->orderby ) ){
 
-			if( 'rand' === $rg->orderby )
+			if( 'rand' === $rg->orderby ){
 				$ORDER_BY['rand'] = 'rand()';
-			else
-				$ORDER_BY['string'] = $esc_orderby__fn( $rg->orderby ) .' ASC';
+			}
+			else{
+				$ORDER_BY['string'] = $esc_orderby__fn( $rg->orderby ) . ' ASC';
+			}
 		}
 	}
 
@@ -311,10 +324,11 @@ function get_dem_polls( $args = [] ){
 		$out[] = '<div class="dem-elem-wrap">'. $elm_html .'</div>';
 	}
 
-	if( $rg->return === 'objects' )
+	if( $rg->return === 'objects' ){
 		return $out;
-	else
-		return sprintf( $rg->wrap, implode( "\n", $out ) );
+	}
+
+	return sprintf( $rg->wrap, implode( "\n", $out ) );
 }
 
 /**

@@ -11,7 +11,7 @@
  * Domain Path: /languages/
  *
  * Requires at least: 4.6
- * Requires PHP: 5.6
+ * Requires PHP: 7.0
  *
  * Version: 5.6.0
  */
