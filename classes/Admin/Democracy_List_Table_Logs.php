@@ -74,10 +74,10 @@ class Democracy_List_Table_Logs extends \WP_List_Table {
 		// where --- filters ----
 		$where = 'WHERE 1';
 		if( $this->poll_id ){
-			$where .= ' AND qid = ' . $this->poll_id;
+			$where .= ' AND qid = ' . (int) $this->poll_id;
 		}
 		if( $userid = (int) @ $_GET['userid'] ){
-			$where .= ' AND userid = ' . intval( $userid );
+			$where .= ' AND userid = ' . (int) $userid;
 		}
 		if( $ip = @ $_GET['ip'] ){
 			$where .= $wpdb->prepare( ' AND ip = %s', $ip );

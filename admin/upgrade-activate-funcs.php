@@ -164,7 +164,7 @@ function dem_get_db_schema() {
 function dem_last_version_up() {
 	$old_ver = get_option( 'democracy_version' );
 
-	if( $old_ver == DEM_VER || ! $old_ver ){
+	if( $old_ver === DEM_VER || ! $old_ver ){
 		return;
 	}
 
@@ -229,100 +229,6 @@ function dem_last_version_up() {
 		$wpdb->query( "ALTER TABLE $wpdb->democracy_log ADD `expire` bigint(20) UNSIGNED NOT NULL default 0 AFTER `userid`;" );
 	}
 
-	// 4.7.5
-	// конвертируем в кодировку utf8mb4
-	if( 'utf8mb4' === $wpdb->charset ){
-		foreach( [ $wpdb->democracy_q, $wpdb->democracy_a, $wpdb->democracy_log ] as $table ){
-			$alter = false;
-			if( ! $results = $wpdb->get_results( "SHOW FULL COLUMNS FROM `$table`" ) ){
-				continue;
-			}
-
-			foreach( $results as $column ){
-				if( ! $column->Collation ){
-					continue;
-				}
-
-				list( $charset ) = explode( '_', $column->Collation );
-
-				if( strtolower( $charset ) != 'utf8mb4' ){
-					$alter = true;
-					break;
-				}
-			}
-
-			if( $alter ){
-				$wpdb->query( "ALTER TABLE $table CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci" );
-			}
-		}
-	}
-
-	// 4.9
-	if( ! in_array( 'date', $fields_log, true ) ){
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_log` ADD `date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' AFTER `userid`;" );
-	}
-
-	// 4.9.3
-	if( version_compare( $old_ver, '4.9.3', '<' ) ){
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_log` CHANGE `date` `date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';" );
-
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_q` CHANGE `multiple` `multiple` tinyint(5) UNSIGNED NOT NULL DEFAULT 0;" );
-
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_a` CHANGE `added_by` `added_by` varchar(100) NOT NULL default '';" );
-		$wpdb->query( "UPDATE `$wpdb->democracy_a` SET added_by = '' WHERE added_by = '0'" );
-	}
-	if( ! in_array( 'added_user', $fields_q, true ) ){
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_q` ADD `added_user` bigint(20) UNSIGNED NOT NULL DEFAULT 0 AFTER `added`;" );
-	}
-	if( ! in_array( 'show_results', $fields_q, true ) ){
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_q` ADD `show_results` tinyint(1) UNSIGNED NOT NULL default 1 AFTER `revote`;" );
-	}
-
-	// 5.0.4
-	if( version_compare( $old_ver, '5.0.4', '<' ) ){
-		//$wpdb->query("ALTER TABLE $wpdb->democracy_log CHANGE `ip` `ip` bigint(11) UNSIGNED NOT NULL DEFAULT '0';"); // ниже изменяется...
-		$wpdb->query( "ALTER TABLE $wpdb->democracy_log CHANGE `qid` `qid` bigint(20) UNSIGNED NOT NULL DEFAULT '0';" );
-
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_a` CHANGE `aid` `aid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;" );
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_a` CHANGE `qid` `qid` bigint(20) UNSIGNED NOT NULL DEFAULT '0';" );
-
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_q` CHANGE `id` `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;" );
-	}
-
-	// 5.2.0
-	if( ! in_array( 'logid', $fields_log ) ){
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_log` ADD `logid` bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;" );
-	}
-
-	if( ! in_array( 'ip_info', $fields_log ) ){
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_log` ADD `ip_info` text NOT NULL default '' AFTER `expire`;" );
-	}
-
-	if( ! in_array( 'aorder', $fields_a ) ){
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_a` ADD `aorder` int(5) unsigned NOT NULL default 0 AFTER `votes`;" );
-	}
-
-	if( ! in_array( 'answers_order', $fields_q ) ){
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_q` ADD `answers_order` varchar(50) NOT NULL default '' AFTER `show_results`;" );
-	}
-
-	if( ! in_array( 'users_voted', $fields_q ) ){
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_q` ADD `users_voted` bigint(20) UNSIGNED NOT NULL DEFAULT '0' AFTER `end`;" );
-		// заполним данными из лога
-		$wpdb->query( "UPDATE $wpdb->democracy_q SET users_voted = (SELECT count(*) FROM $wpdb->democracy_log WHERE qid = id) WHERE multiple > 0" );
-		$wpdb->query( "UPDATE $wpdb->democracy_q SET users_voted = (SELECT SUM(votes) FROM $wpdb->democracy_a WHERE qid = id) WHERE multiple = 0" );
-	}
-
-	// 5.2.1
-	if( ! in_array( 'in_posts', $fields_q ) ){
-		$wpdb->query( "ALTER TABLE `$wpdb->democracy_q` ADD `in_posts` text NOT NULL default '' AFTER `answers_order`;" );
-	}
-
-	// 5.2.4
-	if( $cols_log['ip']->Type != 'varchar(100)' ){
-		$wpdb->query( "ALTER TABLE $wpdb->democracy_log CHANGE `ip` `ip` varchar(100) NOT NULL default '';" );
-		$wpdb->query( "UPDATE $wpdb->democracy_log SET ip = INET_NTOA(ip);" );
-	}
 }
 
 

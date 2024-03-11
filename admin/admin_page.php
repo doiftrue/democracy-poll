@@ -89,7 +89,7 @@ function poll_edit_form( $poll_id = false ) {
 		$poll_id = $_GET['edit_poll'];
 	}
 
-	$poll_id = intval( $poll_id );
+	$poll_id = (int) $poll_id;
 
 	$edit = (bool) $poll_id;
 	$answers = false;
@@ -450,7 +450,7 @@ function dem_general_settings() {
 				<li class="block">
 					<label>
 						<input type="text" size="5"
-						       value="<?= $opt['archive_page_id'] ? intval( $opt['archive_page_id'] ) : ''; ?>"
+						       value="<?= $opt['archive_page_id'] ? (int) $opt['archive_page_id'] : '' ?>"
 						       name="dem[archive_page_id]"/>
 						<?= esc_html__( 'Polls archive page ID.', 'democracy-poll' ) ?>
 					</label>
@@ -1221,8 +1221,8 @@ function dem_migration_subpage() {
 			$poll_ids_old_new = wp_list_pluck( $migration['wp-polls'], 'new_poll_id' );
 
 			foreach( $poll_ids_old_new as $old => $new ){
-				$_new = '[democracy id="' . intval( $new ) . '"]';
-				$_old = '[poll id="' . intval( $old ) . '"]';
+				$_new = '[democracy id="' . (int) $new . '"]';
+				$_old = '[poll id="' . (int) $old . '"]';
 
 				if( $moreaction === 'replace_shortcode' ){
 					$rep_from = $_old;
