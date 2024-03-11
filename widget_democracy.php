@@ -69,17 +69,18 @@ class widget_democracy extends WP_Widget {
 		?>
 		<p>
 			<label>
-				<input type="checkbox"
-				       name="<?= $this->get_field_name( 'questionIsTitle' ) ?>" <?= $checked ?> value="1"
+				<input type="checkbox" <?= $checked ?>
+				       name="<?= $this->get_field_name( 'questionIsTitle' ) ?>"
+				       value="1"
 				       class="questionIsTitle" onchange="demHideTitle(this);">
-				<small><?php _e( 'Poll question = widget title?', 'democracy-poll' ) ?></small>
+				<small><?= esc_html__( 'Poll question = widget title?', 'democracy-poll' ) ?></small>
 			</label>
 		</p>
 
 		<p class="demTitleWrap" <?= $title_style ?>>
-			<label><?php _e( 'Poll title:', 'democracy-poll' ); ?>
+			<label><?= esc_html__( 'Poll title:', 'democracy-poll' ) ?>
 				<input style="width:100%;" type="text" id="demTitle"
-				       name="<?= $this->get_field_name( 'title' ) ?>" value="<?= $title ?>">
+				       name="<?= $this->get_field_name( 'title' ) ?>" value="<?= esc_attr( $title ) ?>">
 			</label>
 		</p>
 

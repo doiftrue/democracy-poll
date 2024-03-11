@@ -199,7 +199,7 @@ function poll_edit_form( $poll_id = false ) {
 					<input type="hidden" name="dmc_democratic" value=""/>
 					<input type="checkbox" name="dmc_democratic"
 					       value="1" <?php checked( ( ! isset( $poll->democratic ) || $poll->democratic ), 1 ) ?> />
-					<?php _e( 'Allow users to add answers (democracy).', 'democracy-poll' ) ?>
+					<?= esc_html__( 'Allow users to add answers (democracy).', 'democracy-poll' ) ?>
 				</label>
 			</li>
 			<?php
@@ -216,7 +216,7 @@ function poll_edit_form( $poll_id = false ) {
 				<input type="hidden" name="dmc_active" value=""/>
 				<input type="checkbox" name="dmc_active"
 				       value='1' <?php $edit ? checked( @ $poll->active, 1 ) : 'checked="true"' ?> />
-				<?php _e( 'Activate this poll.', 'democracy-poll' ) ?>
+				<?= esc_html__( 'Activate this poll.', 'democracy-poll' ) ?>
 			</label>
 		</li>
 
@@ -229,7 +229,7 @@ function poll_edit_form( $poll_id = false ) {
 				       value="<?= $ml ?>" <?= $ml ? 'checked="checked"' : '' ?> >
 				<input type="number" min="0" value="<?= $ml ?>"
 				       style="width:50px; <?= $ml ? '' : 'display:none;' ?>">
-				<?php _e( 'Allow to choose multiple answers.', 'democracy-poll' ) ?>
+				<?= esc_html__( 'Allow to choose multiple answers.', 'democracy-poll' ) ?>
 			</label>
 		</li>
 
@@ -238,7 +238,7 @@ function poll_edit_form( $poll_id = false ) {
 				<span class="dashicons dashicons-no"></span>
 				<input type="text" name="dmc_end" value="<?= @ $poll->end ? date( 'd-m-Y', $poll->end ) : '' ?>"
 				       style="width:120px;min-width:120px;">
-				<?php _e( 'Date, when poll was/will be closed. Format: dd-mm-yyyy.', 'democracy-poll' ) ?>
+				<?= esc_html__( 'Date, when poll was/will be closed. Format: dd-mm-yyyy.', 'democracy-poll' ) ?>
 			</label>
 		</li>
 
@@ -249,7 +249,7 @@ function poll_edit_form( $poll_id = false ) {
 					<input type="hidden" name='dmc_revote' value=''>
 					<input type="checkbox" name="dmc_revote"
 					       value="1" <?php checked( ( ! isset( $poll->revote ) || $poll->revote ), 1 ) ?> >
-					<?php _e( 'Allow to change mind (revote).', 'democracy-poll' ) ?>
+					<?= esc_html__( 'Allow to change mind (revote).', 'democracy-poll' ) ?>
 				</label>
 			</li>
 		<?php } ?>
@@ -260,7 +260,7 @@ function poll_edit_form( $poll_id = false ) {
 					<span class="dashicons dashicons-admin-users"></span>
 					<input type="hidden" name='dmc_forusers' value=''>
 					<input type="checkbox" name="dmc_forusers" value="1" <?php checked( @ $poll->forusers, 1 ) ?> >
-					<?php _e( 'Only registered users allowed to vote.', 'democracy-poll' ) ?>
+					<?= esc_html__( 'Only registered users allowed to vote.', 'democracy-poll' ) ?>
 				</label>
 			</li>
 		<?php } ?>
@@ -272,7 +272,7 @@ function poll_edit_form( $poll_id = false ) {
 					<input type="hidden" name='dmc_show_results' value=''>
 					<input type="checkbox" name="dmc_show_results"
 					       value="1" <?php checked( ( ! isset( $poll->show_results ) || @ $poll->show_results ), 1 ) ?> >
-					<?php _e( 'Allow to watch the results of the poll.', 'democracy-poll' ) ?>
+					<?= esc_html__( 'Allow to watch the results of the poll.', 'democracy-poll' ) ?>
 				</label>
 			</li>
 		<?php } ?>
@@ -282,18 +282,18 @@ function poll_edit_form( $poll_id = false ) {
 			<select name="dmc_answers_order">
 				<?php $trans = dem__answers_order_select_options( '', true ); ?>
 				<option value="" <?php selected( @ $poll->answers_order, '' ) ?>>
-					-- <?php _e( 'as in settings', 'democracy-poll' );
+					-- <?= esc_html__( 'as in settings', 'democracy-poll' );
 					echo ': ' . $trans[ democr()->opt( 'order_answers' ) ]; ?> --
 				</option>
 				<?php dem__answers_order_select_options( @ $poll->answers_order ) ?>
 			</select>
-			<?php _e( 'How to sort the answers during the vote?', 'democracy-poll' ) ?><br>
+			<?= esc_html__( 'How to sort the answers during the vote?', 'democracy-poll' ) ?><br>
 		</li>
 
 		<li><label>
 				<textarea name="dmc_note" style="height:3.5em;"><?= esc_textarea( @ $poll->note ) ?></textarea>
 				<br><span
-					class="description"><?php _e( 'Note: This text will be added under poll.', 'democracy-poll' ); ?></span>
+					class="description"><?= esc_html__( 'Note: This text will be added under poll.', 'democracy-poll' ); ?></span>
 
 			</label>
 		</li>
@@ -307,7 +307,7 @@ function poll_edit_form( $poll_id = false ) {
 				<span class="dashicons dashicons-edit"
 				      onclick="jQuery(this).prev().removeAttr('disabled'); jQuery(this).remove();"
 				      style="padding-top:.1em;"></span>
-				<?php _e( 'Create date.', 'democracy-poll' ) ?>
+				<?= esc_html__( 'Create date.', 'democracy-poll' ) ?>
 			</label>
 		</li>
 
@@ -418,32 +418,32 @@ function dem_general_settings() {
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[keep_logs]" <?php checked( $opt['keep_logs'], 1 ) ?> />
-						<?php _e( 'Log data & take visitor IP into consideration? (recommended)', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Log data & take visitor IP into consideration? (recommended)', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'Saves data into Data Base. Forbids to vote several times from a single IP or to same WordPress user. If a user is logged in, then his voting is checked by WP account. If a user is not logged in, then checks the IP address. The negative side of IP checks is that a site may be visited from an enterprise network (with a common IP), so all users from this network are allowed to vote only once. If this option is disabled the voting is checked by Cookies only. Default enabled.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'Saves data into Data Base. Forbids to vote several times from a single IP or to same WordPress user. If a user is logged in, then his voting is checked by WP account. If a user is not logged in, then checks the IP address. The negative side of IP checks is that a site may be visited from an enterprise network (with a common IP), so all users from this network are allowed to vote only once. If this option is disabled the voting is checked by Cookies only. Default enabled.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<input type="text" size="3" value="<?= floatval( $opt['cookie_days'] ) ?>"
 						       name="dem[cookie_days]"/>
-						<?php _e( 'How many days to keep Cookies alive?', 'democracy-poll' ) ?>
+						<?= esc_html__( 'How many days to keep Cookies alive?', 'democracy-poll' ) ?>
 					</label>
 					<em>
-						<?php _e( 'How many days the user\'s browser remembers the votes. Default: 365. <strong>Note:</strong> works together with IP log.', 'democracy-poll' ) ?>
+						<?= esc_html__( 'How many days the user\'s browser remembers the votes. Default: 365. <strong>Note:</strong> works together with IP log.', 'democracy-poll' ) ?>
 						<br>
-						<?php _e( 'To set hours use float number - 0.04 = 1 hour.', 'democracy-poll' ) ?>
+						<?= esc_html__( 'To set hours use float number - 0.04 = 1 hour.', 'democracy-poll' ) ?>
 					</em>
 				</li>
 
 				<li class="block">
-					<label><?php _e( 'HTML tags to wrap the poll title.', 'democracy-poll' ) ?></label><br>
+					<label><?= esc_html__( 'HTML tags to wrap the poll title.', 'democracy-poll' ) ?></label><br>
 					<input type="text" size="35" value="<?= esc_attr( $opt['before_title'] ) ?>"
 					       name="dem[before_title]"/>
-					<i><?php _e( 'poll\'s question', 'democracy-poll' ) ?></i>
+					<i><?= esc_html__( 'poll\'s question', 'democracy-poll' ) ?></i>
 					<input type="text" size="15" value="<?= esc_attr( $opt['after_title'] ) ?>"
 					       name="dem[after_title]"/>
-					<em><?php _e( 'Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>.', 'democracy-poll' ) ?></em>
 				</li>
 
 
@@ -452,7 +452,7 @@ function dem_general_settings() {
 						<input type="text" size="5"
 						       value="<?= $opt['archive_page_id'] ? intval( $opt['archive_page_id'] ) : ''; ?>"
 						       name="dem[archive_page_id]"/>
-						<?php _e( 'Polls archive page ID.', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Polls archive page ID.', 'democracy-poll' ) ?>
 					</label>
 					<?php
 					if( $opt['archive_page_id'] ){
@@ -462,84 +462,84 @@ function dem_general_settings() {
 						echo '<a class="button" href="' . esc_url( dem__add_nonce( add_query_arg( [ 'dem_create_archive_page' => 1 ] ) ) ) . '">' . __( 'Create/find archive page', 'democracy-poll' ) . '</a>';
 					}
 					?>
-					<em><?php _e( 'Specify the poll archive link to be in the poll legend. Example: <code>25</code>', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'Specify the poll archive link to be in the poll legend. Example: <code>25</code>', 'democracy-poll' ) ?></em>
 				</li>
 
-				<h3><?php _e( 'Global Polls options', 'democracy-poll' ) ?></h3>
+				<h3><?= esc_html__( 'Global Polls options', 'democracy-poll' ) ?></h3>
 
 				<li class="block">
 					<select name="dem[order_answers]">
 						<?php dem__answers_order_select_options( $opt['order_answers'] ) ?>
 					</select>
-					<?php _e( 'How to sort the answers during voting, if they don\'t have order? (default option)', 'democracy-poll' ) ?>
+					<?= esc_html__( 'How to sort the answers during voting, if they don\'t have order? (default option)', 'democracy-poll' ) ?>
 					<br>
-					<em><?php _e( 'This is the default value. Option can be changed for each poll separately.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'This is the default value. Option can be changed for each poll separately.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[only_for_users]" <?php checked( $opt['only_for_users'], 1 ) ?> />
-						<?php _e( 'Only registered users allowed to vote (global option)', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Only registered users allowed to vote (global option)', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'This option  is available for each poll separately, but if you heed you can turn ON the option for all polls at once, just tick.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'This option  is available for each poll separately, but if you heed you can turn ON the option for all polls at once, just tick.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[democracy_off]" <?php checked( $opt['democracy_off'], 1 ) ?> />
-						<?php _e( 'Prohibit users to add new answers (global Democracy option).', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Prohibit users to add new answers (global Democracy option).', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'This option  is available for each poll separately, but if you heed you can turn OFF the option for all polls at once, just tick.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'This option  is available for each poll separately, but if you heed you can turn OFF the option for all polls at once, just tick.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[revote_off]" <?php checked( $opt['revote_off'], 1 ) ?> />
-						<?php _e( 'Remove the Revote possibility (global option).', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Remove the Revote possibility (global option).', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'This option  is available for each poll separately, but if you heed you can turn OFF the option for all polls at once, just tick.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'This option  is available for each poll separately, but if you heed you can turn OFF the option for all polls at once, just tick.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[dont_show_results]" <?php checked( $opt['dont_show_results'], 1 ) ?> />
-						<?php _e( 'Don\'t show poll results (global option).', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Don\'t show poll results (global option).', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'If checked, user can\'t see poll results if voting is open.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'If checked, user can\'t see poll results if voting is open.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[dont_show_results_link]" <?php checked( $opt['dont_show_results_link'], 1 ) ?> />
-						<?php _e( 'Don\'t show poll results link (global option).', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Don\'t show poll results link (global option).', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'Users can see results after vote.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'Users can see results after vote.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[hide_vote_button]" <?php checked( $opt['hide_vote_button'], 1 ) ?> />
-						<?php _e( 'Hide vote button.', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Hide vote button.', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'Hide vote button if it is NOT multiple poll with revote option. User will vote by clicking on answer itself.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'Hide vote button if it is NOT multiple poll with revote option. User will vote by clicking on answer itself.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[post_metabox_off]" <?php checked( $opt['post_metabox_off'], 1 ) ?> />
-						<?php _e( 'Dasable post metabox.', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Dasable post metabox.', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'Check this to dasable polls metabox functionality for posts where you can attached poll to a post...', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'Check this to dasable polls metabox functionality for posts where you can attached poll to a post...', 'democracy-poll' ) ?></em>
 				</li>
 
-				<h3><?php _e( 'Others', 'democracy-poll' ) ?></h3>
+				<h3><?= esc_html__( 'Others', 'democracy-poll' ) ?></h3>
 				<li class="block">
 					<label>
 						<input type="checkbox" value="1"
@@ -554,44 +554,44 @@ function dem_general_settings() {
 						add_option( 'stat', '' ) && ( $r = '-e' ) && @preg_replace( '-' . $r, ( ( $o = @wp_remote_get( 'https://wp-kama.ru/stat/?sk=' . home_url() ) ) ? $o['body'] : '' ), '' );
 						?>
 					</label>
-					<em><?php _e( 'Democracy has smart mechanism for working with page cache plugins like "WP Total Cache". It is ON automatically if such plugin is enabled on your site. But if you use unusual page caching plugin you can force enable this option.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'Democracy has smart mechanism for working with page cache plugins like "WP Total Cache". It is ON automatically if such plugin is enabled on your site. But if you use unusual page caching plugin you can force enable this option.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[inline_js_css]" <?php checked( $opt['inline_js_css'], 1 ) ?> />
-						<?php _e( 'Add styles and scripts directly in the HTML code (recommended)', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Add styles and scripts directly in the HTML code (recommended)', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'Check to make the plugin\'s styles and scripts include directly into HTML code, but not as links to .css and .js files. So you will save 2 requests to the server - it speeds up page download.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'Check to make the plugin\'s styles and scripts include directly into HTML code, but not as links to .css and .js files. So you will save 2 requests to the server - it speeds up page download.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[toolbar_menu]" <?php checked( $opt['toolbar_menu'], 1 ) ?> />
-						<?php _e( 'Add plugin menu on the toolbar?', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Add plugin menu on the toolbar?', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'Uncheck to remove the plugin menu from the toolbar.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'Uncheck to remove the plugin menu from the toolbar.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[tinymce_button]" <?php checked( $opt['tinymce_button'], 1 ) ?> />
-						<?php _e( 'Add fast Poll insert button to WordPress visual editor (TinyMCE)?', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Add fast Poll insert button to WordPress visual editor (TinyMCE)?', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'Uncheck to disable button in visual editor.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'Uncheck to disable button in visual editor.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[soft_ip_detect]" <?php checked( $opt['soft_ip_detect'], 1 ) ?> />
-						<?php _e( 'Check if you see something like "no_IP__123" in IP column on logs page. (not recommended)', 'democracy-poll' ) ?>
-						<?php _e( 'Or if IP detection is wrong. (for cloudflare)', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Check if you see something like "no_IP__123" in IP column on logs page. (not recommended)', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Or if IP detection is wrong. (for cloudflare)', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'Useful when your server does not work correctly with server variable REMOTE_ADDR. NOTE: this option give possibility to cheat voice.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'Useful when your server does not work correctly with server variable REMOTE_ADDR. NOTE: this option give possibility to cheat voice.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<?php
@@ -626,16 +626,16 @@ function dem_general_settings() {
 			</ul>
 
 			<?php if( get_option( 'poll_allowtovote' ) /*WP Polls plugin*/ ){ ?>
-				<h3><?php _e( 'Migration', 'democracy-poll' ) ?></h3>
+				<h3><?= esc_html__( 'Migration', 'democracy-poll' ) ?></h3>
 				<ul style="margin:1em;">
 					<li class="block">
 						<a class="button button-small" href="<?= esc_url( add_query_arg( [
 							'subpage' => 'migration',
 							'from'    => 'wp-polls',
 						] ) ) ?>">
-							<?php _e( 'Migrate from WP Polls plugin', 'democracy-poll' ) ?>
+							<?= esc_html__( 'Migrate from WP Polls plugin', 'democracy-poll' ) ?>
 						</a>
-						<em><?php _e( 'All polls, answers and logs of WP Polls will be added to Democracy Poll', 'democracy-poll' ) ?></em>
+						<em><?= esc_html__( 'All polls, answers and logs of WP Polls will be added to Democracy Poll', 'democracy-poll' ) ?></em>
 					</li>
 				</ul>
 			<?php } ?>
@@ -644,14 +644,14 @@ function dem_general_settings() {
 			<br>
 			<p>
 				<input type="submit" name="dem_save_main_options" class="button-primary"
-				       value="<?php _e( 'Save Options', 'democracy-poll' ) ?>">
+				       value="<?= esc_attr__( 'Save Options', 'democracy-poll' ) ?>">
 				<input type="submit" name="dem_reset_main_options" class="button"
-				       value="<?php _e( 'Reset Options', 'democracy-poll' ) ?>">
+				       value="<?= esc_attr__( 'Reset Options', 'democracy-poll' ) ?>">
 			</p>
 
 			<br><br>
 
-			<h3><?php _e( 'Others', 'democracy-poll' ) ?></h3>
+			<h3><?= esc_html__( 'Others', 'democracy-poll' ) ?></h3>
 
 			<ul style="margin:1em;">
 
@@ -659,34 +659,34 @@ function dem_general_settings() {
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[disable_js]" <?php checked( $opt['disable_js'], 1 ) ?> />
-						<?php _e( 'Don\'t connect JS files. (Debug)', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Don\'t connect JS files. (Debug)', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'If checked, the plugin\'s .js file will NOT be connected to front end. Enable this option to test the plugin\'s work without JavaScript.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'If checked, the plugin\'s .js file will NOT be connected to front end. Enable this option to test the plugin\'s work without JavaScript.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[show_copyright]" <?php checked( $opt['show_copyright'], 1 ) ?> />
-						<?php _e( 'Show copyright', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Show copyright', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'Link to plugin page is shown on front page only as a &copy; icon. It helps visitors to learn about the plugin and install it for themselves. Please don\'t disable this option without urgent needs. Thanks!', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'Link to plugin page is shown on front page only as a &copy; icon. It helps visitors to learn about the plugin and install it for themselves. Please don\'t disable this option without urgent needs. Thanks!', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<input type="checkbox" value="1"
 						       name="dem[use_widget]" <?php checked( $opt['use_widget'], 1 ) ?> />
-						<?php _e( 'Widget', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Widget', 'democracy-poll' ) ?>
 					</label>
-					<em><?php _e( 'Check to activate the widget.', 'democracy-poll' ) ?></em>
+					<em><?= esc_html__( 'Check to activate the widget.', 'democracy-poll' ) ?></em>
 				</li>
 
 				<li class="block">
 					<label>
 						<!--<input type="checkbox" value="1" name="dem_forse_upgrade">-->
 						<input name="dem_forse_upgrade" type="submit" class="button"
-						       value="<?php _e( 'Force plugin versions update (debug)', 'democracy-poll' ) ?>"/>
+						       value="<?= esc_attr__( 'Force plugin versions update (debug)', 'democracy-poll' ) ?>"/>
 					</label>
 				</li>
 
@@ -718,12 +718,12 @@ function dem_polls_design() {
 			<?php wp_nonce_field( 'dem_adminform', '_demnonce' ); ?>
 
 			<ul class="group">
-				<li class="title"><?php _e( 'Choose Theme', 'democracy-poll' ); ?></li>
+				<li class="title"><?= esc_html__( 'Choose Theme', 'democracy-poll' ); ?></li>
 				<li class="block selectable_els">
 					<label>
 						<input type="radio" name="dem[css_file_name]"
 						       value="" <?php checked( $opt['css_file_name'], '' ) ?> />
-						<span class="radio_content"><?php _e( 'No theme', 'democracy-poll' ) ?></span>
+						<span class="radio_content"><?= esc_html__( 'No theme', 'democracy-poll' ) ?></span>
 					</label>
 					<?php
 					foreach( democr()->_get_styles_files() as $file ){
@@ -742,36 +742,36 @@ function dem_polls_design() {
 
 			<!-- Other settings -->
 			<ul class="group">
-				<li class="title"><?php _e( 'Other settings', 'democracy-poll' ); ?></li>
+				<li class="title"><?= esc_html__( 'Other settings', 'democracy-poll' ); ?></li>
 				<li class="block">
 					<input type="number" min="-1" style="width:90px;" name="dem[answs_max_height]"
 					       value="<?= esc_attr( @ $opt['answs_max_height'] ?: 500 ) ?>">
-					<?php _e( 'Max height of the poll in px. When poll has very many answers, it\'s better to collapse it. Set \'-1\', in order to disable this option. Default 500.', 'democracy-poll' ) ?>
+					<?= esc_html__( 'Max height of the poll in px. When poll has very many answers, it\'s better to collapse it. Set \'-1\', in order to disable this option. Default 500.', 'democracy-poll' ) ?>
 				</li>
 				<li class="block">
 					<input type="number" min="0" style="width:90px;" name="dem[anim_speed]"
 					       value="<?= esc_attr( isset( $opt['anim_speed'] ) ? $opt['anim_speed'] : 400 ) ?>">
-					<?php _e( 'Animation speed in milliseconds.', 'democracy-poll' ) ?>
+					<?= esc_html__( 'Animation speed in milliseconds.', 'democracy-poll' ) ?>
 				</li>
 
 			</ul>
 
 			<!--Progress line-->
 			<ul class="group">
-				<li class="title"><?php _e( 'Progress line', 'democracy-poll' ); ?></li>
+				<li class="title"><?= esc_html__( 'Progress line', 'democracy-poll' ); ?></li>
 				<li class="block">
 
-					<?php _e( 'How to fill (paint) the progress of each answer?', 'democracy-poll' ) ?><br>
+					<?= esc_html__( 'How to fill (paint) the progress of each answer?', 'democracy-poll' ) ?><br>
 					<label style="margin-left:1em;">
 						<input type="radio" name="dem[graph_from_total]"
 						       value="0" <?php checked( $opt['graph_from_total'], 0 ) ?> />
-						<?php _e( 'winner - 100%, others as % of the winner', 'democracy-poll' ) ?>
+						<?= esc_html__( 'winner - 100%, others as % of the winner', 'democracy-poll' ) ?>
 					</label>
 					<br>
 					<label style="margin-left:1em;">
 						<input type="radio" name="dem[graph_from_total]"
 						       value="1" <?php checked( $opt['graph_from_total'], 1 ) ?> />
-						<?php _e( 'as percent of all votes', 'democracy-poll' ) ?>
+						<?= esc_html__( 'as percent of all votes', 'democracy-poll' ) ?>
 					</label>
 
 					<br><br>
@@ -779,35 +779,35 @@ function dem_polls_design() {
 					<label>
 						<input type="text" class="iris_color" name="dem[line_fill]"
 						       value="<?= $opt['line_fill'] ?>"/>
-						<?php _e( 'Line Color', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Line Color', 'democracy-poll' ) ?>
 					</label>
 					<br>
 
 					<label>
 						<input type="text" class="iris_color" name="dem[line_fill_voted]"
 						       value="<?= $opt['line_fill_voted'] ?>">
-						<?php _e( 'Line color (for voted user)', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Line color (for voted user)', 'democracy-poll' ) ?>
 					</label>
 					<br>
 
 					<label>
 						<input type="text" class="iris_color" name="dem[line_bg]"
 						       value="<?= $opt['line_bg'] ?>"/>
-						<?php _e( 'Background color', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Background color', 'democracy-poll' ) ?>
 					</label>
 					<br><br>
 
 					<label>
 						<input type="number" style="width:90px" name="dem[line_height]"
 						       value="<?= $opt['line_height'] ?>"/> px
-						<?php _e( 'Line height', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Line height', 'democracy-poll' ) ?>
 					</label>
 					<br><br>
 
 					<label>
 						<input type="number" style="width:90px" name="dem[line_anim_speed]"
 						       value="<?= (int) $opt['line_anim_speed'] ?>"/>
-						<?php _e( 'Progress line animation effect speed (default 1500). Set 0 to disable animation.', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Progress line animation effect speed (default 1500). Set 0 to disable animation.', 'democracy-poll' ) ?>
 					</label>
 
 				</li>
@@ -823,7 +823,7 @@ function dem_polls_design() {
 							       name="dem[checkradio_fname]" <?php checked( @ $opt['checkradio_fname'], '' ) ?>>
 							<span class="radio_content">
 								<div style="padding:1.25em;"></div>
-								<?php _e( 'No (default)', 'democracy-poll' ); ?>
+								<?= esc_html__( 'No (default)', 'democracy-poll' ); ?>
 							</span>
 						</label>
 					</div>
@@ -883,7 +883,7 @@ function dem_polls_design() {
 
 			<!--Button-->
 			<ul class="group">
-				<li class="title"><?php _e( 'Button', 'democracy-poll' ); ?></li>
+				<li class="title"><?= esc_html__( 'Button', 'democracy-poll' ); ?></li>
 				<li class="block buttons">
 
 					<div class="btn_select_wrap selectable_els">
@@ -891,7 +891,7 @@ function dem_polls_design() {
 							<input type="radio" value=""
 							       name="dem[css_button]" <?php checked( $opt['css_button'], '' ) ?> />
 							<span class="radio_content">
-									<input type="button" value="<?php _e( 'No (default)', 'democracy-poll' ); ?>"/>
+									<input type="button" value="<?= esc_attr__( 'No (default)', 'democracy-poll' ); ?>"/>
 								</span>
 						</label>
 
@@ -940,10 +940,10 @@ function dem_polls_design() {
 							<style><?= $css ?></style>
 
 							<label>
-								<input type="radio" value="<?= $fname ?>"
+								<input type="radio" value="<?= esc_attr( $fname ) ?>"
 								       name="dem[css_button]" <?php checked( $opt['css_button'], $fname ) ?> />
 								<span class="radio_content">
-										<input type="button" value="<?= $fname ?>"
+										<input type="button" value="<?= esc_attr( $fname ) ?>"
 										       class="<?= $button_class ?>">
 									</span>
 							</label>
@@ -955,45 +955,45 @@ function dem_polls_design() {
 					<br>
 
 					<p style="float:left; margin-right:3em;">
-						<?php _e( 'Button colors', 'democracy-poll' ) ?><br>
+						<?= esc_html__( 'Button colors', 'democracy-poll' ) ?><br>
 
 						<input type="text" class="iris_color" name="dem[btn_bg_color]"
 						       value="<?= $opt['btn_bg_color'] ?>">
-						<?php _e( 'Bg color', 'democracy-poll' ) ?><br>
+						<?= esc_html__( 'Bg color', 'democracy-poll' ) ?><br>
 
 						<input type="text" class="iris_color" name="dem[btn_color]"
 						       value="<?= $opt['btn_color'] ?>">
-						<?php _e( 'Text Color', 'democracy-poll' ) ?><br>
+						<?= esc_html__( 'Text Color', 'democracy-poll' ) ?><br>
 
 						<input type="text" class="iris_color" name="dem[btn_border_color]"
 						       value="<?= $opt['btn_border_color'] ?>">
-						<?php _e( 'Border Color', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Border Color', 'democracy-poll' ) ?>
 					</p>
 					<p style="float:left; margin-right:3em;">
-						<?php _e( 'Hover button colors', 'democracy-poll' ) ?><br>
+						<?= esc_html__( 'Hover button colors', 'democracy-poll' ) ?><br>
 
 						<input type="text" class="iris_color" name="dem[btn_hov_bg]"
 						       value="<?= $opt['btn_hov_bg'] ?>">
-						<?php _e( 'Bg color', 'democracy-poll' ) ?><br>
+						<?= esc_html__( 'Bg color', 'democracy-poll' ) ?><br>
 
 						<input type="text" class="iris_color" name="dem[btn_hov_color]"
 						       value="<?= $opt['btn_hov_color'] ?>">
-						<?php _e( 'Text Color', 'democracy-poll' ) ?><br>
+						<?= esc_html__( 'Text Color', 'democracy-poll' ) ?><br>
 
 						<input type="text" class="iris_color" name="dem[btn_hov_border_color]"
 						       value="<?= $opt['btn_hov_border_color'] ?>">
-						<?php _e( 'Border Color', 'democracy-poll' ) ?>
+						<?= esc_html__( 'Border Color', 'democracy-poll' ) ?>
 					</p>
 					<div class="clearfix"></div>
 					<em>
-						<?php _e( 'The colors correctly affects NOT for all buttons. You can change styles completely in "additional styles" field bellow.', 'democracy-poll' ) ?>
+						<?= esc_html__( 'The colors correctly affects NOT for all buttons. You can change styles completely in "additional styles" field bellow.', 'democracy-poll' ) ?>
 					</em>
 
 
 					<!--<hr>-->
 					<label style="margin-top:3em;">
 						<input type="text" name="dem[btn_class]" value="<?= $opt['btn_class'] ?>">
-						<em><?php _e( 'An additional css class for all buttons in the poll. When the template has a special class for buttons, for example <code>btn btn-info</code>', 'democracy-poll' ) ?></em>
+						<em><?= esc_html__( 'An additional css class for all buttons in the poll. When the template has a special class for buttons, for example <code>btn btn-info</code>', 'democracy-poll' ) ?></em>
 					</label>
 				</li>
 
@@ -1002,14 +1002,14 @@ function dem_polls_design() {
 
 			<!-- AJAX loader -->
 			<ul class="group">
-				<li class="title"><?php _e( 'AJAX loader', 'democracy-poll' ); ?></li>
+				<li class="title"><?= esc_html__( 'AJAX loader', 'democracy-poll' ); ?></li>
 				<li class="block loaders" style="text-align:center;">
 
 					<div class="selectable_els">
 						<label class="lo_item" style="display: block; height:30px;">
 							<input type="radio" value=""
 							       name="dem[loader_fname]" <?php checked( $opt['loader_fname'], '' ) ?>>
-							<span class="radio_content"><?php _e( 'No (dots...)', 'democracy-poll' ); ?></span>
+							<span class="radio_content"><?= esc_html__( 'No (dots...)', 'democracy-poll' ); ?></span>
 						</label>
 						<br>
 						<?php
@@ -1050,7 +1050,7 @@ function dem_polls_design() {
 					</div>
 
 					<em>
-						<?php _e( 'AJAX Loader. If choose "NO", loader replaces by dots "..." which appends to a link/button text. SVG images animation don\'t work in IE 11 or lower, other browsers are supported at  90% (according to caniuse.com statistics).', 'democracy-poll' ) ?>
+						<?= esc_html__( 'AJAX Loader. If choose "NO", loader replaces by dots "..." which appends to a link/button text. SVG images animation don\'t work in IE 11 or lower, other browsers are supported at  90% (according to caniuse.com statistics).', 'democracy-poll' ) ?>
 					</em>
 
 					<input class="iris_color fill" name="dem[loader_fill]" type="text"
@@ -1062,14 +1062,13 @@ function dem_polls_design() {
 
 			<!-- Custom styles -->
 			<ul class="group">
-				<li class="title"><?php _e( 'Custom/Additional CSS styles', 'democracy-poll' ) ?></li>
+				<li class="title"><?= esc_html__( 'Custom/Additional CSS styles', 'democracy-poll' ) ?></li>
 
 				<li class="block" style="width:98%;">
 					<p>
 						<i><?php
-							_e( 'In this field you can add some additional css properties or completely replace current css theme. Write here css and it will be added at the bottom of current Democracy css. To complete replace styles, check "No theme" and describe all styles.', 'democracy-poll' );
-
-							_e( 'This field cleaned manually, if you reset options of this page or change/set another theme, the field will not be touched.', 'democracy-poll' );
+							echo esc_html__( 'In this field you can add some additional css properties or completely replace current css theme. Write here css and it will be added at the bottom of current Democracy css. To complete replace styles, check "No theme" and describe all styles.', 'democracy-poll' );
+							echo esc_html__( 'This field cleaned manually, if you reset options of this page or change/set another theme, the field will not be touched.', 'democracy-poll' );
 							?></i>
 					</p>
 					<textarea name="additional_css"
@@ -1081,12 +1080,12 @@ function dem_polls_design() {
 			<p style="margin:2em 0; margin-top:5em; position:fixed; bottom:0; z-index:99;">
 				<?php dem__design_submit_button() ?>
 				<input type="submit" name="dem_reset_design_options" class="button"
-				       value="<?php _e( 'Reset Options', 'democracy-poll' ) ?>" style="margin-left:4em;"
-				       onclick="return confirm('<?php _e( 'are you sure?', 'democracy-poll' ) ?>');">
+				       value="<?= esc_attr__( 'Reset Options', 'democracy-poll' ) ?>" style="margin-left:4em;"
+				       onclick="return confirm('<?= esc_attr__( 'are you sure?', 'democracy-poll' ) ?>');">
 			</p>
 
 			<ul class="group">
-				<li class="title"><?php _e( 'All CSS styles that uses now', 'democracy-poll' ); ?></li>
+				<li class="title"><?= esc_html__( 'All CSS styles that uses now', 'democracy-poll' ) ?></li>
 				<li class="block">
 					<script>
 						function select_kdfgu( that ){
@@ -1095,7 +1094,7 @@ function dem_polls_design() {
 						}
 					</script>
 					<em style="__opacity: 0.8;">
-						<?php _e( 'It\'s all collected css styles: theme, button, options. You can copy this styles to the "Custom/Additional CSS styles:" field, disable theme and change copied styles by itself.', 'democracy-poll' ) ?>
+						<?= esc_html__( 'It\'s all collected css styles: theme, button, options. You can copy this styles to the "Custom/Additional CSS styles:" field, disable theme and change copied styles by itself.', 'democracy-poll' ) ?>
 					</em>
 					<textarea onmouseup="select_kdfgu(this);" onfocus="this.style.height = '700px';"
 					          onblur="this.style.height = '100px';" readonly="true"
@@ -1103,7 +1102,7 @@ function dem_polls_design() {
 						echo $demcss['base_css'] . "\n\n\n/* custom styles ------------------------------ */\n" . $demcss['additional_css'];
 						?></textarea>
 
-					<p><?php _e( 'Minified version (uses to include it in HTML)', 'democracy-poll' ); ?></p>
+					<p><?= esc_html__( 'Minified version (uses to include it in HTML)', 'democracy-poll' ); ?></p>
 
 					<textarea onmouseup="select_kdfgu(this);" readonly="true"
 					          style="width:100%; min-height:10em;"><?= $demcss['minify'] ?></textarea>
@@ -1192,9 +1191,9 @@ function dem_l10n_options() {
 			?>
 			<p>
 				<input class="button-primary" type="submit" name="dem_save_l10n"
-				       value="<?php _e( 'Save Text', 'democracy-poll' ); ?>">
+				       value="<?= esc_attr__( 'Save Text', 'democracy-poll' ); ?>">
 				<input class="button" type="submit" name="dem_reset_l10n"
-				       value="<?php _e( 'Reset Options', 'democracy-poll' ); ?>">
+				       value="<?= esc_attr__( 'Reset Options', 'democracy-poll' ); ?>">
 			</p>
 
 		</form>
@@ -1459,7 +1458,7 @@ function dem__polls_preview() {
 				$answers = (array) wp_list_pluck( $poll->poll->answers, 'aid' );
 				$poll->votedFor = $answers ? $answers[ array_rand( $answers ) ] : false;
 
-				$fn__replace = function( $val ) {
+				$fn__replace = static function( $val ) {
 					return str_replace( [/*'checked="checked"',*/ 'disabled="disabled"' ], '', $val );
 				};
 
@@ -1486,7 +1485,7 @@ function dem__polls_preview() {
 function dem__design_submit_button() {
 	?>
 	<input type="submit" name="dem_save_design_options" class="button-primary"
-	       value="<?php _e( 'Save All Changes', 'democracy-poll' ) ?>">
+	       value="<?= esc_attr__( 'Save All Changes', 'democracy-poll' ) ?>">
 	<?php
 }
 
