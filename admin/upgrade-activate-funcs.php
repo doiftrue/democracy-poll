@@ -1,6 +1,6 @@
 <?php
 
-function democracy_activate(){
+function democracy_activate() {
 
 	// in order to activation works - activate_plugin() function works
 	$GLOBALS['democracy_activate_run'] = 1;
@@ -35,7 +35,7 @@ function democracy_activate(){
 /**
  * Создает таблицы, настройки и апгрейдит если надо.
  */
-function _democracy_activate(){
+function _democracy_activate() {
 	global $wpdb;
 
 	Democracy_Poll::load_textdomain();
@@ -46,10 +46,10 @@ function _democracy_activate(){
 	// create tables
 	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 	dbDelta( dem_get_db_schema() );
-	//wp_die();
 
 	// Poll example
-	if( ! $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q LIMIT 1" ) ){
+	$is_any_poll = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q LIMIT 1" );
+	if( ! $is_any_poll ){
 		$wpdb->insert( $wpdb->democracy_q, [
 			'question'   => __( 'What does "money" mean to you?', 'democracy-poll' ),
 			'added'      => current_time( 'timestamp' ),
@@ -81,7 +81,7 @@ function _democracy_activate(){
 		$wpdb->update( $wpdb->democracy_q, [ 'users_voted' => $allvotes ], [ 'id' => $qid ] );
 	}
 
-	// add options, if needed
+	// add options
 	if( ! get_option( Democracy_Poll::OPT_NAME ) ){
 		Democracy_Poll::init()->update_options( 'default' );
 	}
@@ -94,7 +94,7 @@ function _democracy_activate(){
  * Схема таблиц плагина
  * @return string схема
  */
-function dem_get_db_schema(){
+function dem_get_db_schema() {
 	global $wpdb;
 
 	$charset_collate = '';
@@ -161,7 +161,7 @@ function dem_get_db_schema(){
  * Need initiated Democracy_Poll class.
  * Нужно вызывать на странице настроек плагина, чтобы не грузить лишний раз сервер.
  */
-function dem_last_version_up(){
+function dem_last_version_up() {
 	$old_ver = get_option( 'democracy_version' );
 
 	if( $old_ver == DEM_VER || ! $old_ver ){
@@ -323,7 +323,6 @@ function dem_last_version_up(){
 		$wpdb->query( "ALTER TABLE $wpdb->democracy_log CHANGE `ip` `ip` varchar(100) NOT NULL default '';" );
 		$wpdb->query( "UPDATE $wpdb->democracy_log SET ip = INET_NTOA(ip);" );
 	}
-
 }
 
 

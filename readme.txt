@@ -1,11 +1,11 @@
 === Plugin Name ===
 Stable tag: trunk
-Tested up to: 6.4.2
-Requires at least: 3.6
+Tested up to: 6.4.3
+Requires at least: 4.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Contributors: Tkama
-Tags: democracy, poll, polls, create poll, do a poll, awesome poll, easy polls, user polls, online poll, opinion stage, opinionstage, poll plugin, poll widget, polling, polling System, post poll, opinion, questionnaire, vote, voting, voting polls, survey, research, usability, cache, wp poll, yop poll, quiz, rating, review
+Tags: democracy, awesome poll, polls, vote, voting polls, survey, review
 
 
 WordPress Polls plugin. Visitors can choose multiple and adds their own answers. Works with cache plugins like WP Super Cache. Has widget and shortcodes for posts.

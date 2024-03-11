@@ -66,7 +66,7 @@
  *         poll_cookielog_expiry
  *         widget_polls-widget
  */
-function dem_WP_Polls_migration(){
+function dem_WP_Polls_migration() {
 	global $wpdb;
 
 	$migrate_data = get_option( 'democracy_migrated' );

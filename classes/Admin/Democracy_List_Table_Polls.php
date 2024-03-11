@@ -1,6 +1,6 @@
 <?php
 
-class Dem_List_Table_Polls extends WP_List_Table {
+class Democracy_List_Table_Polls extends WP_List_Table {
 
 	public function __construct() {
 
@@ -43,7 +43,7 @@ class Dem_List_Table_Polls extends WP_List_Table {
 		$OFFSET = "LIMIT $offset,$per_page";
 		$order = ( isset( $_GET['order'] ) && $_GET['order'] === 'asc' ) ? 'ASC' : 'DESC';
 		$orderby = sanitize_key( empty( $_GET['orderby'] ) ? 'id' : $_GET['orderby'] );
-		$ORDER_BY = sprintf( "ORDER BY %s %s",  $orderby, $order );
+		$ORDER_BY = sprintf( "ORDER BY %s %s", $orderby, $order );
 
 		$sql = "SELECT * FROM $wpdb->democracy_q $where $ORDER_BY $OFFSET";
 
