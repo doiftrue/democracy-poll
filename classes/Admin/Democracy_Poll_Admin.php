@@ -1,9 +1,10 @@
 <?php
 
-### ADMIN PART
+/// TODO: refactor - extract to separate class
+
 class Democracy_Poll_Admin extends Democracy_Poll {
 
-	function __construct() {
+	public function __construct() {
 		parent::__construct();
 
 		// add the management page to the admin nav bar
@@ -21,13 +22,11 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 
 		// TinyMCE кнопка WP2.5+
 		if( self::$opt['tinymce_button'] ){
-			require_once DEMOC_PATH . '/classes/Admin/Democracy_Tinymce.php';
 			Democracy_Tinymce::init();
 		}
 
 		// метабокс
 		if( ! self::$opt['post_metabox_off'] ){
-			require_once DEMOC_PATH . '/classes/Admin/Democracy_Post_Metabox.php';
 			Democracy_Post_Metabox::init();
 		}
 	}
@@ -66,7 +65,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 				update_option( 'democracy_version', '0.1' );
 			} // hack
 
-			dem_last_version_up();
+			( new Democracy_Upgrade() )->upgrade();
 
 			if( isset( $_POST['dem_forse_upgrade'] ) ){
 				wp_redirect( $_SERVER['REQUEST_URI'] );
@@ -225,12 +224,10 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		}
 		// logs list
 		elseif( $sp === 'logs' ){
-			require_once DEMOC_PATH . '/classes/Admin/Democracy_List_Table_Logs.php';
 			$this->list_table = new Democracy_List_Table_Logs();
 		}
 		// polls list
 		else{
-			require_once DEMOC_PATH . '/classes/Admin/Democracy_List_Table_Polls.php';
 			$this->list_table = new Democracy_List_Table_Polls();
 		}
 	}

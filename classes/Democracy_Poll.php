@@ -42,7 +42,7 @@ class Democracy_Poll {
 	// for Democracy_Post_Metabox
 	static $pollid_meta_key = 'dem_poll_id';
 
-	static function init() {
+	public static function init() {
 
 		if( ! is_null( self::$inst ) ){
 			return self::$inst;
@@ -50,7 +50,7 @@ class Democracy_Poll {
 
 		// admin part
 		if(
-			isset( $GLOBALS['democracy_activate_run'] )
+			Democracy_Activate::$activation_running
 			||
 			( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) )
 		){

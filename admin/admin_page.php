@@ -258,8 +258,8 @@ function poll_edit_form( $poll_id = false ) {
 			<li>
 				<label>
 					<span class="dashicons dashicons-admin-users"></span>
-					<input type="hidden" name='dmc_forusers' value=''>
-					<input type="checkbox" name="dmc_forusers" value="1" <?php checked( @ $poll->forusers, 1 ) ?> >
+					<input type="hidden" name="dmc_forusers" value="">
+					<input type="checkbox" name="dmc_forusers" value="1" <?php checked( $poll->forusers ?? 0, 1 ) ?> >
 					<?= esc_html__( 'Only registered users allowed to vote.', 'democracy-poll' ) ?>
 				</label>
 			</li>
@@ -291,7 +291,7 @@ function poll_edit_form( $poll_id = false ) {
 		</li>
 
 		<li><label>
-				<textarea name="dmc_note" style="height:3.5em;"><?= esc_textarea( @ $poll->note ) ?></textarea>
+				<textarea name="dmc_note" style="height:3.5em;"><?= esc_textarea( $poll->note ?? '' ) ?></textarea>
 				<br><span
 					class="description"><?= esc_html__( 'Note: This text will be added under poll.', 'democracy-poll' ); ?></span>
 
@@ -302,7 +302,7 @@ function poll_edit_form( $poll_id = false ) {
 			<label>
 				<span class="dashicons dashicons-calendar-alt"></span>
 				<input type="text" name="dmc_added"
-				       value="<?= date( 'd-m-Y', ( @ $poll->added ?: current_time( 'timestamp' ) ) ) ?>"
+				       value="<?= date( 'd-m-Y', ( ( $poll->added ?? '' ) ?: current_time( 'timestamp' ) ) ) ?>"
 				       style="width:120px;min-width:120px;" disabled/>
 				<span class="dashicons dashicons-edit"
 				      onclick="jQuery(this).prev().removeAttr('disabled'); jQuery(this).remove();"
@@ -1171,7 +1171,7 @@ function dem_l10n_options() {
 
 			$i = 0;
 			$_l10n = get_option( 'democracy_l10n' );
-			remove_filter( 'gettext_with_context', [ 'Democracy_Poll', 'handle_front_l10n' ], 10, 4 );
+			remove_filter( 'gettext_with_context', [ Democracy_Poll::class, 'handle_front_l10n' ], 10, 4 );
 			foreach( $strs as $str ){
 				$i++;
 				$mo_str = call_user_func( '_x', $str, 'front', 'democracy-poll' );
@@ -1185,7 +1185,7 @@ function dem_l10n_options() {
 					<td><textarea style="width:100%; height:30px;" name="l10n[' . esc_attr( $str ) . ']">' . esc_textarea( $l10ed_str ) . '</textarea></td>
 				</tr>';
 			}
-			add_filter( 'gettext_with_context', [ 'Democracy_Poll', 'handle_front_l10n' ], 10, 4 );
+			add_filter( 'gettext_with_context', [ Democracy_Poll::class, 'handle_front_l10n' ], 10, 4 );
 			echo '<tbody>
 			</table>';
 			?>
@@ -1203,8 +1203,6 @@ function dem_l10n_options() {
 }
 
 function dem_migration_subpage() {
-
-	require_once DEMOC_PATH . 'admin/migration.php';
 
 	$migration = get_option( 'democracy_migrated' );
 
@@ -1254,7 +1252,7 @@ function dem_migration_subpage() {
 	}
 
 	if( @ $_GET['from'] === 'wp-polls' ){
-		dem_WP_Polls_migration();
+		( new Democracy_WP_Polls_Migrator() )->migrate();
 	}
 
 	$migration = get_option( 'democracy_migrated' ); // дуль нужен!

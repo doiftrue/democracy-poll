@@ -10,7 +10,7 @@
  * Text Domain: democracy-poll
  * Domain Path: /languages/
  *
- * Requires at least: 4.6
+ * Requires at least: 4.7
  * Requires PHP: 7.0
  *
  * Version: 5.6.0
@@ -30,18 +30,11 @@ define( 'DEMOC_MAIN_FILE', __FILE__ );
 define( 'DEMOC_URL', plugin_dir_url( __FILE__ ) );
 define( 'DEMOC_PATH', plugin_dir_path( __FILE__ ) );
 
+require_once __DIR__ . '/autoload.php';
 
 dem_set_dbtables();
 
-
-require_once DEMOC_PATH . 'admin/upgrade-activate-funcs.php';
-require_once DEMOC_PATH . 'theme-functions.php';
-
-require_once DEMOC_PATH . '/classes/DemPoll.php';
-require_once DEMOC_PATH . '/classes/Democracy_Poll.php';
-require_once DEMOC_PATH . '/classes/Admin/Democracy_Poll_Admin.php';
-
-register_activation_hook( __FILE__, 'democracy_activate' );
+register_activation_hook( __FILE__, [ Democracy_Activate::class, 'activate' ] );
 
 add_action( 'plugins_loaded', 'democracy_poll_init' );
 function democracy_poll_init() {
@@ -50,18 +43,10 @@ function democracy_poll_init() {
 
 	// enable widget
 	if( democr()->opt( 'use_widget' ) ){
-		require_once DEMOC_PATH . 'widget_democracy.php';
+		add_action( 'widgets_init', function() {
+			register_widget( Democracy_Widget::class );
+		} );
 	}
 }
 
-function democr() {
-	return Democracy_Poll::init();
-}
-
-function dem_set_dbtables() {
-	global $wpdb;
-	$wpdb->democracy_q   = $wpdb->prefix . 'democracy_q';
-	$wpdb->democracy_a   = $wpdb->prefix . 'democracy_a';
-	$wpdb->democracy_log = $wpdb->prefix . 'democracy_log';
-}
 

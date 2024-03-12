@@ -1,18 +1,9 @@
 <?php
 
-/*
- * Democracy Widget
- */
+class Democracy_Widget extends WP_Widget {
 
-add_action( 'widgets_init', 'widget_democracy_register' );
-function widget_democracy_register() {
-	register_widget( 'widget_democracy' );
-}
-
-class widget_democracy extends WP_Widget {
-
-	function __construct() {
-		// Instantiate the parent object. Creates option 'widget_democracy'
+	public function __construct() {
+		// Instantiate the parent object. Creates option 'Democracy_Widget'
 		parent::__construct( 'democracy',
 			__( 'Democracy Poll', 'democracy-poll' ),
 			[
