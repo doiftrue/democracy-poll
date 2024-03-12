@@ -155,12 +155,12 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 
 			// make life easy
 			$_poll_id = 0;
-			$fn__setgetcheck = function( $name ) use ( & $_poll_id ) {
+			$fn__setgetcheck = static function( $name ) use ( & $_poll_id ) {
 				if( empty( $_REQUEST[ $name ] ) ){
 					return $_poll_id = 0;
 				}
 
-				$_poll_id = intval( $_REQUEST[ $name ] );
+				$_poll_id = (int) $_REQUEST[ $name ];
 
 				return democr()->cuser_can_edit_poll( $_poll_id ) ? $_poll_id : 0;
 			};
@@ -417,7 +417,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 
 		// collect all fields which start with 'dmc_'
 		foreach( (array) $_POST as $key => $val ){
-			if( 'dmc_' === substr( $key, 0, 4 ) ){
+			if( str_starts_with( $key, 'dmc_' ) ){
 				$data[ substr( $key, 4 ) ] = $val;
 			}
 		}
@@ -428,19 +428,19 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 	}
 
 	/**
-	 * Add || update poll. Expect unslashed data.
+	 * Add or Update poll. Expects unslashed data.
 	 *
 	 * @param array $data  Data of added poll. If set 'qid' key poll wil be updated.
 	 *
-	 * @return boolean    true when added updated, false otherwise
+	 * @return bool True when added updated, False otherwise.
 	 */
 	function insert_poll( $data ) {
 		global $wpdb;
 
 		$orig_data = $data;
 
-		$poll_id = intval( @ $data['qid'] );
-		$update = !! $poll_id;
+		$poll_id = (int) ( $data['qid'] ?? 0 );
+		$update = (bool) $poll_id;
 
 		// sanitize
 		$data = (object) $this->sanitize_poll_data( $data );
@@ -451,24 +451,18 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 			return false;
 		}
 
-		// awnswers
-		$old_answers = (array) @ $data->old_answers;
-		$new_answers = (array) @ $data->new_answers;
+		/// answers
+		$old_answers = (array) ( $data->old_answers ?? [] );
+		$new_answers = array_filter( (array) ( $data->new_answers ?? [] ) );
 
 		// add data if insert new poll
 		if( ! $update ){
-			if( ! $new_answers ){
-				$this->msg[] = 'Error: Poll must have at least one answer';
-
-				return false;
-			}
-
 			$data->added = current_time( 'timestamp' );
 			$data->added_user = get_current_user_id();
 			$data->open = 1; // poll is open by default
 		}
 
-		// Удалим недопустимые для таблицы поля
+		// Remove invalid for the table fields
 		$q_fields = wp_list_pluck( $wpdb->get_results( "SHOW COLUMNS FROM $wpdb->democracy_q" ), 'Field' );
 		$q_data = array_intersect_key( (array) $data, array_flip( $q_fields ) );
 
@@ -479,14 +473,18 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 			$wpdb->update( $wpdb->democracy_q, $q_data, [ 'id' => $poll_id ] );
 
 			// upadate answers
-			if( $old_answers || $new_answers ){
+			if( 1 ){
 				$ids = [];
 
 				// Обновим старые ответы
 				foreach( $old_answers as $aid => $anws ){
-					$answ_row = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_a WHERE aid = " . intval( $aid ) );
+					$answ_row = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_a WHERE aid = " . (int) $aid );
 
-					$added_by = $this->is_new_answer( $answ_row ) ? str_replace( '-new', '', $answ_row->added_by ) : $answ_row->added_by; // удалим метку NEW
+					// удалим метку NEW
+					$added_by = $this->is_new_answer( $answ_row )
+						? str_replace( '-new', '', $answ_row->added_by )
+						: $answ_row->added_by;
+
 					$order = $anws['aorder'];
 
 					$wpdb->update(
@@ -502,13 +500,17 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 
 					// собираем ID, которые остались. Для исключения из удаления
 					$ids[] = $aid;
-					$max_order_num = ! isset( $max_order_num ) ? $order : ( $max_order_num < $order ? $order : $max_order_num );
+					$max_order_num = isset( $max_order_num ) ? ( $max_order_num < $order ? $order : $max_order_num ) : $order;
 				}
 
 				// Удаляем удаленные ответы, которые есть в БД но нет в запросе
-				if( count( $ids ) > 0 ){
+				if( 1 ){
 					$ids = array_map( 'absint', $ids );
-					$del_ids = $wpdb->get_col( "SELECT aid FROM $wpdb->democracy_a WHERE qid = $poll_id AND aid NOT IN (" . implode( ',', $ids ) . ")" );
+					$AND_NOT_IN = $ids ? sprintf( "AND aid NOT IN (" . implode( ',', $ids ) . ")" ) : '';
+					$del_ids = $wpdb->get_col(
+						"SELECT aid FROM $wpdb->democracy_a WHERE qid = $poll_id $AND_NOT_IN"
+					);
+
 					if( $del_ids ){
 						// delete answers
 						$deleted = $wpdb->query( "DELETE FROM $wpdb->democracy_a WHERE aid IN (" . implode( ',', $del_ids ) . ")" );
@@ -516,14 +518,21 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 						// delete answers logs
 						if( 1 ){
 							// delete logs
-							$user_voted_minus = $wpdb->query( "DELETE FROM $wpdb->democracy_log WHERE qid = $poll_id AND aids IN (" . implode( ',', $del_ids ) . ")" );
+							$user_voted_minus = $wpdb->query(
+								"DELETE FROM $wpdb->democracy_log WHERE qid = $poll_id AND aids IN (" . implode( ',', $del_ids ) . ")"
+							);
+
 							// обновим значение 'users_voted' в бд
 							if( $user_voted_minus ){
 								$wpdb->query( self::users_voted_minus_sql( $user_voted_minus, $poll_id ) );
 							}
 
 							// Обновим мульти логи, где по несколько ответов: '321,654'
-							$up_logs = $wpdb->get_results( "SELECT logid, aids FROM $wpdb->democracy_log WHERE qid = $poll_id AND aids RLIKE '(" . implode( '|', $del_ids ) . ")'" );
+							$up_logs = $wpdb->get_results(
+								"SELECT logid, aids FROM $wpdb->democracy_log
+									WHERE qid = $poll_id AND aids RLIKE '(" . implode( '|', $del_ids ) . ")'"
+							);
+
 							foreach( $up_logs as $log ){
 								$_ids_patt = implode( '|', $del_ids ); // pattern part
 								$new_aids = preg_replace( "~^(?:$_ids_patt),|,(?:$_ids_patt)(?=,)|,(?:$_ids_patt)\$~", '', $log->aids );
@@ -541,11 +550,10 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 				foreach( $new_answers as $anws ){
 					$anws = trim( $anws );
 
-					if( ! empty( $anws ) ){
-						$order = $max_order_num ? $max_order_num++ : 0;
+					if( $anws ){
 						$wpdb->insert( $wpdb->democracy_a, [
 							'answer' => $anws,
-							'aorder' => $order,
+							'aorder' => ( $max_order_num ?? 0 ) ? $max_order_num++ : 0,
 							'qid'    => $poll_id,
 						] );
 					}

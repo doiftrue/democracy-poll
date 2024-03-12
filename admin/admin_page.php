@@ -107,7 +107,7 @@ function poll_edit_form( $poll_id = false ) {
 		$title = democr()->kses_html( $poll->question ) /*.' <small>/ '. __('poll editing','democracy-poll') .'</small>'*/ . $log_link;
 		$shortcode = DemPoll::shortcode_html( $poll_id ) . ' — ' . __( 'shortcode for use in post content', 'democracy-poll' );
 
-		$hidden_inputs = '<input type="hidden" name="dmc_update_poll" value="' . $poll_id . '">';
+		$hidden_inputs = '<input type="hidden" name="dmc_update_poll" value="' . (int) $poll_id . '">';
 	}
 	else{
 		//$title = __('Add new poll','democracy-poll');
