@@ -13,6 +13,7 @@ class Democracy_Activate {
 			$sites = get_sites();
 			foreach( $sites as $site ){
 				switch_to_blog( $site->blog_id );
+				democracy_set_db_tables(); // redefine table names
 				self::_activate();
 				restore_current_blog();
 			}
@@ -24,21 +25,14 @@ class Democracy_Activate {
 
 	private static function _activate() {
 
-		Democracy_Poll::load_textdomain();
-
-		// redefine table names for multisite
-		dem_set_dbtables();
+		democr()->load_textdomain();
+		demopt(); // add default options (if there is no any).
 
 		// create tables
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( self::db_schema() );
 
 		self::add_poll_example();
-
-		// add options
-		if( ! get_option( Democracy_Poll::OPT_NAME ) ){
-			Democracy_Poll::init()->update_options( 'default' );
-		}
 
 		( new Democracy_Upgrade() )->upgrade();
 	}

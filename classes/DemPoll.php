@@ -53,11 +53,11 @@ class DemPoll {
 		$this->poll = $poll;
 
 		// отключим демокраси опцию
-		if( democr()->opt( 'democracy_off' ) ){
+		if( demopt()->democracy_off ){
 			$this->poll->democratic = false;
 		}
 		// отключим опцию переголосования
-		if( democr()->opt( 'revote_off' ) ){
+		if( demopt()->revote_off ){
 			$this->poll->revote = false;
 		}
 
@@ -72,7 +72,7 @@ class DemPoll {
 		}
 
 		// только для зарегистрированных
-		if( ( democr()->opt( 'only_for_users' ) || $this->poll->forusers ) && ! is_user_logged_in() ){
+		if( ( demopt()->only_for_users || $this->poll->forusers ) && ! is_user_logged_in() ){
 			$this->blockForVisitor = true;
 		}
 
@@ -81,7 +81,11 @@ class DemPoll {
 			$this->blockVoting = true;
 		}
 
-		if( ( ! $poll->show_results || democr()->opt( 'dont_show_results' ) ) && $poll->open && ( ! is_admin() || defined( 'DOING_AJAX' ) ) ){
+		if(
+			( ! $poll->show_results || demopt()->dont_show_results )
+			&& $poll->open
+			&& ( ! is_admin() || defined( 'DOING_AJAX' ) )
+		){
 			$this->not_show_results = true;
 		}
 	}
@@ -112,7 +116,7 @@ class DemPoll {
 			return false;
 		}
 
-		$this->inArchive = ( @ $GLOBALS['post']->ID == democr()->opt( 'archive_page_id' ) ) && is_singular();
+		$this->inArchive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) demopt()->archive_page_id ) && is_singular();
 
 		if( $this->blockVoting && $show_screen !== 'force_vote' ){
 			$show_screen = 'voted';
@@ -124,16 +128,16 @@ class DemPoll {
 		$js_opts = [
 			'ajax_url'         => democr()->ajax_url,
 			'pid'              => $this->id,
-			'max_answs'        => ( $this->poll->multiple > 1 ) ? $this->poll->multiple : 0,
-			'answs_max_height' => democr()->opt( 'answs_max_height' ),
-			'anim_speed'       => democr()->opt( 'anim_speed' ),
-			'line_anim_speed'  => (int) democr()->opt( 'line_anim_speed' ),
+			'max_answs'        => (int) ( $this->poll->multiple ?: 0 ),
+			'answs_max_height' => demopt()->answs_max_height,
+			'anim_speed'       => demopt()->anim_speed,
+			'line_anim_speed'  => (int) demopt()->line_anim_speed
 		];
 
 		$html .= '<div id="democracy-' . $this->id . '" class="democracy" data-opts=\'' . json_encode( $js_opts ) . '\' >';
-		$html .= $before_title ?: democr()->opt( 'before_title' );
+		$html .= $before_title ?: demopt()->before_title;
 		$html .= democr()->kses_html( $this->poll->question );
-		$html .= $after_title ?: democr()->opt( 'after_title' );
+		$html .= $after_title ?: demopt()->after_title;
 
 		// изменяемая часть
 		$html .= $this->get_screen_basis( $show_screen );
@@ -146,15 +150,15 @@ class DemPoll {
 		}
 
 		// copyright
-		if( democr()->opt( 'show_copyright' ) && ( is_home() || is_front_page() ) ){
+		if( demopt()->show_copyright && ( is_home() || is_front_page() ) ){
 			$html .= '<a class="dem-copyright" href="http://wp-kama.ru/?p=67" target="_blank" rel="noopener" title="' . __( 'Download the Democracy Poll', 'democracy-poll' ) . '" onmouseenter="var $el = jQuery(this).find(\'span\'); $el.stop().animate({width:\'toggle\'},200); setTimeout(function(){ $el.stop().animate({width:\'toggle\'},200); }, 4000);"> © <span style="display:none;white-space:nowrap;">Kama</span></a>';
 		}
 
 		// loader
-		if( democr()->opt( 'loader_fname' ) ){
+		if( demopt()->loader_fname ){
 			static $loader; // оптимизация, чтобы один раз выводился код на странице
 			if( ! $loader ){
-				$loader = '<div class="dem-loader"><div>' . file_get_contents( DEMOC_PATH . 'styles/loaders/' . democr()->opt( 'loader_fname' ) ) . '</div></div>';
+				$loader = '<div class="dem-loader"><div>' . file_get_contents( DEMOC_PATH . 'styles/loaders/' . demopt()->loader_fname ) . '</div></div>';
 				$html .= $loader;
 			}
 		}
@@ -166,7 +170,7 @@ class DemPoll {
 		if( $this->cachegear_on && ! $this->inArchive ){
 			$html .= '
 			<!--noindex-->
-			<div class="dem-cache-screens" style="display:none;" data-opt_logs="' . democr()->opt( 'keep_logs' ) . '">';
+			<div class="dem-cache-screens" style="display:none;" data-opt_logs="' . (int) demopt()->keep_logs . '">';
 
 			// запоминаем
 			$votedFor = $this->votedFor;
@@ -177,13 +181,15 @@ class DemPoll {
 				return preg_replace( "~[\n\r\t]~u", '', preg_replace( '~\s+~u', ' ', $str ) );
 			};
 
+			// voted_screen
 			if( ! $this->not_show_results ){
 				$html .= $compress( $this->get_screen_basis( 'voted' ) );
-			}  // voted_screen
+			}
 
+			// vote_screen
 			if( $this->poll->open ){
 				$html .= $compress( $this->get_screen_basis( 'force_vote' ) );
-			} // vote_screen
+			}
 
 			$this->for_cache = 0;
 			$this->votedFor = $votedFor; // возвращаем
@@ -193,9 +199,9 @@ class DemPoll {
 			<!--/noindex-->';
 		}
 
-		if( ! democr()->opt( 'disable_js' ) ){
+		if( ! demopt()->disable_js ){
 			democr()->add_js_once();
-		} // подключаем скрипты (один раз)
+		}
 
 		return $html;
 	}
@@ -240,7 +246,7 @@ class DemPoll {
 
 		$poll = $this->poll;
 
-		$auto_vote_on_select = ( ! $poll->multiple && $poll->revote && democr()->opt( 'hide_vote_button' ) );
+		$auto_vote_on_select = ( ! $poll->multiple && $poll->revote && demopt()->hide_vote_button );
 
 		$html = '';
 
@@ -280,8 +286,8 @@ class DemPoll {
 		$html .= '<input type="hidden" name="dem_act" value="vote">';
 		$html .= '<input type="hidden" name="dem_pid" value="' . $this->id . '">';
 
-		$btnVoted = '<div class="dem-voted-button"><input class="dem-button ' . democr()->opt( 'btn_class' ) . '" type="submit" value="' . _x( 'Already voted...', 'front', 'democracy-poll' ) . '" disabled="disabled"></div>';
-		$btnVote = '<div class="dem-vote-button"><input class="dem-button ' . democr()->opt( 'btn_class' ) . '" type="submit" value="' . _x( 'Vote', 'front', 'democracy-poll' ) . '" data-dem-act="vote"></div>';
+		$btnVoted = '<div class="dem-voted-button"><input class="dem-button ' . demopt()->btn_class . '" type="submit" value="' . _x( 'Already voted...', 'front', 'democracy-poll' ) . '" disabled="disabled"></div>';
+		$btnVote = '<div class="dem-vote-button"><input class="dem-button ' . demopt()->btn_class . '" type="submit" value="' . _x( 'Vote', 'front', 'democracy-poll' ) . '" data-dem-act="vote"></div>';
 
 		if( $auto_vote_on_select ){
 			$btnVote = '';
@@ -322,7 +328,7 @@ class DemPoll {
 			}
 		}
 
-		if( ! $this->not_show_results && ! democr()->opt( 'dont_show_results_link' ) ){
+		if( ! $this->not_show_results && ! demopt()->dont_show_results_link ){
 			$html .= '<a href="javascript:void(0);" class="dem-link dem-results-link" data-dem-act="view" rel="nofollow">' . _x( 'Results', 'front', 'democracy-poll' ) . '</a>';
 		}
 
@@ -407,13 +413,13 @@ class DemPoll {
 			$html .= '<div class="dem-label">' . $answer->answer . $sup . $label_perc_txt . '</div>';
 
 			// css процент
-			$graph_percent = ( ( ! democr()->opt( 'graph_from_total' ) && $percent != 0 ) ? round( $votes / $max * 100 ) : $percent ) . '%';
+			$graph_percent = ( ( ! demopt()->graph_from_total && $percent != 0 ) ? round( $votes / $max * 100 ) : $percent ) . '%';
 			if( $graph_percent == 0 ){
 				$graph_percent = '1px';
 			}
 
 			$html .= '<div class="dem-graph">';
-			$html .= '<div class="dem-fill" ' . ( democr()->opt( 'line_anim_speed' ) ? 'data-width="' : 'style="width:' ) . $graph_percent . '"></div>';
+			$html .= '<div class="dem-fill" ' . ( demopt()->line_anim_speed ? 'data-width="' : 'style="width:' ) . $graph_percent . '"></div>';
 			$html .= $votes_txt;
 			$html .= $percent_txt;
 			$html .= "</div>";
@@ -433,8 +439,8 @@ class DemPoll {
 				</div>';
 		$html .= $answer->added_by ? '<div class="dem-added-by-user"><span class="dem-star">*</span>' . _x( ' - added by visitor', 'front', 'democracy-poll' ) . '</div>' : '';
 		$html .= ! $poll->open ? '<div>' . _x( 'Voting is closed', 'front', 'democracy-poll' ) . '</div>' : '';
-		if( ! $this->inArchive && democr()->opt( 'archive_page_id' ) ){
-			$html .= '<a class="dem-archive-link dem-link" href="' . get_permalink( democr()->opt( 'archive_page_id' ) ) . '" rel="nofollow">' . _x( 'Polls Archive', 'front', 'democracy-poll' ) . '</a>';
+		if( ! $this->inArchive && demopt()->archive_page_id ){
+			$html .= '<a class="dem-archive-link dem-link" href="' . get_permalink( demopt()->archive_page_id ) . '" rel="nofollow">' . _x( 'Polls Archive', 'front', 'democracy-poll' ) . '</a>';
 		}
 		$html .= '</div>';
 
@@ -443,7 +449,7 @@ class DemPoll {
 			$for_users_alert = $this->blockForVisitor ? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>' : '';
 
 			// вернуться к голосованию
-			$vote_btn = '<button type="button" class="dem-button dem-vote-link ' . democr()->opt( 'btn_class' ) . '" data-dem-act="vote_screen">' . _x( 'Vote', 'front', 'democracy-poll' ) . '</button>';
+			$vote_btn = '<button type="button" class="dem-button dem-vote-link ' . demopt()->btn_class . '" data-dem-act="vote_screen">' . _x( 'Vote', 'front', 'democracy-poll' ) . '</button>';
 
 			// для кэша
 			if( $this->for_cache ){
@@ -500,7 +506,7 @@ class DemPoll {
 		<form action="#democracy-' . $this->id . '" method="POST">
 			<input type="hidden" name="dem_act" value="delVoted">
 			<input type="hidden" name="dem_pid" value="' . $this->id . '">
-			<input type="submit" value="' . _x( 'Revote', 'front', 'democracy-poll' ) . '" class="dem-revote-link dem-revote-button dem-button ' . democr()->opt( 'btn_class' ) . '" data-dem-act="delVoted" data-confirm-text="' . _x( 'Are you sure you want cancel the votes?', 'front', 'democracy-poll' ) . '">
+			<input type="submit" value="' . _x( 'Revote', 'front', 'democracy-poll' ) . '" class="dem-revote-link dem-revote-button dem-button ' . demopt()->btn_class . '" data-dem-act="delVoted" data-confirm-text="' . _x( 'Are you sure you want cancel the votes?', 'front', 'democracy-poll' ) . '">
 		</form>
 		</span>';
 	}
@@ -517,13 +523,12 @@ class DemPoll {
 				' . _x( 'You or your IP had already vote.', 'front', 'democracy-poll' ) . '
 			</div>';
 		}
-		else{
-			return '
-			<div class="dem-notice">
-				<div class="dem-notice-close" onclick="jQuery(this).parent().fadeOut();">&times;</div>
-				' . $msg . '
-			</div>';
-		}
+
+		return '
+		<div class="dem-notice">
+			<div class="dem-notice-close" onclick="jQuery(this).parent().fadeOut();">&times;</div>
+			' . $msg . '
+		</div>';
 	}
 
 	/**
@@ -639,7 +644,7 @@ class DemPoll {
 
 		$this->set_cookie(); // установим куки
 
-		if( democr()->opt( 'keep_logs' ) ){
+		if( demopt()->keep_logs ){
 			$this->add_logs();
 		}
 
@@ -665,13 +670,13 @@ class DemPoll {
 
 		// если опция логов не включена, то отнимаем по кукам,
 		// тут голоса можно откручивать назад, потому что разные браузеры проверить не получится
-		if( ! democr()->opt( 'keep_logs' ) ){
+		if( ! demopt()->keep_logs ){
 			$this->minus_vote();
 		}
 
 		// Прежде чем удалять, проверим включена ли опция ведения логов и есть ли записи о голосовании в БД,
 		// так как куки могут удалить и тогда, данные о голосовании пойдут в минус
-		if( democr()->opt( 'keep_logs' ) && $this->get_vote_log() ){
+		if( demopt()->keep_logs && $this->get_vote_log() ){
 			$this->minus_vote();
 			$this->delete_vote_from_log(); // чистим логи
 		}
@@ -730,7 +735,7 @@ class DemPoll {
 		// ЗАМЕТКА: обновим куки, если не совпадают. Потому что в разных браузерах могут быть разыне. Не работает,
 		// потому что куки нужно устанавливать перед выводом данных и вообще так делать не нужно, потмоу что проверка
 		// по кукам становится не нужной в целом...
-		if( democr()->opt( 'keep_logs' ) && ( $res = $this->get_vote_log() ) ){
+		if( demopt()->keep_logs && ( $res = $this->get_vote_log() ) ){
 			$this->has_voted = true;
 			$this->votedFor = $res->aids;
 		}
@@ -787,7 +792,7 @@ class DemPoll {
 
 	## время до которого логи будут жить
 	function get_expire_time() {
-		return current_time( 'timestamp', $utc = 1 ) + (int) ( (float) democr()->opt( 'cookie_days' ) * DAY_IN_SECONDS );
+		return current_time( 'timestamp', $utc = 1 ) + (int) ( (float) demopt()->cookie_days * DAY_IN_SECONDS );
 	}
 
 	/**
@@ -823,9 +828,9 @@ class DemPoll {
 			"SELECT * FROM $wpdb->democracy_a WHERE qid = %d", $this->id
 		) );
 
-		// если не установлен порядок
-		if( $answers[0]->aorder == 0 ){
-			$ord = $this->poll->answers_order ?: democr()->opt( 'order_answers' );
+		// не установлен порядок
+		if( ! $answers[0]->aorder ){
+			$ord = $this->poll->answers_order ?: demopt()->order_answers;
 
 			if( $ord === 'by_winner' || $ord == 1 ){
 				$answers = Democracy_Poll::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
@@ -919,24 +924,17 @@ class DemPoll {
 		return '<span style="cursor:pointer;padding:0 2px;background:#fff;" onclick="var sel = window.getSelection(), range = document.createRange(); range.selectNodeContents(this); sel.removeAllRanges(); sel.addRange(range);">[democracy id="' . $poll_id . '"]</span>';
 	}
 
-	static function get_ip() {
+	public static function get_ip() {
 
-		if( democr()->opt( 'soft_ip_detect' ) ){
-			// cloudflare IP support
-			$ip = isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : '';
+		if( demopt()->soft_ip_detect ){
+			$ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? ''; // cloudflare
 
-			if( ! filter_var( $ip, FILTER_VALIDATE_IP ) ){
-				$ip = isset( $_SERVER['HTTP_CLIENT_IP'] ) ? $_SERVER['HTTP_CLIENT_IP'] : '';
-			}
-			if( ! filter_var( $ip, FILTER_VALIDATE_IP ) ){
-				$ip = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
-			}
-			if( ! filter_var( $ip, FILTER_VALIDATE_IP ) ){
-				$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '';
-			}
+			filter_var( $ip, FILTER_VALIDATE_IP ) || ( $ip = $_SERVER['HTTP_CLIENT_IP'] ?? '' );
+			filter_var( $ip, FILTER_VALIDATE_IP ) || ( $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '' );
+			filter_var( $ip, FILTER_VALIDATE_IP ) || ( $ip = $_SERVER['REMOTE_ADDR'] ?? '' );
 		}
 		else{
-			$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '';
+			$ip = $_SERVER['REMOTE_ADDR'] ?? '';
 		}
 
 		$ip = apply_filters( 'dem_get_ip', $ip );

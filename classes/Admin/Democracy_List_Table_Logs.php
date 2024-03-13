@@ -44,7 +44,7 @@ class Democracy_List_Table_Logs extends \WP_List_Table {
 		}
 
 		if( ! $log_ids = array_filter( array_map( 'intval', $_POST['logids'] ) ) ){
-			democr()->msg['error'][] = __( 'Nothing was selected.', 'democracy-poll' );
+			democr()->msg->add_error( __( 'Nothing was selected.', 'democracy-poll' ) );
 
 			return;
 		}
@@ -189,7 +189,7 @@ class Democracy_List_Table_Logs extends \WP_List_Table {
 
 			echo '
 			<div class="alignleft actions" style="margin-top:.3em;">
-				' . ( democr()->opt( 'democracy_off' ) ? '' :
+				' . ( demopt()->democracy_off ? '' :
 					'<a class="button button-small" href="' . esc_url( add_query_arg( [ 'filter' => $newfilter ? null : 'new_answers' ] ) ) . '">' .
 					( $newfilter ? ' &#215; ' : '' ) . __( 'NEW answers logs', 'democracy-poll' )
 					. '</a>'

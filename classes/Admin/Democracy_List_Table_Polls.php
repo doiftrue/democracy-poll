@@ -113,7 +113,7 @@ class Democracy_List_Table_Polls extends WP_List_Table {
 				$actions[] = '<span class="edit"><a href="' . democr()->edit_poll_url( $poll->id ) . '">' . __( 'Edit', 'democracy-poll' ) . '</a> | </span>';
 
 				// logs
-				$has_logs = democr()->opt( 'keep_logs' ) && $wpdb->get_var( $wpdb->prepare( "SELECT qid FROM $wpdb->democracy_log WHERE qid=%d LIMIT 1", $poll->id ) );
+				$has_logs = demopt()->keep_logs && $wpdb->get_var( $wpdb->prepare( "SELECT qid FROM $wpdb->democracy_log WHERE qid=%d LIMIT 1", $poll->id ) );
 				if( $has_logs ){
 					$actions[] = '<span class="edit"><a href="' . add_query_arg( [
 							'subpage' => 'logs',

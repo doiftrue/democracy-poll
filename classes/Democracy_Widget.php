@@ -20,11 +20,14 @@ class Democracy_Widget extends WP_Widget {
 		$before_title  = $args['before_title'];
 		$after_title   = $args['after_title'];
 
-		$title = @ $instance['title'];
-		$pid = @ $instance['show_poll'];
+		$title = $instance['title'] ?? '';
+		$pid = $instance['show_poll'] ?? 0;
 
-		if( is_singular() && ! democr()->opt( 'post_metabox_off' ) && ( $_pid = get_post_poll_id() ) ){
-			$pid = $_pid;
+		if( is_singular()
+		    && ! demopt()->post_metabox_off
+		    && ( $post_pid = get_post_poll_id() )
+		){
+			$pid = $post_pid;
 		}
 
 		if( isset( $instance['questionIsTitle'] ) ){

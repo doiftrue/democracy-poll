@@ -18,15 +18,15 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		}
 
 		// ссылка на настойки
-		add_filter( 'plugin_action_links', [ $this, 'setting_page_link' ], 10, 2 );
+		add_filter( 'plugin_action_links', [ $this, '_plugin_action_setting_page_link' ], 10, 2 );
 
 		// TinyMCE кнопка WP2.5+
-		if( self::$opt['tinymce_button'] ){
+		if( demopt()->tinymce_button ){
 			Democracy_Tinymce::init();
 		}
 
 		// метабокс
-		if( ! self::$opt['post_metabox_off'] ){
+		if( ! demopt()->post_metabox_off ){
 			Democracy_Post_Metabox::init();
 		}
 	}
@@ -50,7 +50,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 	## admin page html
 	function admin_page_output() {
 		if( isset( $_GET['msg'] ) && $_GET['msg'] === 'created' ){
-			$this->msg[] = __( 'New Poll Added', 'democracy-poll' );
+			$this->msg->add_ok( __( 'New Poll Added', 'democracy-poll' ) );
 		}
 
 		require DEMOC_PATH . 'admin/admin_page.php';
@@ -111,29 +111,24 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 					self::handle_front_l10n( 'clear_cache' );
 				}
 
-				// обновляем основные опции
 				if( isset( $_POST['dem_save_main_options'] ) ){
-					$up = $this->update_options( 'main' );
+					$up = demopt()->update_options( 'main' );
 				}
-				// сбрасываем основные опции
 				if( isset( $_POST['dem_reset_main_options'] ) ){
-					$up = $this->update_options( 'main_default' );
+					$up = demopt()->reset_options( 'main' );
 				}
-				// обновляем опции дизайна
 				if( isset( $_POST['dem_save_design_options'] ) ){
-					$up = $this->update_options( 'design' );
+					$up = demopt()->update_options( 'design' );
 				}
-				// сбрасываем опции дизайна
 				if( isset( $_POST['dem_reset_design_options'] ) ){
-					$up = $this->update_options( 'design_default' );
+					$up = demopt()->reset_options( 'design' );
 				}
 
-				// костыль, чтобы сразу применялся результат при отключении/включении тулбара
+				// hack to immediately apply the option change
 				if( $up ){
-					self::$opt['toolbar_menu'] ? add_action( 'admin_bar_menu', [
-						$this,
-						'toolbar',
-					], 99 ) : remove_action( 'admin_bar_menu', [ $this, 'toolbar' ], 99 );
+					demopt()->toolbar_menu
+						? add_action( 'admin_bar_menu', [ $this, 'toolbar', ], 99 )
+						: remove_action( 'admin_bar_menu', [ $this, 'toolbar' ], 99 );
 				}
 
 				// запрос на создание страницы архива
@@ -234,89 +229,25 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 
 	### PLUGIN OPTIONS ----------
 
-	/**
-	 * Обнолвяет опции. Если опция не передана, то на её место будет записано 0
-	 *
-	 * @param bool $type  Какие опции обновлять: default, main_default, design_default, main, design
-	 */
-	function update_options( $type ) {
-		$def_opt = $this->default_options();
-
-		// reset all
-		if( $type === 'default' ){
-			$this->update_options( 'main_default' );
-			$this->update_options( 'design_default' );
-		}
-
-		// reset main & design options
-		if( $type === 'main_default' || $type === 'design_default' ){
-			$_type = str_replace( '_default', '', $type );
-			foreach( $def_opt[ $_type ] as $k => $value ){
-				self::$opt[ $k ] = $value;
-			}
-		}
-
-		// sanitize on POST request
-		$POSTDATA = wp_unslash( $_POST );
-		if( isset( $POSTDATA['dem'] ) && ( $type === 'main' || $type === 'design' ) ){
-			foreach( $def_opt[ $type ] as $k => $v ){
-				$value = isset( $POSTDATA['dem'][ $k ] ) ? $POSTDATA['dem'][ $k ] : 0; // именно 0/null, а не $v для checkbox
-
-				if( in_array( $k, [ 'before_title', 'after_title' ] ) ){
-					$value = wp_kses( $value, 'post' );
-				}
-				// only admin can change 'access_roles'
-				elseif( $k === 'access_roles' ){
-					if( $this->super_access ){
-						$value = array_map( 'sanitize_key', (array) $value );
-					} // sanitize anyway
-					else{
-						$value = (array) self::$opt[ $k ];
-					} // leave as it was - only admin can change 'access_roles'
-				}
-				// all with sanitize_text_field
-				else{
-					$value = is_array( $value ) ? array_map( 'sanitize_text_field', $value ) : sanitize_text_field( $value );
-				}
-
-				self::$opt[ $k ] = $value;
-			}
-		}
-
-		// update css styles option
-		if( $type === 'design' || $type === 'design_default' ){
-			$this->update_democracy_css();
-		}
-
-		// update all options
-		$up = update_option( self::OPT_NAME, self::$opt );
-
-		if( $up ){
-			$this->msg[] = __( 'Updated', 'democracy-poll' );
-		}
-		else{
-			$this->msg['notice'][] = __( 'Nothing was updated', 'democracy-poll' );
-		}
-
-		return $up;
-	}
 
 	## Обновляет произвольный текст перевода
-	function update_l10n() {
+	private function update_l10n(): bool {
 		$new_l10n = stripslashes_deep( $_POST['l10n'] );
 
 		foreach( $new_l10n as $key => & $val ){
 			$val = trim( $val );
 
+			// delete if no difference from original translations_api
 			if( __( $key, 'democracy-poll' ) === $val ){
 				unset( $new_l10n[ $key ] );
-			} // delete if no difference from original translations_api
+			}
+			// sanitize value: Thanks to //pluginvulnerabilities.com/?p=2967
 			else{
 				$val = wp_kses( $val, Democracy_Poll::$allowed_tags );
-			} // sanitize value: Thanks to //pluginvulnerabilities.com/?p=2967
+			}
 		}
 
-		update_option( 'democracy_l10n', $new_l10n );
+		return (bool) update_option( 'democracy_l10n', $new_l10n );
 	}
 
 	/**
@@ -349,7 +280,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		$wpdb->delete( $wpdb->democracy_a, [ 'qid' => $poll_id ] );
 		$wpdb->delete( $wpdb->democracy_log, [ 'qid' => $poll_id ] );
 
-		$this->msg[] = __( 'Poll Deleted', 'democracy-poll' ) . ': ' . $poll_id;
+		$this->msg->add_ok( __( 'Poll Deleted', 'democracy-poll' ) . ": $poll_id" );
 	}
 
 	/**
@@ -380,7 +311,10 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		}
 
 		if( $wpdb->update( $wpdb->democracy_q, $new_data, [ 'id' => $poll->id ] ) ){
-			$this->msg[] = $open ? __( 'Poll Opened', 'democracy-poll' ) : __( 'Voting is closed', 'democracy-poll' );
+			$this->msg->add_ok( $open
+				? __( 'Poll Opened', 'democracy-poll' )
+				: __( 'Voting is closed', 'democracy-poll' )
+			);
 		}
 	}
 
@@ -400,7 +334,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		$active = (int) $activation;
 
 		if( ! $poll->open && $active ){
-			$this->msg['error'][] = __( 'You can not activate closed poll...', 'democracy-poll' );
+			$this->msg->add_error( __( 'You can not activate closed poll...', 'democracy-poll' ) );
 
 			return false;
 		}
@@ -408,7 +342,10 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		$done = $wpdb->update( $wpdb->democracy_q, [ 'active' => $active ], [ 'id' => $poll->id ] );
 
 		if( $done ){
-			$this->msg[] = $active ? __( 'Poll Activated', 'democracy-poll' ) : __( 'Poll Deactivated', 'democracy-poll' );
+			$this->msg->add_ok( $active
+				? __( 'Poll Activated', 'democracy-poll' )
+				: __( 'Poll Deactivated', 'democracy-poll' )
+			);
 		}
 	}
 
@@ -446,7 +383,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		$data = (object) $this->sanitize_poll_data( $data );
 
 		if( ! $data->question ){
-			$this->msg[] = 'error: question not set';
+			$this->msg->add_ok( 'error: question not set' );
 
 			return false;
 		}
@@ -560,7 +497,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 				}
 			}
 
-			$this->msg[] = __( 'Poll Updated', 'democracy-poll' );
+			$this->msg->add_ok( __( 'Poll Updated', 'democracy-poll' ) );
 
 			// collect answers users votes count
 			// обновим 'users_voted' в questions после того как логи были обновлены, зависит от логов
@@ -586,7 +523,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 			$wpdb->insert( $wpdb->democracy_q, $q_data );
 
 			if( ! $poll_id = $wpdb->insert_id ){
-				$this->msg[] = 'error: sql error when adding poll data';
+				$this->msg->add_ok( 'error: sql error when adding poll data' );
 
 				return false;
 			}
@@ -663,22 +600,24 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 
 	#### CSS ------------
 	## Обновляет опцию "democracy_css"
-	function update_democracy_css() {
-		$additional = ! empty( $_POST['additional_css'] ) ? strip_tags( stripslashes( $_POST['additional_css'] ) ) : '';
+	public function update_democracy_css() {
+		$additional_css = $_POST['additional_css'] ?? '';
+		$additional = strip_tags( stripslashes( $additional_css ) );
 
 		$this->regenerate_democracy_css( $additional );
 	}
 
 	## Регенерирует стили в настройках, на оснвое настроек. не трогает дополнительные стили
-	function regenerate_democracy_css( $additional = null ) {
+	public function regenerate_democracy_css( $additional = null ) {
 
 		// чтобы при обновлении плагина, доп. стили не слетали
 		if( $additional === null ){
-			$css = get_option( 'democracy_css' );
-			$additional = isset( $css['additional_css'] ) ? $css['additional_css'] : '';
+			$css = get_option( 'democracy_css', [] );
+			$additional = $css['additional_css'] ?? '';
 		}
 
-		$base = $this->collect_base_css(); // если нет, то тема отключена
+		// если нет, то тема отключена
+		$base = $this->collect_base_css();
 
 		$newdata = [
 			'base_css'       => $base,
@@ -691,27 +630,25 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 
 	## Собирает базовые стили.
 	## @return css код стилей или '', если шаблон отключен.
-	function collect_base_css() {
+	private function collect_base_css(): string {
 
-		$tpl = self::$opt['css_file_name'];
+		$tpl = demopt()->css_file_name;
 
 		// выходим если не указан шаблон
 		if( ! $tpl ){
 			return '';
 		}
 
-		$button = self::$opt['css_button'];
-		$loader = self::$opt['loader_fill'];
+		$button = demopt()->css_button;
+		$loader = demopt()->loader_fill;
 
-		$radios = self::$opt['checkradio_fname'];
+		$radios = demopt()->checkradio_fname;
 
 		$out = '';
 		$styledir = DEMOC_PATH . 'styles';
 
-		$out .= $this->parce_cssimport( "$styledir/$tpl" );
-
+		$out .= $this->parse_cssimport( "$styledir/$tpl" );
 		$out .= $radios ? "\n" . file_get_contents( "$styledir/checkbox-radio/$radios" ) : '';
-
 		$out .= $button ? "\n" . file_get_contents( "$styledir/buttons/$button" ) : '';
 
 		if( $loader ){
@@ -721,10 +658,10 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		}
 
 		// progress line
-		$d_bg       = self::$opt['line_bg'];
-		$d_fill     = self::$opt['line_fill'];
-		$d_height   = self::$opt['line_height'];
-		$d_fillThis = self::$opt['line_fill_voted'];
+		$d_bg       = demopt()->line_bg;
+		$d_fill     = demopt()->line_fill;
+		$d_height   = demopt()->line_height;
+		$d_fillThis = demopt()->line_fill_voted;
 
 		if( $d_bg ){
 			$out .= "\n.dem-graph{ background: $d_bg !important; }\n";
@@ -741,13 +678,13 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 
 		if( $button ){
 			// button
-			$bbackground = self::$opt['btn_bg_color'];
-			$bcolor      = self::$opt['btn_color'];
-			$bbcolor     = self::$opt['btn_border_color'];
+			$bbackground = demopt()->btn_bg_color;
+			$bcolor      = demopt()->btn_color;
+			$bbcolor     = demopt()->btn_border_color;
 			// hover
-			$bh_bg     = self::$opt['btn_hov_bg'];
-			$bh_color  = self::$opt['btn_hov_color'];
-			$bh_bcolor = self::$opt['btn_hov_border_color'];
+			$bh_bg     = demopt()->btn_hov_bg;
+			$bh_color  = demopt()->btn_hov_color;
+			$bh_bcolor = demopt()->btn_hov_border_color;
 
 			if( $bbackground ){
 				$out .= "\n.dem-button{ background-color:$bbackground !important; }\n";
@@ -775,20 +712,13 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 
 	/**
 	 * Сжимает css YUICompressor
-	 *
-	 * $minicss = democr()->cssmin( file_get_contents( DEMOC_URL . 'styles/'. democr()->opt('css_file_name') ) );
-	 *
-	 * @param string $input_css  КОД css
-	 *
-	 * @return string min css.
 	 */
-	function cssmin( $input_css ) {
+	public function cssmin( string $input_css ): string {
 
 		require_once DEMOC_PATH . 'admin/CssMin/cssmin.php';
 
 		$compressor = new tubalmartin\CssMin\Minifier();
 
-		// Override any PHP configuration options before calling run() (optional)
 		// $compressor->set_memory_limit('256M');
 		// $compressor->set_max_execution_time(120);
 
@@ -796,7 +726,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 	}
 
 	## Импортирует @import в css
-	function parce_cssimport( $css_filepath ) {
+	private function parse_cssimport( $css_filepath ) {
 		$filecode = file_get_contents( $css_filepath );
 
 		$filecode = preg_replace_callback( '~@import [\'"](.*?)[\'"];~', static function( $m ) use ( $css_filepath ) {
@@ -807,12 +737,12 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 	}
 
 	## Ссылка на настройки со страницы плагинов
-	function setting_page_link( $actions, $plugin_file ) {
+	public function _plugin_action_setting_page_link( $actions, $plugin_file ) {
 		if( false === strpos( $plugin_file, basename( DEMOC_PATH ) ) ){
 			return $actions;
 		}
 
-		$settings_link = '<a href="' . $this->admin_page_url() . '">' . __( 'Settings', 'democracy-poll' ) . '</a>';
+		$settings_link = sprintf( '<a href="%s">%s</a>', $this->admin_page_url(), __( 'Settings', 'democracy-poll' ) );
 		array_unshift( $actions, $settings_link );
 
 		return $actions;
@@ -850,9 +780,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		}
 
 		// обновляем опцию плагина
-		$newopt = democr()->opt();
-		$newopt['archive_page_id'] = $page_id;
-		update_option( Democracy_Poll::OPT_NAME, $newopt );
+		demopt()->update_single_option( 'archive_page_id', $page_id );
 
 		wp_redirect( remove_query_arg( 'dem_create_archive_page' ) );
 	}
@@ -905,7 +833,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 
 		$res = $wpdb->query( "DELETE FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $logids ) ) . ")" );
 
-		$this->msg[] = $res ? sprintf( __( 'Lines deleted:%s', 'democracy-poll' ), $res ) : __( 'Failed to delete', 'democracy-poll' );
+		$this->msg->add_ok( $res ? sprintf( __( 'Lines deleted:%s', 'democracy-poll' ), $res ) : __( 'Failed to delete', 'democracy-poll' ) );
 
 		do_action( 'dem_delete_only_logs', $logids, $res );
 
@@ -971,9 +899,13 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		// now, delete logs itself
 		$res = $wpdb->query( "DELETE FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $logids ) ) . ")" );
 
-		$this->msg[] = $res
-			? sprintf( __( 'Removed logs:%d. Taken away answers:%d. Taken away users %d.', 'democracy-poll' ), $res, $minus_answ_sum, $minus_users_sum )
-			: __( 'Failed to delete', 'democracy-poll' );
+		$this->msg->add_ok( $res
+			? sprintf(
+				__( 'Removed logs:%d. Taken away answers:%d. Taken away users %d.', 'democracy-poll' ),
+				$res, $minus_answ_sum, $minus_users_sum
+			)
+			: __( 'Failed to delete', 'democracy-poll' )
+		);
 
 		do_action( 'dem_delete_logs_and_votes', $logids, $res, $minus_answ_sum, $minus_users_sum );
 	}

@@ -81,7 +81,7 @@ class Democracy_WP_Polls_Migrator {
 		$wppolls = $wpdb->get_results( "SELECT * FROM $wpdb->pollsq" );
 
 		if( ! $wppolls ){
-			democr()->msg[] = 'No WP Polls polls found.';
+			democr()->msg->add_warn( 'No WP Polls polls found.' );
 
 			return;
 		}
