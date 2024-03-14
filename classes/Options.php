@@ -194,7 +194,7 @@ class Options {
 
 		// update css styles option
 		if( $type === 'design' ){
-			democr()->update_democracy_css();
+			democr()->update_democracy_css__request_handler();
 		}
 
 		return $this->update_in_db();
@@ -216,7 +216,7 @@ class Options {
 			}
 
 			if( $type === 'design' ){
-				democr()->update_democracy_css();
+				democr()->regenerate_democracy_css( '' );
 			}
 		}
 

@@ -604,7 +604,7 @@ class Admin extends \Democracy_Poll {
 
 	#### CSS ------------
 	## Обновляет опцию "democracy_css"
-	public function update_democracy_css() {
+	public function update_democracy_css__request_handler() {
 		$additional_css = $_POST['additional_css'] ?? '';
 		$additional = strip_tags( stripslashes( $additional_css ) );
 

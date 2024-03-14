@@ -819,7 +819,6 @@ class DemPoll {
 
 	/**
 	 * Устанавливает ответы в $this->poll->answers и сортирует их в нужном порядке.
-	 * @return array Массив объектов
 	 */
 	protected function set_answers() {
 		global $wpdb;
@@ -828,27 +827,26 @@ class DemPoll {
 			"SELECT * FROM $wpdb->democracy_a WHERE qid = %d", $this->id
 		) );
 
-		// не установлен порядок
-		if( ! $answers[0]->aorder ){
-			$ord = $this->poll->answers_order ?: demopt()->order_answers;
+		if( $answers ){
+			// не установлен порядок
+			if( ! $answers[0]->aorder ){
+				$ord = $this->poll->answers_order ?: demopt()->order_answers;
 
-			if( $ord === 'by_winner' || $ord == 1 ){
-				$answers = Democracy_Poll::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
+				if( $ord === 'by_winner' || $ord == 1 ){
+					$answers = Democracy_Poll::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
+				}
+				elseif( $ord === 'mix' ){
+					shuffle( $answers );
+				}
+				elseif( $ord === 'by_id' ){}
 			}
-			elseif( $ord === 'mix' ){
-				shuffle( $answers );
-			}
-			elseif( $ord === 'by_id' ){
+			// по порядку
+			else{
+				$answers = Democracy_Poll::objects_array_sort( $answers, [ 'aorder' => 'asc' ] );
 			}
 		}
-		// по порядку
-		else{
-			$answers = Democracy_Poll::objects_array_sort( $answers, [ 'aorder' => 'asc' ] );
-		}
 
-		$answers = apply_filters( 'dem_set_answers', $answers, $this->poll );
-
-		return $this->poll->answers = $answers;
+		$this->poll->answers = apply_filters( 'dem_set_answers', $answers, $this->poll );
 	}
 
 	/**

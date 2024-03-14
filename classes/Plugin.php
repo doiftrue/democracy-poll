@@ -4,6 +4,6 @@ namespace DemocracyPoll;
 
 class Plugin {
 
-
+	// TODO
 
 }

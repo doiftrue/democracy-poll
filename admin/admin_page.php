@@ -695,7 +695,7 @@ function dem_polls_design() {
 	$demcss = get_option( 'democracy_css' );
 	$additional = $demcss['additional_css'];
 	if( ! $demcss['base_css'] && $additional ){
-		$demcss['base_css'] = $additional; // если не уиспользуется тема
+		$demcss['base_css'] = $additional; // если не используется тема
 	}
 
 	echo demenu();

@@ -17,12 +17,12 @@ class Upgrader {
 	 */
 	public function upgrade() {
 
-		if( $this->old_ver === DEM_VER || ! $this->old_ver ){
+		if( $this->old_ver === DEM_VER ){
 			return;
 		}
 
 		// обновим css
-		democr()->regenerate_democracy_css();
+		democr()->regenerate_democracy_css( null );
 
 		update_option( 'democracy_version', DEM_VER );
 
