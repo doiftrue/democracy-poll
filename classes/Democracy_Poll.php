@@ -41,7 +41,7 @@ class Democracy_Poll {
 
 	static $inst;
 
-	// for Democracy_Post_Metabox
+	// for Post_Metabox
 	static $pollid_meta_key = 'dem_poll_id';
 
 	public static function instance() {
@@ -52,11 +52,11 @@ class Democracy_Poll {
 
 		// admin part
 		if(
-			Democracy_Activate::$activation_running
+			\DemocracyPoll\Utils\Activator::$activation_running
 			||
 			( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) )
 		){
-			self::$inst = new Democracy_Poll_Admin();
+			self::$inst = new \DemocracyPoll\Admin\Admin();
 		}
 		// front-end
 		else{
@@ -572,16 +572,16 @@ class Democracy_Poll {
 	 * @param string $ip       IP для проверки. По умолчанию текущий IP.
 	 * @param string $purpose  Какие данные нужно получить. Может быть: location address city state region country countrycode.
 	 *
-	 * @return array|string      Данные в виде массива или строки. Массив при $purpose = "location" в остальных случаях вернется строка.
+	 * @return array|string Данные в виде массива или строки. Массив при $purpose = "location" в остальных случаях вернется строка.
 	 */
-	static function get_ip_info( $ip = null, $purpose = 'location' ) {
+	public static function get_ip_info( $ip = null, $purpose = 'location' ) {
 		$output = null;
 
 		if( filter_var( $ip, FILTER_VALIDATE_IP ) === false ){
 			$ip = DemPoll::get_ip();
 		}
 
-		$purpose = str_replace( [ "name", "\n", "\t", " ", "-", "_" ], null, strtolower( trim( $purpose ) ) );
+		$purpose = str_replace( [ "name", "\n", "\t", " ", "-", "_" ], '', strtolower( trim( $purpose ) ) );
 		$support = [ 'country', 'countrycode', 'state', 'region', 'city', 'location', 'address' ];
 		$continents = [
 			'AF' => 'Africa',
@@ -661,14 +661,14 @@ class Democracy_Poll {
 		}
 
 		if( empty( $format ) ){
-			/*Array(
-				[city] =>
-				[state] =>
-				[country] => Uzbekistan
-				[country_code] => UZ
-				[continent] => Asia
-				[continent_code] => AS
-			)*/
+			/*
+			[city] =>
+			[state] =>
+			[country] => Uzbekistan
+			[country_code] => UZ
+			[continent] => Asia
+			[continent_code] => AS
+			*/
 			if( @ $ip_info['country'] && @  $ip_info['country_code'] ){
 				$format = $ip_info['country'] . ',' . $ip_info['country_code'] . ',' . $ip_info['city'];
 			}
@@ -687,7 +687,7 @@ class Democracy_Poll {
 	 *
 	 * @return array|false Массив объектов записей
 	 */
-	function get_in_posts_posts( $poll ) {
+	public function get_in_posts_posts( $poll ) {
 		global $wpdb;
 
 		if( empty( $poll->in_posts ) || empty( $poll->id ) ){

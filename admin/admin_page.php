@@ -1142,7 +1142,7 @@ function dem_l10n_options() {
 			$strs = [];
 			$files = [
 				DEMOC_PATH . 'classes/DemPoll.php',
-				DEMOC_PATH . 'classes/Democracy_Widget.php',
+				DEMOC_PATH . 'classes/Poll_Widget.php',
 			];
 			foreach( $files as $file ){
 				preg_match_all( '~_x\(\s*[\'](.*?)(?<!\\\\)[\']~', file_get_contents( $file ), $match );
@@ -1236,7 +1236,7 @@ function dem_migration_subpage() {
 	}
 
 	if( @ $_GET['from'] === 'wp-polls' ){
-		( new Democracy_WP_Polls_Migrator() )->migrate();
+		( new \DemocracyPoll\Utils\Migrator__WP_Polls() )->migrate();
 	}
 
 	$migration = get_option( 'democracy_migrated' ); // дуль нужен!

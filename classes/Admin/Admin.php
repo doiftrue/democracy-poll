@@ -1,8 +1,15 @@
 <?php
+/**
+ * @noinspection PhpUnnecessaryLocalVariableInspection
+ * @noinspection OneTimeUseVariablesInspection
+ * @noinspection PhpFullyQualifiedNameUsageInspection
+ */
+
+namespace DemocracyPoll\Admin;
 
 /// TODO: refactor - extract to separate class
 
-class Democracy_Poll_Admin extends Democracy_Poll {
+class Admin extends \Democracy_Poll {
 
 	public function __construct() {
 		parent::__construct();
@@ -22,33 +29,30 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 
 		// TinyMCE кнопка WP2.5+
 		if( demopt()->tinymce_button ){
-			Democracy_Tinymce::init();
+			Tinymce_Button::init();
 		}
 
 		// метабокс
 		if( ! demopt()->post_metabox_off ){
-			Democracy_Post_Metabox::init();
+			Post_Metabox::init();
 		}
 	}
 
 	## Страница плагина
-	function register_option_page() {
+	public function register_option_page() {
 		if( ! $this->admin_access ){
 			return;
 		}
 
 		$title = __( 'Democracy Poll', 'democracy-poll' );
-		$hook_name = add_options_page( $title, $title, 'edit_posts', basename( DEMOC_PATH ), [
-			$this,
-			'admin_page_output',
-		] );
+		$hook_name = add_options_page( $title, $title, 'edit_posts', basename( DEMOC_PATH ), [ $this, 'admin_page_output' ] );
 		// notice: `edit_posts` (role more then subscriber) because capability tests inside the `admin_page.php` and `admin_page_load()`
 
 		add_action( "load-$hook_name", [ $this, 'admin_page_load' ] );
 	}
 
 	## admin page html
-	function admin_page_output() {
+	public function admin_page_output() {
 		if( isset( $_GET['msg'] ) && $_GET['msg'] === 'created' ){
 			$this->msg->add_ok( __( 'New Poll Added', 'democracy-poll' ) );
 		}
@@ -65,7 +69,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 				update_option( 'democracy_version', '0.1' );
 			} // hack
 
-			( new Democracy_Upgrade() )->upgrade();
+			( new \DemocracyPoll\Utils\Upgrader() )->upgrade();
 
 			if( isset( $_POST['dem_forse_upgrade'] ) ){
 				wp_redirect( $_SERVER['REQUEST_URI'] );
@@ -173,11 +177,11 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 			// activates a poll
 			if( $fn__setgetcheck( 'dmc_activate_poll' ) ){
 				$this->poll_activation( $_poll_id, true );
-			}         //echo "$_poll_id ";
+			}
 			// deactivates a poll
 			if( $fn__setgetcheck( 'dmc_deactivate_poll' ) ){
 				$this->poll_activation( $_poll_id, false );
-			}        //echo "$_poll_id ";
+			}
 
 			// open voting a poll
 			if( $fn__setgetcheck( 'dmc_open_poll' ) ){
@@ -195,12 +199,8 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		//	$this->del_poll_logs( $_GET['poll'] );
 
 		// admin subpages (after handlers) ------
-		$sp = &$_GET['subpage'];
-		if( $sp === 'general_settings' ){
-		}
-		elseif( $sp === 'l10n' ){
-		}
-		elseif( $sp === 'design' ){
+		$sp = $_GET['subpage'] ?? '';
+		if( $sp === 'design' ){
 			// CodeMirror
 			if( function_exists( 'wp_enqueue_code_editor' ) ){
 				add_action( 'admin_enqueue_scripts', function() {
@@ -214,16 +214,16 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 				}, 99 );
 			}
 		}
-		// add/edit poll
-		elseif( $sp === 'add_new' || isset( $_GET['edit_poll'] ) ){
-		}
+		elseif( $sp === 'general_settings' ){}
+		elseif( $sp === 'l10n' ){}
+		elseif( $sp === 'add_new' || isset( $_GET['edit_poll'] ) ){}
 		// logs list
 		elseif( $sp === 'logs' ){
-			$this->list_table = new Democracy_List_Table_Logs();
+			$this->list_table = new List_Table_Logs();
 		}
 		// polls list
 		else{
-			$this->list_table = new Democracy_List_Table_Polls();
+			$this->list_table = new List_Table_Polls();
 		}
 	}
 
@@ -243,7 +243,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 			}
 			// sanitize value: Thanks to //pluginvulnerabilities.com/?p=2967
 			else{
-				$val = wp_kses( $val, Democracy_Poll::$allowed_tags );
+				$val = wp_kses( $val, \Democracy_Poll::$allowed_tags );
 			}
 		}
 
@@ -254,7 +254,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 	 * Получает существующие полные css файлы из каталога плагина
 	 * @return array Возвращает массив имен (путей) к файлам
 	 */
-	function _get_styles_files() {
+	public function _get_styles_files(): array {
 		$arr = [];
 
 		foreach( glob( DEMOC_PATH . 'styles/*.css' ) as $file ){
@@ -292,7 +292,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 	function poll_opening( $poll_id, $open ) {
 		global $wpdb;
 
-		if( ! $poll = DemPoll::get_poll( $poll_id ) ){
+		if( ! $poll = \DemPoll::get_poll( $poll_id ) ){
 			return;
 		}
 
@@ -324,11 +324,12 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 	 * @param int  $poll_id     ID опроса
 	 * @param bool $activation  Что сделать, активировать (true) или деактивировать?
 	 */
-	function poll_activation( $poll_id, $activation = true ) {
+	private function poll_activation( $poll_id, $activation = true ): bool {
 		global $wpdb;
 
-		if( ! $poll = DemPoll::get_poll( $poll_id ) ){
-			return;
+		$poll = \DemPoll::get_poll( $poll_id );
+		if( ! $poll ){
+			return false;
 		}
 
 		$active = (int) $activation;
@@ -347,6 +348,8 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 				: __( 'Poll Deactivated', 'democracy-poll' )
 			);
 		}
+
+		return (bool) $done;
 	}
 
 	function insert_poll_handler() {
@@ -544,8 +547,10 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		return true;
 	}
 
-	## sanitize all poll fields before save in db
-	function sanitize_poll_data( $data ) {
+	/**
+	 * Sanitize all poll fields before save in db.
+	 */
+	public function sanitize_poll_data( $data ) {
 		$original_data = $data;
 
 		foreach( $data as $key => & $val ){
@@ -553,15 +558,13 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 				$val = trim( $val );
 			}
 
-			if( 0 ){
-			}
 			// valid tags
-			elseif( $key === 'question' || $key === 'note' ){
+			if( $key === 'question' || $key === 'note' ){
 				$val = wp_kses( $val, self::$allowed_tags );
 			}
 			// date
 			elseif( $key === 'end' || $key === 'added' ){
-				if( preg_match( '~[0-9]{1,2}-[0-9]{1,2}-[0-9]{4}~', $val ) ){
+				if( preg_match( '~\d{1,2}-\d{1,2}-\d{4}~', $val ) ){
 					$val = strtotime( $val );
 				}
 				else{
@@ -585,6 +588,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 					foreach( $val as & $_val ){
 						$_val = $this->sanitize_answer_data( $_val );
 					}
+					unset( $_val );
 				}
 			}
 			// remove tags
@@ -717,7 +721,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 
 		require_once DEMOC_PATH . 'admin/CssMin/cssmin.php';
 
-		$compressor = new tubalmartin\CssMin\Minifier();
+		$compressor = new \tubalmartin\CssMin\Minifier();
 
 		// $compressor->set_memory_limit('256M');
 		// $compressor->set_max_execution_time(120);
@@ -748,13 +752,13 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		return $actions;
 	}
 
-	## Создает страницу архива. Сохраняет УРЛ созданой страницы в опции плагина.
-	# Перед созданием проверят нет ли уже такой страницы.
-	## @return  УРЛ созданной страницы или false
 	/**
+	 * Создает страницу архива. Сохраняет УРЛ созданой страницы в опции плагина.
+	 * Перед созданием проверят нет ли уже такой страницы.
+	 *
 	 * @return false|void
 	 */
-	function dem_create_archive_page() {
+	public function dem_create_archive_page() {
 		global $wpdb;
 
 		// Пробуем найти страницу с архивом
@@ -785,7 +789,9 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		wp_redirect( remove_query_arg( 'dem_create_archive_page' ) );
 	}
 
-	## Clear all log table
+	/**
+	 * Clears all log table.
+	 */
 	protected function clear_logs() {
 		global $wpdb;
 		$wpdb->query( "TRUNCATE TABLE $wpdb->democracy_log" );
@@ -808,34 +814,26 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 	}
 
 	/**
-	 * Удаляет логи опроса
-	 *
-	 * @param integer $poll_id  ID опроса
-	 *                          function del_poll_logs( $poll_id ){
-	 *                          global $wpdb;
-	 *
-	 * $done = $wpdb->query("DELETE FROM $wpdb->democracy_log WHERE qid = ". intval($poll_id) );
-	 * }
-	 */
-
-	/**
 	 * Удаляет только указанный лог
 	 *
-	 * @param array/int $logids Log IDs array or single log ID
+	 * @param array|int $log_ids  Log IDs array or single log ID
 	 */
-	function del_only_logs( $logids ) {
-		$logids = array_filter( (array) $logids );
-		if( ! $logids ){
+	public function del_only_logs( $log_ids ) {
+		global $wpdb;
+
+		$log_ids = array_filter( (array) $log_ids );
+		if( ! $log_ids ){
 			return false;
 		}
 
-		global $wpdb;
+		$res = $wpdb->query( "DELETE FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $log_ids ) ) . ")" );
 
-		$res = $wpdb->query( "DELETE FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $logids ) ) . ")" );
+		$this->msg->add_ok( $res
+			? sprintf( __( 'Lines deleted: %s', 'democracy-poll' ), $res )
+			: __( 'Failed to delete', 'democracy-poll' )
+		);
 
-		$this->msg->add_ok( $res ? sprintf( __( 'Lines deleted:%s', 'democracy-poll' ), $res ) : __( 'Failed to delete', 'democracy-poll' ) );
-
-		do_action( 'dem_delete_only_logs', $logids, $res );
+		do_action( 'dem_delete_only_logs', $log_ids, $res );
 
 		return $res;
 	}
@@ -843,18 +841,20 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 	/**
 	 * Удаляет указанный лог и связанные голоса
 	 *
-	 * @param array|int $logids Log IDs array or single log ID
+	 * @param array|int $log_ids  Log IDs array or single log ID
 	 */
-	function del_logs_and_votes( $logids ) {
-		$logids = array_filter( (array) $logids );
-		if( ! $logids ){
+	public function del_logs_and_votes( $log_ids ) {
+		$log_ids = array_filter( (array) $log_ids );
+		if( ! $log_ids ){
 			return false;
 		}
 
 		global $wpdb;
 
 		// Соберем все ID вопросов, которые нужно минусануть
-		$log_data = $wpdb->get_results( "SELECT qid, aids FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $logids ) ) . ")" );
+		$log_data = $wpdb->get_results(
+			"SELECT qid, aids FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $log_ids ) ) . ")"
+		);
 		$aids = wp_list_pluck( $log_data, 'aids' );
 		$qids = wp_list_pluck( $log_data, 'qid' );
 
@@ -897,7 +897,7 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 		}
 
 		// now, delete logs itself
-		$res = $wpdb->query( "DELETE FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $logids ) ) . ")" );
+		$res = $wpdb->query( "DELETE FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $log_ids ) ) . ")" );
 
 		$this->msg->add_ok( $res
 			? sprintf(
@@ -907,10 +907,10 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 			: __( 'Failed to delete', 'democracy-poll' )
 		);
 
-		do_action( 'dem_delete_logs_and_votes', $logids, $res, $minus_answ_sum, $minus_users_sum );
+		do_action( 'dem_delete_logs_and_votes', $log_ids, $res, $minus_answ_sum, $minus_users_sum );
 	}
 
-	static function users_voted_minus_sql( $minus_num, $qid ) {
+	private static function users_voted_minus_sql( $minus_num, $qid ) {
 		global $wpdb;
 
 		return $wpdb->prepare( "UPDATE $wpdb->democracy_q SET users_voted = IF( (users_voted<=%d), 0, (users_voted-%d) ) WHERE id = %d", $minus_num, $minus_num, $qid );
@@ -920,10 +920,8 @@ class Democracy_Poll_Admin extends Democracy_Poll {
 	 * Проверяет является ли переданный ответ новым ответом - NEW
 	 *
 	 * @param object $answer  Объект ответа
-	 *
-	 * @return boolean Новый или нет
 	 */
-	function is_new_answer( $answer ) {
+	public function is_new_answer( $answer ): bool {
 		return preg_match( '~-new$~', $answer->added_by );
 	}
 

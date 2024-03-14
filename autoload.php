@@ -24,28 +24,10 @@ spl_autoload_register( static function( $class ) {
 spl_autoload_register(
 	static function( $class ) {
 		if(
-			$class !== 'DemPoll'
-			&&
-			! str_starts_with( $class, 'Democracy_' )
+			$class === \DemPoll::class ||
+			$class === \Democracy_Poll::class
 		){
-			return;
-		}
-
-		$paths = [
-			__DIR__ . "/classes/$class.php",
-			__DIR__ . "/classes/Admin/$class.php",
-			__DIR__ . "/classes/Utils/$class.php",
-		];
-
-		foreach( $paths as $index => $path ){
-			// include last path without check to get error if file not found.
-			if( ! isset( $path[ $index + 1 ] ) ){
-				require_once $path;
-			}
-
-			if( file_exists( $path ) ){
-				require_once $path;
-			}
+			require_once __DIR__ . "/classes/$class.php";
 		}
 	}
 );

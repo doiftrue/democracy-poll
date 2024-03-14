@@ -1,9 +1,11 @@
 <?php
 
-class Democracy_Widget extends WP_Widget {
+namespace DemocracyPoll;
+
+class Poll_Widget extends \WP_Widget {
 
 	public function __construct() {
-		// Instantiate the parent object. Creates option 'Democracy_Widget'
+		// Instantiate the parent object. Creates option 'Poll_Widget'
 		parent::__construct( 'democracy',
 			__( 'Democracy Poll', 'democracy-poll' ),
 			[
@@ -13,7 +15,7 @@ class Democracy_Widget extends WP_Widget {
 	}
 
 	// front end
-	function widget( $args, $instance ) {
+	public function widget( $args, $instance ) {
 
 		$before_widget = $args['before_widget'];
 		$after_widget  = $args['after_widget'];
@@ -43,7 +45,7 @@ class Democracy_Widget extends WP_Widget {
 	}
 
 	// options
-	function update( $new_instance, $old_instance ) {
+	public function update( $new_instance, $old_instance ): array {
 		foreach( $new_instance as & $val ){
 			$val = strip_tags( $val );
 		}
@@ -52,7 +54,7 @@ class Democracy_Widget extends WP_Widget {
 	}
 
 	// admin
-	function form( $instance ) {
+	public function form( $instance ) {
 		add_action( 'admin_footer', [ $this, 'dem_widget_footer_js' ], 11 );
 
 		$checked = isset( $instance['questionIsTitle'] ) ? ' checked="checked"' : '';
@@ -77,10 +79,8 @@ class Democracy_Widget extends WP_Widget {
 				       name="<?= $this->get_field_name( 'title' ) ?>" value="<?= esc_attr( $title ) ?>">
 			</label>
 		</p>
-
-
 		<?php
-		global $wpdb, $table_prefix;
+		global $wpdb;
 
 		$options = '
 		<option value="0">' . __( '- Active (random all active)', 'democracy-poll' ) . '</option>
@@ -101,12 +101,12 @@ class Democracy_Widget extends WP_Widget {
 		</p>';
 	}
 
-	function dem_widget_footer_js() {
+	public function dem_widget_footer_js() {
 		?>
 		<script type="text/javascript">
-			var getTitleObj = function( that ){
+			let getTitleObj = function( that ){
 				return jQuery( that ).closest( '.widget-content' ).find( '.demTitleWrap' );
-			};
+			}
 
 			window.demHideTitle = function( that ){
 				if( that.checked ) getTitleObj( that ).slideUp( 300 );

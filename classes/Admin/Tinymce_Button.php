@@ -1,8 +1,10 @@
 <?php
+## tinymce кнопка
 
-class Democracy_Tinymce {
+namespace DemocracyPoll\Admin;
 
-	## tinymce кнопка
+class Tinymce_Button {
+
 	public static function init() {
 		add_filter( 'mce_external_plugins', [ __CLASS__, 'tinymce_plugin' ] );
 		add_filter( 'mce_buttons', [ __CLASS__, 'tinymce_register_button' ] );
@@ -30,4 +32,5 @@ class Democracy_Tinymce {
 
 		return $mce_l10n + $l10n;
 	}
+
 }

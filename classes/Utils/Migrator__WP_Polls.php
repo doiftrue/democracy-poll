@@ -65,7 +65,9 @@
  *         widget_polls-widget
  */
 
-class Democracy_WP_Polls_Migrator {
+namespace DemocracyPoll\Utils;
+
+class Migrator__WP_Polls {
 
 	public function migrate() {
 		global $wpdb;

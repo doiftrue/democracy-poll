@@ -31,7 +31,7 @@ require_once __DIR__ . '/autoload.php';
 
 democracy_set_db_tables();
 
-register_activation_hook( __FILE__, [ Democracy_Activate::class, 'activate' ] );
+register_activation_hook( __FILE__, [ \DemocracyPoll\Utils\Activator::class, 'activate' ] );
 
 add_action( 'plugins_loaded', 'democracy_poll_init' );
 function democracy_poll_init() {
@@ -41,7 +41,7 @@ function democracy_poll_init() {
 	// enable widget
 	if( demopt()->use_widget ){
 		add_action( 'widgets_init', function() {
-			register_widget( Democracy_Widget::class );
+			register_widget( \DemocracyPoll\Poll_Widget::class );
 		} );
 	}
 }

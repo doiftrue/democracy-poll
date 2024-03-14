@@ -1,6 +1,8 @@
-<?php
+<?php /** @noinspection PhpFullyQualifiedNameUsageInspection */
 
-class Democracy_List_Table_Logs extends \WP_List_Table {
+namespace DemocracyPoll\Admin;
+
+class List_Table_Logs extends \WP_List_Table {
 
 	private static $cache;
 
@@ -116,7 +118,7 @@ class Democracy_List_Table_Logs extends \WP_List_Table {
 	/**
 	 * @return array
 	 */
-	function get_columns() {
+	public function get_columns(): array {
 
 		$columns = [
 			'cb'      => '<input type="checkbox" />',
@@ -136,17 +138,11 @@ class Democracy_List_Table_Logs extends \WP_List_Table {
 		return $columns;
 	}
 
-	/**
-	 * @return array
-	 */
-	function get_hidden_columns() {
+	public function get_hidden_columns(): array {
 		return [];
 	}
 
-	/**
-	 * @return array
-	 */
-	function get_sortable_columns() {
+	public function get_sortable_columns(): array {
 		return [
 			'ip'      => [ 'ip', 'asc' ],
 			'ip_info' => [ 'ip_info', 'asc' ],
@@ -156,10 +152,7 @@ class Democracy_List_Table_Logs extends \WP_List_Table {
 		];
 	}
 
-	/**
-	 * @return array
-	 */
-	protected function get_bulk_actions() {
+	protected function get_bulk_actions(): array {
 		return [
 			'delete_only_logs'  => __( 'Delete logs only', 'democracy-poll' ),
 			'delete_logs_votes' => __( 'Delete logs and votes', 'democracy-poll' ),
@@ -174,18 +167,23 @@ class Democracy_List_Table_Logs extends \WP_List_Table {
 		if( $this->poll_id ){
 
 			if( ! $poll = $this->cache( 'polls', $this->poll_id ) ){
-				$poll = $this->cache( 'polls', $this->poll_id, DemPoll::get_poll( $this->poll_id ) );
+				$poll = $this->cache( 'polls', $this->poll_id, \DemPoll::get_poll( $this->poll_id ) );
 			}
 
-			echo '<h2><small>' . __( 'Poll\'s logs: ', 'democracy-poll' ) . '</small>' . democr()->kses_html( $poll->question ) . ' <small><a href="' . democr()->edit_poll_url( $this->poll_id ) . '">' . __( 'Edit poll', 'democracy-poll' ) . '</a></small></h2>';
+			echo sprintf( '<h2><small>%s</small>%s <small><a href="%s">%s</a></small></h2>',
+				__( 'Poll\'s logs: ', 'democracy-poll' ),
+				democr()->kses_html( $poll->question ),
+				democr()->edit_poll_url( $this->poll_id ),
+				__( 'Edit poll', 'democracy-poll' )
+			);
 		}
 	}
 
 	## Extra controls to be displayed between bulk actions and pagination
-	function extra_tablenav( $which ) {
+	public function extra_tablenav( $which ) {
 
 		if( $which === 'top' ){
-			$newfilter = @ $_GET['filter'] === 'new_answers';
+			$newfilter = ( $_GET['filter'] ?? '' ) === 'new_answers';
 
 			echo '
 			<div class="alignleft actions" style="margin-top:.3em;">
@@ -226,7 +224,7 @@ class Democracy_List_Table_Logs extends \WP_List_Table {
 			// обновим данные IP если их нет и прошло больше суток с последней попытки
 			if( $log->ip ){
 				if( ! $log->ip_info || ( is_numeric( $log->ip_info ) && ( time() - DAY_IN_SECONDS ) > $log->ip_info ) ){
-					$log->ip_info = Democracy_Poll::ip_info_format( $log->ip );
+					$log->ip_info = \Democracy_Poll::ip_info_format( $log->ip );
 
 					$wpdb->update( $wpdb->democracy_log, [ 'ip_info' => $log->ip_info ], [ 'logid' => $log->logid ] );
 				}
@@ -250,7 +248,7 @@ class Democracy_List_Table_Logs extends \WP_List_Table {
 
 		if( 'qid' === $col ){
 			if( ! $poll = $this->cache( 'polls', $log->qid ) ){
-				$poll = $this->cache( 'polls', $log->qid, DemPoll::get_poll( $log->qid ) );
+				$poll = $this->cache( 'polls', $log->qid, \DemPoll::get_poll( $log->qid ) );
 			}
 
 			$actions = '';

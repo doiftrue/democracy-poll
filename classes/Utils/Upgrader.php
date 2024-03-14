@@ -1,6 +1,8 @@
 <?php
 
-class Democracy_Upgrade {
+namespace DemocracyPoll\Utils;
+
+class Upgrader {
 
 	private $old_ver;
 

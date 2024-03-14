@@ -1,6 +1,8 @@
 <?php
 
-class Democracy_Activate {
+namespace DemocracyPoll\Utils;
+
+class Activator {
 
 	public static $activation_running = false;
 
@@ -34,7 +36,7 @@ class Democracy_Activate {
 
 		self::add_poll_example();
 
-		( new Democracy_Upgrade() )->upgrade();
+		( new Upgrader() )->upgrade();
 	}
 
 	private static function add_poll_example(){
