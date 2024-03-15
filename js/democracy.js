@@ -236,7 +236,7 @@ function democracyInit( $ ){
 		// Соберем ответы
 		if( 'vote' === act ){
 			data.answer_ids = $the.demCollectAnsw()
-			if( !data.answer_ids ){
+			if( ! data.answer_ids ){
 				Dem.demShake( $the )
 				return false
 			}

@@ -36,7 +36,7 @@ class List_Table_Logs extends \WP_List_Table {
 	 */
 	private function bulk_action_handler() {
 
-		$nonce = &$_POST['_wpnonce'];
+		$nonce = $_POST['_wpnonce'] ?? '';
 		if( ! $nonce || ! ( $action = $this->current_action() ) ){
 			return;
 		}
@@ -162,7 +162,7 @@ class List_Table_Logs extends \WP_List_Table {
 	/**
 	 * @return void
 	 */
-	function table_title() {
+	public function table_title() {
 
 		if( $this->poll_id ){
 
@@ -200,7 +200,7 @@ class List_Table_Logs extends \WP_List_Table {
 	## если указать $val кэш будет устанавливаться
 	function cache( $type, $key, $val = null ) {
 
-		$cache = &self::$cache[ $type ][ $key ];
+		$cache = & self::$cache[ $type ][ $key ];
 
 		if( ! isset( $cache ) && $val !== null ){
 			$cache = $val;
@@ -214,17 +214,20 @@ class List_Table_Logs extends \WP_List_Table {
 		global $wpdb;
 
 		if( 'ip' === $col ){
-			return '<a title="' . __( 'Search by IP', 'democracy-poll' ) . '" href="' . esc_url( add_query_arg( [
-					'ip'   => $log->ip,
-					'poll' => null,
-				] ) ) . '">' . esc_html( $log->ip ) . '</a>';
+			return sprintf( '<a title="%s" href="%s">%s</a>',
+				__( 'Search by IP', 'democracy-poll' ),
+				esc_url( add_query_arg( [ 'ip' => $log->ip, 'poll' => null ] ) ),
+				esc_html( $log->ip )
+			);
 		}
 
 		if( 'ip_info' === $col ){
+			$country_img = '';
+
 			// обновим данные IP если их нет и прошло больше суток с последней попытки
 			if( $log->ip ){
 				if( ! $log->ip_info || ( is_numeric( $log->ip_info ) && ( time() - DAY_IN_SECONDS ) > $log->ip_info ) ){
-					$log->ip_info = \Democracy_Poll::ip_info_format( $log->ip );
+					$log->ip_info = \DemocracyPoll\Helpers\IP::prepared_ip_info( $log->ip );
 
 					$wpdb->update( $wpdb->democracy_log, [ 'ip_info' => $log->ip_info ], [ 'logid' => $log->logid ] );
 				}
@@ -243,7 +246,9 @@ class List_Table_Logs extends \WP_List_Table {
 				}
 			}
 
-			return @ $country_img ? $country_img . ' <span style="opacity:0.7">' . $country_name . ( $city ? ", $city" : '' ) . '</span>' : '';
+			return $country_img
+				? $country_img . ' <span style="opacity:0.7">' . $country_name . ( $city ? ", $city" : '' ) . '</span>'
+				: '';
 		}
 
 		if( 'qid' === $col ){
@@ -294,11 +299,11 @@ class List_Table_Logs extends \WP_List_Table {
 		}
 
 
-		return isset( $log->$col ) ? $log->$col : print_r( $log, true );
+		return $log->$col ?? print_r( $log, true );
 	}
 
-	function column_cb( $item ) {
-		echo '<label><input id="cb-select-' . @ $item->logid . '" type="checkbox" name="logids[]" value="' . @ $item->logid . '" /></label>';
+	public function column_cb( $item ) {
+		echo '<label><input id="cb-select-' . $item->logid . '" type="checkbox" name="logids[]" value="' . $item->logid . '" /></label>';
 	}
 
 }

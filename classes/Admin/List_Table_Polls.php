@@ -181,11 +181,11 @@ class List_Table_Polls extends \WP_List_Table {
 		}
 
 		if( $col === 'active' ){
-			return democr()->cuser_can_edit_poll( $poll ) ? dem_activatation_buttons( $poll, 'reverse' ) : '';
+			return democr()->cuser_can_edit_poll( $poll ) ? dem__activate_button( $poll, 'reverse' ) : '';
 		}
 
 		if( $col === 'open' ){
-			return democr()->cuser_can_edit_poll( $poll ) ? dem_opening_buttons( $poll, 'reverse' ) : '';
+			return democr()->cuser_can_edit_poll( $poll ) ? dem__open_button( $poll, 'reverse' ) : '';
 		}
 
 		if( $col === 'added' ){

@@ -1,5 +1,7 @@
 <?php
 
+use DemocracyPoll\Helpers\IP;
+
 /**
  * Display and vote a separate poll.
  * Needs a Dem plugin class.
@@ -24,7 +26,7 @@ class DemPoll {
 	// Название ключа cookie
 	public $cookey;
 
-	function __construct( $id = 0 ) {
+	public function __construct( $id = 0 ) {
 		global $wpdb;
 
 		if( ! $id ){
@@ -658,7 +660,7 @@ class DemPoll {
 	 * Отменяет установленные $this->has_voted и $this->votedFor
 	 * Должна вызываться до вывода данных на экран
 	 */
-	function delete_vote() {
+	public function delete_vote() {
 
 		if( ! $this->id ){
 			return false;
@@ -708,7 +710,7 @@ class DemPoll {
 		$cuser_id = get_current_user_id();
 
 		// добавлен из фронта - демократический вариант ответа не важно какой юзер!
-		$added_by = $cuser_id ?: self::get_ip();
+		$added_by = $cuser_id ?: IP::get_user_ip();
 		$added_by .= ( ! $cuser_id || $this->poll->added_user != $cuser_id ) ? '-new' : '';
 
 		// если есть порядок, ставим 'max+1'
@@ -856,7 +858,7 @@ class DemPoll {
 	function get_vote_log() {
 		global $wpdb;
 
-		$user_ip = self::get_ip();
+		$user_ip = IP::get_user_ip();
 		$AND = $wpdb->prepare( 'AND ip = %s', $user_ip );
 
 		// нужно проверять юзера и IP отдельно! Иначе, если юзер не авторизован его id=0 и он будет совпадать с другими пользователями
@@ -881,7 +883,7 @@ class DemPoll {
 	protected function delete_vote_from_log() {
 		global $wpdb;
 
-		$user_ip = self::get_ip();
+		$user_ip = IP::get_user_ip();
 
 		// Ищем пользвоателя или IP в логах
 		$sql = $wpdb->prepare(
@@ -900,16 +902,16 @@ class DemPoll {
 
 		global $wpdb;
 
-		$ip = self::get_ip();
+		$ip = IP::get_user_ip();
 
 		return $wpdb->insert( $wpdb->democracy_log, [
-			'ip'      => $ip,
 			'qid'     => $this->id,
 			'aids'    => $this->votedFor,
 			'userid'  => (int) get_current_user_id(),
 			'date'    => current_time( 'mysql' ),
 			'expire'  => $this->get_expire_time(),
-			'ip_info' => Democracy_Poll::ip_info_format( $ip ),
+			'ip'      => $ip,
+			'ip_info' => IP::prepared_ip_info( $ip ),
 		] );
 	}
 
@@ -922,27 +924,7 @@ class DemPoll {
 		return '<span style="cursor:pointer;padding:0 2px;background:#fff;" onclick="var sel = window.getSelection(), range = document.createRange(); range.selectNodeContents(this); sel.removeAllRanges(); sel.addRange(range);">[democracy id="' . $poll_id . '"]</span>';
 	}
 
-	public static function get_ip() {
 
-		if( demopt()->soft_ip_detect ){
-			$ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? ''; // cloudflare
-
-			filter_var( $ip, FILTER_VALIDATE_IP ) || ( $ip = $_SERVER['HTTP_CLIENT_IP'] ?? '' );
-			filter_var( $ip, FILTER_VALIDATE_IP ) || ( $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '' );
-			filter_var( $ip, FILTER_VALIDATE_IP ) || ( $ip = $_SERVER['REMOTE_ADDR'] ?? '' );
-		}
-		else{
-			$ip = $_SERVER['REMOTE_ADDR'] ?? '';
-		}
-
-		$ip = apply_filters( 'dem_get_ip', $ip );
-
-		if( ! filter_var( $ip, FILTER_VALIDATE_IP ) ){
-			$ip = 'no_IP__' . rand( 1, 999999 );
-		}
-
-		return $ip;
-	}
 
 }
 

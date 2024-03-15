@@ -61,7 +61,7 @@ class Admin extends \Democracy_Poll {
 	}
 
 	## предватирельная загрузка страницы настроек плагина, подключение стилей, скриптов, запросов и т.д.
-	function admin_page_load() {
+	public function admin_page_load() {
 		// run upgrade
 		if( $this->super_access ){
 			// check and try forse upgrade

@@ -1,4 +1,8 @@
 <?php
+/**
+ * @var \DemocracyPoll\Admin\Admin $this
+ */
+
 defined( 'ABSPATH' ) || exit;
 ?>
 
@@ -6,51 +10,50 @@ defined( 'ABSPATH' ) || exit;
 
 	<?php
 	$subpage = sanitize_key( $_GET['subpage'] ?? '' );
-	$poll_id = sanitize_key( $_GET['edit_poll'] ?? '' );
+	$poll_id = (int) ( $_GET['edit_poll'] ?? 0 );
 
-	// список опросов
+	// Polls list
 	if( ! $subpage && ! $poll_id ){
-		dem_polls_list( $this->list_table );
+		dem_page__polls_list( $this->list_table );
 	}
-	// Редактирование опроса
+	// Edit a poll
 	elseif( $poll_id ){
 		// no access
 		if( ! democr()->cuser_can_edit_poll( $poll_id ) ){
 			wp_die( 'Sorry, you are not allowed to access this page.' );
 		}
 
-		poll_edit_form( $poll_id );
+		dem_page__poll_edit_form( $poll_id );
 	}
-	// Добавить новый опрос
+	// Add a new poll
 	elseif( $subpage === 'add_new' ){
-		poll_edit_form();
+		dem_page__poll_edit_form();
 	}
-	// Логи
+	// Logs
 	elseif( $subpage === 'logs' ){
 		// no access
 		if( $this->list_table->poll_id && ! democr()->cuser_can_edit_poll( $this->list_table->poll_id ) ){
 			wp_die( 'Sorry, you are not allowed to access this page.' );
 		}
 
-		dem_logs_list( $this->list_table );
+		dem_page__logs_list( $this->list_table );
 	}
 	// super_access
 	elseif( $this->super_access ){
 
 		if( $subpage === 'general_settings' ){
-			dem_general_settings();
+			dem_page__general_settings();
 		}
 		elseif( $subpage === 'design' ){
-			dem_polls_design();
+			dem_page__polls_design();
 		}
 		elseif( $subpage === 'l10n' ){
-			dem_l10n_options();
+			dem_page__l10n_options();
 		}
 		elseif( $subpage === 'migration' ){
-			dem_migration_subpage();
+			dem_page__migration_subpage();
 		}
 	}
-
 	?>
 
 </div>
@@ -60,7 +63,7 @@ defined( 'ABSPATH' ) || exit;
 
 /// Functions
 
-function dem_polls_list( $list_table ) {
+function dem_page__polls_list( $list_table ) {
 	echo demenu();
 
 	$list_table->search_box( __( 'Search', 'democracy-poll' ), 'style="margin:1em 0 -1em;"' );
@@ -72,21 +75,19 @@ function dem_polls_list( $list_table ) {
 
 }
 
-function poll_edit_form( $poll_id = false ) {
+function dem_page__poll_edit_form( $poll_id = 0 ) {
 	global $wpdb;
 
-	wp_enqueue_script( 'jquery-ui-sortable' ); // sortable js
+	wp_enqueue_script( 'jquery-ui-sortable' );
 
-	if( ! $poll_id && isset( $_GET['edit_poll'] ) ){
-		$poll_id = (int) ( $_GET['edit_poll'] ?? 0 );
-	}
-
-	$poll_id = (int) $poll_id;
+	$poll_id = (int) ( $poll_id ?: ( $_GET['edit_poll'] ?? '' ) );
 
 	$edit = (bool) $poll_id;
 	$answers = false;
 
-	$title = $poll = $shortcode = '';
+	$title = '';
+	$poll = '';
+	$shortcode = '';
 	if( $edit ){
 		$poll = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->democracy_q WHERE id = %d LIMIT 1", $poll_id ) );
 		$answers = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->democracy_a WHERE qid = %d", $poll_id ) );
@@ -103,8 +104,6 @@ function poll_edit_form( $poll_id = false ) {
 		$hidden_inputs = '<input type="hidden" name="dmc_update_poll" value="' . (int) $poll_id . '">';
 	}
 	else{
-		//$title = __('Add new poll','democracy-poll');
-
 		$hidden_inputs = "<input type='hidden' name='dmc_create_poll' value='1'>";
 	}
 
@@ -230,7 +229,7 @@ function poll_edit_form( $poll_id = false ) {
 			<label>
 				<span class="dashicons dashicons-no"></span>
 				<input type="text" name="dmc_end" value="<?= @ $poll->end ? date( 'd-m-Y', $poll->end ) : '' ?>"
-				       style="width:120px;min-width:120px;">
+				       style="width:120px; min-width:120px;">
 				<?= esc_html__( 'Date, when poll was/will be closed. Format: dd-mm-yyyy.', 'democracy-poll' ) ?>
 			</label>
 		</li>
@@ -310,30 +309,34 @@ function poll_edit_form( $poll_id = false ) {
 	echo $hidden_inputs .
 	     '<input type="submit" class="button-primary" value="' . ( $edit ? __( 'Save Changes', 'democracy-poll' ) : __( 'Add Poll', 'democracy-poll' ) ) . '">';
 
-	// если редактируем
+	// buttons
 	if( $edit ){
-		// открыть
-		echo ' ' . dem_opening_buttons( $poll );
+		echo ' ' . dem__open_button( $poll );
 
-		// активировать
-		echo ' ' . dem_activatation_buttons( $poll );
+		echo ' ' . dem__activate_button( $poll );
 
-		echo ' ' . '<a href="' . dem__add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], democr()->admin_page_url() ) ) . '" class="button" onclick="return confirm(\'' . __( 'Are you sure?', 'democracy-poll' ) . '\');" title="' . __( 'Delete', 'democracy-poll' ) . '"><span class="dashicons dashicons-trash"></span></a>';
+		echo sprintf(
+			' <a href="%s" class="button" onclick="return confirm(\'%s\');" title="%s"><span class="dashicons dashicons-trash"></span></a>',
+			dem__add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], democr()->admin_page_url() ) ),
+			__( 'Are you sure?', 'democracy-poll' ),
+			__( 'Delete', 'democracy-poll' )
+		);
 
 		// in posts
 		if( $posts = democr()->get_in_posts_posts( $poll ) ){
 			$links = [];
 			foreach( $posts as $post ){
-				$links[] = '<a href="' . get_permalink( $post ) . '">' . esc_html( $post->post_title ) . '</a>';
+				$links[] = sprintf( '<a href="%s">%s</a>', get_permalink( $post ), esc_html( $post->post_title ) );
 			}
 
 			echo '
-				<div style="margin-top:4em;">
-					<h4>' . __( 'Posts where the poll shortcode used:', 'democracy-poll' ) . '</h4>
-					<ol>
-						<li>' . implode( "</li>\n<li>", $links ) . '</li>
-					</ol>
-				</div>';
+			<div style="margin-top:4em;">
+				<h4>' . __( 'Posts where the poll shortcode used:', 'democracy-poll' ) . '</h4>
+				<ol>
+					<li>' . implode( "</li>\n<li>", $links ) . '</li>
+				</ol>
+			</div>
+			';
 		}
 	}
 
@@ -359,7 +362,12 @@ function dem__answers_order_select_options( $selected = '', $get_vars = 0 ) {
 	}
 }
 
-function dem_logs_list( $list_table ) {
+/**
+ * @param DemocracyPoll\Admin\List_Table_Logs $list_table
+ *
+ * @return void
+ */
+function dem_page__logs_list( $list_table ) {
 	if( ! demopt()->keep_logs ){
 		democr()->msg->add_error( __( 'Logs records turned off in the settings - logs are not recorded.', 'democracy-poll' ) );
 	}
@@ -368,10 +376,11 @@ function dem_logs_list( $list_table ) {
 
 	$list_table->table_title();
 
-	// special buttons
 	if( democr()->super_access ){
 		global $wpdb;
-		$count = $wpdb->get_var( "SELECT count(*) FROM $wpdb->democracy_log WHERE qid IN (SELECT id FROM $wpdb->democracy_q WHERE open = 0)" );
+		$count = $wpdb->get_var(
+			"SELECT count(*) FROM $wpdb->democracy_log WHERE qid IN (SELECT id FROM $wpdb->democracy_q WHERE open = 0)"
+		);
 		echo '
 		<div style="text-align:right; margin-bottom:1em;">
 			' . ( demopt()->democracy_off ? '' : '
@@ -388,13 +397,15 @@ function dem_logs_list( $list_table ) {
 		</div>';
 	}
 
-	echo '<form action="" method="POST">';
-	wp_nonce_field( 'dem_adminform', '_demnonce' );
-	$list_table->display();
-	echo '</form>';
+	?>
+	<form action="" method="POST">
+		<?php wp_nonce_field( 'dem_adminform', '_demnonce' ) ?>
+		<?php $list_table->display() ?>
+	</form>
+	<?php
 }
 
-function dem_general_settings() {
+function dem_page__general_settings() {
 
 	echo demenu();
 	?>
@@ -434,7 +445,6 @@ function dem_general_settings() {
 					       name="dem[after_title]"/>
 					<em><?= esc_html__( 'Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>.', 'democracy-poll' ) ?></em>
 				</li>
-
 
 				<li class="block">
 					<label>
@@ -690,7 +700,7 @@ function dem_general_settings() {
 	<?php
 }
 
-function dem_polls_design() {
+function dem_page__polls_design() {
 
 	$demcss = get_option( 'democracy_css' );
 	$additional = $demcss['additional_css'];
@@ -1104,7 +1114,7 @@ function dem_polls_design() {
 	<?php
 }
 
-function dem_l10n_options() {
+function dem_page__l10n_options() {
 	echo demenu();
 	?>
 	<div class="democr_options dempage_l10n">
@@ -1186,7 +1196,7 @@ function dem_l10n_options() {
 	<?php
 }
 
-function dem_migration_subpage() {
+function dem_page__migration_subpage() {
 
 	$migration = get_option( 'democracy_migrated' );
 
@@ -1280,13 +1290,14 @@ function dem_migration_subpage() {
 }
 
 /**
- * Выводит все меню админки. Ссылки: с подстраниц на главную страницу и умный referer
- *
- * Выводит сообщения об ошибках и успехах.
- *
- * @return null echo HTML.
+ * Displays full admin menu. Links: from subpages to home page and smart referer.
+ * Outputs error and success messages.
  */
-function demenu() {
+function demenu(): string {
+	$subpage = sanitize_key( $_GET['subpage'] ?? '' );
+	$edit_poll = (int) ( $_GET['edit_poll'] ?? 0 );
+	$request_uri = $_SERVER['REQUEST_URI'];
+	$referer = wp_make_link_relative( $_SERVER['HTTP_REFERER'] ?? '' );
 
 	if( 'back link' ){
 		$transient = 'democracy_referer';
@@ -1294,7 +1305,7 @@ function demenu() {
 		$referer = isset( $_SERVER['HTTP_REFERER'] ) ? wp_make_link_relative( $_SERVER['HTTP_REFERER'] ) : '';
 
 		// если обновляем
-		if( $referer == $_SERVER['REQUEST_URI'] ){
+		if( $referer === $request_uri ){
 			$referer = get_transient( $transient );
 		}
 		// если запрос пришел с любой страницы настроект democracy
@@ -1307,28 +1318,56 @@ function demenu() {
 		}
 	}
 
-	if( isset( $_GET['edit_poll'] ) ){
-		$_GET['subpage'] = 'add_new';
-	} // костыль
+	if( $edit_poll ){
+		$_GET['subpage'] = 'add_new'; // hack
+	}
 
-	$fn__current = function( $page ) {
-		return ( @ $_GET['subpage'] == $page ) ? ' nav-tab-active' : '';
+	$current_class = static function( $page ) use ( $subpage ) {
+		return $subpage === $page ? ' nav-tab-active' : '';
 	};
 
-	$out = ''; //'<h2>'. __('Democracy Poll','democracy-poll') .'<h2>';
-	$out .= '<h2 class="nav-tab-wrapper nav-tab-small" style="margin-bottom:1em;">' .
-	        ( $referer ? '<a class="nav-tab" href="' . $referer . '" style="margin-right:20px;">← ' . __( 'Back', 'democracy-poll' ) . '</a>' : '' ) .
-	        '<a class="nav-tab' . $fn__current( '' ) . '" href="' . $mainpage . '">' . __( 'Polls List', 'democracy-poll' ) . '</a>' .
-	        '<a class="nav-tab' . $fn__current( 'add_new' ) . '" href="' . add_query_arg( [ 'subpage' => 'add_new' ], $mainpage ) . '">' . __( 'Add new poll', 'democracy-poll' ) . '</a>' .
-	        '<a style="margin-right:1em;" class="nav-tab' . $fn__current( 'logs' ) . '" href="' . add_query_arg( [ 'subpage' => 'logs' ], $mainpage ) . '">' . __( 'Logs', 'democracy-poll' ) . '</a>' .
-	        ( democr()->super_access ? (
-		        '<a class="nav-tab' . $fn__current( 'general_settings' ) . '" href="' . add_query_arg( [ 'subpage' => 'general_settings' ], $mainpage ) . '">' . __( 'Settings', 'democracy-poll' ) . '</a>' .
-		        '<a class="nav-tab' . $fn__current( 'design' ) . '" href="' . add_query_arg( [ 'subpage' => 'design' ], $mainpage ) . '">' . __( 'Theme Settings', 'democracy-poll' ) . '</a>' .
-		        '<a class="nav-tab' . $fn__current( 'l10n' ) . '" href="' . add_query_arg( [ 'subpage' => 'l10n' ], $mainpage ) . '">' . __( 'Texts changes', 'democracy-poll' ) . '</a>'
-	        ) : '' ) .
-	        '</h2>';
 
-	if( democr()->super_access && in_array( @ $_GET['subpage'], [ 'general_settings', 'design', 'l10n' ] ) ){
+	$buttons = array_filter( [
+		'back' => $referer
+			? sprintf( '<a class="nav-tab" href="%s" style="margin-right:20px;">← %s</a>', $referer, __( 'Back', 'democracy-poll' ) )
+			: '',
+		'list' => sprintf( '<a class="nav-tab %s" href="%s">%s</a>',
+			$current_class( '' ),
+			$mainpage,
+			__( 'Polls List', 'democracy-poll' )
+		),
+		'add_new' => sprintf( '<a class="nav-tab %s" href="%s">%s</a>',
+			$current_class( 'add_new' ),
+			add_query_arg( [ 'subpage' => 'add_new' ], $mainpage ), __( 'Add new poll', 'democracy-poll' )
+		),
+		'logs' => sprintf( '<a style="margin-right:1em;" class="nav-tab %s" href="%s">%s</a>',
+			$current_class( 'logs' ),
+			add_query_arg( [ 'subpage' => 'logs' ], $mainpage ), __( 'Logs', 'democracy-poll' )
+		),
+		'general_settings' => democr()->super_access ? (
+			sprintf( '<a class="nav-tab %s" href="%s">%s</a>',
+				$current_class( 'general_settings' ),
+				add_query_arg( [ 'subpage' => 'general_settings' ], $mainpage ),
+				__( 'Settings', 'democracy-poll' )
+			) .
+			sprintf( '<a class="nav-tab %s" href="%s">%s</a>',
+				$current_class( 'design' ),
+				add_query_arg( [ 'subpage' => 'design' ], $mainpage ),
+				__( 'Theme Settings', 'democracy-poll' )
+			) .
+			sprintf( '<a class="nav-tab %s" href="%s">%s</a>',
+				$current_class( 'l10n' ),
+				add_query_arg( [ 'subpage' => 'l10n' ], $mainpage ),
+				__( 'Texts changes', 'democracy-poll' )
+			)
+		) : '',
+	] );
+
+	$out = '<h2 class="nav-tab-wrapper" style="margin-bottom:1em;">' . implode( "\n", $buttons ) . '</h2>';
+
+	if( democr()->super_access
+	    && in_array( $subpage, [ 'general_settings', 'design', 'l10n' ], true )
+	){
 		$out .= dem__info_bar();
 	}
 
@@ -1378,24 +1417,23 @@ function dem__info_bar() {
  *
  * @param object $poll  Объект опроса.
  * @param string $url   УРЛ страницы ссылки, которую нужно обработать.
- *
- * @return string HTML.
  */
-function dem_activatation_buttons( $poll, $icon_reverse = false ) {
+function dem__activate_button( $poll, $icon_reverse = false ): string {
 	if( $poll->active ){
-		$out = '<a class="button" href="' . esc_url( dem__add_nonce( add_query_arg( [
-				'dmc_deactivate_poll' => $poll->id,
-				'dmc_activate_poll'   => null,
-			] ) ) ) . '" title="' . __( 'Deactivate', 'democracy-poll' ) . '"><span class="dashicons dashicons-controls-' . ( $icon_reverse ? 'play' : 'pause' ) . '"></span></a>';
+		$url = esc_url( dem__add_nonce( add_query_arg( [ 'dmc_deactivate_poll' => $poll->id, 'dmc_activate_poll' => null, ] ) ) );
+		$title = __( 'Deactivate', 'democracy-poll' );
+		$icon = $icon_reverse ? 'dashicons-controls-play' : 'dashicons-controls-pause';
 	}
 	else{
-		$out = '<a class="button" href="' . esc_url( dem__add_nonce( add_query_arg( [
-				'dmc_deactivate_poll' => null,
-				'dmc_activate_poll'   => $poll->id,
-			] ) ) ) . '" title="' . __( 'Activate', 'democracy-poll' ) . '"><span class="dashicons dashicons-controls-' . ( $icon_reverse ? 'pause' : 'play' ) . '"></span></a>';
+		$url = esc_url( dem__add_nonce( add_query_arg( [ 'dmc_deactivate_poll' => null, 'dmc_activate_poll' => $poll->id, ] ) ) );
+		$title = __( 'Activate', 'democracy-poll' );
+		$icon = $icon_reverse ? 'dashicons-controls-pause' : 'dashicons-controls-play';
 	}
 
-	return $out;
+	return sprintf(
+		'<a class="button" href="%s" title="%s"><span class="dashicons %s"></span></a>',
+		esc_url( $url ), esc_html( $title ), $icon
+	);
 }
 
 /**
@@ -1403,27 +1441,24 @@ function dem_activatation_buttons( $poll, $icon_reverse = false ) {
  *
  * @param object $poll  Объект опроса.
  * @param string $url   УРЛ страницы ссылки, которую нужно обработать.
- *
- * @return string HTML.
  */
-function dem_opening_buttons( $poll, $icon_reverse = false ) {
+function dem__open_button( $poll, $icon_reverse = false ): string {
 
 	if( $poll->open ){
-
-		$out = '<a class="button" href="' . esc_url( dem__add_nonce( add_query_arg( [
-				'dmc_close_poll' => $poll->id,
-				'dmc_open_poll'  => null,
-			] ) ) ) . '" title="' . __( 'Close voting', 'democracy-poll' ) . '"><span class="dashicons dashicons-' . ( $icon_reverse ? 'yes' : 'no' ) . '"></span></a>';
+		$url = esc_url( dem__add_nonce( add_query_arg( [ 'dmc_close_poll' => $poll->id, 'dmc_open_poll' => null ] ) ) );
+		$title = __( 'Close voting', 'democracy-poll' );
+		$icon = $icon_reverse ? 'dashicons-yes' : 'dashicons-no';
 	}
 	else{
-
-		$out = '<a class="button" href="' . esc_url( dem__add_nonce( add_query_arg( [
-				'dmc_close_poll' => null,
-				'dmc_open_poll'  => $poll->id,
-			] ) ) ) . '" title="' . __( 'Open voting', 'democracy-poll' ) . '"><span class="dashicons dashicons-' . ( $icon_reverse ? 'no' : 'yes' ) . '"></span></a>';
+		$url = esc_url( dem__add_nonce( add_query_arg( [ 'dmc_close_poll' => null, 'dmc_open_poll' => $poll->id ] ) ) );
+		$title = __( 'Open voting', 'democracy-poll' );
+		$icon = $icon_reverse ? 'dashicons-no' : 'dashicons-yes';
 	}
 
-	return $out;
+	return sprintf(
+		'<a class="button" href="%s" title="%s"><span class="dashicons %s"></span></a>',
+		esc_url( $url ), esc_html( $title ), $icon
+	);
 }
 
 function dem__polls_preview() {

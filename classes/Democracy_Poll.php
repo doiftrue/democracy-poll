@@ -264,9 +264,9 @@ class Democracy_Poll {
 	/**
 	 * Очищает данные ответа
 	 *
-	 * @param string/array $data Что очистить? Если передана строка, удалить из нее недопустимые HTML теги.
+	 * @param string|array $data Что очистить? Если передана строка, удалить из нее недопустимые HTML теги.
 	 *
-	 * @return string/array Чистые данные.
+	 * @return string|array Чистые данные.
 	 */
 	function sanitize_answer_data( $data, $filter_type = '' ) {
 
@@ -353,7 +353,7 @@ class Democracy_Poll {
 	}
 
 	# обрабатывает запрос AJAX
-	function ajax_request_handler() {
+	public function ajax_request_handler() {
 
 		$vars = (object) $this->_sanitize_request_vars();
 
@@ -423,7 +423,7 @@ class Democracy_Poll {
 	}
 
 	# для работы функции без AJAX
-	function not_ajax_request_handler() {
+	public function not_ajax_request_handler() {
 
 		$vars = (object) $this->_sanitize_request_vars();
 
@@ -435,26 +435,26 @@ class Democracy_Poll {
 
 		if( 'vote' === $vars->act && $vars->aids ){
 			$poll->vote( $vars->aids );
-			wp_redirect( remove_query_arg( [ 'dem_act', 'dem_pid' ], $_SERVER['HTTP_REFERER'] ) );
+			wp_safe_redirect( remove_query_arg( [ 'dem_act', 'dem_pid' ], $_SERVER['HTTP_REFERER'] ) );
 
 			exit;
 		}
 
 		if( 'delVoted' === $vars->act ){
 			$poll->delete_vote();
-			wp_redirect( remove_query_arg( [ 'dem_act', 'dem_pid' ], $_SERVER['HTTP_REFERER'] ) );
+			wp_safe_redirect( remove_query_arg( [ 'dem_act', 'dem_pid' ], $_SERVER['HTTP_REFERER'] ) );
 
 			exit;
 		}
 	}
 
 	# Делает предваритеьную проверку передавемых переменных запроса
-	function _sanitize_request_vars() {
+	public function _sanitize_request_vars(): array {
 
 		return [
-			'act'  => isset( $_POST['dem_act'] ) ? $_POST['dem_act'] : false,
-			'pid'  => isset( $_POST['dem_pid'] ) ? absint( $_POST['dem_pid'] ) : false,
-			'aids' => isset( $_POST['answer_ids'] ) ? wp_unslash( $_POST['answer_ids'] ) : false,
+			'act'  => sanitize_text_field( $_POST['dem_act'] ?? '' ),
+			'pid'  => (int) ( $_POST['dem_pid'] ?? 0 ),
+			'aids' => wp_unslash( $_POST['answer_ids'] ?? '' ),
 		];
 	}
 
@@ -566,119 +566,8 @@ class Democracy_Poll {
 	}
 
 
-	/**
-	 * Получает данные локации переданного IP.
-	 *
-	 * @param string $ip       IP для проверки. По умолчанию текущий IP.
-	 * @param string $purpose  Какие данные нужно получить. Может быть: location address city state region country countrycode.
-	 *
-	 * @return array|string Данные в виде массива или строки. Массив при $purpose = "location" в остальных случаях вернется строка.
-	 */
-	public static function get_ip_info( $ip = null, $purpose = 'location' ) {
-		$output = null;
 
-		if( filter_var( $ip, FILTER_VALIDATE_IP ) === false ){
-			$ip = DemPoll::get_ip();
-		}
 
-		$purpose = str_replace( [ "name", "\n", "\t", " ", "-", "_" ], '', strtolower( trim( $purpose ) ) );
-		$support = [ 'country', 'countrycode', 'state', 'region', 'city', 'location', 'address' ];
-		$continents = [
-			'AF' => 'Africa',
-			'AN' => 'Antarctica',
-			'AS' => 'Asia',
-			'EU' => 'Europe',
-			'OC' => 'Australia (Oceania)',
-			'NA' => 'North America',
-			'SA' => 'South Americ',
-		];
-
-		if( filter_var( $ip, FILTER_VALIDATE_IP ) && in_array( $purpose, $support ) ){
-
-			//$ipdat = json_decode( wp_remote_retrieve_body( wp_remote_get("http://www.geoplugin.net/json.gp?ip=$ip") ) ); // wp_remote_get отдает forbiden 403 !!!
-			$ipdat = json_decode( @ file_get_contents( "http://www.geoplugin.net/json.gp?ip=$ip" ) );
-
-			if( $ipdat && @ strlen( trim( $ipdat->geoplugin_countryCode ) ) == 2 ){
-				switch( $purpose ){
-					case "location":
-						$output = [
-							'city'           => @ $ipdat->geoplugin_city,
-							'state'          => @ $ipdat->geoplugin_regionName,
-							'country'        => @ $ipdat->geoplugin_countryName,
-							'country_code'   => @ $ipdat->geoplugin_countryCode,
-							'continent'      => @ $continents[ strtoupper( $ipdat->geoplugin_continentCode ) ],
-							'continent_code' => @ $ipdat->geoplugin_continentCode,
-						];
-						break;
-					case "address":
-						$address = [ $ipdat->geoplugin_countryName ];
-						if( @ strlen( $ipdat->geoplugin_regionName ) >= 1 ){
-							$address[] = $ipdat->geoplugin_regionName;
-						}
-						if( @ strlen( $ipdat->geoplugin_city ) >= 1 ){
-							$address[] = $ipdat->geoplugin_city;
-						}
-						$output = implode( ", ", array_reverse( $address ) );
-						break;
-					case "city":
-						$output = @ $ipdat->geoplugin_city;
-						break;
-					case "region":
-					case "state":
-						$output = @ $ipdat->geoplugin_regionName;
-						break;
-					case "country":
-						$output = @ $ipdat->geoplugin_countryName;
-						break;
-					case "countrycode":
-						$output = @ $ipdat->geoplugin_countryCode;
-						break;
-				}
-			}
-		}
-
-		return $output;
-	}
-
-	/**
-	 * Получает строку: Формат ip_info для таблицы логов.
-	 *
-	 * @param array|string $ip_info  IP или уже полученные данные IP в массиве
-	 *
-	 * @return string Формат: 'название_страны,код_страны,город' или 'текущее время UNIX'
-	 *                Зависит от метода Democracy_Poll::get_ip_info()
-	 */
-	public static function ip_info_format( $ip_info ) {
-
-		// если передан IP
-		if( filter_var( $ip_info, FILTER_VALIDATE_IP ) ){
-			if( $ip_info === '127.0.0.1' ){
-				$format = time() + YEAR_IN_SECONDS * 10;
-			}
-			else{
-				$ip_info = self::get_ip_info( $ip_info );
-			}
-		}
-
-		if( empty( $format ) ){
-			/*
-			[city] =>
-			[state] =>
-			[country] => Uzbekistan
-			[country_code] => UZ
-			[continent] => Asia
-			[continent_code] => AS
-			*/
-			if( @ $ip_info['country'] && @  $ip_info['country_code'] ){
-				$format = $ip_info['country'] . ',' . $ip_info['country_code'] . ',' . $ip_info['city'];
-			}
-			else{
-				$format = time();
-			}
-		}
-
-		return $format;
-	}
 
 	/**
 	 * Получает объекты записей к которым прикреплен опрос (где испльзуется шорткод).
