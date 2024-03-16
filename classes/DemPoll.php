@@ -175,7 +175,7 @@ class DemPoll {
 			<div class="dem-cache-screens" style="display:none;" data-opt_logs="' . (int) demopt()->keep_logs . '">';
 
 			// запоминаем
-			$votedFor = $this->votedFor;
+			$voted_for = $this->votedFor;
 			$this->votedFor = false;
 			$this->for_cache = 1;
 
@@ -194,7 +194,7 @@ class DemPoll {
 			}
 
 			$this->for_cache = 0;
-			$this->votedFor = $votedFor; // возвращаем
+			$this->votedFor = $voted_for; // возвращаем
 
 			$html .= '
 			</div>
@@ -539,9 +539,9 @@ class DemPoll {
 	 * @param string|array $aids  ID ответов через запятую. Там может быть строка,
 	 *                            тогда она будет добавлена, как ответ пользователя.
 	 *
-	 * @return WP_Error/string $aids IDs, separated
+	 * @return WP_Error|string $aids IDs, separated
 	 */
-	function vote( $aids ) {
+	public function vote( $aids ) {
 
 		if( ! $this->id ){
 			return new WP_Error( 'vote_err', 'ERROR: no id' );
@@ -591,7 +591,7 @@ class DemPoll {
 			}
 
 			// if there is free answer, add it and vote
-			if( $new_free_answer && ( $aid = $this->_add_democratic_answer( $new_free_answer ) ) ){
+			if( $new_free_answer && ( $aid = $this->insert_democratic_answer( $new_free_answer ) ) ){
 				$aids[] = $aid;
 			}
 		}
@@ -608,8 +608,8 @@ class DemPoll {
 
 		// one answer
 		if( count( $aids ) === 1 ){
-			$aids = reset( $aids ); // $aids must be defined
-			$AND = $wpdb->prepare( " AND aid = %d LIMIT 1", $aids );
+			$aids = reset( $aids );
+			$AND = $wpdb->prepare( ' AND aid = %d LIMIT 1', $aids );
 		}
 		// many answers (multiple)
 		elseif( $this->poll->multiple ){
@@ -670,41 +670,44 @@ class DemPoll {
 			return false;
 		}
 
-		// если опция логов не включена, то отнимаем по кукам,
-		// тут голоса можно откручивать назад, потому что разные браузеры проверить не получится
-		if( ! demopt()->keep_logs ){
-			$this->minus_vote();
-		}
-
 		// Прежде чем удалять, проверим включена ли опция ведения логов и есть ли записи о голосовании в БД,
 		// так как куки могут удалить и тогда, данные о голосовании пойдут в минус
-		if( demopt()->keep_logs && $this->get_vote_log() ){
+		if( demopt()->keep_logs ){
+			if( $this->get_user_vote_logs() ){
+				$this->minus_vote();
+				$this->delete_vote_log();
+			}
+		}
+		// если опция логов не включена, то отнимаем по кукам.
+		// Тут голоса можно откручивать назад, потому что разные браузеры проверить не получится.
+		else {
 			$this->minus_vote();
-			$this->delete_vote_from_log(); // чистим логи
 		}
 
 		$this->unset_cookie();
 
 		$this->has_voted = false;
 		$this->votedFor = false;
-		$this->blockVoting = $this->poll->open ? false : true; // тут еще нужно учесть открыт опрос или нет...
+		$this->blockVoting = ! $this->poll->open;
 
-		$this->set_answers(); // переустановим ответы, если вдруг добавленный ответ был удален
+		$this->set_answers(); // переустановим ответы, если добавленный ответ был удален
 
 		do_action_ref_array( 'dem_vote_deleted', [ $this->poll, $this ] );
 	}
 
-	private function _add_democratic_answer( $answer ) {
+	private function insert_democratic_answer( $answer ): int {
 		global $wpdb;
 
 		$new_answer = democr()->sanitize_answer_data( $answer, 'democratic_answer' );
 		$new_answer = wp_unslash( $new_answer );
 
 		// проверим нет ли уже такого ответа
-		if( $wpdb->query( $wpdb->prepare(
-			"SELECT aid FROM $wpdb->democracy_a WHERE answer = '%s' AND qid = $this->id", $new_answer
-		) ) ){
-			return;
+		$aids = $wpdb->query( $wpdb->prepare(
+			"SELECT aid FROM $wpdb->democracy_a WHERE answer = %s AND qid = %d",
+			$new_answer, $this->id
+		) );
+		if( $aids ){
+			return 0;
 		}
 
 		$cuser_id = get_current_user_id();
@@ -714,7 +717,9 @@ class DemPoll {
 		$added_by .= ( ! $cuser_id || $this->poll->added_user != $cuser_id ) ? '-new' : '';
 
 		// если есть порядок, ставим 'max+1'
-		$aorder = $this->poll->answers[0]->aorder > 0 ? max( wp_list_pluck( $this->poll->answers, 'aorder' ) ) + 1 : 0;
+		$aorder = $this->poll->answers[0]->aorder > 0
+			? max( wp_list_pluck( $this->poll->answers, 'aorder' ) ) + 1
+			: 0;
 
 		$inserted = $wpdb->insert( $wpdb->democracy_a, [
 			'qid'      => $this->id,
@@ -737,9 +742,9 @@ class DemPoll {
 		// ЗАМЕТКА: обновим куки, если не совпадают. Потому что в разных браузерах могут быть разыне. Не работает,
 		// потому что куки нужно устанавливать перед выводом данных и вообще так делать не нужно, потмоу что проверка
 		// по кукам становится не нужной в целом...
-		if( demopt()->keep_logs && ( $res = $this->get_vote_log() ) ){
+		if( demopt()->keep_logs && ( $res = $this->get_user_vote_logs() ) ){
 			$this->has_voted = true;
-			$this->votedFor = $res->aids;
+			$this->votedFor = reset( $res )->aids;
 		}
 		// проверяем куки
 		elseif( isset( $_COOKIE[ $this->cookey ] ) && ( $_COOKIE[ $this->cookey ] != 'notVote' ) ){
@@ -749,24 +754,25 @@ class DemPoll {
 	}
 
 	## отнимает голоса в БД и удаляет ответ, если надо
-	protected function minus_vote() {
+	protected function minus_vote(): bool {
 		global $wpdb;
 
-		$INaids = implode( ',', $this->get_answ_aids_from_str( $this->votedFor ) ); // чистит для БД!
+		$aids_IN = implode( ',', $this->get_answ_aids_from_str( $this->votedFor ) ); // чистит для БД!
 
-		if( ! $INaids ){
+		if( ! $aids_IN ){
 			return false;
 		}
 
 		// сначала удалим добавленные пользователем ответы, если они есть и у них 0 или 1 голос
 		$r1 = $wpdb->query(
-			"DELETE FROM $wpdb->democracy_a WHERE added_by != '' AND votes IN (0,1) AND aid IN ($INaids) ORDER BY aid DESC LIMIT 1"
+			"DELETE FROM $wpdb->democracy_a WHERE added_by != '' AND votes IN (0,1) AND aid IN ($aids_IN) ORDER BY aid DESC LIMIT 1"
 		);
 
 		// отнимаем голоса
 		$r2 = $wpdb->query(
-			"UPDATE $wpdb->democracy_a SET votes = IF( votes>0, votes-1, 0 ) WHERE aid IN ($INaids)"
+			"UPDATE $wpdb->democracy_a SET votes = IF( votes>0, votes-1, 0 ) WHERE aid IN ($aids_IN)"
 		);
+
 		// отнимаем кол голосовавших
 		$r3 = $wpdb->query(
 			"UPDATE $wpdb->democracy_q SET users_voted = IF( users_voted>0, users_voted-1, 0 ) WHERE id = " . (int) $this->id
@@ -779,12 +785,12 @@ class DemPoll {
 	 * Получает массив ID ответов из переданной строки, где id разделены запятой.
 	 * Чистит для БД!
 	 *
-	 * @param string $str  Строка с ID ответов
+	 * @param string $aids_str  Строка с ID ответов
 	 *
-	 * @return array  ID ответов
+	 * @return int[]  ID ответов
 	 */
-	protected function get_answ_aids_from_str( $str ) {
-		$arr = explode( ',', $str );
+	protected function get_answ_aids_from_str( string $aids_str ): array {
+		$arr = explode( ',', $aids_str );
 		$arr = array_map( 'trim', $arr );
 		$arr = array_map( 'intval', $arr );
 		$arr = array_filter( $arr );
@@ -853,45 +859,55 @@ class DemPoll {
 
 	/**
 	 * Получает строку логов по ID или IP пользователя
-	 * @return object/null democracy_log table row
+	 * @return array democracy_log table rows.
 	 */
-	function get_vote_log() {
+	protected function get_user_vote_logs(): array {
 		global $wpdb;
 
-		$user_ip = IP::get_user_ip();
-		$AND = $wpdb->prepare( 'AND ip = %s', $user_ip );
 
-		// нужно проверять юзера и IP отдельно! Иначе, если юзер не авторизован его id=0 и он будет совпадать с другими пользователями
-		if( $user_id = get_current_user_id() ){
-			// только для юзеров, IP не учитывается - если вы голосовали как посетитель, а потом залогинились, то можно голосовать еще раз
-			$AND = $wpdb->prepare( 'AND userid = %d', $user_id );
-			//$AND = $wpdb->prepare('AND (userid = %d OR ip = %s)', $user_id, $user_ip );
+		$WHERE = [
+			$wpdb->prepare( 'qid = %d', $this->id ),
+			$wpdb->prepare( 'expire > %d', time() )
+		];
+
+		$user_id = get_current_user_id();
+		// нужно проверять юзера и IP отдельно!
+		// Иначе, если юзер не авторизован его id=0 и он будет совпадать с другими пользователями
+		if( $user_id ){
+			// только для юзеров, IP не учитывается.
+			// Если голосовали как не авторизованный, а потом залогинились, то можно голосовать еще раз.
+			$WHERE[] = $wpdb->prepare( 'userid = %d', $user_id );
+		}
+		else {
+			$WHERE[] = $wpdb->prepare( 'userid = 0 AND ip = %s', IP::get_user_ip() );
 		}
 
-		$AND .= $wpdb->prepare( ' AND expire > %d', time() );
+		$WHERE = implode( ' AND ', $WHERE );
 
-		// получаем первую строку найденого лога по IP или ID юзера
-		$sql = $wpdb->prepare( "SELECT * FROM $wpdb->democracy_log WHERE qid = %d $AND ORDER BY logid DESC LIMIT 1", $this->id );
+		$sql = "SELECT * FROM $wpdb->democracy_log WHERE $WHERE ORDER BY logid DESC";
 
-		return $wpdb->get_row( $sql );
+		return $wpdb->get_results( $sql );
 	}
 
 	/**
 	 * Удаляет записи о голосовании в логах.
+	 *
 	 * @return bool
 	 */
-	protected function delete_vote_from_log() {
+	protected function delete_vote_log(): bool {
 		global $wpdb;
 
-		$user_ip = IP::get_user_ip();
+		$logs = $this->get_user_vote_logs();
+		if( ! $logs ){
+			return true;
+		}
 
-		// Ищем пользвоателя или IP в логах
-		$sql = $wpdb->prepare(
-			"DELETE FROM $wpdb->democracy_log WHERE qid = %d AND (ip = %s OR userid = %d)",
-			$this->id, $user_ip, get_current_user_id()
-		);
+		$delete_log_ids = wp_list_pluck( $logs, 'logid' );
+		$logid_IN = implode( ',', array_map( 'intval', $delete_log_ids ) );
 
-		return $wpdb->query( $sql );
+		$sql = "DELETE FROM $wpdb->democracy_log WHERE logid IN ( $logid_IN )";
+
+		return (bool) $wpdb->query( $sql );
 	}
 
 	protected function add_logs() {
@@ -923,8 +939,6 @@ class DemPoll {
 
 		return '<span style="cursor:pointer;padding:0 2px;background:#fff;" onclick="var sel = window.getSelection(), range = document.createRange(); range.selectNodeContents(this); sel.removeAllRanges(); sel.addRange(range);">[democracy id="' . $poll_id . '"]</span>';
 	}
-
-
 
 }
 
