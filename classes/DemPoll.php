@@ -1,5 +1,6 @@
 <?php
 
+use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Helpers\IP;
 
 /**
@@ -120,7 +121,7 @@ class DemPoll {
 	 *
 	 * @return string|false HTML.
 	 */
-	function get_screen( $show_screen = 'vote', $before_title = '', $after_title = '' ) {
+	public function get_screen( $show_screen = 'vote', $before_title = '', $after_title = '' ) {
 
 		if( ! $this->id ){
 			return false;
@@ -136,7 +137,7 @@ class DemPoll {
 		$html .= democr()->add_css_once();
 
 		$js_opts = [
-			'ajax_url'         => democr()->ajax_url,
+			'ajax_url'         => democr()->poll_ajax->ajax_url,
 			'pid'              => $this->id,
 			'max_answs'        => (int) ( $this->poll->multiple ?: 0 ),
 			'answs_max_height' => demopt()->answs_max_height,
@@ -223,7 +224,7 @@ class DemPoll {
 	 *
 	 * @return string HTML
 	 */
-	function get_screen_basis( $show_screen = 'vote' ) {
+	protected function get_screen_basis( $show_screen = 'vote' ): string {
 		$class_suffix = $this->for_cache ? '-cache' : '';
 
 		if( $this->not_show_results ){
@@ -248,7 +249,7 @@ class DemPoll {
 	 *
 	 * @return string HTML
 	 */
-	function get_vote_screen() {
+	public function get_vote_screen() {
 
 		if( ! $this->id ){
 			return false;
@@ -307,7 +308,7 @@ class DemPoll {
 
 		// для экша
 		if( $this->for_cache ){
-			$html .= self::_voted_notice();
+			$html .= self::voted_notice_html();
 
 			if( $for_users_alert ){
 				$html .= str_replace(
@@ -316,7 +317,7 @@ class DemPoll {
 			}
 
 			if( $poll->revote ){
-				$html .= preg_replace( '/(<[^>]+)/', '$1 style="display:none;"', $this->_revote_btn(), 1 );
+				$html .= preg_replace( '/(<[^>]+)/', '$1 style="display:none;"', $this->revote_btn_html(), 1 );
 			}
 			else{
 				$html .= substr_replace( $btnVoted, '<div style="display:none;"', 0, 4 );
@@ -330,7 +331,7 @@ class DemPoll {
 			}
 			else{
 				if( $this->has_voted ){
-					$html .= $poll->revote ? $this->_revote_btn() : $btnVoted;
+					$html .= $poll->revote ? $this->revote_btn_html() : $btnVoted;
 				}
 				else{
 					$html .= $btnVote;
@@ -363,7 +364,7 @@ class DemPoll {
 		$poll = $this->poll;
 
 		// отсортируем по голосам
-		$answers = democr()::objects_array_sort( $poll->answers, [ 'votes' => 'desc' ] );
+		$answers = Helpers::objects_array_sort( $poll->answers, [ 'votes' => 'desc' ] );
 
 		$html = '';
 
@@ -463,7 +464,7 @@ class DemPoll {
 
 			// для кэша
 			if( $this->for_cache ){
-				$html .= self::_voted_notice();
+				$html .= self::voted_notice_html();
 
 				if( $for_users_alert ){
 					$html .= str_replace( [ '<div', 'class="' ], [
@@ -473,7 +474,7 @@ class DemPoll {
 				}
 
 				if( $poll->revote ){
-					$html .= $this->_revote_btn();
+					$html .= $this->revote_btn_html();
 				}
 				else{
 					$html .= $vote_btn;
@@ -487,7 +488,7 @@ class DemPoll {
 				else{
 					if( $this->has_voted ){
 						if( $poll->revote ){
-							$html .= $this->_revote_btn();
+							$html .= $this->revote_btn_html();
 						}
 					}
 					else{
@@ -502,7 +503,7 @@ class DemPoll {
 		return apply_filters( 'dem_result_screen', $html, $this );
 	}
 
-	static function registered_only_alert_text() {
+	protected static function registered_only_alert_text() {
 		return str_replace(
 			'<a',
 			'<a href="' . esc_url( wp_login_url( $_SERVER['REQUEST_URI'] ) ) . '" rel="nofollow"',
@@ -510,7 +511,7 @@ class DemPoll {
 		);
 	}
 
-	function _revote_btn() {
+	protected function revote_btn_html(): string {
 		return '
 		<span class="dem-revote-button-wrap">
 		<form action="#democracy-' . $this->id . '" method="POST">
@@ -525,7 +526,7 @@ class DemPoll {
 	 * заметка: вы уже голосовали
 	 * @return string Текст заметки
 	 */
-	static function _voted_notice( $msg = '' ) {
+	public static function voted_notice_html( $msg = '' ): string {
 		if( ! $msg ){
 			return '
 			<div class="dem-notice dem-youarevote" style="display:none;">
@@ -655,7 +656,7 @@ class DemPoll {
 		$this->set_cookie(); // установим куки
 
 		if( demopt()->keep_logs ){
-			$this->add_logs();
+			$this->insert_logs();
 		}
 
 		do_action_ref_array( 'dem_voted', [ $this->votedFor, $this->poll, $this ] );
@@ -807,7 +808,7 @@ class DemPoll {
 	}
 
 	## время до которого логи будут жить
-	function get_expire_time() {
+	public function get_cookie_expire_time() {
 		return current_time( 'timestamp', $utc = 1 ) + (int) ( (float) demopt()->cookie_days * DAY_IN_SECONDS );
 	}
 
@@ -817,10 +818,10 @@ class DemPoll {
 	 * @param string $value   Значение куки, по умолчанию текущие голоса.
 	 * @param int    $expire  Время окончания кики.
 	 *
-	 * @return null
+	 * @return void
 	 */
-	function set_cookie( $value = '', $expire = false ) {
-		$expire = $expire ?: $this->get_expire_time();
+	public function set_cookie( $value = '', $expire = false ) {
+		$expire = $expire ?: $this->get_cookie_expire_time();
 		$value = $value ?: $this->votedFor;
 
 		setcookie( $this->cookey, $value, $expire, COOKIEPATH );
@@ -828,7 +829,7 @@ class DemPoll {
 		$_COOKIE[ $this->cookey ] = $value;
 	}
 
-	function unset_cookie() {
+	public function unset_cookie() {
 		setcookie( $this->cookey, null, strtotime( '-1 day' ), COOKIEPATH );
 		$_COOKIE[ $this->cookey ] = '';
 	}
@@ -849,7 +850,7 @@ class DemPoll {
 				$ord = $this->poll->answers_order ?: demopt()->order_answers;
 
 				if( $ord === 'by_winner' || $ord == 1 ){
-					$answers = democr()::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
+					$answers = Helpers::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
 				}
 				elseif( $ord === 'mix' ){
 					shuffle( $answers );
@@ -858,7 +859,7 @@ class DemPoll {
 			}
 			// по порядку
 			else{
-				$answers = democr()::objects_array_sort( $answers, [ 'aorder' => 'asc' ] );
+				$answers = Helpers::objects_array_sort( $answers, [ 'aorder' => 'asc' ] );
 			}
 		}
 
@@ -918,7 +919,7 @@ class DemPoll {
 		return (bool) $wpdb->query( $sql );
 	}
 
-	protected function add_logs() {
+	protected function insert_logs() {
 
 		if( ! $this->id ){
 			return false;
@@ -933,19 +934,10 @@ class DemPoll {
 			'aids'    => $this->votedFor,
 			'userid'  => (int) get_current_user_id(),
 			'date'    => current_time( 'mysql' ),
-			'expire'  => $this->get_expire_time(),
+			'expire'  => $this->get_cookie_expire_time(),
 			'ip'      => $ip,
 			'ip_info' => IP::prepared_ip_info( $ip ),
 		] );
-	}
-
-	public static function shortcode_html( $poll_id ) {
-
-		if( ! $poll_id ){
-			return '';
-		}
-
-		return '<span style="cursor:pointer;padding:0 2px;background:#fff;" onclick="var sel = window.getSelection(), range = document.createRange(); range.selectNodeContents(this); sel.removeAllRanges(); sel.addRange(range);">[democracy id="' . $poll_id . '"]</span>';
 	}
 
 }

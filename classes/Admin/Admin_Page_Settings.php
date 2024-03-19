@@ -56,12 +56,12 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 					<li class="block">
 						<label>
-							<input type="text" size="3" value="<?= (float) demopt()->cookie_days ?>"
-							       name="dem[cookie_days]"/>
+							<input type="number" step="30" min="0" value="<?= (float) demopt()->cookie_days ?>"
+							       name="dem[cookie_days]" />
 							<?= esc_html__( 'How many days to keep Cookies alive?', 'democracy-poll' ) ?>
 						</label>
 						<em>
-							<?= esc_html__( 'How many days the user\'s browser remembers the votes. Default: 365. <strong>Note:</strong> works together with IP log.', 'democracy-poll' ) ?>
+							<?= esc_html__( 'How many days the user\'s browser remembers the votes. Default: 365. Note: works together with IP log.', 'democracy-poll' ) ?>
 							<br>
 							<?= esc_html__( 'To set hours use float number - 0.04 = 1 hour.', 'democracy-poll' ) ?>
 						</em>
@@ -74,7 +74,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 						<i><?= esc_html__( 'poll\'s question', 'democracy-poll' ) ?></i>
 						<input type="text" size="15" value="<?= esc_attr( demopt()->after_title ) ?>"
 						       name="dem[after_title]"/>
-						<em><?= esc_html__( 'Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>.', 'democracy-poll' ) ?></em>
+						<em><?= wp_kses_post( __( 'Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>.', 'democracy-poll' ) ) ?></em>
 					</li>
 
 					<li class="block">
@@ -96,7 +96,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 							);
 						}
 						?>
-						<em><?= esc_html__( 'Specify the poll archive link to be in the poll legend. Example: <code>25</code>', 'democracy-poll' ) ?></em>
+						<em><?= wp_kses_post( __( 'Specify the poll archive link to be in the poll legend. Example: <code>25</code>', 'democracy-poll' ) ) ?></em>
 					</li>
 
 					<h3><?= esc_html__( 'Global Polls options', 'democracy-poll' ) ?></h3>
@@ -272,7 +272,6 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 						</li>
 					</ul>
 				<?php } ?>
-
 
 				<br>
 				<p>

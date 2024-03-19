@@ -301,10 +301,9 @@ function get_dem_polls( $args = [] ) {
 			$rg->add_from_posts &&
 			( $posts = democr()->get_in_posts_posts( $poll ) )
 		){
-
 			$links = [];
 			foreach( $posts as $post ){
-				$links[] = '<a href="' . get_permalink( $post ) . '">' . esc_html( $post->post_title ) . '</a>';
+				$links[] = sprintf( '<a href="%s">%s</a>', get_permalink( $post ), esc_html( $post->post_title ) );
 			}
 
 			$elm_html .= '
@@ -328,8 +327,6 @@ function get_dem_polls( $args = [] ) {
 
 /**
  * Какой экран показать, на основе переданных запросов: 'voted' или 'vote'.
- *
- * @param $poll
  *
  * @return mixed|string|void
  */

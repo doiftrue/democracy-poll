@@ -11,10 +11,10 @@ require_once __DIR__ . '/includes/theme-functions.php';
 spl_autoload_register( static function( $class ) {
 
 	if( str_starts_with( $class, __NAMESPACE__ . '\\' ) ){
-		$class = str_replace( __NAMESPACE__ . '\\', '', $class );
-		$class = str_replace( '\\', '/', $class );
+		$folder = __DIR__ . '/classes';
+		$path = str_replace( [ __NAMESPACE__, '\\' ], [ $folder, '/' ], $class );
 
-		require __DIR__ . "/classes/$class.php";
+		require "$path.php";
 	}
 } );
 

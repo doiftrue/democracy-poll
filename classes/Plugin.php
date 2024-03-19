@@ -6,21 +6,22 @@ namespace DemocracyPoll;
 
 class Plugin {
 
-	public $ajax_url;
-
 	// only access to add/edit poll and so on.
 	public $admin_access;
 
 	// full access to change settings and so on.
 	public $super_access;
 
+	/** @var Poll_Ajax */
+	public $poll_ajax;
+
 	/** @var Options */
 	public $options;
 
-	/** @var \DemocracyPoll\Admin\Admin */
+	/** @var Admin\Admin */
 	public $admin;
 
-	/** @var \DemocracyPoll\Helpers\Messages  */
+	/** @var Helpers\Messages  */
 	public $msg;
 
 	// The tags allowed in questions and answers. Will be added to global $allowedtags.
@@ -48,8 +49,6 @@ class Plugin {
 		self::$allowed_tags = array_merge( $allowedtags, array_map( '_wp_add_global_attributes', self::$allowed_tags ) );
 
 		$this->set_access_caps();
-
-		$this->ajax_url = admin_url( 'admin-ajax.php' );
 
 		$this->msg = new \DemocracyPoll\Helpers\Messages();
 	}
@@ -85,6 +84,16 @@ class Plugin {
 		}
 
 		$this->hide_form_indexing();
+	}
+
+	protected function front_init() {
+
+		// шоткод [democracy]
+		add_shortcode( 'democracy', [ $this, 'poll_shortcode' ] );
+		add_shortcode( 'democracy_archives', [ $this, 'archives_shortcode' ] );
+
+		$this->poll_ajax = new Poll_Ajax();
+		$this->poll_ajax->init();
 	}
 
 	// hide duplicate content. For 5+ versions it's no need
@@ -194,7 +203,7 @@ class Plugin {
 	/**
 	 * Проверяет, используется ли страничный плагин кэширования на сайте.
 	 */
-	function is_cachegear_on(): bool {
+	public function is_cachegear_on(): bool {
 
 		if( demopt()->force_cachegear ){
 			return true;
@@ -208,9 +217,9 @@ class Plugin {
 
 		// wp total cache
 		if(
-			defined( 'W3TC' ) && \W3TC\Dispatcher::component( 'ModuleStatus' )
-			&&
-			\W3TC\Dispatcher::component( 'ModuleStatus' )->is_enabled( 'pgcache' )
+			class_exists( \W3TC\Dispatcher::class )
+			&& \W3TC\Dispatcher::component( 'ModuleStatus' )
+			&& \W3TC\Dispatcher::component( 'ModuleStatus' )->is_enabled( 'pgcache' )
 		){
 			return true;
 		}
@@ -219,15 +228,15 @@ class Plugin {
 			return true;
 		}
 		// WordFence
-		if( defined( 'WORDFENCE_VERSION' ) && @ wfConfig::get( 'cacheType' ) === 'falcon' ){
+		if( class_exists( \wfConfig::class ) && wfConfig::get( 'cacheType' ) === 'falcon' ){
 			return true;
 		}
 		// WP Rocket
-		if( class_exists( 'HyperCache' ) ){
+		if( class_exists( \HyperCache::class ) ){
 			return true;
 		}
 		// Quick Cache
-		if( class_exists( 'quick_cache' ) && @ \quick_cache\plugin()->options['enable'] ){
+		if( function_exists( '\quick_cache\plugin' ) && \quick_cache\plugin()->options['enable'] ){
 			return true;
 		}
 		// wp-fastest-cache
@@ -280,10 +289,8 @@ class Plugin {
 	 * Check if current or specified user can edit specified poll.
 	 *
 	 * @param object|string|int $poll  Poll object.
-	 *
-	 * @return bool
 	 */
-	function cuser_can_edit_poll( $poll ) {
+	public function cuser_can_edit_poll( $poll ): bool {
 
 		if( $this->super_access ){
 			return true;
@@ -307,134 +314,8 @@ class Plugin {
 
 	// FRONT ---
 
-	function front_init() {
-
-		// шоткод [democracy]
-		add_shortcode( 'democracy', [ $this, 'poll_shortcode' ] );
-		add_shortcode( 'democracy_archives', [ $this, 'archives_shortcode' ] );
-
-		// для работы функции без AJAX
-		if(
-			! isset( $_POST['action'] )
-			||
-			'dem_ajax' !== $_POST['action']
-		){
-			$this->not_ajax_request_handler();
-		}
-
-		// ajax request во frontend_init нельзя, потому что срабатывает только как is_admin()
-		add_action( 'wp_ajax_dem_ajax', [ $this, 'ajax_request_handler' ] );
-		add_action( 'wp_ajax_nopriv_dem_ajax', [ $this, 'ajax_request_handler' ] );
-	}
-
-	# обрабатывает запрос AJAX
-	public function ajax_request_handler() {
-
-		$vars = (object) $this->_sanitize_request_vars();
-
-		if( ! $vars->act ){
-			wp_die( 'error: no parameters have been sent or it is unavailable' );
-		}
-
-		if( ! $vars->pid ){
-			wp_die( 'error: id unknown' );
-		}
-
-		// Вывод
-		$poll = new \DemPoll( $vars->pid );
-
-		// switch
-		// голосуем и выводим результаты
-		if( 'vote' === $vars->act && $vars->aids ){
-			// если пользователь голосует с другого браузера и он уже голосовал, ставим куки
-			//if( $poll->cachegear_on && $poll->votedFor ) $poll->set_cookie();
-
-			$voted = $poll->vote( $vars->aids );
-
-			if( is_wp_error( $voted ) ){
-				echo $poll::_voted_notice( $voted->get_error_message() );
-				echo $poll->get_vote_screen();
-			}
-			elseif( $poll->not_show_results ){
-				echo $poll->get_vote_screen();
-			}
-			else{
-				echo $poll->get_result_screen();
-			}
-		}
-		// удаляем результаты
-		elseif( 'delVoted' === $vars->act ){
-			$poll->delete_vote();
-			echo $poll->get_vote_screen();
-		}
-		// смотрим результаты
-		elseif( 'view' === $vars->act ){
-			if( $poll->not_show_results ){
-				echo $poll->get_vote_screen();
-			}
-			else{
-				echo $poll->get_result_screen();
-			}
-		}
-		// вернуться к голосованию
-		elseif( 'vote_screen' === $vars->act ){
-			echo $poll->get_vote_screen();
-		}
-		elseif( 'getVotedIds' === $vars->act ){
-			if( $poll->votedFor ){
-				$poll->set_cookie(); // Установим куки, т.к. этот запрос делается только если куки не установлены
-				echo $poll->votedFor;
-			}
-			elseif( $poll->blockForVisitor ){
-				echo 'blockForVisitor'; // чтобы вывести заметку
-			}
-			else{
-				// если не голосовал ставим куки на пол дня, чтобы не делать эту проверку каждый раз
-				$poll->set_cookie( 'notVote', ( time() + ( DAY_IN_SECONDS / 2 ) ) );
-			}
-		}
-
-		wp_die();
-	}
-
-	# для работы функции без AJAX
-	public function not_ajax_request_handler() {
-
-		$vars = (object) $this->_sanitize_request_vars();
-
-		if( ! $vars->act || ! $vars->pid || ! isset( $_SERVER['HTTP_REFERER'] ) ){
-			return;
-		}
-
-		$poll = new \DemPoll( $vars->pid );
-
-		if( 'vote' === $vars->act && $vars->aids ){
-			$poll->vote( $vars->aids );
-			wp_safe_redirect( remove_query_arg( [ 'dem_act', 'dem_pid' ], $_SERVER['HTTP_REFERER'] ) );
-
-			exit;
-		}
-
-		if( 'delVoted' === $vars->act ){
-			$poll->delete_vote();
-			wp_safe_redirect( remove_query_arg( [ 'dem_act', 'dem_pid' ], $_SERVER['HTTP_REFERER'] ) );
-
-			exit;
-		}
-	}
-
-	# Делает предваритеьную проверку передавемых переменных запроса
-	public function _sanitize_request_vars(): array {
-
-		return [
-			'act'  => sanitize_text_field( $_POST['dem_act'] ?? '' ),
-			'pid'  => (int) ( $_POST['dem_pid'] ?? 0 ),
-			'aids' => wp_unslash( $_POST['answer_ids'] ?? '' ),
-		];
-	}
-
 	# шоткод архива опросов
-	function archives_shortcode( $args ) {
+	public function archives_shortcode( $args ) {
 
 		$args = shortcode_atts( [
 			'before_title'   => '',
@@ -451,7 +332,7 @@ class Plugin {
 	}
 
 	# шоткод опроса
-	function poll_shortcode( $atts ) {
+	public function poll_shortcode( $atts ) {
 
 		$atts = shortcode_atts( [
 			'id' => '', // number or 'current', 'last'
@@ -507,37 +388,6 @@ class Plugin {
 	static function _add_js_wp_footer() {
 		echo "\n<!--democracy-->\n" .
 		     '<script type="text/javascript">' . file_get_contents( DEMOC_PATH . 'js/democracy.min.js' ) . '</script>' . "\n";
-	}
-
-	# Сортировка массива объектов.
-	# Передаете в $array массив объектов, указываете в $args параметры
-	# сортировки и получаете отсортированный массив объектов.
-	static function objects_array_sort( $array, $args = [ 'votes' => 'desc' ] ) {
-
-		usort( $array, static function( $a, $b ) use ( $args ) {
-			$res = 0;
-
-			if( is_array( $a ) ){
-				$a = (object) $a;
-				$b = (object) $b;
-			}
-
-			foreach( $args as $k => $v ){
-				if( $a->$k === $b->$k ){
-					continue;
-				}
-
-				$res = ( $a->$k < $b->$k ) ? -1 : 1;
-				if( $v === 'desc' ){
-					$res = -$res;
-				}
-				break;
-			}
-
-			return $res;
-		} );
-
-		return $array;
 	}
 
 	/**

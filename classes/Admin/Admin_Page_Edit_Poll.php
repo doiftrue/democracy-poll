@@ -72,7 +72,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 				: '';
 
 			$title = democr()->kses_html( $this->poll->question ) . $log_link;
-			$shortcode = \DemPoll::shortcode_html( $this->poll_id ) . ' — ' . __( 'shortcode for use in post content', 'democracy-poll' );
+			$shortcode = self::shortcode_html( $this->poll_id ) . ' — ' . __( 'shortcode for use in post content', 'democracy-poll' );
 
 			$hidden_inputs = '<input type="hidden" name="dmc_update_poll" value="' . (int) $this->poll_id . '">';
 		}
@@ -109,7 +109,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 					$is_answers_order = ( $answers[0]->aorder > 0 );
 
 					// сортировка, по порядку или по кол. голосов
-					$_answers = democr()::objects_array_sort( $answers, ( $is_answers_order ? [ 'aorder' => 'asc' ] : [
+					$_answers = Helpers::objects_array_sort( $answers, ( $is_answers_order ? [ 'aorder' => 'asc' ] : [
 						'votes' => 'desc',
 						'aid'   => 'asc',
 					] ) );
@@ -566,6 +566,16 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 		unset( $val );
 
 		return apply_filters( 'demadmin_sanitize_poll_data', $data, $original_data );
+	}
+
+	public static function shortcode_html( $poll_id ): string {
+
+		if( ! $poll_id ){
+			return '';
+		}
+
+		return '<span style="cursor:pointer; padding:0 2px; background:#fff;"
+		onclick="var sel = window.getSelection(), range = document.createRange(); range.selectNodeContents(this); sel.removeAllRanges(); sel.addRange(range);">[democracy id="' . $poll_id . '"]</span>';
 	}
 
 	/**

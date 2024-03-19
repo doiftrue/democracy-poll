@@ -138,7 +138,7 @@ class List_Table_Polls extends \WP_List_Table {
 			}
 
 			// shortcode
-			$actions[] = '<span style="color:#999">' . \DemPoll::shortcode_html( $poll->id ) . '</span>';
+			$actions[] = '<span style="color:#999">' . Admin_Page_Edit_Poll::shortcode_html( $poll->id ) . '</span>';
 
 			return $statuses . democr()->kses_html( $poll->question ) . '<div class="row-actions">' . implode( " ", $actions ) . '</div>';
 		}

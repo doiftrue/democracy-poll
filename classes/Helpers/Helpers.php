@@ -23,4 +23,37 @@ final class Helpers {
 		return implode( "\n", $options );
 	}
 
+	/**
+	 * Сортировка массива объектов.
+	 * Передаете в $array массив объектов, указываете в $args параметры
+	 * сортировки и получаете отсортированный массив объектов.
+	 */
+	public static function objects_array_sort( $array, $args = [ 'votes' => 'desc' ] ) {
+
+		usort( $array, static function( $a, $b ) use ( $args ) {
+			$res = 0;
+
+			if( is_array( $a ) ){
+				$a = (object) $a;
+				$b = (object) $b;
+			}
+
+			foreach( $args as $k => $v ){
+				if( $a->$k === $b->$k ){
+					continue;
+				}
+
+				$res = ( $a->$k < $b->$k ) ? -1 : 1;
+				if( $v === 'desc' ){
+					$res = -$res;
+				}
+				break;
+			}
+
+			return $res;
+		} );
+
+		return $array;
+	}
+
 }
