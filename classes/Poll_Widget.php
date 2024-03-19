@@ -16,6 +16,7 @@ class Poll_Widget extends \WP_Widget {
 
 	// front end
 	public function widget( $args, $instance ) {
+		global $post;
 
 		$before_widget = $args['before_widget'];
 		$after_widget  = $args['after_widget'];
@@ -23,23 +24,23 @@ class Poll_Widget extends \WP_Widget {
 		$after_title   = $args['after_title'];
 
 		$title = $instance['title'] ?? '';
-		$pid = $instance['show_poll'] ?? 0;
+		$poll_id = $instance['show_poll'] ?? 0;
 
-		if( is_singular()
+		if( $post && is_singular()
 		    && ! demopt()->post_metabox_off
-		    && ( $post_pid = get_post_poll_id() )
+		    && ( $post_pid = \DemocracyPoll\Admin\Post_Metabox::get_post_poll_id( $post->ID ) )
 		){
-			$pid = $post_pid;
+			$poll_id = $post_pid;
 		}
 
 		if( isset( $instance['questionIsTitle'] ) ){
 			echo $before_widget;
-			democracy_poll( $pid, $before_title, $after_title );
+			democracy_poll( $poll_id, $before_title, $after_title );
 			echo $after_widget;
 		}
 		else{
 			echo $before_widget . $before_title . $title . $after_title;
-			democracy_poll( $pid );
+			democracy_poll( $poll_id );
 			echo $after_widget;
 		}
 	}

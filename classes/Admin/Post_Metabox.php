@@ -4,13 +4,22 @@ namespace DemocracyPoll\Admin;
 
 class Post_Metabox {
 
+	// for Post_Metabox
+	const POLL_ID_MKEY = 'dem_poll_id';
+
 	private static $pid_metakey;
 
 	public static function init() {
-		self::$pid_metakey = \Democracy_Poll::$pollid_meta_key;
-
 		add_action( 'add_meta_boxes', [ __CLASS__, 'add_meta_box' ] );
 		add_action( 'save_post', [ __CLASS__, 'save_post' ], 10, 2 );
+	}
+
+	public static function get_post_poll_id( int $post_id ): int {
+		if( ! $post_id ){
+			return 0;
+		}
+
+		return (int) get_post_meta( $post_id, self::POLL_ID_MKEY, true );
 	}
 
 	public static function add_meta_box() {
@@ -28,7 +37,7 @@ class Post_Metabox {
 	public static function meta_box( $post ) {
 		global $wpdb;
 
-		$poll_id = get_post_meta( $post->ID, self::$pid_metakey, true );
+		$poll_id = get_post_meta( $post->ID, self::POLL_ID_MKEY, true );
 
 		$polls = $wpdb->get_results( $wpdb->prepare(
 			"SELECT * FROM $wpdb->democracy_q WHERE ( open = 1 OR id = %d ) ORDER BY id DESC", $poll_id
@@ -45,7 +54,7 @@ class Post_Metabox {
 		}
 
 		?>
-		<select name="democ_metabox[<?= esc_attr( self::$pid_metakey ) ?>]">
+		<select name="democ_metabox[<?= esc_attr( self::POLL_ID_MKEY ) ?>]">
 			<?= implode( '', $options ) ?>
 		</select>
 		<p>
@@ -64,13 +73,13 @@ class Post_Metabox {
 			return;
 		}
 
-		$pollid = (int) $_POST['democ_metabox'][ self::$pid_metakey ];
+		$pollid = (int) $_POST['democ_metabox'][ self::POLL_ID_MKEY ];
 
 		if( $pollid ){
-			update_post_meta( $post_id, self::$pid_metakey, $pollid );
+			update_post_meta( $post_id, self::POLL_ID_MKEY, $pollid );
 		}
 		else{
-			delete_post_meta( $post_id, self::$pid_metakey );
+			delete_post_meta( $post_id, self::POLL_ID_MKEY );
 		}
 	}
 

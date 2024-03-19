@@ -23,10 +23,7 @@ spl_autoload_register( static function( $class ) {
  */
 spl_autoload_register(
 	static function( $class ) {
-		if(
-			$class === \DemPoll::class ||
-			$class === \Democracy_Poll::class
-		){
+		if( $class === \DemPoll::class ){
 			require_once __DIR__ . "/classes/$class.php";
 		}
 	}

@@ -3,26 +3,25 @@
 /**
  * Get poll object
  *
- * @param integer $poll_id  ID of poll.
+ * @param int $poll_id  ID of poll.
  *
  * @return object Poll object
  */
 function democracy_get_poll( $poll_id ) {
-	return DemPoll::get_poll( $poll_id );
+	return \DemPoll::get_poll( $poll_id );
 }
 
 /**
  * Get poll attached to current post.
  *
- * @param integer $post_id  ID or object of post, attached poll of which you want to get.
+ * @param int $post_id  ID or object of post, attached poll of which you want to get.
  */
 function get_post_poll_id( $post_id = 0 ): int {
+	if( ! $post_id ){
+		$post_id = get_post()->ID;
+	}
 
-	$post_id = ( is_numeric( $post_id ) && $post_id )
-		? (int) $post_id
-		: get_post( $post_id )->ID;
-
-	return (int) get_post_meta( $post_id, Democracy_Poll::$pollid_meta_key, true );
+	return \DemocracyPoll\Admin\Post_Metabox::get_post_poll_id( (int) $post_id );
 }
 
 /**
@@ -37,16 +36,16 @@ function democracy_poll( $id = 0, $before_title = '', $after_title = '', $from_p
 /**
  * Get specified democracy poll.
  *
- * @param integer        $poll_id       Poll ID. If 0 Random Active poll will be returned.
- * @param string         $before_title  HTML/text before poll title.
- * @param string         $after_title   HTML/text after poll title.
- * @param integer|object $from_post     Post ID from which the poll was called - to which the poll must be attached.
+ * @param int        $poll_id       Poll ID. If 0 Random Active poll will be returned.
+ * @param string     $before_title  HTML/text before poll title.
+ * @param string     $after_title   HTML/text after poll title.
+ * @param int|object $from_post     Post ID from which the poll was called - to which the poll must be attached.
  *
  * @return string   Poll HTML code.
  */
 function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = '', $from_post = 0 ) {
 
-	$poll = new DemPoll( $poll_id );
+	$poll = new \DemPoll( $poll_id );
 
 	if( ! $poll->id ){
 		return 'Poll not found';
@@ -71,15 +70,15 @@ function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = ''
 /**
  * Gets poll results screen.
  *
- * @param integer $poll_id       Poll ID
- * @param string  $before_title  HTML/text before poll title.
- * @param string  $after_title   HTML/text after poll title.
+ * @param int    $poll_id       Poll ID
+ * @param string $before_title  HTML/text before poll title.
+ * @param string $after_title   HTML/text after poll title.
  *
  * @return string   Poll HTML code.
  */
 function get_democracy_poll_results( $poll_id = 0, $before_title = '', $after_title = '' ) {
 
-	$poll = new DemPoll( $poll_id );
+	$poll = new \DemPoll( $poll_id );
 
 	if( ! $poll->id ){
 		return '';
@@ -284,7 +283,7 @@ function get_dem_polls( $args = [] ) {
 
 	foreach( $poll_ids as $poll_id ){
 
-		$DemPoll = new DemPoll( $poll_id );
+		$DemPoll = new \DemPoll( $poll_id );
 		$poll = $DemPoll->poll;
 
 		if( $rg->return === 'objects' ){

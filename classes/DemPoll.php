@@ -92,6 +92,14 @@ class DemPoll {
 		}
 	}
 
+	public function __isset( $var ) {
+		return isset( $this->poll->$var );
+	}
+
+	public function __set( $name, $val ) {
+		return $this->$name = $val;
+	}
+
 	public function __get( $var ) {
 		return $this->poll->$var ?? null;
 	}
@@ -99,7 +107,7 @@ class DemPoll {
 	public static function get_poll( $poll_id ) {
 		global $wpdb;
 
-		$poll = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q WHERE id = " . (int) $poll_id . " LIMIT 1" );
+		$poll = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->democracy_q WHERE id = %d LIMIT 1", $poll_id ) );
 		$poll = apply_filters( 'dem_get_poll', $poll, $poll_id );
 
 		return $poll;
@@ -346,7 +354,7 @@ class DemPoll {
 	 * Получает код результатов голосования
 	 * @return string HTML
 	 */
-	function get_result_screen() {
+	public function get_result_screen() {
 
 		if( ! $this->id ){
 			return false;
@@ -355,7 +363,7 @@ class DemPoll {
 		$poll = $this->poll;
 
 		// отсортируем по голосам
-		$answers = Democracy_Poll::objects_array_sort( $poll->answers, [ 'votes' => 'desc' ] );
+		$answers = democr()::objects_array_sort( $poll->answers, [ 'votes' => 'desc' ] );
 
 		$html = '';
 
@@ -841,7 +849,7 @@ class DemPoll {
 				$ord = $this->poll->answers_order ?: demopt()->order_answers;
 
 				if( $ord === 'by_winner' || $ord == 1 ){
-					$answers = Democracy_Poll::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
+					$answers = democr()::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
 				}
 				elseif( $ord === 'mix' ){
 					shuffle( $answers );
@@ -850,7 +858,7 @@ class DemPoll {
 			}
 			// по порядку
 			else{
-				$answers = Democracy_Poll::objects_array_sort( $answers, [ 'aorder' => 'asc' ] );
+				$answers = democr()::objects_array_sort( $answers, [ 'aorder' => 'asc' ] );
 			}
 		}
 
@@ -931,7 +939,7 @@ class DemPoll {
 		] );
 	}
 
-	static function shortcode_html( $poll_id ) {
+	public static function shortcode_html( $poll_id ) {
 
 		if( ! $poll_id ){
 			return '';

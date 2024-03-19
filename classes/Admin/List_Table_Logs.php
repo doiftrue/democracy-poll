@@ -8,7 +8,11 @@ class List_Table_Logs extends \WP_List_Table {
 
 	public $poll_id;
 
-	public function __construct() {
+	/** @var Admin_Page_Logs */
+	private $logs_page;
+
+	public function __construct( Admin_Page_Logs $logs_page ) {
+		$this->logs_page = $logs_page;
 
 		parent::__construct( [
 			'singular' => 'demlog',
@@ -53,12 +57,12 @@ class List_Table_Logs extends \WP_List_Table {
 
 		// delete
 		if( 'delete_only_logs' === $action ){
-			democr()->del_only_logs( $log_ids );
+			$this->logs_page->del_only_logs( $log_ids );
 		}
 
 		// delete with votes
 		if( 'delete_logs_votes' === $action ){
-			democr()->del_logs_and_votes( $log_ids );
+			$this->logs_page->del_logs_and_votes( $log_ids );
 		}
 	}
 

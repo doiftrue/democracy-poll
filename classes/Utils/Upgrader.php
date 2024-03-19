@@ -6,15 +6,13 @@ class Upgrader {
 
 	private $old_ver;
 
+	/**
+	 * It should not be called on front-end to not load the server unnecessarily.
+	 */
 	public function __construct() {
 	    $this->old_ver = get_option( 'democracy_version' );
 	}
 
-	/**
-	 * Plugin Upgrade
-	 * Need initiated {@see Democracy_Poll} class.
-	 * Нужно вызывать на странице настроек плагина, чтобы не грузить лишний раз сервер.
-	 */
 	public function upgrade() {
 
 		if( $this->old_ver === DEM_VER ){
@@ -22,7 +20,7 @@ class Upgrader {
 		}
 
 		// обновим css
-		democr()->regenerate_democracy_css( null );
+		( new \DemocracyPoll\Options_CSS() )->regenerate_democracy_css( null );
 
 		update_option( 'democracy_version', DEM_VER );
 

@@ -194,7 +194,11 @@ class Options {
 
 		// update css styles option
 		if( $type === 'design' ){
-			democr()->update_democracy_css__request_handler();
+			## Обновляет опцию "democracy_css"
+			$additional_css = $_POST['additional_css'] ?? '';
+			$additional = strip_tags( stripslashes( $additional_css ) );
+
+			( new \DemocracyPoll\Options_CSS() )->regenerate_democracy_css( $additional );
 		}
 
 		return $this->update_in_db();
@@ -216,7 +220,7 @@ class Options {
 			}
 
 			if( $type === 'design' ){
-				democr()->regenerate_democracy_css( '' );
+				( new \DemocracyPoll\Options_CSS() )->regenerate_democracy_css( '' );
 			}
 		}
 

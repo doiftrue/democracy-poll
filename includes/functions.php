@@ -1,7 +1,10 @@
 <?php
 
 function democr() {
-	return Democracy_Poll::instance();
+	static $inst;
+	$inst || $inst = new \DemocracyPoll\Plugin();
+
+	return $inst;
 }
 
 function demopt() {

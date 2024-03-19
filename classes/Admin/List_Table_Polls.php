@@ -4,7 +4,12 @@ namespace DemocracyPoll\Admin;
 
 class List_Table_Polls extends \WP_List_Table {
 
-	public function __construct() {
+	/** @var Admin_Page_Polls */
+	private $polls_page;
+
+	public function __construct( Admin_Page_Polls $polls_page ) {
+
+		$this->polls_page = $polls_page;
 
 		parent::__construct( [
 			'singular' => 'dempoll',
@@ -129,7 +134,7 @@ class List_Table_Polls extends \WP_List_Table {
 				}
 
 				// delete
-				$actions[] = '<span class="delete"><a href="' . dem__add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], $admurl ) ) . '" onclick="return confirm(\'' . __( 'Are you sure?', 'democracy-poll' ) . '\');">' . __( 'Delete', 'democracy-poll' ) . '</a> | </span>';
+				$actions[] = '<span class="delete"><a href="' . Admin_Page::add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], $admurl ) ) . '" onclick="return confirm(\'' . __( 'Are you sure?', 'democracy-poll' ) . '\');">' . __( 'Delete', 'democracy-poll' ) . '</a> | </span>';
 			}
 
 			// shortcode
@@ -181,11 +186,11 @@ class List_Table_Polls extends \WP_List_Table {
 		}
 
 		if( $col === 'active' ){
-			return democr()->cuser_can_edit_poll( $poll ) ? dem__activate_button( $poll, 'reverse' ) : '';
+			return democr()->cuser_can_edit_poll( $poll ) ? Admin_Page_Edit_Poll::activate_button( $poll, 'reverse' ) : '';
 		}
 
 		if( $col === 'open' ){
-			return democr()->cuser_can_edit_poll( $poll ) ? dem__open_button( $poll, 'reverse' ) : '';
+			return democr()->cuser_can_edit_poll( $poll ) ? Admin_Page_Edit_Poll::open_button( $poll, 'reverse' ) : '';
 		}
 
 		if( $col === 'added' ){
