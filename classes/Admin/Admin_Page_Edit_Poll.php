@@ -3,6 +3,7 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Helpers;
+use DemocracyPoll\Helpers\Kses;
 
 class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 
@@ -62,7 +63,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 		$title = '';
 		$shortcode = '';
 		if( $this->poll_id ){
-			$this->poll = \DemPoll::get_poll( $this->poll_id );
+			$this->poll = \DemPoll::get_poll_object( $this->poll_id );
 			$answers = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->democracy_a WHERE qid = %d", $this->poll_id ) );
 
 			$log_link = demopt()->keep_logs
@@ -71,7 +72,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 					__( 'Poll logs', 'democracy-poll' ) )
 				: '';
 
-			$title = democr()->kses_html( $this->poll->question ) . $log_link;
+			$title = Kses::kses_html( $this->poll->question ) . $log_link;
 			$shortcode = self::shortcode_html( $this->poll_id ) . ' — ' . __( 'shortcode for use in post content', 'democracy-poll' );
 
 			$hidden_inputs = '<input type="hidden" name="dmc_update_poll" value="' . (int) $this->poll_id . '">';
@@ -118,7 +119,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 						$after_answer = apply_filters( 'demadmin_after_answer', '', $answer );
 						$answer = apply_filters( 'demadmin_edit_poll_answer', $answer );
 
-						$by_user = $answer->added_by ? '<i>*' . ( democr()->is_new_answer( $answer ) ? ' new' : '' ) . '</i>' : '';
+						$by_user = $answer->added_by ? '<i>*' . ( Admin_Page_Logs::is_new_answer( $answer ) ? ' new' : '' ) . '</i>' : '';
 
 						echo '
 						<li class="answ">
@@ -298,7 +299,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 				);
 
 				// in posts
-				if( $posts = democr()->get_in_posts_posts( $poll ) ){
+				if( $posts = Helpers::get_posts_with_poll( $poll ) ){
 					$links = [];
 					foreach( $posts as $post ){
 						$links[] = sprintf( '<a href="%s">%s</a>', get_permalink( $post ), esc_html( $post->post_title ) );
@@ -388,7 +389,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 					$answ_row = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_a WHERE aid = " . (int) $aid );
 
 					// удалим метку NEW
-					$added_by = democr()->is_new_answer( $answ_row )
+					$added_by = Admin_Page_Logs::is_new_answer( $answ_row )
 						? str_replace( '-new', '', $answ_row->added_by )
 						: $answ_row->added_by;
 
@@ -527,7 +528,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 
 			// valid tags
 			if( $key === 'question' || $key === 'note' ){
-				$val = wp_kses( $val, \DemocracyPoll\Plugin::$allowed_tags );
+				$val = Kses::kses_html( $val );
 			}
 			// date
 			elseif( $key === 'end' || $key === 'added' ){
@@ -549,11 +550,11 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 			// answers
 			elseif( $key === 'old_answers' || $key === 'new_answers' ){
 				if( is_string( $val ) ){
-					$val = democr()->sanitize_answer_data( $val );
+					$val = Kses::sanitize_answer_data( $val );
 				}
 				else{
 					foreach( $val as & $_val ){
-						$_val = democr()->sanitize_answer_data( $_val );
+						$_val = Kses::sanitize_answer_data( $_val );
 					}
 					unset( $_val );
 				}
@@ -574,8 +575,8 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 			return '';
 		}
 
-		return '<span style="cursor:pointer; padding:0 2px; background:#fff;"
-		onclick="var sel = window.getSelection(), range = document.createRange(); range.selectNodeContents(this); sel.removeAllRanges(); sel.addRange(range);">[democracy id="' . $poll_id . '"]</span>';
+		return '<span style="cursor:pointer; padding:2px 4px; background:#fff;"
+		onclick="var sel = window.getSelection(), range = document.createRange(); range.selectNodeContents(this); sel.removeAllRanges(); sel.addRange(range); document.execCommand(\'copy\');">[democracy id="' . $poll_id . '"]</span>';
 	}
 
 	/**
@@ -668,7 +669,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	private static function _poll_opening( $poll_id, $action ): bool {
 		global $wpdb;
 
-		$poll = \DemPoll::get_poll( $poll_id );
+		$poll = \DemPoll::get_poll_object( $poll_id );
 		if( ! $poll ){
 			return false;
 		}
@@ -706,7 +707,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	private static function _poll_activation( $poll_id, $action ): bool {
 		global $wpdb;
 
-		$poll = \DemPoll::get_poll( $poll_id );
+		$poll = \DemPoll::get_poll_object( $poll_id );
 		if( ! $poll ){
 			return false;
 		}

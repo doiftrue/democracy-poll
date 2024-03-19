@@ -1,17 +1,14 @@
 <?php
 
-function democr() {
+function democr(): \DemocracyPoll\Plugin {
 	static $inst;
 	$inst || $inst = new \DemocracyPoll\Plugin();
 
 	return $inst;
 }
 
-function demopt() {
-	static $inst;
-	$inst || $inst = new \DemocracyPoll\Options();
-
-	return $inst;
+function demopt(): \DemocracyPoll\Options {
+	return democr()->opt;
 }
 
 function democracy_set_db_tables() {

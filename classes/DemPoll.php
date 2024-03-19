@@ -2,6 +2,7 @@
 
 use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Helpers\IP;
+use DemocracyPoll\Helpers\Kses;
 
 /**
  * Display and vote a separate poll.
@@ -37,7 +38,7 @@ class DemPoll {
 			$poll = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q WHERE open = 1 ORDER BY id DESC LIMIT 1" );
 		}
 		else{
-			$poll = self::get_poll( $id );
+			$poll = self::get_poll_object( $id );
 		}
 
 		if( ! $poll ){
@@ -105,10 +106,15 @@ class DemPoll {
 		return $this->poll->$var ?? null;
 	}
 
-	public static function get_poll( $poll_id ) {
+	/**
+	 * @return object|null
+	 */
+	public static function get_poll_object( $poll_id ) {
 		global $wpdb;
 
-		$poll = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->democracy_q WHERE id = %d LIMIT 1", $poll_id ) );
+		$poll = $wpdb->get_row( $wpdb->prepare(
+			"SELECT * FROM $wpdb->democracy_q WHERE id = %d LIMIT 1", $poll_id
+		) );
 		$poll = apply_filters( 'dem_get_poll', $poll, $poll_id );
 
 		return $poll;
@@ -147,7 +153,7 @@ class DemPoll {
 
 		$html .= '<div id="democracy-' . $this->id . '" class="democracy" data-opts=\'' . json_encode( $js_opts ) . '\' >';
 		$html .= $before_title ?: demopt()->before_title;
-		$html .= democr()->kses_html( $this->poll->question );
+		$html .= Kses::kses_html( $this->poll->question );
 		$html .= $after_title ?: demopt()->after_title;
 
 		// изменяемая часть
@@ -707,7 +713,7 @@ class DemPoll {
 	private function insert_democratic_answer( $answer ): int {
 		global $wpdb;
 
-		$new_answer = democr()->sanitize_answer_data( $answer, 'democratic_answer' );
+		$new_answer = Kses::sanitize_answer_data( $answer, 'democratic_answer' );
 		$new_answer = wp_unslash( $new_answer );
 
 		// проверим нет ли уже такого ответа
@@ -723,7 +729,7 @@ class DemPoll {
 
 		// добавлен из фронта - демократический вариант ответа не важно какой юзер!
 		$added_by = $cuser_id ?: IP::get_user_ip();
-		$added_by .= ( ! $cuser_id || $this->poll->added_user != $cuser_id ) ? '-new' : '';
+		$added_by .= ( ! $cuser_id || (int) $this->poll->added_user !== (int) $cuser_id ) ? '-new' : '';
 
 		// если есть порядок, ставим 'max+1'
 		$aorder = $this->poll->answers[0]->aorder > 0

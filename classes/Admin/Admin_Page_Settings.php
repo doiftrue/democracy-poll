@@ -56,7 +56,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 					<li class="block">
 						<label>
-							<input type="number" step="30" min="0" value="<?= (float) demopt()->cookie_days ?>"
+							<input type="number" step="1" min="0" value="<?= (float) demopt()->cookie_days ?>"
 							       name="dem[cookie_days]" />
 							<?= esc_html__( 'How many days to keep Cookies alive?', 'democracy-poll' ) ?>
 						</label>

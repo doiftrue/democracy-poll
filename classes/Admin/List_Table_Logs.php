@@ -1,6 +1,8 @@
-<?php /** @noinspection PhpFullyQualifiedNameUsageInspection */
+<?php
 
 namespace DemocracyPoll\Admin;
+
+use DemocracyPoll\Helpers\Kses;
 
 class List_Table_Logs extends \WP_List_Table {
 
@@ -171,12 +173,12 @@ class List_Table_Logs extends \WP_List_Table {
 		if( $this->poll_id ){
 
 			if( ! $poll = $this->cache( 'polls', $this->poll_id ) ){
-				$poll = $this->cache( 'polls', $this->poll_id, \DemPoll::get_poll( $this->poll_id ) );
+				$poll = $this->cache( 'polls', $this->poll_id, \DemPoll::get_poll_object( $this->poll_id ) );
 			}
 
 			echo sprintf( '<h2><small>%s</small>%s <small><a href="%s">%s</a></small></h2>',
 				__( 'Poll\'s logs: ', 'democracy-poll' ),
-				democr()->kses_html( $poll->question ),
+				Kses::kses_html( $poll->question ),
 				democr()->edit_poll_url( $this->poll_id ),
 				__( 'Edit poll', 'democracy-poll' )
 			);
@@ -257,7 +259,7 @@ class List_Table_Logs extends \WP_List_Table {
 
 		if( 'qid' === $col ){
 			if( ! $poll = $this->cache( 'polls', $log->qid ) ){
-				$poll = $this->cache( 'polls', $log->qid, \DemPoll::get_poll( $log->qid ) );
+				$poll = $this->cache( 'polls', $log->qid, \DemPoll::get_poll_object( $log->qid ) );
 			}
 
 			$actions = '';
@@ -272,7 +274,7 @@ class List_Table_Logs extends \WP_List_Table {
 				</div>';
 			}
 
-			return democr()->kses_html( $poll->question ) . $actions;
+			return Kses::kses_html( $poll->question ) . $actions;
 		}
 
 		if( 'userid' === $col ){
@@ -294,7 +296,9 @@ class List_Table_Logs extends \WP_List_Table {
 					$answ = $this->cache( 'answs', $aid, $wpdb->get_row( "SELECT * FROM $wpdb->democracy_a WHERE aid = " . (int) $aid ) );
 				}
 
-				$new = democr()->is_new_answer( $answ ) ? ' <a href="' . democr()->edit_poll_url( $log->qid ) . '"><span style="color:red;">NEW</span></a>' : '';
+				$new = Admin_Page_Logs::is_new_answer( $answ )
+					? sprintf( ' <a href="%s"><span style="color:red;">NEW</span></a>', democr()->edit_poll_url( $log->qid ) )
+					: '';
 
 				$out[] = '- ' . esc_html( $answ->answer ) . $new;
 			}

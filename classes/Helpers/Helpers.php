@@ -56,4 +56,39 @@ final class Helpers {
 		return $array;
 	}
 
+	/**
+	 * Retrieves the post objects to which the poll is attached (where the shortcode is used).
+	 *
+	 * @param object $poll  The current poll object from the database.
+	 *
+	 * @return \WP_Post[] An array of post objects or an empty array.
+	 */
+	public static function get_posts_with_poll( $poll ): array {
+		global $wpdb;
+
+		if( empty( $poll->in_posts ) || empty( $poll->id ) ){
+			return [];
+		}
+
+		$pids = explode( ',', $poll->in_posts );
+
+		$posts = [];
+
+		// delete the IDs of posts that no longer exist.
+		$delete_pids = [];
+		foreach( $pids as $post_id ){
+			$post = get_post( $post_id );
+			$post
+				? ( $posts[] = $post )
+				: ( $delete_pids[] = $post_id );
+		}
+
+		if( $delete_pids ){
+			$new_in_posts = array_diff( $pids, $delete_pids );
+			$wpdb->update( $wpdb->democracy_q, [ 'in_posts' => implode( ',', $new_in_posts ) ], [ 'id' => $poll->id ] );
+		}
+
+		return $posts;
+	}
+
 }

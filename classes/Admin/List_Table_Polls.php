@@ -2,6 +2,8 @@
 
 namespace DemocracyPoll\Admin;
 
+use DemocracyPoll\Helpers\Kses;
+
 class List_Table_Polls extends \WP_List_Table {
 
 	/** @var Admin_Page_Polls */
@@ -140,7 +142,7 @@ class List_Table_Polls extends \WP_List_Table {
 			// shortcode
 			$actions[] = '<span style="color:#999">' . Admin_Page_Edit_Poll::shortcode_html( $poll->id ) . '</span>';
 
-			return $statuses . democr()->kses_html( $poll->question ) . '<div class="row-actions">' . implode( " ", $actions ) . '</div>';
+			return $statuses . Kses::kses_html( $poll->question ) . '<div class="row-actions">' . implode( " ", $actions ) . '</div>';
 		}
 
 		if( $col === 'usersvotes' ){
@@ -150,7 +152,7 @@ class List_Table_Polls extends \WP_List_Table {
 		}
 
 		if( $col === 'in_posts' ){
-			if( ! $posts = democr()->get_in_posts_posts( $poll ) ){
+			if( ! $posts = \DemocracyPoll\Helpers\Helpers::get_posts_with_poll( $poll ) ){
 				return '';
 			}
 
@@ -170,7 +172,7 @@ class List_Table_Polls extends \WP_List_Table {
 
 		if( $col === 'answers' ){
 			if( ! $answ ){
-				return 'Нет';
+				return 'No';
 			}
 
 			usort( $answ, static function( $a, $b ) {

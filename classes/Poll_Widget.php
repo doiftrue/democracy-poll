@@ -2,6 +2,8 @@
 
 namespace DemocracyPoll;
 
+use DemocracyPoll\Helpers\Kses;
+
 class Poll_Widget extends \WP_Widget {
 
 	public function __construct() {
@@ -91,7 +93,11 @@ class Poll_Widget extends \WP_Widget {
 
 		$qu = $wpdb->get_results( "SELECT * FROM $wpdb->democracy_q ORDER BY added DESC LIMIT 70" );
 		foreach( $qu as $quest ){
-			$options .= '<option value="' . $quest->id . '" ' . selected( $show_poll, $quest->id, 0 ) . '>' . democr()->kses_html( $quest->question ) . '</option>';
+			$options .= sprintf( '<option value="%s" %s>%s</option>',
+				$quest->id,
+				selected( $show_poll, $quest->id, 0 ),
+				Kses::kses_html( $quest->question )
+			);
 		}
 
 		echo '

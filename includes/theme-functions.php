@@ -5,10 +5,10 @@
  *
  * @param int $poll_id  ID of poll.
  *
- * @return object Poll object
+ * @return \DemPoll Poll object
  */
 function democracy_get_poll( $poll_id ) {
-	return \DemPoll::get_poll( $poll_id );
+	return new \DemPoll( $poll_id );
 }
 
 /**
@@ -299,7 +299,7 @@ function get_dem_polls( $args = [] ) {
 		// in posts
 		if(
 			$rg->add_from_posts &&
-			( $posts = democr()->get_in_posts_posts( $poll ) )
+			( $posts = \DemocracyPoll\Helpers\Helpers::get_posts_with_poll( $poll ) )
 		){
 			$links = [];
 			foreach( $posts as $post ){
@@ -326,11 +326,11 @@ function get_dem_polls( $args = [] ) {
 }
 
 /**
- * Какой экран показать, на основе переданных запросов: 'voted' или 'vote'.
+ * Which screen to display, based on the passed request
  *
- * @return mixed|string|void
+ * @return string One of: 'voted' or 'vote'.
  */
-function dem__query_poll_screen_choose( $poll ) {
+function dem__query_poll_screen_choose( $poll ): string {
 
 	// view results is closed in options
 	if( $poll->open && ! $poll->show_results ){
@@ -344,6 +344,6 @@ function dem__query_poll_screen_choose( $poll ) {
 	)
 		? 'voted' : 'vote';
 
-	return apply_filters( 'dem_poll_screen_choose', $screen, $poll );
+	return (string) apply_filters( 'dem_poll_screen_choose', $screen, $poll );
 }
 

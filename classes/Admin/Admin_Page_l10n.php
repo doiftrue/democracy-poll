@@ -131,7 +131,7 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 			}
 			// sanitize value: Thanks to //pluginvulnerabilities.com/?p=2967
 			else{
-				$val = wp_kses( $val, \DemocracyPoll\Plugin::$allowed_tags );
+				$val = \DemocracyPoll\Helpers\Kses::kses_html( $val );
 			}
 		}
 		unset( $val );

@@ -226,4 +226,13 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 		return $wpdb->prepare( "UPDATE $wpdb->democracy_q SET users_voted = IF( (users_voted<=%d), 0, (users_voted-%d) ) WHERE id = %d", $minus_num, $minus_num, $qid );
 	}
 
+	/**
+	 * Проверяет является ли переданный ответ новым ответом - NEW
+	 *
+	 * @param object $answer  Объект ответа
+	 */
+	public static function is_new_answer( $answer ): bool {
+		return preg_match( '~-new$~', $answer->added_by );
+	}
+
 }
