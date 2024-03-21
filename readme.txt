@@ -1,14 +1,14 @@
+
 === Plugin Name ===
-Stable tag: trunk
+Stable tag: 6.0.0
 Tested up to: 6.4.3
 Requires at least: 4.7
+Contributors: Tkama
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Contributors: Tkama
-Tags: democracy, awesome poll, polls, vote, voting polls, survey, review
+Tags: democracy, polls, vote, survey, review
 
-
-WordPress Polls plugin. Visitors can choose multiple and adds their own answers. Works with cache plugins like WP Super Cache. Has widget and shortcodes for posts.
+WordPress Polls plugin with multiple choice and custom answers. Works with cache plugins. Includes widget and shortcodes for posts.
 
 
 == Description ==
@@ -127,6 +127,13 @@ Yes it is! To completely uninstall the plugin, deactivate it and then press "del
 8. Polls theme settings.
 9. Poll's texts changes.
 
+
+
+== Upgrade Notice ==
+
+= 6.0.0 =
+* Minimal PHP version 7.0
+* If you used some plugin classes directly in your code it may need to be refactored to new class names.
 
 
 
