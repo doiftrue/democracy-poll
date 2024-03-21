@@ -191,7 +191,7 @@ class Plugin {
 	/**
 	 * Check if current or specified user can edit specified poll.
 	 *
-	 * @param object|int $poll  Poll object or poll id.
+	 * @param \DemPoll|object|int $poll  Poll object or poll id.
 	 */
 	public function cuser_can_edit_poll( $poll ): bool {
 

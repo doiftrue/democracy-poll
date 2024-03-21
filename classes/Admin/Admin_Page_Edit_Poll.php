@@ -144,12 +144,12 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 				// users_voted filed
 				if( $edit ){
 					// сбросить порядок, если установлен
-					echo '
-					<li class="not__answer reset__aorder" style="list-style:none; ' . ( $is_answers_order ? '' : 'display:none;' ) . '">
+					?>
+					<li class="not__answer reset__aorder" style="list-style:none; <?= ( $is_answers_order ? '' : 'display:none;' ) ?>">
 						<span class="dashicons dashicons-menu"></span>
-						<span style="cursor:pointer; border-bottom:1px dashed #999;">&#215; ' . __( 'reset order', 'democracy-poll' ) . '</span>
+						<span style="cursor:pointer; border-bottom:1px dashed #999;">&#215; <?= __( 'reset order', 'democracy-poll' ) ?></span>
 					</li>
-					';
+					<?php
 
 					echo '
 					<li class="not__answer" style="list-style:none;">

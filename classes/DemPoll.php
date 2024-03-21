@@ -12,24 +12,63 @@ use function DemocracyPoll\options;
  */
 class DemPoll {
 
-	// id опроса, 0 или 'last'
-	public $id;
-
-	/** @var object|null */
-	public $data = null;
-
 	public $has_voted        = false;
 	public $votedFor         = '';    // за какие ответы голосовал
 	public $blockVoting      = false; // блокировать голосование
 	public $blockForVisitor  = false; // только для зарегистрированных
 	public $not_show_results = false; // не показывать результаты
 
-	public $inArchive = false; // в архивной странице
-
+	public $in_archive = false; // в архивной странице
 	public $for_cache = false;
 
-	// Название ключа cookie
-	public $cookey;
+	public $cookie_key;
+
+	/** @var object|null */
+	public $data = null;
+
+	/** @var object[] */
+	public $answers = [];
+
+	/// Fields from DB
+
+	public $id = 0;
+
+	/** @var string Poll title */
+	public $question = '';
+
+	/** @var int Added UNIX timestamp */
+	public $added = 0;
+
+	/** @var int End UNIX timestamp */
+	public $end = 0;
+
+	/** @var int User ID */
+	public $added_user = 0;
+
+	public $users_voted = 0;
+
+	public $democratic = false;
+
+	public $active = false;
+
+	public $open = false;
+
+	public $multiple = 0;
+
+	/** @var bool For logged users only */
+	public $forusers = false;
+
+	public $revote = false;
+
+	public $show_results = false;
+
+	public $answers_order = '';
+
+	/** @var string Comma separated posts_ids */
+	public $in_posts = '';
+
+	/** @var string Additional poll notes */
+	public $note = '';
 
 	/**
 	 * @param object|int $ident  Poll id to get. Or poll object from DB. Or use 'rand', 'last' strings.
@@ -42,42 +81,47 @@ class DemPoll {
 		}
 
 		$poll_obj = is_object( $ident ) ? $ident : self::get_poll_object( $ident );
-		if( ! $poll_obj ){
+		if( ! $poll_obj || ! isset( $poll_obj->id ) ){
 			return;
 		}
 
-		$this->id = (int) $poll_obj->id;
-		if( ! $this->id ){
-			return;
-		}
-
-		$this->cookey = 'demPoll_' . $this->id;
 		$this->data = $poll_obj;
 
-		// отключим демокраси опцию
-		if( options()->democracy_off ){
-			$this->data->democratic = false;
-		}
-		// отключим опцию переголосования
-		if( options()->revote_off ){
-			$this->data->revote = false;
-		}
+		$this->id            = (int) $poll_obj->id;
+		$this->question      = $this->data->question;
+		$this->added         = (int) $this->data->added;
+		$this->added_user    = (int) $this->data->added_user;
+		$this->end           = (int) $this->data->end;
+		$this->users_voted   = (int) $this->data->users_voted;
+		$this->democratic    = (bool) ( options()->democracy_off ? false : $this->data->democratic );
+		$this->active        = (bool) $this->data->active;
+		$this->open          = (bool) $this->data->open;
+		$this->multiple      = (int) $this->data->multiple;
+		$this->forusers      = (bool) $this->data->forusers;
+		$this->revote        = (bool) ( options()->revote_off ? false : $this->data->revote );
+		$this->show_results  = (bool) $this->data->show_results;
+		$this->answers_order = $this->data->answers_order;
+		$this->in_posts      = $this->data->in_posts;
+		$this->note          = $this->data->note;
+
+
+		$this->cookie_key = "demPoll_$this->id";
 
 		$this->set_voted_data();
-		$this->set_answers(); // установим свойство $this->poll->answers
+		$this->set_answers(); // установим свойство $this->answers
 
 		// закрываем опрос т.к. срок закончился
-		if( $this->data->end && $this->data->open && ( current_time( 'timestamp' ) > $this->data->end ) ){
+		if( $this->end && $this->open && ( current_time( 'timestamp' ) > $this->end ) ){
 			$wpdb->update( $wpdb->democracy_q, [ 'open' => 0 ], [ 'id' => $this->id ] );
 		}
 
 		// только для зарегистрированных
-		if( ( options()->only_for_users || $this->data->forusers ) && ! is_user_logged_in() ){
+		if( ( options()->only_for_users || $this->forusers ) && ! is_user_logged_in() ){
 			$this->blockForVisitor = true;
 		}
 
 		// блокировка возможности голосовать
-		if( $this->blockForVisitor || ! $this->data->open || $this->has_voted ){
+		if( $this->blockForVisitor || ! $this->open || $this->has_voted ){
 			$this->blockVoting = true;
 		}
 
@@ -90,18 +134,6 @@ class DemPoll {
 		}
 	}
 
-	public function __isset( $var ) {
-		return isset( $this->data->$var );
-	}
-
-	public function __set( $name, $val ) {
-		return $this->$name = $val;
-	}
-
-	public function __get( $var ) {
-		return $this->data->$var ?? null;
-	}
-
 	/**
 	 * @param int|string $poll_id Poll id to get. Or use 'rand', 'last' strings.
 	 *
@@ -111,18 +143,18 @@ class DemPoll {
 		global $wpdb;
 
 		if( 'rand' === $poll_id ){
-			$poll = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q WHERE active = 1 ORDER BY RAND() LIMIT 1" );
+			$poll_obj = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q WHERE active = 1 ORDER BY RAND() LIMIT 1" );
 		}
 		elseif( 'last' === $poll_id ){
-			$poll = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q WHERE open = 1 ORDER BY id DESC LIMIT 1" );
+			$poll_obj = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q WHERE open = 1 ORDER BY id DESC LIMIT 1" );
 		}
 		else {
-			$poll = $wpdb->get_row( $wpdb->prepare(
+			$poll_obj = $wpdb->get_row( $wpdb->prepare(
 				"SELECT * FROM $wpdb->democracy_q WHERE id = %d LIMIT 1", $poll_id
 			) );
 		}
 
-		return apply_filters( 'dem_get_poll', $poll, $poll_id );
+		return apply_filters( 'dem_get_poll', $poll_obj, $poll_id );
 	}
 
 	/**
@@ -138,7 +170,7 @@ class DemPoll {
 			return false;
 		}
 
-		$this->inArchive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) options()->archive_page_id ) && is_singular();
+		$this->in_archive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) options()->archive_page_id ) && is_singular();
 
 		if( $this->blockVoting && $show_screen !== 'force_vote' ){
 			$show_screen = 'voted';
@@ -150,7 +182,7 @@ class DemPoll {
 		$js_opts = [
 			'ajax_url'         => plugin()->poll_ajax->ajax_url,
 			'pid'              => $this->id,
-			'max_answs'        => (int) ( $this->data->multiple ?: 0 ),
+			'max_answs'        => (int) ( $this->multiple ?: 0 ),
 			'answs_max_height' => options()->answs_max_height,
 			'anim_speed'       => options()->anim_speed,
 			'line_anim_speed'  => (int) options()->line_anim_speed
@@ -158,16 +190,16 @@ class DemPoll {
 
 		$html .= '<div id="democracy-' . $this->id . '" class="democracy" data-opts=\'' . json_encode( $js_opts ) . '\' >';
 		$html .= $before_title ?: options()->before_title;
-		$html .= Kses::kses_html( $this->data->question );
+		$html .= Kses::kses_html( $this->question );
 		$html .= $after_title ?: options()->after_title;
 
 		// изменяемая часть
 		$html .= $this->get_screen_basis( $show_screen );
 		// изменяемая часть
 
-		$html .= $this->data->note ? '<div class="dem-poll-note">' . wpautop( $this->data->note ) . '</div>' : '';
+		$html .= $this->note ? '<div class="dem-poll-note">' . wpautop( $this->note ) . '</div>' : '';
 
-		if( plugin()->cuser_can_edit_poll( $this->data ) ){
+		if( plugin()->cuser_can_edit_poll( $this ) ){
 			$html .= '<a class="dem-edit-link" href="' . plugin()->edit_poll_url( $this->id ) . '" title="' . __( 'Edit poll', 'democracy-poll' ) . '"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1.5em" height="100%" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve"><path d="M617.8,203.4l175.8,175.8l-445,445L172.9,648.4L617.8,203.4z M927,161l-78.4-78.4c-30.3-30.3-79.5-30.3-109.9,0l-75.1,75.1 l175.8,175.8l87.6-87.6C950.5,222.4,950.5,184.5,927,161z M80.9,895.5c-3.2,14.4,9.8,27.3,24.2,23.8L301,871.8L125.3,696L80.9,895.5z"/></svg></a>';
 		}
 
@@ -189,7 +221,7 @@ class DemPoll {
 
 		// for page cache
 		// never use poll caching mechanism in admin
-		if( ! $this->inArchive && ! is_admin() && plugin()->is_cachegear_on ){
+		if( ! $this->in_archive && ! is_admin() && plugin()->is_cachegear_on ){
 			$html .= '
 			<!--noindex-->
 			<div class="dem-cache-screens" style="display:none;" data-opt_logs="' . (int) options()->keep_logs . '">';
@@ -209,7 +241,7 @@ class DemPoll {
 			}
 
 			// vote_screen
-			if( $this->data->open ){
+			if( $this->open ){
 				$html .= $compress( $this->get_screen_basis( 'force_vote' ) );
 			}
 
@@ -266,18 +298,16 @@ class DemPoll {
 			return false;
 		}
 
-		$poll = $this->data;
-
-		$auto_vote_on_select = ( ! $poll->multiple && $poll->revote && options()->hide_vote_button );
+		$auto_vote_on_select = ( ! $this->multiple && $this->revote && options()->hide_vote_button );
 
 		$html = '';
 
 		$html .= '<form method="POST" action="#democracy-' . $this->id . '">';
 			$html .= '<ul class="dem-vote">';
 
-				$type = $poll->multiple ? 'checkbox' : 'radio';
+				$type = $this->multiple ? 'checkbox' : 'radio';
 
-				foreach( $poll->answers as $answer ){
+				foreach( $this->answers as $answer ){
 					$answer = apply_filters( 'dem_vote_screen_answer', $answer );
 
 					$auto_vote = $auto_vote_on_select ? 'data-dem-act="vote"' : '';
@@ -292,14 +322,14 @@ class DemPoll {
 					}
 
 					$html .= '
-							<li data-aid="' . $answer->aid . '">
-								<label class="dem__' . $type . '_label">
-									<input class="dem__' . $type . '" ' . $auto_vote . ' type="' . $type . '" value="' . $answer->aid . '" name="answer_ids[]"' . $checked . $disabled . '><span class="dem__spot"></span> ' . $answer->answer . '
-								</label>
-							</li>';
+					<li data-aid="' . $answer->aid . '">
+						<label class="dem__' . $type . '_label">
+							<input class="dem__' . $type . '" ' . $auto_vote . ' type="' . $type . '" value="' . $answer->aid . '" name="answer_ids[]"' . $checked . $disabled . '><span class="dem__spot"></span> ' . $answer->answer . '
+						</label>
+					</li>';
 				}
 
-				if( $poll->democratic && ! $this->blockVoting ){
+				if( $this->democratic && ! $this->blockVoting ){
 					$html .= '<li class="dem-add-answer"><a href="javascript:void(0);" rel="nofollow" data-dem-act="newAnswer" class="dem-link">' . _x( 'Add your answer', 'front', 'democracy-poll' ) . '</a></li>';
 				}
 			$html .= "</ul>";
@@ -327,7 +357,7 @@ class DemPoll {
 				);
 			}
 
-			if( $poll->revote ){
+			if( $this->revote ){
 				$html .= preg_replace( '/(<[^>]+)/', '$1 style="display:none;"', $this->revote_btn_html(), 1 );
 			}
 			else{
@@ -342,7 +372,7 @@ class DemPoll {
 			}
 			else{
 				if( $this->has_voted ){
-					$html .= $poll->revote ? $this->revote_btn_html() : $btnVoted;
+					$html .= $this->revote ? $this->revote_btn_html() : $btnVoted;
 				}
 				else{
 					$html .= $btnVote;
@@ -372,10 +402,8 @@ class DemPoll {
 			return false;
 		}
 
-		$poll = $this->data;
-
 		// отсортируем по голосам
-		$answers = Helpers::objects_array_sort( $poll->answers, [ 'votes' => 'desc' ] );
+		$answers = Helpers::objects_array_sort( $this->answers, [ 'votes' => 'desc' ] );
 
 		$html = '';
 
@@ -453,20 +481,20 @@ class DemPoll {
 		$html .= '<div class="dem-bottom">';
 		$html .= '<div class="dem-poll-info">';
 		$html .= '<div class="dem-total-votes">' . sprintf( _x( 'Total Votes: %s', 'front', 'democracy-poll' ), $total ) . '</div>';
-		$html .= ( $poll->multiple ? '<div class="dem-users-voted">' . sprintf( _x( 'Voters: %s', 'front', 'democracy-poll' ), $poll->users_voted ) . '</div>' : '' );
+		$html .= ( $this->multiple ? '<div class="dem-users-voted">' . sprintf( _x( 'Voters: %s', 'front', 'democracy-poll' ), $this->users_voted ) . '</div>' : '' );
 		$html .= '
 				<div class="dem-date" title="' . _x( 'Begin', 'front', 'democracy-poll' ) . '">
-					<span class="dem-begin-date">' . date_i18n( get_option( 'date_format' ), $poll->added ) . '</span>
-					' . ( $poll->end ? ' - <span class="dem-end-date" title="' . _x( 'End', 'front', 'democracy-poll' ) . '">' . date_i18n( get_option( 'date_format' ), $poll->end ) . '</span>' : '' ) . '
+					<span class="dem-begin-date">' . date_i18n( get_option( 'date_format' ), $this->added ) . '</span>
+					' . ( $this->end ? ' - <span class="dem-end-date" title="' . _x( 'End', 'front', 'democracy-poll' ) . '">' . date_i18n( get_option( 'date_format' ), $this->end ) . '</span>' : '' ) . '
 				</div>';
 		$html .= $answer->added_by ? '<div class="dem-added-by-user"><span class="dem-star">*</span>' . _x( ' - added by visitor', 'front', 'democracy-poll' ) . '</div>' : '';
-		$html .= ! $poll->open ? '<div>' . _x( 'Voting is closed', 'front', 'democracy-poll' ) . '</div>' : '';
-		if( ! $this->inArchive && options()->archive_page_id ){
+		$html .= ! $this->open ? '<div>' . _x( 'Voting is closed', 'front', 'democracy-poll' ) . '</div>' : '';
+		if( ! $this->in_archive && options()->archive_page_id ){
 			$html .= '<a class="dem-archive-link dem-link" href="' . get_permalink( options()->archive_page_id ) . '" rel="nofollow">' . _x( 'Polls Archive', 'front', 'democracy-poll' ) . '</a>';
 		}
 		$html .= '</div>';
 
-		if( $poll->open ){
+		if( $this->open ){
 			// заметка для незарегистрированных пользователей
 			$for_users_alert = $this->blockForVisitor ? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>' : '';
 
@@ -484,7 +512,7 @@ class DemPoll {
 					], $for_users_alert );
 				}
 
-				if( $poll->revote ){
+				if( $this->revote ){
 					$html .= $this->revote_btn_html();
 				}
 				else{
@@ -498,7 +526,7 @@ class DemPoll {
 				}
 				else{
 					if( $this->has_voted ){
-						if( $poll->revote ){
+						if( $this->revote ){
 							$html .= $this->revote_btn_html();
 						}
 					}
@@ -568,7 +596,7 @@ class DemPoll {
 		}
 
 		// установим куки повторно, был баг...
-		if( $this->has_voted && ( $_COOKIE[ $this->cookey ] === 'notVote' ) ){
+		if( $this->has_voted && ( $_COOKIE[ $this->cookie_key ] === 'notVote' ) ){
 			$this->set_cookie();
 		}
 
@@ -588,13 +616,13 @@ class DemPoll {
 		$aids = array_filter( $aids );
 
 		// check the quantity
-		if( $this->data->multiple > 1 && count( $aids ) > $this->data->multiple ){
+		if( $this->multiple > 1 && count( $aids ) > $this->multiple ){
 			return new WP_Error( 'vote_err', __( 'ERROR: You select more number of answers than it is allowed...', 'democracy-poll' ) );
 		}
 
 		// Add user free answer
 		// Checks values of $aids array, trying to find string, if has - it's free answer
-		if( $this->data->democratic ){
+		if( $this->democratic ){
 			$new_free_answer = false;
 
 			foreach( $aids as $k => $id ){
@@ -603,7 +631,7 @@ class DemPoll {
 					unset( $aids[ $k ] ); // remove from the common array, so that there is no this answer
 
 					// clear array because multiple voting is blocked
-					if( ! $this->data->multiple ){
+					if( ! $this->multiple ){
 						$aids = [];
 					}
 					//break; !!!!NO
@@ -632,12 +660,12 @@ class DemPoll {
 			$AND = $wpdb->prepare( ' AND aid = %d LIMIT 1', $aids );
 		}
 		// many answers (multiple)
-		elseif( $this->data->multiple ){
+		elseif( $this->multiple ){
 			$aids = array_map( 'intval', $aids );
 
 			// не больше чем разрешено...
-			if( count( $aids ) > (int) $this->data->multiple ){
-				$aids = array_slice( $aids, 0, $this->data->multiple );
+			if( count( $aids ) > (int) $this->multiple ){
+				$aids = array_slice( $aids, 0, $this->multiple );
 			}
 
 			$aids = implode( ',', $aids ); // must be separate!
@@ -656,7 +684,8 @@ class DemPoll {
 			"UPDATE $wpdb->democracy_q SET users_voted = (users_voted+1) WHERE id = %d", $this->id
 		) );
 
-		$this->data->users_voted++;
+		$this->users_voted++;
+		$this->data->users_voted++; // just in case
 
 		$this->blockVoting = true;
 		$this->has_voted   = true;
@@ -670,7 +699,7 @@ class DemPoll {
 			$this->insert_logs();
 		}
 
-		do_action_ref_array( 'dem_voted', [ $this->votedFor, $this->data, $this ] );
+		do_action_ref_array( 'dem_voted', [ $this->votedFor, $this ] );
 
 		return $this->votedFor;
 	}
@@ -679,15 +708,17 @@ class DemPoll {
 	 * Удаляет данные пользователя о голосовании.
 	 * Отменяет установленные $this->has_voted и $this->votedFor
 	 * Должна вызываться до вывода данных на экран
+	 *
+	 * @return void
 	 */
 	public function delete_vote() {
 
 		if( ! $this->id ){
-			return false;
+			return;
 		}
 
-		if( ! $this->data->revote ){
-			return false;
+		if( ! $this->revote ){
+			return;
 		}
 
 		// Прежде чем удалять, проверим включена ли опция ведения логов и есть ли записи о голосовании в БД,
@@ -708,11 +739,11 @@ class DemPoll {
 
 		$this->has_voted = false;
 		$this->votedFor = false;
-		$this->blockVoting = ! $this->data->open;
+		$this->blockVoting = ! $this->open;
 
 		$this->set_answers(); // переустановим ответы, если добавленный ответ был удален
 
-		do_action_ref_array( 'dem_vote_deleted', [ $this->data, $this ] );
+		do_action_ref_array( 'dem_vote_deleted', [ $this ] );
 	}
 
 	private function insert_democratic_answer( $answer ): int {
@@ -734,11 +765,11 @@ class DemPoll {
 
 		// добавлен из фронта - демократический вариант ответа не важно какой юзер!
 		$added_by = $cuser_id ?: IP::get_user_ip();
-		$added_by .= ( ! $cuser_id || (int) $this->data->added_user !== (int) $cuser_id ) ? '-new' : '';
+		$added_by .= ( ! $cuser_id || (int) $this->added_user !== (int) $cuser_id ) ? '-new' : '';
 
 		// если есть порядок, ставим 'max+1'
-		$aorder = $this->data->answers[0]->aorder > 0
-			? max( wp_list_pluck( $this->data->answers, 'aorder' ) ) + 1
+		$aorder = reset( $this->answers )->aorder > 0
+			? max( wp_list_pluck( $this->answers, 'aorder' ) ) + 1
 			: 0;
 
 		$inserted = $wpdb->insert( $wpdb->democracy_a, [
@@ -767,9 +798,9 @@ class DemPoll {
 			$this->votedFor = reset( $res )->aids;
 		}
 		// проверяем куки
-		elseif( isset( $_COOKIE[ $this->cookey ] ) && ( $_COOKIE[ $this->cookey ] != 'notVote' ) ){
+		elseif( isset( $_COOKIE[ $this->cookie_key ] ) && ( $_COOKIE[ $this->cookie_key ] != 'notVote' ) ){
 			$this->has_voted = true;
-			$this->votedFor = preg_replace( '/[^0-9, ]/', '', $_COOKIE[ $this->cookey ] ); // чистим
+			$this->votedFor = preg_replace( '/[^0-9, ]/', '', $_COOKIE[ $this->cookie_key ] ); // чистим
 		}
 	}
 
@@ -835,18 +866,18 @@ class DemPoll {
 		$expire = $expire ?: $this->get_cookie_expire_time();
 		$value = $value ?: $this->votedFor;
 
-		setcookie( $this->cookey, $value, $expire, COOKIEPATH );
+		setcookie( $this->cookie_key, $value, $expire, COOKIEPATH );
 
-		$_COOKIE[ $this->cookey ] = $value;
+		$_COOKIE[ $this->cookie_key ] = $value;
 	}
 
 	public function unset_cookie() {
-		setcookie( $this->cookey, null, strtotime( '-1 day' ), COOKIEPATH );
-		$_COOKIE[ $this->cookey ] = '';
+		setcookie( $this->cookie_key, null, strtotime( '-1 day' ), COOKIEPATH );
+		$_COOKIE[ $this->cookie_key ] = '';
 	}
 
 	/**
-	 * Устанавливает ответы в $this->poll->answers и сортирует их в нужном порядке.
+	 * Устанавливает ответы в $this->answers и сортирует их в нужном порядке.
 	 */
 	protected function set_answers() {
 		global $wpdb;
@@ -858,7 +889,7 @@ class DemPoll {
 		if( $answers ){
 			// не установлен порядок
 			if( ! $answers[0]->aorder ){
-				$ord = $this->data->answers_order ?: options()->order_answers;
+				$ord = $this->answers_order ?: options()->order_answers;
 
 				if( $ord === 'by_winner' || $ord == 1 ){
 					$answers = Helpers::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
@@ -873,8 +904,11 @@ class DemPoll {
 				$answers = Helpers::objects_array_sort( $answers, [ 'aorder' => 'asc' ] );
 			}
 		}
+		else {
+			$answers = [];
+		}
 
-		$this->data->answers = apply_filters( 'dem_set_answers', $answers, $this->data );
+		$this->answers = apply_filters( 'dem_set_answers', $answers, $this );
 	}
 
 	/**
