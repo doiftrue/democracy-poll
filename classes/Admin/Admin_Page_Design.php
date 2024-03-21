@@ -494,11 +494,11 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 		<ul class="group">
 			<li class="block polls-preview">
 				<?php
-				$poll = new \DemPoll();
+				$poll = new \DemPoll( 'rand' );
 
 				if( $poll->id ){
 					//$poll->has_voted = 1;
-					$answers = (array) wp_list_pluck( $poll->poll->answers, 'aid' );
+					$answers = (array) wp_list_pluck( $poll->data->answers, 'aid' );
 					$poll->votedFor = $answers ? $answers[ array_rand( $answers ) ] : false;
 
 					$fn__replace = static function( $val ) {

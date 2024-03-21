@@ -14,7 +14,9 @@ class DemPoll {
 
 	// id опроса, 0 или 'last'
 	public $id;
-	public $poll;
+
+	/** @var object|null */
+	public $data = null;
 
 	public $has_voted        = false;
 	public $votedFor         = '';    // за какие ответы голосовал
@@ -29,64 +31,59 @@ class DemPoll {
 	// Название ключа cookie
 	public $cookey;
 
-	public function __construct( $id = 0 ) {
+	/**
+	 * @param object|int $ident  Poll id to get. Or poll object from DB. Or use 'rand', 'last' strings.
+	 */
+	public function __construct( $ident = null ) {
 		global $wpdb;
 
-		if( ! $id ){
-			$poll = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q WHERE active = 1 ORDER BY RAND() LIMIT 1" );
-		}
-		elseif( $id === 'last' ){
-			$poll = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q WHERE open = 1 ORDER BY id DESC LIMIT 1" );
-		}
-		else{
-			$poll = self::get_poll_object( $id );
-		}
-
-		if( ! $poll ){
+		if( ! $ident ){
 			return;
 		}
 
-		// устанавливаем необходимые переменные
-		$this->id = (int) $poll->id;
+		$poll_obj = is_object( $ident ) ? $ident : self::get_poll_object( $ident );
+		if( ! $poll_obj ){
+			return;
+		}
 
-		// влияет на весь класс, важно!
+		$this->id = (int) $poll_obj->id;
 		if( ! $this->id ){
 			return;
 		}
 
 		$this->cookey = 'demPoll_' . $this->id;
-		$this->poll = $poll;
+		$this->data = $poll_obj;
 
 		// отключим демокраси опцию
 		if( options()->democracy_off ){
-			$this->poll->democratic = false;
+			$this->data->democratic = false;
 		}
 		// отключим опцию переголосования
 		if( options()->revote_off ){
-			$this->poll->revote = false;
+			$this->data->revote = false;
 		}
 
 		$this->set_voted_data();
 		$this->set_answers(); // установим свойство $this->poll->answers
 
 		// закрываем опрос т.к. срок закончился
-		if( $this->poll->end && $this->poll->open && ( current_time( 'timestamp' ) > $this->poll->end ) ){
+		if( $this->data->end && $this->data->open && ( current_time( 'timestamp' ) > $this->data->end ) ){
 			$wpdb->update( $wpdb->democracy_q, [ 'open' => 0 ], [ 'id' => $this->id ] );
 		}
 
 		// только для зарегистрированных
-		if( ( options()->only_for_users || $this->poll->forusers ) && ! is_user_logged_in() ){
+		if( ( options()->only_for_users || $this->data->forusers ) && ! is_user_logged_in() ){
 			$this->blockForVisitor = true;
 		}
 
 		// блокировка возможности голосовать
-		if( $this->blockForVisitor || ! $this->poll->open || $this->has_voted ){
+		if( $this->blockForVisitor || ! $this->data->open || $this->has_voted ){
 			$this->blockVoting = true;
 		}
 
 		if(
-			( ! $poll->show_results || options()->dont_show_results )
-			&& $poll->open
+			( ! $poll_obj->show_results || options()->dont_show_results )
+			&& $poll_obj->open
 			&& ( ! is_admin() || defined( 'DOING_AJAX' ) )
 		){
 			$this->not_show_results = true;
@@ -94,7 +91,7 @@ class DemPoll {
 	}
 
 	public function __isset( $var ) {
-		return isset( $this->poll->$var );
+		return isset( $this->data->$var );
 	}
 
 	public function __set( $name, $val ) {
@@ -102,21 +99,30 @@ class DemPoll {
 	}
 
 	public function __get( $var ) {
-		return $this->poll->$var ?? null;
+		return $this->data->$var ?? null;
 	}
 
 	/**
+	 * @param int|string $poll_id Poll id to get. Or use 'rand', 'last' strings.
+	 *
 	 * @return object|null
 	 */
 	public static function get_poll_object( $poll_id ) {
 		global $wpdb;
 
-		$poll = $wpdb->get_row( $wpdb->prepare(
-			"SELECT * FROM $wpdb->democracy_q WHERE id = %d LIMIT 1", $poll_id
-		) );
-		$poll = apply_filters( 'dem_get_poll', $poll, $poll_id );
+		if( 'rand' === $poll_id ){
+			$poll = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q WHERE active = 1 ORDER BY RAND() LIMIT 1" );
+		}
+		elseif( 'last' === $poll_id ){
+			$poll = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q WHERE open = 1 ORDER BY id DESC LIMIT 1" );
+		}
+		else {
+			$poll = $wpdb->get_row( $wpdb->prepare(
+				"SELECT * FROM $wpdb->democracy_q WHERE id = %d LIMIT 1", $poll_id
+			) );
+		}
 
-		return $poll;
+		return apply_filters( 'dem_get_poll', $poll, $poll_id );
 	}
 
 	/**
@@ -144,7 +150,7 @@ class DemPoll {
 		$js_opts = [
 			'ajax_url'         => plugin()->poll_ajax->ajax_url,
 			'pid'              => $this->id,
-			'max_answs'        => (int) ( $this->poll->multiple ?: 0 ),
+			'max_answs'        => (int) ( $this->data->multiple ?: 0 ),
 			'answs_max_height' => options()->answs_max_height,
 			'anim_speed'       => options()->anim_speed,
 			'line_anim_speed'  => (int) options()->line_anim_speed
@@ -152,16 +158,16 @@ class DemPoll {
 
 		$html .= '<div id="democracy-' . $this->id . '" class="democracy" data-opts=\'' . json_encode( $js_opts ) . '\' >';
 		$html .= $before_title ?: options()->before_title;
-		$html .= Kses::kses_html( $this->poll->question );
+		$html .= Kses::kses_html( $this->data->question );
 		$html .= $after_title ?: options()->after_title;
 
 		// изменяемая часть
 		$html .= $this->get_screen_basis( $show_screen );
 		// изменяемая часть
 
-		$html .= $this->poll->note ? '<div class="dem-poll-note">' . wpautop( $this->poll->note ) . '</div>' : '';
+		$html .= $this->data->note ? '<div class="dem-poll-note">' . wpautop( $this->data->note ) . '</div>' : '';
 
-		if( plugin()->cuser_can_edit_poll( $this->poll ) ){
+		if( plugin()->cuser_can_edit_poll( $this->data ) ){
 			$html .= '<a class="dem-edit-link" href="' . plugin()->edit_poll_url( $this->id ) . '" title="' . __( 'Edit poll', 'democracy-poll' ) . '"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1.5em" height="100%" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve"><path d="M617.8,203.4l175.8,175.8l-445,445L172.9,648.4L617.8,203.4z M927,161l-78.4-78.4c-30.3-30.3-79.5-30.3-109.9,0l-75.1,75.1 l175.8,175.8l87.6-87.6C950.5,222.4,950.5,184.5,927,161z M80.9,895.5c-3.2,14.4,9.8,27.3,24.2,23.8L301,871.8L125.3,696L80.9,895.5z"/></svg></a>';
 		}
 
@@ -203,7 +209,7 @@ class DemPoll {
 			}
 
 			// vote_screen
-			if( $this->poll->open ){
+			if( $this->data->open ){
 				$html .= $compress( $this->get_screen_basis( 'force_vote' ) );
 			}
 
@@ -260,7 +266,7 @@ class DemPoll {
 			return false;
 		}
 
-		$poll = $this->poll;
+		$poll = $this->data;
 
 		$auto_vote_on_select = ( ! $poll->multiple && $poll->revote && options()->hide_vote_button );
 
@@ -366,7 +372,7 @@ class DemPoll {
 			return false;
 		}
 
-		$poll = $this->poll;
+		$poll = $this->data;
 
 		// отсортируем по голосам
 		$answers = Helpers::objects_array_sort( $poll->answers, [ 'votes' => 'desc' ] );
@@ -582,13 +588,13 @@ class DemPoll {
 		$aids = array_filter( $aids );
 
 		// check the quantity
-		if( $this->poll->multiple > 1 && count( $aids ) > $this->poll->multiple ){
+		if( $this->data->multiple > 1 && count( $aids ) > $this->data->multiple ){
 			return new WP_Error( 'vote_err', __( 'ERROR: You select more number of answers than it is allowed...', 'democracy-poll' ) );
 		}
 
 		// Add user free answer
 		// Checks values of $aids array, trying to find string, if has - it's free answer
-		if( $this->poll->democratic ){
+		if( $this->data->democratic ){
 			$new_free_answer = false;
 
 			foreach( $aids as $k => $id ){
@@ -597,7 +603,7 @@ class DemPoll {
 					unset( $aids[ $k ] ); // remove from the common array, so that there is no this answer
 
 					// clear array because multiple voting is blocked
-					if( ! $this->poll->multiple ){
+					if( ! $this->data->multiple ){
 						$aids = [];
 					}
 					//break; !!!!NO
@@ -626,12 +632,12 @@ class DemPoll {
 			$AND = $wpdb->prepare( ' AND aid = %d LIMIT 1', $aids );
 		}
 		// many answers (multiple)
-		elseif( $this->poll->multiple ){
+		elseif( $this->data->multiple ){
 			$aids = array_map( 'intval', $aids );
 
 			// не больше чем разрешено...
-			if( count( $aids ) > (int) $this->poll->multiple ){
-				$aids = array_slice( $aids, 0, $this->poll->multiple );
+			if( count( $aids ) > (int) $this->data->multiple ){
+				$aids = array_slice( $aids, 0, $this->data->multiple );
 			}
 
 			$aids = implode( ',', $aids ); // must be separate!
@@ -650,7 +656,7 @@ class DemPoll {
 			"UPDATE $wpdb->democracy_q SET users_voted = (users_voted+1) WHERE id = %d", $this->id
 		) );
 
-		$this->poll->users_voted++;
+		$this->data->users_voted++;
 
 		$this->blockVoting = true;
 		$this->has_voted   = true;
@@ -664,7 +670,7 @@ class DemPoll {
 			$this->insert_logs();
 		}
 
-		do_action_ref_array( 'dem_voted', [ $this->votedFor, $this->poll, $this ] );
+		do_action_ref_array( 'dem_voted', [ $this->votedFor, $this->data, $this ] );
 
 		return $this->votedFor;
 	}
@@ -680,7 +686,7 @@ class DemPoll {
 			return false;
 		}
 
-		if( ! $this->poll->revote ){
+		if( ! $this->data->revote ){
 			return false;
 		}
 
@@ -702,11 +708,11 @@ class DemPoll {
 
 		$this->has_voted = false;
 		$this->votedFor = false;
-		$this->blockVoting = ! $this->poll->open;
+		$this->blockVoting = ! $this->data->open;
 
 		$this->set_answers(); // переустановим ответы, если добавленный ответ был удален
 
-		do_action_ref_array( 'dem_vote_deleted', [ $this->poll, $this ] );
+		do_action_ref_array( 'dem_vote_deleted', [ $this->data, $this ] );
 	}
 
 	private function insert_democratic_answer( $answer ): int {
@@ -728,11 +734,11 @@ class DemPoll {
 
 		// добавлен из фронта - демократический вариант ответа не важно какой юзер!
 		$added_by = $cuser_id ?: IP::get_user_ip();
-		$added_by .= ( ! $cuser_id || (int) $this->poll->added_user !== (int) $cuser_id ) ? '-new' : '';
+		$added_by .= ( ! $cuser_id || (int) $this->data->added_user !== (int) $cuser_id ) ? '-new' : '';
 
 		// если есть порядок, ставим 'max+1'
-		$aorder = $this->poll->answers[0]->aorder > 0
-			? max( wp_list_pluck( $this->poll->answers, 'aorder' ) ) + 1
+		$aorder = $this->data->answers[0]->aorder > 0
+			? max( wp_list_pluck( $this->data->answers, 'aorder' ) ) + 1
 			: 0;
 
 		$inserted = $wpdb->insert( $wpdb->democracy_a, [
@@ -852,7 +858,7 @@ class DemPoll {
 		if( $answers ){
 			// не установлен порядок
 			if( ! $answers[0]->aorder ){
-				$ord = $this->poll->answers_order ?: options()->order_answers;
+				$ord = $this->data->answers_order ?: options()->order_answers;
 
 				if( $ord === 'by_winner' || $ord == 1 ){
 					$answers = Helpers::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
@@ -868,7 +874,7 @@ class DemPoll {
 			}
 		}
 
-		$this->poll->answers = apply_filters( 'dem_set_answers', $answers, $this->poll );
+		$this->data->answers = apply_filters( 'dem_set_answers', $answers, $this->data );
 	}
 
 	/**
@@ -877,7 +883,6 @@ class DemPoll {
 	 */
 	protected function get_user_vote_logs(): array {
 		global $wpdb;
-
 
 		$WHERE = [
 			$wpdb->prepare( 'qid = %d', $this->id ),

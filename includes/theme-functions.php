@@ -283,18 +283,18 @@ function get_dem_polls( $args = [] ) {
 
 	foreach( $poll_ids as $poll_id ){
 
-		$DemPoll = new \DemPoll( $poll_id );
-		$poll = $DemPoll->poll;
+		$dem_poll = new \DemPoll( $poll_id );
+		$poll = $dem_poll->data;
 
 		if( $rg->return === 'objects' ){
-			$out[] = $DemPoll;
+			$out[] = $dem_poll;
 			continue;
 		}
 
 		// if return html is set
-		$screen = isset( $_REQUEST['dem_act'] ) ? dem__query_poll_screen_choose( $DemPoll ) : $rg->screen;
+		$screen = isset( $_REQUEST['dem_act'] ) ? dem__query_poll_screen_choose( $dem_poll ) : $rg->screen;
 
-		$elm_html = $DemPoll->get_screen( $screen, $rg->before_title, $rg->after_title );
+		$elm_html = $dem_poll->get_screen( $screen, $rg->before_title, $rg->after_title );
 
 		// in posts
 		if(

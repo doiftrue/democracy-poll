@@ -191,7 +191,7 @@ class Plugin {
 	/**
 	 * Check if current or specified user can edit specified poll.
 	 *
-	 * @param object|string|int $poll  Poll object.
+	 * @param object|int $poll  Poll object or poll id.
 	 */
 	public function cuser_can_edit_poll( $poll ): bool {
 
@@ -208,11 +208,7 @@ class Plugin {
 			$poll = \DemPoll::get_poll_object( $poll );
 		}
 
-		if( $poll && (int) $poll->added_user === (int) get_current_user_id() ){
-			return true;
-		}
-
-		return false;
+		return $poll && (int) $poll->added_user === (int) get_current_user_id();
 	}
 
 	public function get_minified_styles_once(): string {
