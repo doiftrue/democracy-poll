@@ -2,11 +2,13 @@
 
 namespace DemocracyPoll\Helpers;
 
+use function DemocracyPoll\options;
+
 class IP {
 
 	public static function get_user_ip(): string {
 
-		if( demopt()->soft_ip_detect ){
+		if( options()->soft_ip_detect ){
 			$ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? ''; // cloudflare
 
 			filter_var( $ip, FILTER_VALIDATE_IP ) || ( $ip = $_SERVER['HTTP_CLIENT_IP'] ?? '' );
@@ -76,7 +78,7 @@ class IP {
 	 *
 	 * @return array Данные в виде массива.
 	 */
-	public static function get_ip_info( string $ip = '' ) {
+	public static function get_ip_info( string $ip = '' ): array {
 
 		if( ! $ip ){
 			$ip = self::get_user_ip();

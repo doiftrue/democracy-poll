@@ -2,6 +2,9 @@
 
 namespace DemocracyPoll\Admin;
 
+use function DemocracyPoll\plugin;
+use function DemocracyPoll\options;
+
 class Admin_Page_Logs implements Admin_Subpage_Interface {
 
 	/** @var Admin_Page */
@@ -19,7 +22,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 	}
 
 	public function request_handler(  ){
-		if( ! democr()->super_access || ! Admin_Page::check_nonce() ){
+		if( ! plugin()->super_access || ! Admin_Page::check_nonce() ){
 			return;
 		}
 
@@ -43,28 +46,28 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 	public function render() {
 
 		// no access
-		if( $this->list_table->poll_id && ! democr()->cuser_can_edit_poll( $this->list_table->poll_id ) ){
-			democr()->msg->add_error( 'Sorry, you are not allowed to access this page.' );
+		if( $this->list_table->poll_id && ! plugin()->cuser_can_edit_poll( $this->list_table->poll_id ) ){
+			plugin()->msg->add_error( 'Sorry, you are not allowed to access this page.' );
 			echo $this->admpage->subpages_menu();
 
 			return;
 		}
 
-		if( ! demopt()->keep_logs ){
-			democr()->msg->add_warn( __( 'Logs records turned off in the settings - logs are not recorded.', 'democracy-poll' ) );
+		if( ! options()->keep_logs ){
+			plugin()->msg->add_warn( __( 'Logs records turned off in the settings - logs are not recorded.', 'democracy-poll' ) );
 		}
 
 		echo $this->admpage->subpages_menu();
 
 		$this->list_table->table_title();
 
-		if( democr()->super_access ){
+		if( plugin()->super_access ){
 			global $wpdb;
 			$count = $wpdb->get_var(
 				"SELECT count(*) FROM $wpdb->democracy_log WHERE qid IN (SELECT id FROM $wpdb->democracy_q WHERE open = 0)"
 			);
 
-			$del_new_marks_button = demopt()->democracy_off
+			$del_new_marks_button = options()->democracy_off
 				? ''
 				: sprintf( '<a class="button button-small" href="%s">%s</a>',
 					esc_url( Admin_Page::add_nonce( $_SERVER['REQUEST_URI'] . '&dem_del_new_mark' ) ),
@@ -114,7 +117,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 
 		$res = $wpdb->query( "DELETE FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $log_ids ) ) . ")" );
 
-		democr()->msg->add_ok( $res
+		plugin()->msg->add_ok( $res
 			? sprintf( __( 'Lines deleted: %s', 'democracy-poll' ), $res )
 			: __( 'Failed to delete', 'democracy-poll' )
 		);
@@ -185,7 +188,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 		// now, delete logs itself
 		$res = $wpdb->query( "DELETE FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $log_ids ) ) . ")" );
 
-		democr()->msg->add_ok( $res
+		plugin()->msg->add_ok( $res
 			? sprintf(
 				__( 'Removed logs: %d. Removed answers:%d. Removed users %d.', 'democracy-poll' ),
 				$res, $minus_answ_sum, $minus_users_sum

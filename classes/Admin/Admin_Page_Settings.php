@@ -2,6 +2,9 @@
 
 namespace DemocracyPoll\Admin;
 
+use function DemocracyPoll\plugin;
+use function DemocracyPoll\options;
+
 class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 	/** @var Admin_Page */
@@ -15,15 +18,15 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 	}
 
 	public function request_handler(){
-		if( ! democr()->super_access || ! Admin_Page::check_nonce() ){
+		if( ! plugin()->super_access || ! Admin_Page::check_nonce() ){
 			return;
 		}
 
 		if( isset( $_POST['dem_save_main_options'] ) ){
-			$up = demopt()->update_options( 'main' );
+			$up = options()->update_options( 'main' );
 		}
 		if( isset( $_POST['dem_reset_main_options'] ) ){
-			$up = demopt()->reset_options( 'main' );
+			$up = options()->reset_options( 'main' );
 		}
 
 		// запрос на создание страницы архива
@@ -35,7 +38,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 	public function render() {
 		echo $this->admpage->subpages_menu();
 
-		if( ! democr()->super_access ){
+		if( ! plugin()->super_access ){
 			return;
 		}
 
@@ -48,7 +51,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[keep_logs]" <?php checked( demopt()->keep_logs, 1 ) ?> />
+							       name="dem[keep_logs]" <?php checked( options()->keep_logs, 1 ) ?> />
 							<?= esc_html__( 'Log data & take visitor IP into consideration? (recommended)', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'Saves data into Data Base. Forbids to vote several times from a single IP or to same WordPress user. If a user is logged in, then his voting is checked by WP account. If a user is not logged in, then checks the IP address. The negative side of IP checks is that a site may be visited from an enterprise network (with a common IP), so all users from this network are allowed to vote only once. If this option is disabled the voting is checked by Cookies only. Default enabled.', 'democracy-poll' ) ?></em>
@@ -56,7 +59,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 					<li class="block">
 						<label>
-							<input type="number" step="1" min="0" value="<?= (float) demopt()->cookie_days ?>"
+							<input type="number" step="1" min="0" value="<?= (float) options()->cookie_days ?>"
 							       name="dem[cookie_days]" />
 							<?= esc_html__( 'How many days to keep Cookies alive?', 'democracy-poll' ) ?>
 						</label>
@@ -69,23 +72,23 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 					<li class="block">
 						<label><?= esc_html__( 'HTML tags to wrap the poll title.', 'democracy-poll' ) ?></label><br>
-						<input type="text" size="35" value="<?= esc_attr( demopt()->before_title ) ?>"
+						<input type="text" size="35" value="<?= esc_attr( options()->before_title ) ?>"
 						       name="dem[before_title]"/>
 						<i><?= esc_html__( 'poll\'s question', 'democracy-poll' ) ?></i>
-						<input type="text" size="15" value="<?= esc_attr( demopt()->after_title ) ?>"
+						<input type="text" size="15" value="<?= esc_attr( options()->after_title ) ?>"
 						       name="dem[after_title]"/>
 						<em><?= wp_kses_post( __( 'Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>.', 'democracy-poll' ) ) ?></em>
 					</li>
 
 					<li class="block">
 						<label>
-							<input type="text" size="10" name="dem[archive_page_id]" value="<?= (int) demopt()->archive_page_id ?>" />
+							<input type="text" size="10" name="dem[archive_page_id]" value="<?= (int) options()->archive_page_id ?>" />
 							<?= esc_html__( 'Polls archive page ID.', 'democracy-poll' ) ?>
 						</label>
 						<?php
-						if( demopt()->archive_page_id ){
+						if( options()->archive_page_id ){
 							echo sprintf( '<a href="%s">%s</a>',
-								get_permalink( demopt()->archive_page_id ),
+								get_permalink( options()->archive_page_id ),
 								__( 'Go to archive page', 'democracy-poll' )
 							);
 						}
@@ -103,7 +106,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 					<li class="block">
 						<select name="dem[order_answers]">
-							<?= \DemocracyPoll\Helpers\Helpers::answers_order_select_options( demopt()->order_answers ) ?>
+							<?= \DemocracyPoll\Helpers\Helpers::answers_order_select_options( options()->order_answers ) ?>
 						</select>
 						<?= esc_html__( 'How to sort the answers during voting, if they don\'t have order? (default option)', 'democracy-poll' ) ?>
 						<br>
@@ -113,7 +116,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[only_for_users]" <?php checked( demopt()->only_for_users, 1 ) ?> />
+							       name="dem[only_for_users]" <?php checked( options()->only_for_users, 1 ) ?> />
 							<?= esc_html__( 'Only registered users allowed to vote (global option)', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'This option  is available for each poll separately, but if you heed you can turn ON the option for all polls at once, just tick.', 'democracy-poll' ) ?></em>
@@ -122,7 +125,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[democracy_off]" <?php checked( demopt()->democracy_off, 1 ) ?> />
+							       name="dem[democracy_off]" <?php checked( options()->democracy_off, 1 ) ?> />
 							<?= esc_html__( 'Prohibit users to add new answers (global Democracy option).', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'This option  is available for each poll separately, but if you heed you can turn OFF the option for all polls at once, just tick.', 'democracy-poll' ) ?></em>
@@ -131,7 +134,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[revote_off]" <?php checked( demopt()->revote_off, 1 ) ?> />
+							       name="dem[revote_off]" <?php checked( options()->revote_off, 1 ) ?> />
 							<?= esc_html__( 'Remove the Revote possibility (global option).', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'This option  is available for each poll separately, but if you heed you can turn OFF the option for all polls at once, just tick.', 'democracy-poll' ) ?></em>
@@ -140,7 +143,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[dont_show_results]" <?php checked( demopt()->dont_show_results, 1 ) ?> />
+							       name="dem[dont_show_results]" <?php checked( options()->dont_show_results, 1 ) ?> />
 							<?= esc_html__( 'Don\'t show poll results (global option).', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'If checked, user can\'t see poll results if voting is open.', 'democracy-poll' ) ?></em>
@@ -149,7 +152,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[dont_show_results_link]" <?php checked( demopt()->dont_show_results_link, 1 ) ?> />
+							       name="dem[dont_show_results_link]" <?php checked( options()->dont_show_results_link, 1 ) ?> />
 							<?= esc_html__( 'Don\'t show poll results link (global option).', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'Users can see results after vote.', 'democracy-poll' ) ?></em>
@@ -158,7 +161,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[hide_vote_button]" <?php checked( demopt()->hide_vote_button, 1 ) ?> />
+							       name="dem[hide_vote_button]" <?php checked( options()->hide_vote_button, 1 ) ?> />
 							<?= esc_html__( 'Hide vote button.', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'Hide vote button if it is NOT multiple poll with revote option. User will vote by clicking on answer itself.', 'democracy-poll' ) ?></em>
@@ -167,7 +170,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[post_metabox_off]" <?php checked( demopt()->post_metabox_off, 1 ) ?> />
+							       name="dem[post_metabox_off]" <?php checked( options()->post_metabox_off, 1 ) ?> />
 							<?= esc_html__( 'Dasable post metabox.', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'Check this to dasable polls metabox functionality for posts where you can attached poll to a post...', 'democracy-poll' ) ?></em>
@@ -177,9 +180,9 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[force_cachegear]" <?php checked( demopt()->force_cachegear, 1 ) ?> />
+							       name="dem[force_cachegear]" <?php checked( options()->force_cachegear, 1 ) ?> />
 							<?php
-							list( $cache_status, $cache_style ) = democr()->is_cachegear_on
+							list( $cache_status, $cache_style ) = plugin()->is_cachegear_on
 								? [ __( 'ON', 'democracy-poll' ), 'color:#05A800' ]
 								: [ __( 'OFF', 'democracy-poll' ), 'color:#FF1427' ];
 
@@ -196,7 +199,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[inline_js_css]" <?php checked( demopt()->inline_js_css, 1 ) ?> />
+							       name="dem[inline_js_css]" <?php checked( options()->inline_js_css, 1 ) ?> />
 							<?= esc_html__( 'Add styles and scripts directly in the HTML code (recommended)', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'Check to make the plugin\'s styles and scripts include directly into HTML code, but not as links to .css and .js files. So you will save 2 requests to the server - it speeds up page download.', 'democracy-poll' ) ?></em>
@@ -205,7 +208,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[toolbar_menu]" <?php checked( demopt()->toolbar_menu, 1 ) ?> />
+							       name="dem[toolbar_menu]" <?php checked( options()->toolbar_menu, 1 ) ?> />
 							<?= esc_html__( 'Add plugin menu on the toolbar?', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'Uncheck to remove the plugin menu from the toolbar.', 'democracy-poll' ) ?></em>
@@ -214,7 +217,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[tinymce_button]" <?php checked( demopt()->tinymce_button, 1 ) ?> />
+							       name="dem[tinymce_button]" <?php checked( options()->tinymce_button, 1 ) ?> />
 							<?= esc_html__( 'Add fast Poll insert button to WordPress visual editor (TinyMCE)?', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'Uncheck to disable button in visual editor.', 'democracy-poll' ) ?></em>
@@ -223,7 +226,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[soft_ip_detect]" <?php checked( demopt()->soft_ip_detect, 1 ) ?> />
+							       name="dem[soft_ip_detect]" <?php checked( options()->soft_ip_detect, 1 ) ?> />
 							<?= esc_html__( 'Check if you see something like "no_IP__123" in IP column on logs page. (not recommended)', 'democracy-poll' ) ?>
 							<?= esc_html__( 'Or if IP detection is wrong. (for cloudflare)', 'democracy-poll' ) ?>
 						</label>
@@ -231,7 +234,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					</li>
 
 					<?php
-					if( democr()->super_access ){
+					if( plugin()->super_access ){
 						$_options = '';
 
 						foreach( array_reverse( get_editable_roles() ) as $role => $details ){
@@ -244,7 +247,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 							$_options .= sprintf( '<option value="%s" %s>%s</option>',
 								esc_attr( $role ),
-								in_array( $role, (array) demopt()->access_roles ) ? ' selected="selected"' : '',
+								in_array( $role, (array) options()->access_roles ) ? ' selected="selected"' : '',
 								translate_user_role( $details['name'] )
 							);
 						}
@@ -292,7 +295,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[disable_js]" <?php checked( demopt()->disable_js, 1 ) ?> />
+							       name="dem[disable_js]" <?php checked( options()->disable_js, 1 ) ?> />
 							<?= esc_html__( 'Don\'t connect JS files. (Debug)', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'If checked, the plugin\'s .js file will NOT be connected to front end. Enable this option to test the plugin\'s work without JavaScript.', 'democracy-poll' ) ?></em>
@@ -301,7 +304,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[show_copyright]" <?php checked( demopt()->show_copyright, 1 ) ?> />
+							       name="dem[show_copyright]" <?php checked( options()->show_copyright, 1 ) ?> />
 							<?= esc_html__( 'Show copyright', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'Link to plugin page is shown on front page only as a &copy; icon. It helps visitors to learn about the plugin and install it for themselves. Please don\'t disable this option without urgent needs. Thanks!', 'democracy-poll' ) ?></em>
@@ -310,7 +313,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1"
-							       name="dem[use_widget]" <?php checked( demopt()->use_widget, 1 ) ?> />
+							       name="dem[use_widget]" <?php checked( options()->use_widget, 1 ) ?> />
 							<?= esc_html__( 'Widget', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'Check to activate the widget.', 'democracy-poll' ) ?></em>
@@ -363,7 +366,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 		}
 
 		// обновляем опцию плагина
-		demopt()->update_single_option( 'archive_page_id', $page_id );
+		options()->update_single_option( 'archive_page_id', $page_id );
 
 		wp_redirect( remove_query_arg( 'dem_create_archive_page' ) );
 	}

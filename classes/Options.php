@@ -232,8 +232,8 @@ class Options {
 		$up = update_option( self::OPT_NAME, $this->opt );
 
 		$up
-			? democr()->msg->add_ok( __( 'Updated', 'democracy-poll' ) )
-			: democr()->msg->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
+			? plugin()->msg->add_ok( __( 'Updated', 'democracy-poll' ) )
+			: plugin()->msg->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
 
 		return (bool) $up;
 	}
@@ -253,7 +253,7 @@ class Options {
 			}
 			elseif( $key === 'access_roles' ){
 				// sanitize anyway
-				if( democr()->super_access ){
+				if( plugin()->super_access ){
 					$value = array_map( 'sanitize_key', (array) $value );
 				}
 				// leave as it is - only admin can change 'access_roles'

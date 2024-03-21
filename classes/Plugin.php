@@ -26,7 +26,7 @@ class Plugin {
 	/** @var Admin */
 	public $admin;
 
-	/** @var Helpers\Messages  */
+	/** @var Messages  */
 	public $msg;
 
 	/** @var bool whether page caching is enabled */
@@ -69,7 +69,7 @@ class Plugin {
 		}
 
 		// menu in the admin bar
-		if( $this->admin_access && demopt()->toolbar_menu ){
+		if( $this->admin_access && options()->toolbar_menu ){
 			add_action( 'admin_bar_menu', [ $this, 'add_toolbar_node' ], 99 );
 		}
 
@@ -106,9 +106,9 @@ class Plugin {
 		$this->admin_access = $is_adminor;
 
 		// open admin manage access for other roles
-		if( ! $this->admin_access && demopt()->access_roles ){
+		if( ! $this->admin_access && options()->access_roles ){
 			foreach( wp_get_current_user()->roles as $role ){
-				if( in_array( $role, demopt()->access_roles, true ) ){
+				if( in_array( $role, options()->access_roles, true ) ){
 					$this->admin_access = true;
 					break;
 				}
@@ -118,7 +118,7 @@ class Plugin {
 
 	private function set_is_cachegear_on() {
 
-		if( demopt()->force_cachegear ){
+		if( options()->force_cachegear ){
 			$this->is_cachegear_on = true;
 			return;
 		}
@@ -239,7 +239,7 @@ class Plugin {
 		}
 
 		// inline HTML
-		if( demopt()->inline_js_css ){
+		if( options()->inline_js_css ){
 			wp_enqueue_script( 'jquery' );
 			add_action( ( is_admin() ? 'admin_footer' : 'wp_footer' ), [ __CLASS__, '_add_js_wp_footer' ], 0 );
 		}

@@ -1,14 +1,16 @@
 <?php
 
-function democr(): \DemocracyPoll\Plugin {
+namespace DemocracyPoll;
+
+function plugin(): Plugin {
 	static $inst;
-	$inst || $inst = new \DemocracyPoll\Plugin();
+	$inst || $inst = new Plugin();
 
 	return $inst;
 }
 
-function demopt(): \DemocracyPoll\Options {
-	return democr()->opt;
+function options(): Options {
+	return plugin()->opt;
 }
 
 

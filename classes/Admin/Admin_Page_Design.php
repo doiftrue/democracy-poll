@@ -2,6 +2,9 @@
 
 namespace DemocracyPoll\Admin;
 
+use function DemocracyPoll\plugin;
+use function DemocracyPoll\options;
+
 class Admin_Page_Design implements Admin_Subpage_Interface {
 
 	/** @var Admin_Page */
@@ -31,27 +34,27 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 	}
 
 	public function request_handler(  ){
-		if( ! democr()->super_access || ! Admin_Page::check_nonce() ){
+		if( ! plugin()->super_access || ! Admin_Page::check_nonce() ){
 			return;
 		}
 
 		if( isset( $_POST['dem_save_design_options'] ) ){
-			$up = demopt()->update_options( 'design' );
+			$up = options()->update_options( 'design' );
 		}
 		if( isset( $_POST['dem_reset_design_options'] ) ){
-			$up = demopt()->reset_options( 'design' );
+			$up = options()->reset_options( 'design' );
 		}
 
 		// hack to immediately apply the option change
 		if( $up ){
-			demopt()->toolbar_menu
-				? add_action( 'admin_bar_menu', [ democr(), 'add_toolbar_node', ], 99 )
-				: remove_action( 'admin_bar_menu', [ democr(), 'add_toolbar_node' ], 99 );
+			options()->toolbar_menu
+				? add_action( 'admin_bar_menu', [ plugin(), 'add_toolbar_node', ], 99 )
+				: remove_action( 'admin_bar_menu', [ plugin(), 'add_toolbar_node' ], 99 );
 		}
 	}
 
 	public function render() {
-		if( ! democr()->super_access ){
+		if( ! plugin()->super_access ){
 			return;
 		}
 
@@ -74,7 +77,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 					<li class="block selectable_els">
 						<label>
 							<input type="radio" name="dem[css_file_name]"
-							       value="" <?php checked( demopt()->css_file_name, '' ) ?> />
+							       value="" <?php checked( options()->css_file_name, '' ) ?> />
 							<span class="radio_content"><?= esc_html__( 'No theme', 'democracy-poll' ) ?></span>
 						</label>
 						<?php
@@ -83,7 +86,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 							?>
 							<label>
 								<input type="radio" name="dem[css_file_name]"
-								       value="<?= $filename ?>" <?php checked( demopt()->css_file_name, $filename ) ?> />
+								       value="<?= $filename ?>" <?php checked( options()->css_file_name, $filename ) ?> />
 								<span class="radio_content"><?= $filename ?></span>
 							</label>
 							<?php
@@ -97,12 +100,12 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 					<li class="title"><?= esc_html__( 'Other settings', 'democracy-poll' ); ?></li>
 					<li class="block">
 						<input type="number" min="-1" style="width:90px;" name="dem[answs_max_height]"
-						       value="<?= esc_attr( demopt()->answs_max_height ) ?>">
+						       value="<?= esc_attr( options()->answs_max_height ) ?>">
 						<?= esc_html__( 'Max height of the poll in px. When poll has very many answers, it\'s better to collapse it. Set \'-1\', in order to disable this option. Default 500.', 'democracy-poll' ) ?>
 					</li>
 					<li class="block">
 						<input type="number" min="0" style="width:90px;" name="dem[anim_speed]"
-						       value="<?= esc_attr( demopt()->anim_speed ) ?>">
+						       value="<?= esc_attr( options()->anim_speed ) ?>">
 						<?= esc_html__( 'Animation speed in milliseconds.', 'democracy-poll' ) ?>
 					</li>
 
@@ -116,13 +119,13 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 						<?= esc_html__( 'How to fill (paint) the progress of each answer?', 'democracy-poll' ) ?><br>
 						<label style="margin-left:1em;">
 							<input type="radio" name="dem[graph_from_total]"
-							       value="0" <?php checked( demopt()->graph_from_total, 0 ) ?> />
+							       value="0" <?php checked( options()->graph_from_total, 0 ) ?> />
 							<?= esc_html__( 'winner - 100%, others as % of the winner', 'democracy-poll' ) ?>
 						</label>
 						<br>
 						<label style="margin-left:1em;">
 							<input type="radio" name="dem[graph_from_total]"
-							       value="1" <?php checked( demopt()->graph_from_total, 1 ) ?> />
+							       value="1" <?php checked( options()->graph_from_total, 1 ) ?> />
 							<?= esc_html__( 'as percent of all votes', 'democracy-poll' ) ?>
 						</label>
 
@@ -130,35 +133,35 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 
 						<label>
 							<input type="text" class="iris_color" name="dem[line_fill]"
-							       value="<?= demopt()->line_fill ?>"/>
+							       value="<?= options()->line_fill ?>"/>
 							<?= esc_html__( 'Line Color', 'democracy-poll' ) ?>
 						</label>
 						<br>
 
 						<label>
 							<input type="text" class="iris_color" name="dem[line_fill_voted]"
-							       value="<?= demopt()->line_fill_voted ?>">
+							       value="<?= options()->line_fill_voted ?>">
 							<?= esc_html__( 'Line color (for voted user)', 'democracy-poll' ) ?>
 						</label>
 						<br>
 
 						<label>
 							<input type="text" class="iris_color" name="dem[line_bg]"
-							       value="<?= demopt()->line_bg ?>"/>
+							       value="<?= options()->line_bg ?>"/>
 							<?= esc_html__( 'Background color', 'democracy-poll' ) ?>
 						</label>
 						<br><br>
 
 						<label>
 							<input type="number" style="width:90px" name="dem[line_height]"
-							       value="<?= demopt()->line_height ?>"/> px
+							       value="<?= options()->line_height ?>"/> px
 							<?= esc_html__( 'Line height', 'democracy-poll' ) ?>
 						</label>
 						<br><br>
 
 						<label>
 							<input type="number" style="width:90px" name="dem[line_anim_speed]"
-							       value="<?= (int) demopt()->line_anim_speed ?>"/>
+							       value="<?= (int) options()->line_anim_speed ?>"/>
 							<?= esc_html__( 'Progress line animation effect speed (default 1500). Set 0 to disable animation.', 'democracy-poll' ) ?>
 						</label>
 
@@ -172,7 +175,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 						<div style="float:left;">
 							<label style="padding:0em 3em 1em;">
 								<input type="radio" value=""
-								       name="dem[checkradio_fname]" <?php checked( demopt()->checkradio_fname, '' ) ?>>
+								       name="dem[checkradio_fname]" <?php checked( options()->checkradio_fname, '' ) ?>>
 								<span class="radio_content">
 								<div style="padding:1.25em;"></div>
 								<?= esc_html__( 'No (default)', 'democracy-poll' ); ?>
@@ -202,7 +205,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 							<div style="float:left;">
 								<style><?= $styles ?></style>
 								<label style="padding:0 3em 1em;">
-									<input type="radio" value="<?= $fname ?>" name="dem[checkradio_fname]" <?= checked( demopt()->checkradio_fname, $fname, 0 ) ?>>
+									<input type="radio" value="<?= $fname ?>" name="dem[checkradio_fname]" <?= checked( options()->checkradio_fname, $fname, 0 ) ?>>
 									<span class="radio_content">
 										<div style="padding:.5em;">
 											<label class="<?= $unique ?>dem__radio_label">
@@ -239,7 +242,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 						<div class="btn_select_wrap selectable_els">
 							<label>
 								<input type="radio" value=""
-								       name="dem[css_button]" <?php checked( demopt()->css_button, '' ) ?> />
+								       name="dem[css_button]" <?php checked( options()->css_button, '' ) ?> />
 								<span class="radio_content">
 									<input type="button" value="<?= esc_attr__( 'No (default)', 'democracy-poll' ); ?>"/>
 								</span>
@@ -258,14 +261,14 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 								$css = "/*reset*/\n.$button_class{position: relative; display:inline-block; text-decoration: none; user-select: none; outline: none; line-height: 1; border:0;}\n";
 								$css .= str_replace( 'dem-button', $button_class, file_get_contents( $file ) ); // стили кнопки
 
-								if( demopt()->css_button ){
-									$bbg = demopt()->btn_bg_color;
-									$bcolor = demopt()->btn_color;
-									$bbcolor = demopt()->btn_border_color;
+								if( options()->css_button ){
+									$bbg = options()->btn_bg_color;
+									$bcolor = options()->btn_color;
+									$bbcolor = options()->btn_border_color;
 									// hover
-									$bh_bg = demopt()->btn_hov_bg;
-									$bh_color = demopt()->btn_hov_color;
-									$bh_bcolor = demopt()->btn_hov_border_color;
+									$bh_bg = options()->btn_hov_bg;
+									$bh_color = options()->btn_hov_color;
+									$bh_bcolor = options()->btn_hov_border_color;
 
 									if( $bbg ){
 										$css .= "\n.$button_class{ background-color:$bbg !important; }\n";
@@ -291,7 +294,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 
 								<label>
 									<input type="radio" value="<?= esc_attr( $fname ) ?>"
-									       name="dem[css_button]" <?php checked( demopt()->css_button, $fname ) ?> />
+									       name="dem[css_button]" <?php checked( options()->css_button, $fname ) ?> />
 									<span class="radio_content">
 										<input type="button" value="<?= esc_attr( $fname ) ?>"
 										       class="<?= $button_class ?>">
@@ -308,30 +311,30 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 							<?= esc_html__( 'Button colors', 'democracy-poll' ) ?><br>
 
 							<input type="text" class="iris_color" name="dem[btn_bg_color]"
-							       value="<?= demopt()->btn_bg_color ?>">
+							       value="<?= options()->btn_bg_color ?>">
 							<?= esc_html__( 'Bg color', 'democracy-poll' ) ?><br>
 
 							<input type="text" class="iris_color" name="dem[btn_color]"
-							       value="<?= demopt()->btn_color ?>">
+							       value="<?= options()->btn_color ?>">
 							<?= esc_html__( 'Text Color', 'democracy-poll' ) ?><br>
 
 							<input type="text" class="iris_color" name="dem[btn_border_color]"
-							       value="<?= demopt()->btn_border_color ?>">
+							       value="<?= options()->btn_border_color ?>">
 							<?= esc_html__( 'Border Color', 'democracy-poll' ) ?>
 						</p>
 						<p style="float:left; margin-right:3em;">
 							<?= esc_html__( 'Hover button colors', 'democracy-poll' ) ?><br>
 
 							<input type="text" class="iris_color" name="dem[btn_hov_bg]"
-							       value="<?= demopt()->btn_hov_bg ?>">
+							       value="<?= options()->btn_hov_bg ?>">
 							<?= esc_html__( 'Bg color', 'democracy-poll' ) ?><br>
 
 							<input type="text" class="iris_color" name="dem[btn_hov_color]"
-							       value="<?= demopt()->btn_hov_color ?>">
+							       value="<?= options()->btn_hov_color ?>">
 							<?= esc_html__( 'Text Color', 'democracy-poll' ) ?><br>
 
 							<input type="text" class="iris_color" name="dem[btn_hov_border_color]"
-							       value="<?= demopt()->btn_hov_border_color ?>">
+							       value="<?= options()->btn_hov_border_color ?>">
 							<?= esc_html__( 'Border Color', 'democracy-poll' ) ?>
 						</p>
 						<div class="clearfix"></div>
@@ -341,7 +344,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 
 						<!--<hr>-->
 						<label style="margin-top:3em;">
-							<input type="text" name="dem[btn_class]" value="<?= demopt()->btn_class ?>">
+							<input type="text" name="dem[btn_class]" value="<?= options()->btn_class ?>">
 							<em><?= esc_html__( 'An additional css class for all buttons in the poll. When the template has a special class for buttons, for example <code>btn btn-info</code>', 'democracy-poll' ) ?></em>
 						</label>
 					</li>
@@ -357,7 +360,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 						<div class="selectable_els">
 							<label class="lo_item" style="display: block; height:30px;">
 								<input type="radio" value=""
-								       name="dem[loader_fname]" <?php checked( demopt()->loader_fname, '' ) ?>>
+								       name="dem[loader_fname]" <?php checked( options()->loader_fname, '' ) ?>>
 								<span class="radio_content"><?= esc_html__( 'No (dots...)', 'democracy-poll' ); ?></span>
 							</label>
 							<br>
@@ -375,7 +378,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 								echo '<div class="clearfix"></div>' . "<h2 style='text-align:center;'>$ex</h2>"; //'';
 
 								// поправим стили
-								if( demopt()->loader_fill ){
+								if( options()->loader_fill ){
 									preg_match_all( '~\.dem-loader\s+\.(?:fill|stroke|css-fill)[^\{]*\{.*?\}~s', $demcss['base_css'], $match );
 									echo "<style>" . str_replace( '.dem-loader', '.loader', implode( "\n", $match[0] ) ) . "</style>";
 								}
@@ -384,7 +387,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 									?>
 									<label class="lo_item <?= $ex ?>">
 										<input type="radio" value="<?= $fname ?>"
-										       name="dem[loader_fname]" <?php checked( demopt()->loader_fname, $fname ) ?>>
+										       name="dem[loader_fname]" <?php checked( options()->loader_fname, $fname ) ?>>
 										<span class="radio_content">
 											<div class="loader"><?= file_get_contents( $file ) ?></div>
 											<?php //echo $ex
@@ -403,7 +406,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 						</em>
 
 						<input class="iris_color fill" name="dem[loader_fill]" type="text"
-						       value="<?= demopt()->loader_fill ?>">
+						       value="<?= options()->loader_fill ?>">
 
 					</li>
 

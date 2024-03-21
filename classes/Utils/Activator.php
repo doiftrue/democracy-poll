@@ -2,6 +2,9 @@
 
 namespace DemocracyPoll\Utils;
 
+use function DemocracyPoll\plugin;
+use function DemocracyPoll\options;
+
 class Activator {
 
 	public static $activation_running = false;
@@ -34,8 +37,8 @@ class Activator {
 	private static function _activate() {
 		self::set_db_tables();
 
-		democr()->load_textdomain();
-		demopt(); // add default options (if there is no any).
+		plugin()->load_textdomain();
+		options(); // add default options (if there is no any).
 
 		// create tables
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';

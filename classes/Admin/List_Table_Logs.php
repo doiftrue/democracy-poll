@@ -3,6 +3,8 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Kses;
+use function DemocracyPoll\plugin;
+use function DemocracyPoll\options;
 
 class List_Table_Logs extends \WP_List_Table {
 
@@ -52,7 +54,7 @@ class List_Table_Logs extends \WP_List_Table {
 		}
 
 		if( ! $log_ids = array_filter( array_map( 'intval', $_POST['logids'] ) ) ){
-			democr()->msg->add_error( __( 'Nothing was selected.', 'democracy-poll' ) );
+			plugin()->msg->add_error( __( 'Nothing was selected.', 'democracy-poll' ) );
 
 			return;
 		}
@@ -179,7 +181,7 @@ class List_Table_Logs extends \WP_List_Table {
 			echo sprintf( '<h2><small>%s</small>%s <small><a href="%s">%s</a></small></h2>',
 				__( 'Poll\'s logs: ', 'democracy-poll' ),
 				Kses::kses_html( $poll->question ),
-				democr()->edit_poll_url( $this->poll_id ),
+				plugin()->edit_poll_url( $this->poll_id ),
 				__( 'Edit poll', 'democracy-poll' )
 			);
 		}
@@ -193,7 +195,7 @@ class List_Table_Logs extends \WP_List_Table {
 
 			echo '
 			<div class="alignleft actions" style="margin-top:.3em;">
-				' . ( demopt()->democracy_off ? '' :
+				' . ( options()->democracy_off ? '' :
 					'<a class="button button-small" href="' . esc_url( add_query_arg( [ 'filter' => $newfilter ? null : 'new_answers' ] ) ) . '">' .
 					( $newfilter ? ' &#215; ' : '' ) . __( 'NEW answers logs', 'democracy-poll' )
 					. '</a>'
@@ -263,10 +265,10 @@ class List_Table_Logs extends \WP_List_Table {
 			}
 
 			$actions = '';
-			if( democr()->cuser_can_edit_poll( $poll ) ){
+			if( plugin()->cuser_can_edit_poll( $poll ) ){
 				$actions = '
 				<div class="row-actions">
-					<span class="edit"><a href="' . democr()->edit_poll_url( $poll->id ) . '">' . __( 'Edit poll', 'democracy-poll' ) . '</a> | </span>
+					<span class="edit"><a href="' . plugin()->edit_poll_url( $poll->id ) . '">' . __( 'Edit poll', 'democracy-poll' ) . '</a> | </span>
 					<span class="edit"><a href="' . esc_url( add_query_arg( [
 						'ip'   => null,
 						'poll' => $log->qid,
@@ -297,7 +299,7 @@ class List_Table_Logs extends \WP_List_Table {
 				}
 
 				$new = Admin_Page_Logs::is_new_answer( $answ )
-					? sprintf( ' <a href="%s"><span style="color:red;">NEW</span></a>', democr()->edit_poll_url( $log->qid ) )
+					? sprintf( ' <a href="%s"><span style="color:red;">NEW</span></a>', plugin()->edit_poll_url( $log->qid ) )
 					: '';
 
 				$out[] = '- ' . esc_html( $answ->answer ) . $new;

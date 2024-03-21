@@ -7,6 +7,9 @@
 
 namespace DemocracyPoll\Admin;
 
+use function DemocracyPoll\plugin;
+use function DemocracyPoll\options;
+
 class Admin {
 
 	public function __construct() {
@@ -20,12 +23,12 @@ class Admin {
 		add_filter( 'plugin_action_links', [ $this, '_plugin_action_setting_page_link' ], 10, 2 );
 
 		// TinyMCE кнопка WP2.5+
-		if( demopt()->tinymce_button ){
+		if( options()->tinymce_button ){
 			Tinymce_Button::init();
 		}
 
 		// метабокс
-		if( ! demopt()->post_metabox_off ){
+		if( ! options()->post_metabox_off ){
 			Post_Metabox::init();
 		}
 	}
@@ -36,7 +39,7 @@ class Admin {
 			return $actions;
 		}
 
-		$settings_link = sprintf( '<a href="%s">%s</a>', democr()->admin_page_url(), __( 'Settings', 'democracy-poll' ) );
+		$settings_link = sprintf( '<a href="%s">%s</a>', plugin()->admin_page_url(), __( 'Settings', 'democracy-poll' ) );
 		array_unshift( $actions, $settings_link );
 
 		return $actions;

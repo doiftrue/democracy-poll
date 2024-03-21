@@ -29,7 +29,7 @@ class Poll_Widget extends \WP_Widget {
 		$poll_id = $instance['show_poll'] ?? 0;
 
 		if( $post && is_singular()
-		    && ! demopt()->post_metabox_off
+		    && ! options()->post_metabox_off
 		    && ( $post_pid = \DemocracyPoll\Admin\Post_Metabox::get_post_poll_id( $post->ID ) )
 		){
 			$poll_id = $post_pid;

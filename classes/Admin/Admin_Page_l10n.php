@@ -2,6 +2,9 @@
 
 namespace DemocracyPoll\Admin;
 
+use function DemocracyPoll\plugin;
+use function DemocracyPoll\options;
+
 class Admin_Page_l10n implements Admin_Subpage_Interface {
 
 	/** @var Admin_Page */
@@ -15,7 +18,7 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 	}
 
 	public function request_handler(  ){
-		if( ! democr()->super_access || ! Admin_Page::check_nonce() ){
+		if( ! plugin()->super_access || ! Admin_Page::check_nonce() ){
 			return;
 		}
 
@@ -33,14 +36,14 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 			}
 
 			$up
-				? democr()->msg->add_ok( __( 'Updated', 'democracy-poll' ) )
-				: democr()->msg->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
+				? plugin()->msg->add_ok( __( 'Updated', 'democracy-poll' ) )
+				: plugin()->msg->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
 
 		}
 	}
 
 	public function render() {
-		if( ! democr()->super_access ){
+		if( ! plugin()->super_access ){
 			return;
 		}
 

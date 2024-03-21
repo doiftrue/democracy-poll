@@ -2,6 +2,9 @@
 
 namespace DemocracyPoll\Admin;
 
+use function DemocracyPoll\plugin;
+use function DemocracyPoll\options;
+
 class Admin_Page_Polls implements Admin_Subpage_Interface {
 
 	/** @var List_Table_Polls */
@@ -20,7 +23,7 @@ class Admin_Page_Polls implements Admin_Subpage_Interface {
 
 	public function request_handler(){
 
-		if( ! democr()->admin_access ){
+		if( ! plugin()->admin_access ){
 			return;
 		}
 

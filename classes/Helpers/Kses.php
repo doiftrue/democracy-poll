@@ -2,6 +2,9 @@
 
 namespace DemocracyPoll\Helpers;
 
+use function DemocracyPoll\plugin;
+use function DemocracyPoll\options;
+
 class Kses {
 
 	// The tags allowed in questions and answers. Will be added to global $allowedtags.
@@ -49,7 +52,7 @@ class Kses {
 
 		if( is_string( $data ) ){
 			$value = trim( $data );
-			$data = democr()->admin_access ? Kses::kses_html( $value ) : wp_kses( $value, 'strip' );
+			$data = plugin()->admin_access ? Kses::kses_html( $value ) : wp_kses( $value, 'strip' );
 		}
 		else{
 			foreach( $data as $key => & $val ){
@@ -60,7 +63,7 @@ class Kses {
 
 				// допустимые теги
 				if( $key === 'answer' ){
-					$val = democr()->admin_access ? Kses::kses_html( $val ) : wp_kses( $val, 'strip' );
+					$val = plugin()->admin_access ? Kses::kses_html( $val ) : wp_kses( $val, 'strip' );
 				}
 				// числа
 				elseif( in_array( $key, [ 'qid', 'aid', 'votes' ] ) ){

@@ -2,6 +2,8 @@
 
 namespace DemocracyPoll\Admin;
 
+use function DemocracyPoll\plugin;
+
 class Admin_Page {
 
 	use Admin_Page__Additional;
@@ -29,7 +31,7 @@ class Admin_Page {
 	}
 
 	public function init(){
-		if( ! democr()->admin_access ){
+		if( ! plugin()->admin_access ){
 			return;
 		}
 
@@ -42,7 +44,7 @@ class Admin_Page {
 	}
 
 	public function register_option_page() {
-		if( ! democr()->admin_access ){
+		if( ! plugin()->admin_access ){
 			return;
 		}
 
@@ -103,13 +105,13 @@ class Admin_Page {
 			}
 
 			if( ! Admin_Page::check_nonce() ){
-				democr()->msg->add_error( 'Bad Nonce' );
+				plugin()->msg->add_error( 'Bad Nonce' );
 				return 0;
 			}
 
 			$_poll_id = (int) $_REQUEST[ $name ];
 
-			return democr()->cuser_can_edit_poll( $_poll_id ) ? $_poll_id : 0;
+			return plugin()->cuser_can_edit_poll( $_poll_id ) ? $_poll_id : 0;
 		};
 
 		if( $set_poll_id__cb( 'delete_poll' ) ){
@@ -142,7 +144,7 @@ class Admin_Page {
 
 	private function run_upgrade(){
 		// maybe force upgrade
-		if( isset( $_POST['dem_forse_upgrade'] ) && democr()->super_access ){
+		if( isset( $_POST['dem_forse_upgrade'] ) && plugin()->super_access ){
 
 			update_option( 'democracy_version', '0.1' ); // hack
 			( new \DemocracyPoll\Utils\Upgrader() )->upgrade();
@@ -173,7 +175,7 @@ trait Admin_Page__Additional {
 	public function subpages_menu(): string {
 
 		$referer = self::back_link();
-		$main_page = wp_make_link_relative( democr()->admin_page_url() );
+		$main_page = wp_make_link_relative( plugin()->admin_page_url() );
 
 		$current_class = function( $page ) {
 			return $this->subpage === $page ? ' nav-tab-active' : '';
@@ -196,7 +198,7 @@ trait Admin_Page__Additional {
 				$current_class( 'logs' ),
 				add_query_arg( [ 'subpage' => 'logs' ], $main_page ), __( 'Logs', 'democracy-poll' )
 			),
-			'general_settings' => democr()->super_access ? (
+			'general_settings' => plugin()->super_access ? (
 				sprintf( '<a class="nav-tab %s" href="%s">%s</a>',
 					$current_class( 'general_settings' ),
 					add_query_arg( [ 'subpage' => 'general_settings' ], $main_page ),
@@ -217,13 +219,13 @@ trait Admin_Page__Additional {
 
 		$out = '<h2 class="nav-tab-wrapper" style="margin-bottom:1em;">' . implode( "\n", $buttons ) . '</h2>';
 
-		if( democr()->super_access
+		if( plugin()->super_access
 		    && in_array( $this->subpage, [ 'general_settings', 'design', 'l10n' ], true )
 		){
 			$out .= self::info_sidebar();
 		}
 
-		$out .= democr()->msg->messages_html();
+		$out .= plugin()->msg->messages_html();
 
 		return $out;
 	}
@@ -232,7 +234,7 @@ trait Admin_Page__Additional {
 		$request_uri = $_SERVER['REQUEST_URI'];
 
 		$transient = 'democracy_referer';
-		$main_page = wp_make_link_relative( democr()->admin_page_url() );
+		$main_page = wp_make_link_relative( plugin()->admin_page_url() );
 		$referer = isset( $_SERVER['HTTP_REFERER'] ) ? wp_make_link_relative( $_SERVER['HTTP_REFERER'] ) : '';
 
 		// если обновляем

@@ -67,6 +67,9 @@
 
 namespace DemocracyPoll\Utils;
 
+use function DemocracyPoll\plugin;
+use function DemocracyPoll\options;
+
 class Migrator__WP_Polls {
 
 	public function migrate() {
@@ -83,7 +86,7 @@ class Migrator__WP_Polls {
 		$wppolls = $wpdb->get_results( "SELECT * FROM $wpdb->pollsq" );
 
 		if( ! $wppolls ){
-			democr()->msg->add_warn( 'No WP Polls polls found.' );
+			plugin()->msg->add_warn( 'No WP Polls polls found.' );
 
 			return;
 		}

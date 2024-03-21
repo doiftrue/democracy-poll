@@ -42,17 +42,17 @@ class Options_CSS {
 	 */
 	private function collect_base_css(): string {
 
-		$tpl = demopt()->css_file_name;
+		$tpl = options()->css_file_name;
 
 		// выходим если не указан шаблон
 		if( ! $tpl ){
 			return '';
 		}
 
-		$button = demopt()->css_button;
-		$loader = demopt()->loader_fill;
+		$button = options()->css_button;
+		$loader = options()->loader_fill;
 
-		$radios = demopt()->checkradio_fname;
+		$radios = options()->checkradio_fname;
 
 		$out = '';
 		$styledir = DEMOC_PATH . 'styles';
@@ -68,10 +68,10 @@ class Options_CSS {
 		}
 
 		// progress line
-		$d_bg       = demopt()->line_bg;
-		$d_fill     = demopt()->line_fill;
-		$d_height   = demopt()->line_height;
-		$d_fillThis = demopt()->line_fill_voted;
+		$d_bg       = options()->line_bg;
+		$d_fill     = options()->line_fill;
+		$d_height   = options()->line_height;
+		$d_fillThis = options()->line_fill_voted;
 
 		if( $d_bg ){
 			$out .= "\n.dem-graph{ background: $d_bg !important; }\n";
@@ -88,13 +88,13 @@ class Options_CSS {
 
 		if( $button ){
 			// button
-			$bbackground = demopt()->btn_bg_color;
-			$bcolor      = demopt()->btn_color;
-			$bbcolor     = demopt()->btn_border_color;
+			$bbackground = options()->btn_bg_color;
+			$bcolor      = options()->btn_color;
+			$bbcolor     = options()->btn_border_color;
 			// hover
-			$bh_bg     = demopt()->btn_hov_bg;
-			$bh_color  = demopt()->btn_hov_color;
-			$bh_bcolor = demopt()->btn_hov_border_color;
+			$bh_bg     = options()->btn_hov_bg;
+			$bh_color  = options()->btn_hov_color;
+			$bh_bcolor = options()->btn_hov_border_color;
 
 			if( $bbackground ){
 				$out .= "\n.dem-button{ background-color:$bbackground !important; }\n";

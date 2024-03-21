@@ -3,6 +3,8 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Kses;
+use function DemocracyPoll\plugin;
+use function DemocracyPoll\options;
 
 class List_Table_Polls extends \WP_List_Table {
 
@@ -100,7 +102,7 @@ class List_Table_Polls extends \WP_List_Table {
 
 		$answ = & $cache[ $poll->id ];
 
-		$admurl = democr()->admin_page_url();
+		$admurl = plugin()->admin_page_url();
 		$date_format = get_option( 'date_format' );
 
 		// вывод
@@ -117,16 +119,16 @@ class List_Table_Polls extends \WP_List_Table {
 			// actions
 			$actions = [];
 			// user can edit
-			if( democr()->cuser_can_edit_poll( $poll ) ){
+			if( plugin()->cuser_can_edit_poll( $poll ) ){
 				// edit
 				$actions[] = sprintf(
 					'<span class="edit"><a href="%s">%s</a> | </span>',
-					democr()->edit_poll_url( $poll->id ),
+					plugin()->edit_poll_url( $poll->id ),
 					__( 'Edit', 'democracy-poll' )
 				);
 
 				// logs
-				$has_logs = demopt()->keep_logs && $wpdb->get_var( $wpdb->prepare( "SELECT qid FROM $wpdb->democracy_log WHERE qid=%d LIMIT 1", $poll->id ) );
+				$has_logs = options()->keep_logs && $wpdb->get_var( $wpdb->prepare( "SELECT qid FROM $wpdb->democracy_log WHERE qid=%d LIMIT 1", $poll->id ) );
 				if( $has_logs ){
 					$actions[] = sprintf(
 						'<span class="edit"><a href="%s">%s</a> | </span>',
@@ -188,11 +190,11 @@ class List_Table_Polls extends \WP_List_Table {
 		}
 
 		if( $col === 'active' ){
-			return democr()->cuser_can_edit_poll( $poll ) ? Admin_Page_Edit_Poll::activate_button( $poll, 'reverse' ) : '';
+			return plugin()->cuser_can_edit_poll( $poll ) ? Admin_Page_Edit_Poll::activate_button( $poll, 'reverse' ) : '';
 		}
 
 		if( $col === 'open' ){
-			return democr()->cuser_can_edit_poll( $poll ) ? Admin_Page_Edit_Poll::open_button( $poll, 'reverse' ) : '';
+			return plugin()->cuser_can_edit_poll( $poll ) ? Admin_Page_Edit_Poll::open_button( $poll, 'reverse' ) : '';
 		}
 
 		if( $col === 'added' ){

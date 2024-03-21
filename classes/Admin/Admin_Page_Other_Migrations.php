@@ -2,6 +2,9 @@
 
 namespace DemocracyPoll\Admin;
 
+use function DemocracyPoll\plugin;
+use function DemocracyPoll\options;
+
 class Admin_Page_Other_Migrations implements Admin_Subpage_Interface {
 
 	/** @var Admin_Page */
@@ -30,7 +33,7 @@ class Admin_Page_Other_Migrations implements Admin_Subpage_Interface {
 			if( $more_action === 'delete_wp_polls_info' ){
 				delete_option( 'democracy_migrated' );
 
-				democr()->msg->add_ok( __( 'Data of migration deleted', 'democracy-poll' ) );
+				plugin()->msg->add_ok( __( 'Data of migration deleted', 'democracy-poll' ) );
 
 				return; // important!
 			}
@@ -123,7 +126,7 @@ class Admin_Page_Other_Migrations implements Admin_Subpage_Interface {
 			}
 		}
 
-		democr()->msg->add_ok( sprintf( __( 'Shortcodes replaced: %s', 'democracy-poll' ), $count ) );
+		plugin()->msg->add_ok( sprintf( __( 'Shortcodes replaced: %s', 'democracy-poll' ), $count ) );
 	}
 
 }

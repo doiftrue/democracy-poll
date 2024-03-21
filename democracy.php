@@ -16,6 +16,8 @@
  * Version: 5.6.0
  */
 
+namespace DemocracyPoll;
+
 defined( 'ABSPATH' ) || exit;
 
 __( 'Allows to create democratic polls. Visitors can vote for more than one answer & add their own answers.', 'democracy-poll' );
@@ -31,12 +33,12 @@ require_once __DIR__ . '/autoload.php';
 
 register_activation_hook( __FILE__, [ \DemocracyPoll\Utils\Activator::class, 'activate' ] );
 
-add_action( 'plugins_loaded', 'democracy_poll_init' );
-function democracy_poll_init() {
-	democr()->init();
+add_action( 'plugins_loaded', '\DemocracyPoll\init' );
+function init() {
+	plugin()->init();
 
 	// enable widget
-	if( demopt()->use_widget ){
+	if( options()->use_widget ){
 		add_action( 'widgets_init', function() {
 			register_widget( \DemocracyPoll\Poll_Widget::class );
 		} );
