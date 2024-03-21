@@ -133,8 +133,20 @@ Yes it is! To completely uninstall the plugin, deactivate it and then press "del
 
 == Changelog ==
 
-= 5.7.0 =
-* CHG: Requires PHP: 7.0
+= 6.0.0 =
+* BUG: It was impossible to delete all answers or create democracy poll with no starting answer.
+* CHG: Minimal PHP version 7.0
+* CHG: "Democracy_Poll" class renamed to "Plugin" and moved under namespace.
+* CHG: `democr()` and `demopt()` functions renamed to `\DemocracyPoll\plugin()` and `\DemocracyPoll\options()`.
+* CHG: Most of the classes moved under `DemocracyPoll` namespace.
+* CHG: DemPoll object improvements: magic properties replaced with real ones.
+* FIX: democracy_shortcode bugfix.
+* FIX: Not logged user logs now gets with user_id=0 AND ip. But not only by IP.
+* FIX: Regenerate_democracy_css fixes. Empty answer PHP notice fix.
+* IMP: "Admin" classes refactored. IMP: Admin Pages code refactored (improved).
+* IMP: Classes autoloader implemented.
+* IMP: Huge Refactoring, minor code improvements and decomposition.
+* UPD: democracy-poll.pot
 
 = 5.6.0 =
 * BUG: Pagination links on archive page.
