@@ -20,8 +20,6 @@ namespace DemocracyPoll;
 
 defined( 'ABSPATH' ) || exit;
 
-__( 'Allows to create democratic polls. Visitors can vote for more than one answer & add their own answers.', 'democracy-poll' );
-
 $data = get_file_data( __FILE__, [ 'Version' => 'Version' ] );
 define( 'DEM_VER', $data['Version'] );
 

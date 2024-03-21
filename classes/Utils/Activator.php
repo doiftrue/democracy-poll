@@ -44,47 +44,48 @@ class Activator {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( self::db_schema() );
 
-		self::add_poll_example();
+		self::add_sample_poll();
 
 		( new Upgrader() )->upgrade();
 	}
 
-	private static function add_poll_example(){
+	private static function add_sample_poll(){
 		global $wpdb;
 
 		$is_any_poll = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q LIMIT 1" );
-		if( ! $is_any_poll ){
-			$wpdb->insert( $wpdb->democracy_q, [
-				'question'   => __( 'What does "money" mean to you?', 'democracy-poll' ),
-				'added'      => current_time( 'timestamp' ),
-				'added_user' => get_current_user_id(),
-				'democratic' => 1,
-				'active'     => 1,
-				'open'       => 1,
-				'revote'     => 1,
-			] );
-
-			$qid = $wpdb->insert_id;
-
-			$answers = [
-				__( ' It is a universal product for exchange.', 'democracy-poll' ),
-				__( 'Money - is paper... Money is not the key to happiness...', 'democracy-poll' ),
-				__( 'Source to achieve the goal. ', 'democracy-poll' ),
-				__( 'Pieces of Evil :)', 'democracy-poll' ),
-				__( 'The authority, the  "power", the happiness...', 'democracy-poll' ),
-			];
-
-			// create votes
-			$allvotes = 0;
-			foreach( $answers as $answr ){
-				$allvotes += $votes = rand( 0, 100 );
-				$wpdb->insert( $wpdb->democracy_a, [ 'votes' => $votes, 'qid' => $qid, 'answer' => $answr ] );
-			}
-
-			// 'users_voted' update
-			$wpdb->update( $wpdb->democracy_q, [ 'users_voted' => $allvotes ], [ 'id' => $qid ] );
+		if( $is_any_poll ){
+			return;
 		}
 
+		$wpdb->insert( $wpdb->democracy_q, [
+			'question'   => __( 'What is the capital city of France?', 'democracy-poll' ),
+			'added'      => current_time( 'timestamp' ),
+			'added_user' => get_current_user_id(),
+			'democratic' => 1,
+			'active'     => 1,
+			'open'       => 1,
+			'revote'     => 1,
+		] );
+
+		$qid = $wpdb->insert_id;
+
+		$answers = [
+			__( 'Paris', 'democracy-poll' ),
+			__( 'Rome', 'democracy-poll' ),
+			__( 'Madrid', 'democracy-poll' ),
+			__( 'Berlin', 'democracy-poll' ),
+			__( 'London', 'democracy-poll' ),
+		];
+
+		// create votes
+		$allvotes = 0;
+		foreach( $answers as $answr ){
+			$allvotes += $votes = rand( 0, 100 );
+			$wpdb->insert( $wpdb->democracy_a, [ 'votes' => $votes, 'qid' => $qid, 'answer' => $answr ] );
+		}
+
+		// 'users_voted' update
+		$wpdb->update( $wpdb->democracy_q, [ 'users_voted' => $allvotes ], [ 'id' => $qid ] );
 	}
 
 	public static function db_schema(): string {

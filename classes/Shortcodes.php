@@ -37,7 +37,7 @@ class Shortcodes {
 		], $atts, 'democracy' );
 
 		// для опредления к какой записи относиться опрос. проверка, если шорткод вызван не из контента...
-		$post_id = ( is_singular() && is_main_query() ) ? $GLOBALS['post'] : 0;
+		$post_id = ( is_singular() && is_main_query() ) ? $GLOBALS['post']->ID : 0;
 
 		if( $atts['id'] === 'current' ){
 			$atts['id'] = \DemocracyPoll\Admin\Post_Metabox::get_post_poll_id( $post_id );
