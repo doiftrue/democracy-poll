@@ -51,9 +51,6 @@ class Poll_Ajax {
 		// switch
 		// голосуем и выводим результаты
 		if( 'vote' === $vars->act && $vars->aids ){
-			// если пользователь голосует с другого браузера и он уже голосовал, ставим куки
-			//if( $poll->cachegear_on && $poll->votedFor ) $poll->set_cookie();
-
 			$voted = $poll->vote( $vars->aids );
 
 			if( is_wp_error( $voted ) ){

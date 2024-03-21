@@ -91,4 +91,44 @@ final class Helpers {
 		return $posts;
 	}
 
+	/**
+	 * Checks if the page caching plugin is being used and active on the site.
+	 */
+	public static function is_page_cache_plugin_on(): bool {
+
+		// wp total cache
+		if(
+			class_exists( \W3TC\Dispatcher::class )
+			&& \W3TC\Dispatcher::component( 'ModuleStatus' )
+			&& \W3TC\Dispatcher::component( 'ModuleStatus' )->is_enabled( 'pgcache' )
+		){
+			return true;
+		}
+
+		// wp super cache
+		if( defined( 'WPCACHEHOME' ) && @ $GLOBALS['cache_enabled'] ){
+			return true;
+		}
+
+		// WordFence
+		if( class_exists( \wfConfig::class ) && wfConfig::get( 'cacheType' ) === 'falcon' ){
+			return true;
+		}
+
+		// WP Rocket
+		if( class_exists( \HyperCache::class ) ){
+			return true;
+		}
+
+		// Quick Cache
+		if( function_exists( '\quick_cache\plugin' ) && \quick_cache\plugin()->options['enable'] ){
+			return true;
+		}
+
+		// wp-fastest-cache
+		// aio-cache
+
+		return false;
+	}
+
 }

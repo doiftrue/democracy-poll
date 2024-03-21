@@ -36,7 +36,7 @@ class Admin {
 			return $actions;
 		}
 
-		$settings_link = sprintf( '<a href="%s">%s</a>', $this->admin_page_url(), __( 'Settings', 'democracy-poll' ) );
+		$settings_link = sprintf( '<a href="%s">%s</a>', democr()->admin_page_url(), __( 'Settings', 'democracy-poll' ) );
 		array_unshift( $actions, $settings_link );
 
 		return $actions;

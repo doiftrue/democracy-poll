@@ -6,6 +6,13 @@ class Activator {
 
 	public static $activation_running = false;
 
+	public static function set_db_tables() {
+		global $wpdb;
+		$wpdb->democracy_q   = $wpdb->prefix . 'democracy_q';
+		$wpdb->democracy_a   = $wpdb->prefix . 'democracy_a';
+		$wpdb->democracy_log = $wpdb->prefix . 'democracy_log';
+	}
+
 	public static function activate() {
 
 		// in order to activation works - activate_plugin() function works
@@ -15,7 +22,6 @@ class Activator {
 			$sites = get_sites();
 			foreach( $sites as $site ){
 				switch_to_blog( $site->blog_id );
-				democracy_set_db_tables(); // redefine table names
 				self::_activate();
 				restore_current_blog();
 			}
@@ -26,6 +32,7 @@ class Activator {
 	}
 
 	private static function _activate() {
+		self::set_db_tables();
 
 		democr()->load_textdomain();
 		demopt(); // add default options (if there is no any).

@@ -29,13 +29,10 @@ define( 'DEMOC_PATH', plugin_dir_path( __FILE__ ) );
 
 require_once __DIR__ . '/autoload.php';
 
-democracy_set_db_tables();
-
 register_activation_hook( __FILE__, [ \DemocracyPoll\Utils\Activator::class, 'activate' ] );
 
 add_action( 'plugins_loaded', 'democracy_poll_init' );
 function democracy_poll_init() {
-
 	democr()->init();
 
 	// enable widget

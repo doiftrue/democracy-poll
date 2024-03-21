@@ -2,9 +2,12 @@
 
 namespace DemocracyPoll;
 
-// TODO: decompose class
-
+use DemocracyPoll\Admin\Admin;
+use DemocracyPoll\Admin\Admin_Page_l10n;
+use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Helpers\Messages;
+use DemocracyPoll\Utils\Activator;
 
 class Plugin {
 
@@ -20,47 +23,49 @@ class Plugin {
 	/** @var Options */
 	public $opt;
 
-	/** @var Admin\Admin */
+	/** @var Admin */
 	public $admin;
 
 	/** @var Helpers\Messages  */
 	public $msg;
 
+	/** @var bool whether page caching is enabled */
+	public $is_cachegear_on;
+
 	public function __construct() {
+		$this->opt = new Options();
+		$this->msg = new Messages();
 
 		$this->set_access_caps();
-
-		$this->opt = new \DemocracyPoll\Options();
-
-		$this->msg = new \DemocracyPoll\Helpers\Messages();
 	}
 
 	public function init() {
+		\DemocracyPoll\Utils\Activator::set_db_tables();
+
+		$this->set_is_cachegear_on();
+
 		Kses::set_allowed_tags();
 		$this->load_textdomain();
 
 		// admin part
 		if(
-			\DemocracyPoll\Utils\Activator::$activation_running
+			Activator::$activation_running
 			||
 			( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) )
 		){
-			$this->admin = new \DemocracyPoll\Admin\Admin();
+			$this->admin = new Admin();
 			$this->admin->init();
 		}
-		// front-end
-		else{
-			( new Shortcodes() )->init();
 
-			$this->poll_ajax = new Poll_Ajax();
-			$this->poll_ajax->init();
-		}
+		( new Shortcodes() )->init();
+		$this->poll_ajax = new Poll_Ajax();
+		$this->poll_ajax->init();
 
 		// For front part localisation and custom translation setup
-		\DemocracyPoll\Admin\Admin_Page_l10n::add_gettext_filter();
+		Admin_Page_l10n::add_gettext_filter();
 
 		if( is_multisite() ){
-			add_action( 'switch_blog', 'democracy_set_db_tables' );
+			add_action( 'switch_blog', [ Activator::class, 'set_db_tables' ] );
 		}
 
 		// menu in the admin bar
@@ -109,6 +114,22 @@ class Plugin {
 				}
 			}
 		}
+	}
+
+	private function set_is_cachegear_on() {
+
+		if( demopt()->force_cachegear ){
+			$this->is_cachegear_on = true;
+			return;
+		}
+
+		$status = apply_filters( 'dem_cachegear_status', null );
+		if( null !== $status ){
+			$this->is_cachegear_on = (bool) $status;
+			return;
+		}
+
+		$this->is_cachegear_on = Helpers::is_page_cache_plugin_on();
 	}
 
 	public function load_textdomain() {
@@ -194,69 +215,23 @@ class Plugin {
 		return false;
 	}
 
-	/**
-	 * Проверяет, используется ли страничный плагин кэширования на сайте.
-	 */
-	public function is_cachegear_on(): bool {
-
-		if( demopt()->force_cachegear ){
-			return true;
-		}
-
-		$status = apply_filters( 'dem_cachegear_status', null );
-
-		if( null !== $status ){
-			return (bool) $status;
-		}
-
-		// wp total cache
-		if(
-			class_exists( \W3TC\Dispatcher::class )
-			&& \W3TC\Dispatcher::component( 'ModuleStatus' )
-			&& \W3TC\Dispatcher::component( 'ModuleStatus' )->is_enabled( 'pgcache' )
-		){
-			return true;
-		}
-		// wp super cache
-		if( defined( 'WPCACHEHOME' ) && @ $GLOBALS['cache_enabled'] ){
-			return true;
-		}
-		// WordFence
-		if( class_exists( \wfConfig::class ) && wfConfig::get( 'cacheType' ) === 'falcon' ){
-			return true;
-		}
-		// WP Rocket
-		if( class_exists( \HyperCache::class ) ){
-			return true;
-		}
-		// Quick Cache
-		if( function_exists( '\quick_cache\plugin' ) && \quick_cache\plugin()->options['enable'] ){
-			return true;
-		}
-		// wp-fastest-cache
-		// aio-cache
-
-		return false;
-	}
-
-	// FRONT ---
-
-	# добавляет стили в WP head
-	public function add_css_once() {
+	public function get_minified_styles_once(): string {
 		static $once = 0;
 		if( $once++ ){
 			return '';
 		}
 
 		$demcss = get_option( 'democracy_css' );
-		$minify = @ $demcss['minify'];
+		$minified = $demcss['minify'] ?? '';
 
-		if( $minify ){
-			return "\n<!--democracy-->\n" . '<style type="text/css">' . $minify . '</style>' . "\n";
-		}
+		return $minified
+			? "\n" . '<style id="democracy-poll">' . $minified . '</style>' . "\n"
+			: '';
 	}
 
-	# добавляет скрипты в подвал
+	/**
+	 * Adds scripts to the footer.
+	 */
 	public function add_js_once() {
 		static $once = 0;
 		if( $once++ ){
@@ -267,8 +242,6 @@ class Plugin {
 		if( demopt()->inline_js_css ){
 			wp_enqueue_script( 'jquery' );
 			add_action( ( is_admin() ? 'admin_footer' : 'wp_footer' ), [ __CLASS__, '_add_js_wp_footer' ], 0 );
-			// подключаем через фильтр, потому что иногда вылазиет баг, когда опрос добавляется прямо в контент...
-			//return "\n" .'<script type="text/javascript">'. file_get_contents( DEMOC_PATH .'js/democracy.min.js' ) .'</script>'."\n";
 		}
 		else{
 			wp_enqueue_script( 'democracy', DEMOC_URL . 'js/democracy.min.js', [], DEM_VER, true );
@@ -276,8 +249,7 @@ class Plugin {
 	}
 
 	public static function _add_js_wp_footer() {
-		echo "\n<!--democracy-->\n" .
-		     '<script type="text/javascript">' . file_get_contents( DEMOC_PATH . 'js/democracy.min.js' ) . '</script>' . "\n";
+		echo "\n" . '<script id="democracy-poll">' . file_get_contents( DEMOC_PATH . 'js/democracy.min.js' ) . '</script>' . "\n";
 	}
 
 }

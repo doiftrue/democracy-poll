@@ -22,7 +22,6 @@ class DemPoll {
 
 	public $inArchive = false; // в архивной странице
 
-	public $cachegear_on = false; // проверка включен ли механихм кэширвоания
 	public $for_cache = false;
 
 	// Название ключа cookie
@@ -64,8 +63,6 @@ class DemPoll {
 		if( demopt()->revote_off ){
 			$this->poll->revote = false;
 		}
-
-		$this->cachegear_on = democr()->is_cachegear_on();
 
 		$this->set_voted_data();
 		$this->set_answers(); // установим свойство $this->poll->answers
@@ -140,7 +137,7 @@ class DemPoll {
 		}
 
 		$html = '';
-		$html .= democr()->add_css_once();
+		$html .= democr()->get_minified_styles_once();
 
 		$js_opts = [
 			'ajax_url'         => democr()->poll_ajax->ajax_url,
@@ -182,9 +179,9 @@ class DemPoll {
 
 		$html .= "</div><!--democracy-->";
 
-
-		// для КЭША
-		if( $this->cachegear_on && ! $this->inArchive ){
+		// for page cache
+		// never use poll caching mechanism in admin
+		if( ! $this->inArchive && ! is_admin() && democr()->is_cachegear_on ){
 			$html .= '
 			<!--noindex-->
 			<div class="dem-cache-screens" style="display:none;" data-opt_logs="' . (int) demopt()->keep_logs . '">';

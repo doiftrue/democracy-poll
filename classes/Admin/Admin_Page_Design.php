@@ -494,8 +494,6 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 				$poll = new \DemPoll();
 
 				if( $poll->id ){
-					$poll->cachegear_on = false;
-
 					//$poll->has_voted = 1;
 					$answers = (array) wp_list_pluck( $poll->poll->answers, 'aid' );
 					$poll->votedFor = $answers ? $answers[ array_rand( $answers ) ] : false;
