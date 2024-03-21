@@ -3,21 +3,18 @@
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 if( is_multisite() ){
-
 	foreach( get_sites() as $site ){
 		switch_to_blog( $site->blog_id );
-
-		dem_delete_plugin();
+		democr_delete_plugin();
+		restore_current_blog();
 	}
-
-	restore_current_blog();
 }
 else{
-	dem_delete_plugin();
+	democr_delete_plugin();
 }
 
 
-function dem_delete_plugin() {
+function democr_delete_plugin() {
 	global $wpdb;
 
 	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}democracy_q" );

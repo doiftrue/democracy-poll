@@ -5,7 +5,7 @@ on:
     tags:
       - "*"
 jobs:
-  build:
+  wporg_deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

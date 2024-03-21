@@ -1,8 +1,19 @@
-<?php
+<?php /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
 
-class Dem_List_Table_Polls extends WP_List_Table {
+namespace DemocracyPoll\Admin;
 
-	public function __construct() {
+use DemocracyPoll\Helpers\Kses;
+use function DemocracyPoll\plugin;
+use function DemocracyPoll\options;
+
+class List_Table_Polls extends \WP_List_Table {
+
+	/** @var Admin_Page_Polls */
+	private $polls_page;
+
+	public function __construct( Admin_Page_Polls $polls_page ) {
+
+		$this->polls_page = $polls_page;
 
 		parent::__construct( [
 			'singular' => 'dempoll',
@@ -43,14 +54,14 @@ class Dem_List_Table_Polls extends WP_List_Table {
 		$OFFSET = "LIMIT $offset,$per_page";
 		$order = ( isset( $_GET['order'] ) && $_GET['order'] === 'asc' ) ? 'ASC' : 'DESC';
 		$orderby = sanitize_key( empty( $_GET['orderby'] ) ? 'id' : $_GET['orderby'] );
-		$ORDER_BY = sprintf( "ORDER BY %s %s",  $orderby, $order );
+		$ORDER_BY = sprintf( "ORDER BY %s %s", $orderby, $order );
 
 		$sql = "SELECT * FROM $wpdb->democracy_q $where $ORDER_BY $OFFSET";
 
 		$this->items = $wpdb->get_results( $sql );
 	}
 
-	public function get_columns() {
+	public function get_columns(): array {
 		$columns = [
 			//'cb'        => '<input type="checkbox" />',
 			'id'         => __( 'ID', 'democracy-poll' ),
@@ -66,11 +77,11 @@ class Dem_List_Table_Polls extends WP_List_Table {
 		return $columns;
 	}
 
-	public function get_hidden_columns() {
+	public function get_hidden_columns(): array {
 		return [];
 	}
 
-	public function get_sortable_columns() {
+	public function get_sortable_columns(): array {
 		return [
 			'id'         => [ 'id', 'asc' ],
 			'question'   => [ 'question', 'asc' ],
@@ -86,12 +97,12 @@ class Dem_List_Table_Polls extends WP_List_Table {
 		static $cache;
 
 		if( ! isset( $cache[ $poll->id ] ) ){
-			$cache[ $poll->id ] = $wpdb->get_results( "SELECT * FROM $wpdb->democracy_a WHERE qid = " . intval( $poll->id ) );
+			$cache[ $poll->id ] = $wpdb->get_results( "SELECT * FROM $wpdb->democracy_a WHERE qid = " . (int) $poll->id );
 		}
 
-		$answ = &$cache[ $poll->id ];
+		$answ = & $cache[ $poll->id ];
 
-		$admurl = democr()->admin_page_url();
+		$admurl = plugin()->admin_page_url();
 		$date_format = get_option( 'date_format' );
 
 		// вывод
@@ -108,35 +119,42 @@ class Dem_List_Table_Polls extends WP_List_Table {
 			// actions
 			$actions = [];
 			// user can edit
-			if( democr()->cuser_can_edit_poll( $poll ) ){
+			if( plugin()->cuser_can_edit_poll( $poll ) ){
 				// edit
-				$actions[] = '<span class="edit"><a href="' . democr()->edit_poll_url( $poll->id ) . '">' . __( 'Edit', 'democracy-poll' ) . '</a> | </span>';
+				$actions[] = sprintf(
+					'<span class="edit"><a href="%s">%s</a> | </span>',
+					plugin()->edit_poll_url( $poll->id ),
+					__( 'Edit', 'democracy-poll' )
+				);
 
 				// logs
-				$has_logs = democr()->opt( 'keep_logs' ) && $wpdb->get_var( $wpdb->prepare( "SELECT qid FROM $wpdb->democracy_log WHERE qid=%d LIMIT 1", $poll->id ) );
+				$has_logs = options()->keep_logs && $wpdb->get_var( $wpdb->prepare( "SELECT qid FROM $wpdb->democracy_log WHERE qid=%d LIMIT 1", $poll->id ) );
 				if( $has_logs ){
-					$actions[] = '<span class="edit"><a href="' . add_query_arg( [
-							'subpage' => 'logs',
-							'poll'    => $poll->id,
-						], $admurl ) . '">' . __( 'Logs', 'democracy-poll' ) . '</a> | </span>';
+					$actions[] = sprintf(
+						'<span class="edit"><a href="%s">%s</a> | </span>',
+						add_query_arg( [ 'subpage' => 'logs', 'poll' => $poll->id ], $admurl ),
+						__( 'Logs', 'democracy-poll' )
+					);
 				}
 
 				// delete
-				$actions[] = '<span class="delete"><a href="' . dem__add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], $admurl ) ) . '" onclick="return confirm(\'' . __( 'Are you sure?', 'democracy-poll' ) . '\');">' . __( 'Delete', 'democracy-poll' ) . '</a> | </span>';
+				$actions[] = '<span class="delete"><a href="' . Admin_Page::add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], $admurl ) ) . '" onclick="return confirm(\'' . __( 'Are you sure?', 'democracy-poll' ) . '\');">' . __( 'Delete', 'democracy-poll' ) . '</a> | </span>';
 			}
 
 			// shortcode
-			$actions[] = '<span style="color:#999">' . DemPoll::shortcode_html( $poll->id ) . '</span>';
+			$actions[] = '<span style="color:#999">' . Admin_Page_Edit_Poll::shortcode_html( $poll->id ) . '</span>';
 
-			return $statuses . democr()->kses_html( $poll->question ) . '<div class="row-actions">' . implode( " ", $actions ) . '</div>';
+			return $statuses . Kses::kses_html( $poll->question ) . '<div class="row-actions">' . implode( " ", $actions ) . '</div>';
 		}
-		elseif( $col === 'usersvotes' ){
+
+		if( $col === 'usersvotes' ){
 			$votes_sum = array_sum( wp_list_pluck( (array) $answ, 'votes' ) );
 
 			return $poll->multiple ? '<span title="' . __( 'voters / votes', 'democracy-poll' ) . '">' . $poll->users_voted . ' <small>/ ' . $votes_sum . '</small></span>' : $votes_sum;
 		}
-		elseif( $col === 'in_posts' ){
-			if( ! $posts = democr()->get_in_posts_posts( $poll ) ){
+
+		if( $col === 'in_posts' ){
+			if( ! $posts = \DemocracyPoll\Helpers\Helpers::get_posts_with_poll( $poll ) ){
 				return '';
 			}
 
@@ -149,17 +167,18 @@ class Dem_List_Table_Polls extends WP_List_Table {
 
 			$_style = ' style="margin-bottom:0; line-height:1.4;"';
 
-			return ( count( $out ) > 1 ) ?
-				'<ol class="in__posts" style="margin:0 0 0 1em;"><li' . $_style . '>' . implode( '</li><li' . $_style . '>', $out ) . '</li></ol>' :
-				$out[0];
+			return ( count( $out ) > 1 )
+				? '<ol class="in__posts" style="margin:0 0 0 1em;"><li' . $_style . '>' . implode( '</li><li' . $_style . '>', $out ) . '</li></ol>'
+				: $out[0];
 		}
-		elseif( $col === 'answers' ){
+
+		if( $col === 'answers' ){
 			if( ! $answ ){
-				return 'Нет';
+				return 'No';
 			}
 
-			usort( $answ, function( $a, $b ) {
-				return $a->votes === $b->votes ? 0 : ( $a->votes < $b->votes ? 1 : -1 );
+			usort( $answ, static function( $a, $b ) {
+				return $b->votes <=> $a->votes;
 			} );
 
 			$_answ = [];
@@ -169,21 +188,23 @@ class Dem_List_Table_Polls extends WP_List_Table {
 
 			return '<div class="compact-answ">' . implode( '<br>', $_answ ) . '</div>';
 		}
-		elseif( $col === 'active' ){
-			return democr()->cuser_can_edit_poll( $poll ) ? dem_activatation_buttons( $poll, 'reverse' ) : '';
+
+		if( $col === 'active' ){
+			return plugin()->cuser_can_edit_poll( $poll ) ? Admin_Page_Edit_Poll::activate_button( $poll, 'reverse' ) : '';
 		}
-		elseif( $col === 'open' ){
-			return democr()->cuser_can_edit_poll( $poll ) ? dem_opening_buttons( $poll, 'reverse' ) : '';
+
+		if( $col === 'open' ){
+			return plugin()->cuser_can_edit_poll( $poll ) ? Admin_Page_Edit_Poll::open_button( $poll, 'reverse' ) : '';
 		}
-		elseif( $col === 'added' ){
+
+		if( $col === 'added' ){
 			$date = date( $date_format, $poll->added );
 			$end = $poll->end ? date( $date_format, $poll->end ) : '';
 
 			return "$date<br>$end";
 		}
-		else{
-			return isset( $poll->$col ) ? $poll->$col : print_r( $poll, true );
-		}
+
+		return $poll->$col ?? print_r( $poll, true );
 	}
 
 	public function column_cb( $item ) {

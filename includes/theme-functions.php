@@ -3,25 +3,25 @@
 /**
  * Get poll object
  *
- * @param  integer $poll_id ID of poll.
+ * @param int $poll_id  ID of poll.
  *
- * @return object Poll object
+ * @return \DemPoll Poll object
  */
-function democracy_get_poll( $poll_id ){
-	return DemPoll::get_poll( $poll_id );
+function democracy_get_poll( $poll_id ) {
+	return new \DemPoll( $poll_id );
 }
 
 /**
  * Get poll attached to current post.
  *
- * @param  integer $post_id ID or object of post, attached poll of which you want to get.
- *
- * @return string  Poll HTML code.
+ * @param int $post_id  ID or object of post, attached poll of which you want to get.
  */
-function get_post_poll_id( $post_id = 0 ){
-	$post_id = ( is_numeric($post_id) && $post_id ) ? (int) $post_id : get_post( $post_id )->ID;
+function get_post_poll_id( $post_id = 0 ): int {
+	if( ! $post_id ){
+		$post_id = get_post()->ID;
+	}
 
-	return $poll_id = (int) get_post_meta( $post_id, Democracy_Poll::$pollid_meta_key, 1 );
+	return \DemocracyPoll\Admin\Post_Metabox::get_post_poll_id( (int) $post_id );
 }
 
 /**
@@ -29,30 +29,31 @@ function get_post_poll_id( $post_id = 0 ){
  *
  * @see get_democracy_poll()
  */
-function democracy_poll( $id = 0, $before_title = '', $after_title = '', $from_post = 0 ){
+function democracy_poll( $id = 0, $before_title = '', $after_title = '', $from_post = 0 ) {
 	echo get_democracy_poll( $id, $before_title, $after_title, $from_post );
 }
 
 /**
  * Get specified democracy poll.
  *
- * @param  integer        $poll_id       Poll ID. If 0 Random Active poll will be returned.
- * @param  string         $before_title  HTML/text before poll title.
- * @param  string         $after_title   HTML/text after poll title.
- * @param  integer|object $from_post     Post ID from which the poll was called - to which the poll must be attached.
+ * @param int        $poll_id       Poll ID. If 0 Random Active poll will be returned.
+ * @param string     $before_title  HTML/text before poll title.
+ * @param string     $after_title   HTML/text after poll title.
+ * @param int|object $from_post     Post ID from which the poll was called - to which the poll must be attached.
  *
  * @return string   Poll HTML code.
  */
-function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = '', $from_post = 0 ){
+function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = '', $from_post = 0 ) {
 
-	$poll = new DemPoll( $poll_id );
+	$poll = new \DemPoll( $poll_id );
 
-	if( ! $poll->id )
+	if( ! $poll->id ){
 		return 'Poll not found';
+	}
 
 	// обновим ID записи с которой вызван опрос, если такого ID нет в данных
 	$from_post = is_object( $from_post ) ? $from_post->ID : (int) $from_post;
-	if( $from_post && ( ! $poll->in_posts || ! preg_match('~(?:^|,)'. $from_post .'(?:,|$)~', $poll->in_posts) ) ){
+	if( $from_post && ( ! $poll->in_posts || ! preg_match( '~(?:^|,)' . $from_post . '(?:,|$)~', $poll->in_posts ) ) ){
 		global $wpdb;
 
 		$new_in_posts = $poll->in_posts ? "$poll->in_posts,$from_post" : $from_post;
@@ -69,21 +70,23 @@ function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = ''
 /**
  * Gets poll results screen.
  *
- * @param  integer  $poll_id       Poll ID
- * @param  string   $before_title  HTML/text before poll title.
- * @param  string   $after_title   HTML/text after poll title.
+ * @param int    $poll_id       Poll ID
+ * @param string $before_title  HTML/text before poll title.
+ * @param string $after_title   HTML/text after poll title.
  *
  * @return string   Poll HTML code.
  */
-function get_democracy_poll_results( $poll_id = 0, $before_title = '', $after_title = '' ){
+function get_democracy_poll_results( $poll_id = 0, $before_title = '', $after_title = '' ) {
 
-	$poll = new DemPoll( $poll_id );
+	$poll = new \DemPoll( $poll_id );
 
-	if( ! $poll->id )
+	if( ! $poll->id ){
 		return '';
+	}
 
-	if( $poll->open && ! $poll->show_results )
+	if( $poll->open && ! $poll->show_results ){
 		return __( 'Poll results hidden for now...', 'democracy-poll' );
+	}
 
 	return $poll->get_screen( 'voted', $before_title, $after_title );
 }
@@ -91,13 +94,11 @@ function get_democracy_poll_results( $poll_id = 0, $before_title = '', $after_ti
 /**
  * Show archives.
  *
- * @see get_democracy_archives()
- *
- * @param array $args See {@see get_democracy_archives()}.
+ * @param array $args  See {@see get_democracy_archives()}.
  *
  * @return string HTML
  */
-function democracy_archives( $args = [] ){
+function democracy_archives( $args = [] ) {
 	echo get_democracy_archives( $args );
 }
 
@@ -122,35 +123,35 @@ function democracy_archives( $args = [] ){
  * @return string HTML
  */
 function get_democracy_archives( $args = [] ){
+	// backward compatibility
+	$passed_args = func_get_args();
+	if( func_num_args() > 1 ){
+		$args = [
+			'active'       => $passed_args[0] ? 0 : null, // $hide_active
+			'before_title' => $passed_args[1],
+			'after_title'  => $passed_args[2] ?? '',
+		];
+	}
 
 	$dem_paged = isset( $_GET['dem_paged'] ) ? (int) $_GET['dem_paged'] : 1;
 
 	$defaults = [
-		'before_title' => '',
-		'after_title'  => '',
-		'active'       => null,    // 1 (active), 0 (not active) or null (param not set).
-		'open'         => null,    // 1 (opened), 0 (closed) or null (param not set) polls.
-		'screen'       => 'voted',
-		'per_page'     => 10,
+		'before_title'   => '',
+		'after_title'    => '',
+		'active'         => null,    // 1 (active), 0 (not active) or null (param not set).
+		'open'           => null,    // 1 (opened), 0 (closed) or null (param not set) polls.
+		'screen'         => 'voted',
+		'per_page'       => 10,
 		'add_from_posts' => true,    // add From posts: html block
 		// internal
-		'paged'        => $dem_paged,       // pagination page when 'limit' parameter is set
-		'wrap'         => '<div class="dem-archives">%s</div>',
-		'return'       => 'html',
+		'paged'          => $dem_paged,       // pagination page when 'limit' parameter is set
+		'wrap'           => '<div class="dem-archives">%s</div>',
+		'return'         => 'html',
 	];
-
-	// backward compatibility
-	if( func_num_args() > 1 ){
-		$args = [
-			'active'       => ( $hide_active = func_get_arg( 0 ) ) ? 0 : null,
-			'before_title' => func_get_arg( 1 ),
-			'after_title'  => func_get_arg( 2 ),
-		];
-	}
 
 	$args = wp_parse_args( $args, $defaults );
 
-	$html = get_dem_polls( $args );
+	$html = (string) get_dem_polls( $args );
 	$found_rows = get_dem_polls( 'get_found_rows' );
 
 	// pagination
@@ -163,7 +164,7 @@ function get_democracy_archives( $args = [] ){
 			'total'   => ceil( $found_rows / (int) $args['per_page'] ),
 		] );
 
-		$html .= '<div class="dem-paging">'. $pagination .'</div>';
+		$html .= '<div class="dem-paging">' . $pagination . '</div>';
 	}
 
 	return $html;
@@ -190,12 +191,13 @@ function get_democracy_archives( $args = [] ){
  *
  * @return array|string
  */
-function get_dem_polls( $args = [] ){
+function get_dem_polls( $args = [] ) {
 	global $wpdb;
 
 	static $all_found_rows;
-	if( 'get_found_rows' === $args  )
+	if( 'get_found_rows' === $args ){
 		return $all_found_rows;
+	}
 
 	$rg = (object) wp_parse_args( $args, [
 		'wrap'           => '<div class="dem-polls">%s</div>',
@@ -213,37 +215,43 @@ function get_dem_polls( $args = [] ){
 
 	// WHERE
 	$WHERE = [];
-	if( isset( $rg->active ) )
+	if( isset( $rg->active ) ){
 		$WHERE['active'] = $wpdb->prepare( 'WHERE active = %d', (int) $rg->active );
-	if( isset( $rg->open ) )
-		$WHERE['open']   = $wpdb->prepare( 'WHERE open = %d', (int) $rg->open );
+	}
+	if( isset( $rg->open ) ){
+		$WHERE['open'] = $wpdb->prepare( 'WHERE open = %d', (int) $rg->open );
+	}
 
 	// ORDER_BY
-	$esc_orderby__fn = function( $val ){
+	$esc_orderby__fn = static function( $val ) {
 		return preg_replace( '/[^a-z0-9 _\-]/i', '', $val );
 	};
 
 	$ORDER_BY = [];
 	if( ! $rg->orderby ){
 
-		if( null === $rg->active )
+		if( null === $rg->active ){
 			$ORDER_BY['active'] = 'active DESC';
-		if( null === $rg->open )
+		}
+		if( null === $rg->open ){
 			$ORDER_BY['open'] = 'open DESC';
+		}
 
 		$ORDER_BY['id'] = 'id DESC';
 	}
-	else {
+	else{
 
 		if( is_array( $rg->orderby ) ){
 			$ORDER_BY['array'] = $esc_orderby__fn( implode( ' ', $rg->orderby ) );
 		}
-		elseif( is_string($rg->orderby) ){
+		elseif( is_string( $rg->orderby ) ){
 
-			if( 'rand' === $rg->orderby )
+			if( 'rand' === $rg->orderby ){
 				$ORDER_BY['rand'] = 'rand()';
-			else
-				$ORDER_BY['string'] = $esc_orderby__fn( $rg->orderby ) .' ASC';
+			}
+			else{
+				$ORDER_BY['string'] = $esc_orderby__fn( $rg->orderby ) . ' ASC';
+			}
 		}
 	}
 
@@ -257,8 +265,8 @@ function get_dem_polls( $args = [] ){
 	}
 
 	$clauses = (object) apply_filters( 'get_dem_polls_sql_clauses', [
-		'where'   => implode(' AND ', $WHERE ),
-		'orderby' => 'ORDER BY '. implode(', ', $ORDER_BY ),
+		'where'   => implode( ' AND ', $WHERE ),
+		'orderby' => 'ORDER BY ' . implode( ', ', $ORDER_BY ),
 		'limit'   => $LIMIT,
 	] );
 
@@ -271,63 +279,64 @@ function get_dem_polls( $args = [] ){
 		: null;
 
 	// OUT
-	$out = array();
+	$out = [];
 
 	foreach( $poll_ids as $poll_id ){
 
-		$DemPoll = new DemPoll( $poll_id );
-		$poll = $DemPoll->poll;
+		$poll = new \DemPoll( $poll_id );
 
 		if( $rg->return === 'objects' ){
-			$out[] = $DemPoll;
+			$out[] = $poll;
 			continue;
 		}
 
 		// if return html is set
-		$screen = isset( $_REQUEST['dem_act'] ) ? dem__query_poll_screen_choose( $DemPoll ) : $rg->screen;
+		$screen = isset( $_REQUEST['dem_act'] )
+			? dem__query_poll_screen_choose( $poll )
+			: $rg->screen;
 
-		$elm_html = $DemPoll->get_screen( $screen, $rg->before_title, $rg->after_title );
+		$elm_html = $poll->get_screen( $screen, $rg->before_title, $rg->after_title );
 
 		// in posts
 		if(
 			$rg->add_from_posts &&
-			( $posts = democr()->get_in_posts_posts( $poll ) )
+			( $posts = \DemocracyPoll\Helpers\Helpers::get_posts_with_poll( $poll ) )
 		){
-
-			$links = array();
+			$links = [];
 			foreach( $posts as $post ){
-				$links[] = '<a href="' . get_permalink( $post ) . '">' . esc_html( $post->post_title ) . '</a>';
+				$links[] = sprintf( '<a href="%s">%s</a>', get_permalink( $post ), esc_html( $post->post_title ) );
 			}
 
 			$elm_html .= '
 			<div class="dem-moreinfo">
-				<b>'. __('From posts:','democracy-poll') .'</b>
+				<b>' . __( 'From posts:', 'democracy-poll' ) . '</b>
 				<ul>
-					<li>'. implode("</li>\n<li>", $links) .'</li>
+					<li>' . implode( "</li>\n<li>", $links ) . '</li>
 				</ul>
 			</div>';
 		}
 
-		$out[] = '<div class="dem-elem-wrap">'. $elm_html .'</div>';
+		$out[] = '<div class="dem-elem-wrap">' . $elm_html . '</div>';
 	}
 
-	if( $rg->return === 'objects' )
+	if( $rg->return === 'objects' ){
 		return $out;
-	else
-		return sprintf( $rg->wrap, implode( "\n", $out ) );
+	}
+
+	return sprintf( $rg->wrap, implode( "\n", $out ) );
 }
 
 /**
- * Какой экран показать, на основе переданных запросов: 'voted' или 'vote'.
+ * Which screen to display, based on the passed request
  *
- * @param $poll
- *
- * @return mixed|string|void
+ * @return string One of: 'voted' or 'vote'.
  */
-function dem__query_poll_screen_choose( $poll ){
+function dem__query_poll_screen_choose( $poll ): string {
 
-	if( $poll->open && ! $poll->show_results )
-		return 'vote'; // view results is closed in options
+	// view results is closed in options
+	if( $poll->open && ! $poll->show_results ){
+		return 'vote';
+	}
 
 	$screen = (
 		isset( $_REQUEST['dem_act'], $_REQUEST['dem_pid'] ) &&
@@ -336,6 +345,6 @@ function dem__query_poll_screen_choose( $poll ){
 	)
 		? 'voted' : 'vote';
 
-	return apply_filters( 'dem_poll_screen_choose', $screen, $poll );
+	return (string) apply_filters( 'dem_poll_screen_choose', $screen, $poll );
 }
 
