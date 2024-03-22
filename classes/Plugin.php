@@ -35,24 +35,28 @@ class Plugin {
 	public function __construct() {
 		$this->opt = new Options();
 		$this->msg = new Messages();
+	}
+
+	public function basic_init() {
+		$this->opt->set_opt();
+
+		Activator::set_db_tables();
+		if( is_multisite() ){
+			add_action( 'switch_blog', [ Activator::class, 'set_db_tables' ] );
+		}
 
 		$this->set_access_caps();
+		Kses::set_allowed_tags();
+		$this->load_textdomain();
 	}
 
 	public function init() {
-		\DemocracyPoll\Utils\Activator::set_db_tables();
+		$this->basic_init();
 
 		$this->set_is_cachegear_on();
 
-		Kses::set_allowed_tags();
-		$this->load_textdomain();
-
 		// admin part
-		if(
-			Activator::$activation_running
-			||
-			( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) )
-		){
+		if( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ){
 			$this->admin = new Admin();
 			$this->admin->init();
 		}
@@ -61,15 +65,11 @@ class Plugin {
 		$this->poll_ajax = new Poll_Ajax();
 		$this->poll_ajax->init();
 
-		// For front part localisation and custom translation setup
+		// For front-end localisation and custom translation
 		Admin_Page_l10n::add_gettext_filter();
 
-		if( is_multisite() ){
-			add_action( 'switch_blog', [ Activator::class, 'set_db_tables' ] );
-		}
-
 		// menu in the admin bar
-		if( $this->admin_access && options()->toolbar_menu ){
+		if( $this->admin_access && $this->opt->toolbar_menu ){
 			add_action( 'admin_bar_menu', [ $this, 'add_toolbar_node' ], 99 );
 		}
 
@@ -106,9 +106,9 @@ class Plugin {
 		$this->admin_access = $is_adminor;
 
 		// open admin manage access for other roles
-		if( ! $this->admin_access && options()->access_roles ){
+		if( ! $this->admin_access && $this->opt->access_roles ){
 			foreach( wp_get_current_user()->roles as $role ){
-				if( in_array( $role, options()->access_roles, true ) ){
+				if( in_array( $role, $this->opt->access_roles, true ) ){
 					$this->admin_access = true;
 					break;
 				}
@@ -118,7 +118,7 @@ class Plugin {
 
 	private function set_is_cachegear_on() {
 
-		if( options()->force_cachegear ){
+		if( $this->opt->force_cachegear ){
 			$this->is_cachegear_on = true;
 			return;
 		}
@@ -235,7 +235,7 @@ class Plugin {
 		}
 
 		// inline HTML
-		if( options()->inline_js_css ){
+		if( $this->opt->inline_js_css ){
 			wp_enqueue_script( 'jquery' );
 			add_action( ( is_admin() ? 'admin_footer' : 'wp_footer' ), [ __CLASS__, '_add_js_wp_footer' ], 0 );
 		}

@@ -122,7 +122,6 @@ class Options {
 	];
 
 	public function __construct() {
-		$this->set_opt();
 	}
 
 	public function __get( $name ){
@@ -137,7 +136,7 @@ class Options {
 		// prohibit to set any additional options
 	}
 
-	public function default_options(): array {
+	public function get_default_options(): array {
 		return $this->default_options;
 	}
 
@@ -146,10 +145,10 @@ class Options {
 	 *
 	 * @return void
 	 */
-	private function set_opt() {
+	public function set_opt() {
 
 		if( ! $this->opt ){
-			$this->opt = get_option( self::OPT_NAME );
+			$this->opt = get_option( self::OPT_NAME, [] );
 
 			if( ! $this->opt ){
 				$this->reset_options( 'all' );
@@ -187,7 +186,7 @@ class Options {
 	public function update_options( string $type ): bool {
 
 		// sanitize on POST request
-		$POSTDATA = wp_unslash( $_POST );
+		$POSTDATA = wp_unslash( $_POST ); // TODO: move it out of here
 		if( isset( $POSTDATA['dem'] ) && ( $type === 'main' || $type === 'design' ) ){
 			$this->sanitize_request_options( $POSTDATA, $type );
 		}
@@ -201,7 +200,7 @@ class Options {
 			( new \DemocracyPoll\Options_CSS() )->regenerate_democracy_css( $additional );
 		}
 
-		return $this->update_in_db();
+		return (bool) update_option( self::OPT_NAME, $this->opt );
 	}
 
 	public function reset_options( $type ): bool {
@@ -224,18 +223,7 @@ class Options {
 			}
 		}
 
-		return $this->update_in_db();
-	}
-
-	private function update_in_db(): bool {
-
-		$up = update_option( self::OPT_NAME, $this->opt );
-
-		$up
-			? plugin()->msg->add_ok( __( 'Updated', 'democracy-poll' ) )
-			: plugin()->msg->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
-
-		return (bool) $up;
+		return (bool) update_option( self::OPT_NAME, $this->opt );
 	}
 
 	/**

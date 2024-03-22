@@ -3,11 +3,8 @@
 namespace DemocracyPoll\Utils;
 
 use function DemocracyPoll\plugin;
-use function DemocracyPoll\options;
 
 class Activator {
-
-	public static $activation_running = false;
 
 	public static function set_db_tables() {
 		global $wpdb;
@@ -17,9 +14,7 @@ class Activator {
 	}
 
 	public static function activate() {
-
-		// in order to activation works - activate_plugin() function works
-		self::$activation_running = true;
+		plugin()->basic_init();
 
 		if( is_multisite() ){
 			$sites = get_sites();
@@ -35,11 +30,6 @@ class Activator {
 	}
 
 	private static function _activate() {
-		self::set_db_tables();
-
-		plugin()->load_textdomain();
-		options(); // add default options (if there is no any).
-
 		// create tables
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( self::db_schema() );
@@ -147,7 +137,7 @@ class Activator {
 			KEY qid (qid),
 			KEY userid (userid)
 		) $charset_collate;
-	";
+		";
 	}
 
 }

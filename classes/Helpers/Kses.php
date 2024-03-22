@@ -3,7 +3,6 @@
 namespace DemocracyPoll\Helpers;
 
 use function DemocracyPoll\plugin;
-use function DemocracyPoll\options;
 
 class Kses {
 

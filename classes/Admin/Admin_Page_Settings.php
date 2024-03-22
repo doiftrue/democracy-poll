@@ -22,11 +22,18 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 			return;
 		}
 
+		$up = null;
 		if( isset( $_POST['dem_save_main_options'] ) ){
 			$up = options()->update_options( 'main' );
 		}
 		if( isset( $_POST['dem_reset_main_options'] ) ){
 			$up = options()->reset_options( 'main' );
+		}
+
+		if( $up !== null ){
+			$up
+				? plugin()->msg->add_ok( __( 'Updated', 'democracy-poll' ) )
+				: plugin()->msg->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
 		}
 
 		// запрос на создание страницы архива

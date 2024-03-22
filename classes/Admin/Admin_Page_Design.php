@@ -38,11 +38,18 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 			return;
 		}
 
+		$up = null;
 		if( isset( $_POST['dem_save_design_options'] ) ){
 			$up = options()->update_options( 'design' );
 		}
 		if( isset( $_POST['dem_reset_design_options'] ) ){
 			$up = options()->reset_options( 'design' );
+		}
+
+		if( $up !== null ){
+			$up
+				? plugin()->msg->add_ok( __( 'Updated', 'democracy-poll' ) )
+				: plugin()->msg->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
 		}
 
 		// hack to immediately apply the option change
