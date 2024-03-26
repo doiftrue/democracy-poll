@@ -111,7 +111,7 @@ final class Helpers {
 		}
 
 		// WordFence
-		if( class_exists( \wfConfig::class ) && wfConfig::get( 'cacheType' ) === 'falcon' ){
+		if( class_exists( \wfConfig::class ) && \wfConfig::get( 'cacheType' ) === 'falcon' ){
 			return true;
 		}
 

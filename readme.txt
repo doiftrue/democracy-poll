@@ -1,6 +1,6 @@
 
 === Plugin Name ===
-Stable tag: 6.0.1
+Stable tag: 6.0.2
 Tested up to: 6.4.3
 Requires at least: 4.7
 Contributors: Tkama
@@ -139,6 +139,9 @@ Yes it is! To completely uninstall the plugin, deactivate it and then press "del
 
 
 == Changelog ==
+
+= 6.0.2 =
+BUG: A fatal error occurred when using the "WordFence" plugin: "Failed opening ... /Helpers/wfConfig.php".
 
 = 6.0.1 =
 * BUG: Fix v6.0.0 bug: short-circuit recursion on plugin object construct for the not logged-in users.
