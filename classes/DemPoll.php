@@ -53,6 +53,7 @@ class DemPoll {
 
 	public $open = false;
 
+	/** @var int How many answers may be selected. */
 	public $multiple = 0;
 
 	/** @var bool For logged users only */
@@ -64,23 +65,25 @@ class DemPoll {
 
 	public $answers_order = '';
 
-	/** @var string Comma separated posts_ids */
+	/** @var string Comma separated posts_ids. Eg: '16865,16892' */
 	public $in_posts = '';
 
 	/** @var string Additional poll notes */
 	public $note = '';
 
 	/**
-	 * @param object|int $ident  Poll id to get. Or poll object from DB. Or use 'rand', 'last' strings.
+	 * @param object|int $poll_id  Poll id to get. Or poll object from DB.
 	 */
-	public function __construct( $ident = null ) {
+	public function __construct( $poll_id ) {
 		global $wpdb;
 
-		if( ! $ident ){
+		if( ! $poll_id ){
 			return;
 		}
 
-		$poll_obj = is_object( $ident ) ? $ident : self::get_poll_object( $ident );
+		$poll_obj = null;
+		is_object( $poll_id ) && $poll_obj = $poll_id;
+		is_numeric( $poll_id ) && $poll_obj = self::get_poll_object( $poll_id );
 		if( ! $poll_obj || ! isset( $poll_obj->id ) ){
 			return;
 		}
@@ -103,7 +106,6 @@ class DemPoll {
 		$this->answers_order = $this->data->answers_order;
 		$this->in_posts      = $this->data->in_posts;
 		$this->note          = $this->data->note;
-
 
 		$this->cookie_key = "demPoll_$this->id";
 

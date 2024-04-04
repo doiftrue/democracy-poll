@@ -1,7 +1,7 @@
 
 === Plugin Name ===
-Stable tag: 6.0.2
-Tested up to: 6.4.3
+Stable tag: 6.0.3
+Tested up to: 6.5.0
 Requires at least: 4.7
 Contributors: Tkama
 License: GPLv2 or later

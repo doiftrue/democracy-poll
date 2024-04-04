@@ -501,7 +501,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 		<ul class="group">
 			<li class="block polls-preview">
 				<?php
-				$poll = new \DemPoll( 'rand' );
+				$poll = new \DemPoll( \DemPoll::get_poll_object( 'rand' ) );
 
 				if( $poll->id ){
 					//$poll->has_voted = 1;

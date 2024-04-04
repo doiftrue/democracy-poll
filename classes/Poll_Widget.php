@@ -35,14 +35,16 @@ class Poll_Widget extends \WP_Widget {
 			$poll_id = $post_pid;
 		}
 
+		$poll_object = \DemPoll::get_poll_object( $poll_id ?: 'rand' ); // $poll_id may be: int, 'last', 'rand'
+
 		if( isset( $instance['questionIsTitle'] ) ){
 			echo $before_widget;
-			democracy_poll( $poll_id, $before_title, $after_title );
+			echo get_democracy_poll( $poll_object, $before_title, $after_title );
 			echo $after_widget;
 		}
 		else{
 			echo $before_widget . $before_title . $title . $after_title;
-			democracy_poll( $poll_id );
+			echo get_democracy_poll( $poll_object );
 			echo $after_widget;
 		}
 	}
