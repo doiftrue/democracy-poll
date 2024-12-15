@@ -8,6 +8,7 @@ final class Helpers {
 		return [
 			'by_id'     => __( 'As it was added (by ID)', 'democracy-poll' ),
 			'by_winner' => __( 'Winners at the top', 'democracy-poll' ),
+			'alphabet'  => __( 'Alphabetically', 'democracy-poll' ),
 			'mix'       => __( 'Mix', 'democracy-poll' ),
 		];
 	}

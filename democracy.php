@@ -10,10 +10,10 @@
  * Text Domain: democracy-poll
  * Domain Path: /languages/
  *
- * Requires at least: 4.7
- * Requires PHP: 7.0
+ * Requires at least: 5.8
+ * Requires PHP: 7.4
  *
- * Version: 6.0.3
+ * Version: 6.0.3.1
  */
 
 namespace DemocracyPoll;

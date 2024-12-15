@@ -76,7 +76,11 @@ class Plugin {
 		$this->hide_form_indexing();
 	}
 
-	// hide duplicate content. For 5+ versions it's no need
+	/**
+	 * Hide duplicate content. For 5+ versions it's no need.
+	 *
+	 * @return void
+	 */
 	private function hide_form_indexing() {
 		// hide duplicate content. For 5+ versions it's no need
 		if(

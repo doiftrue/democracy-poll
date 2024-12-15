@@ -16,16 +16,18 @@ class Poll_Ajax {
 		add_action( 'wp_ajax_nopriv_dem_ajax', [ $this, 'ajax_request_handler' ] );
 
 		// to work without AJAX
-		if( isset( $_POST['dem_act'] ) &&
-		    ( ! isset( $_POST['action'] ) || 'dem_ajax' !== $_POST['action'] )
+		if(
+			isset( $_POST['dem_act'] )
+		    && ( ! isset( $_POST['action'] ) || 'dem_ajax' !== $_POST['action'] )
 		){
 			add_action( 'init', [ $this, 'not_ajax_request_handler' ], 99 );
 		}
 	}
 
-	# Делает предваритеьную проверку передавемых переменных запроса
+	/**
+	 * Does a preliminary sanitization of the passed request variables.
+	 */
 	public function sanitize_request_vars(): array {
-
 		return [
 			'act'  => sanitize_text_field( $_POST['dem_act'] ?? '' ),
 			'pid'  => (int) ( $_POST['dem_pid'] ?? 0 ),
@@ -33,7 +35,6 @@ class Poll_Ajax {
 		];
 	}
 
-	# обрабатывает запрос AJAX
 	public function ajax_request_handler() {
 
 		$vars = (object) $this->sanitize_request_vars();
@@ -48,8 +49,7 @@ class Poll_Ajax {
 
 		$poll = new \DemPoll( $vars->pid );
 
-		// switch
-		// голосуем и выводим результаты
+		// vote and display results
 		if( 'vote' === $vars->act && $vars->aids ){
 			$voted = $poll->vote( $vars->aids );
 
@@ -64,12 +64,12 @@ class Poll_Ajax {
 				echo $poll->get_result_screen();
 			}
 		}
-		// удаляем результаты
+		// delete results
 		elseif( 'delVoted' === $vars->act ){
 			$poll->delete_vote();
 			echo $poll->get_vote_screen();
 		}
-		// смотрим результаты
+		// view results
 		elseif( 'view' === $vars->act ){
 			if( $poll->not_show_results ){
 				echo $poll->get_vote_screen();
@@ -78,20 +78,21 @@ class Poll_Ajax {
 				echo $poll->get_result_screen();
 			}
 		}
-		// вернуться к голосованию
+		// back to voting
 		elseif( 'vote_screen' === $vars->act ){
 			echo $poll->get_vote_screen();
 		}
+		// get poll->votedFor value (from db)
 		elseif( 'getVotedIds' === $vars->act ){
 			if( $poll->votedFor ){
-				$poll->set_cookie(); // Установим куки, т.к. этот запрос делается только если куки не установлены
+				$poll->set_cookie(); // Set cookies, since this request is only made if cookies are not set
 				echo $poll->votedFor;
 			}
 			elseif( $poll->blockForVisitor ){
-				echo 'blockForVisitor'; // чтобы вывести заметку
+				echo 'blockForVisitor'; // to display a note
 			}
 			else{
-				// если не голосовал ставим куки на пол дня, чтобы не делать эту проверку каждый раз
+				// If not voted, set a cookie for half a day to don't do this check every time.
 				$poll->set_cookie( 'notVote', ( time() + ( DAY_IN_SECONDS / 2 ) ) );
 			}
 		}

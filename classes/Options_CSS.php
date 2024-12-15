@@ -57,7 +57,7 @@ class Options_CSS {
 		$out = '';
 		$styledir = DEMOC_PATH . 'styles';
 
-		$out .= $this->parse_cssimport( "$styledir/$tpl" );
+		$out .= $this->parse_css_import( "$styledir/$tpl" );
 		$out .= $radios ? "\n" . file_get_contents( "$styledir/checkbox-radio/$radios" ) : '';
 		$out .= $button ? "\n" . file_get_contents( "$styledir/buttons/$button" ) : '';
 
@@ -137,7 +137,7 @@ class Options_CSS {
 	/**
 	 * Imports @import in css.
 	 */
-	private function parse_cssimport( $css_filepath ) {
+	private function parse_css_import( $css_filepath ) {
 		$filecode = file_get_contents( $css_filepath );
 
 		$filecode = preg_replace_callback( '~@import [\'"](.*?)[\'"];~', static function( $m ) use ( $css_filepath ) {

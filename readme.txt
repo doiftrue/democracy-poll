@@ -1,8 +1,7 @@
 
 === Plugin Name ===
 Stable tag: 6.0.3
-Tested up to: 6.5.0
-Requires at least: 4.7
+Tested up to: 6.7.1
 Contributors: Tkama
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -140,8 +139,11 @@ Yes it is! To completely uninstall the plugin, deactivate it and then press "del
 
 == Changelog ==
 
+= 6.0.3 =
+* BUG: Poll Widget was not worked correctly if select random poll option was set.
+
 = 6.0.2 =
-BUG: A fatal error occurred when using the "WordFence" plugin: "Failed opening ... /Helpers/wfConfig.php".
+* BUG: A fatal error occurred when using the "WordFence" plugin: "Failed opening ... /Helpers/wfConfig.php".
 
 = 6.0.1 =
 * BUG: Fix v6.0.0 bug: short-circuit recursion on plugin object construct for the not logged-in users.

@@ -889,25 +889,24 @@ class DemPoll {
 		) );
 
 		if( $answers ){
-			// не установлен порядок
-			if( ! $answers[0]->aorder ){
-				$ord = $this->answers_order ?: options()->order_answers;
-
-				if( $ord === 'by_winner' || $ord == 1 ){
-					$answers = Helpers::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
-				}
-				elseif( $ord === 'mix' ){
-					shuffle( $answers );
-				}
-				elseif( $ord === 'by_id' ){}
-			}
-			// по порядку
-			else{
+			$is_custom_order = (bool) reset( $answers )->aorder;
+			if( $is_custom_order ){
 				$answers = Helpers::objects_array_sort( $answers, [ 'aorder' => 'asc' ] );
 			}
-		}
-		else {
-			$answers = [];
+			else{
+				$order = $this->answers_order ?: options()->order_answers;
+
+				if( $order === 'by_winner' || $order == 1 ){
+					$answers = Helpers::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
+				}
+				elseif( $order === 'alphabet' ){
+					$answers = Helpers::objects_array_sort( $answers, [ 'answer' => 'asc' ] );
+				}
+				elseif( $order === 'mix' ){
+					shuffle( $answers );
+				}
+				elseif( $order === 'by_id' ){}
+			}
 		}
 
 		$this->answers = apply_filters( 'dem_set_answers', $answers, $this );

@@ -1,42 +1,5 @@
 
-/* reset -------------------------------- */
-.democracy:after{ content:'';display:table; clear:both; }
-.democracy ul li,
-.democracy ul{ background:none; padding:0;margin:0; }
-.democracy ul li:before{ display:none; } /* li reset */
-
-.democracy input[type='radio'],
-.democracy input[type='checkbox']{
-	margin:0; vertical-align:middle;
-}
-.democracy input[type='radio']:focus,
-.democracy input[type='checkbox']:focus{
-	outline:none;
-}
-.democracy ul{ list-style:none !important; border:none !important; }
-.democracy ul li{ list-style:none !important; }
-
-input[type="submit"].dem-button,
-a.dem-button,
-.dem-button{
-	position:relative; display:inline-block; text-decoration:none; line-height:1; border:0; margin:0; padding:0; cursor:pointer; white-space:nowrap;
-	-webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;
-}
-input[type="submit"].dem-button:focus,
-a.dem-button:focus,
-.dem-button:focus{
-	outline:none;
-}
-input[type="submit"].dem-button:disabled,
-a.dem-button:disabled,
-.dem-button:disabled{
-	opacity:.6;
-	cursor:not-allowed;
-}
-a.dem-button:hover{ text-decoration:none !important; }
-
-
-/* common presets ------------------------------------ */
+/* presets ------------------------------------ */
 .democracy{ position:relative; margin:0 auto; }
 
 .democracy input[type='radio'],
@@ -112,7 +75,7 @@ input.dem-add-answer-txt{ width:100%; box-sizing:border-box; }
 .dem__collapser.collapsed .arr:before{ content:"▾"; }
 .dem__collapser.expanded  .arr:before{ content:"▴"; }
 
-/* / typically do't change */
+/* / typically don't change */
 
 /* shortcode */
 .dem-poll-shortcode{ margin-bottom:1.5em; }
@@ -131,4 +94,4 @@ input.dem-add-answer-txt{ width:100%; box-sizing:border-box; }
 .dem-paging .prev{  }
 .dem-paging .next{  }
 
-/*  / common presets --------------------------------- */
+/*  / presets --------------------------------- */
