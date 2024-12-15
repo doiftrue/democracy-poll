@@ -178,9 +178,9 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 						<label>
 							<input type="checkbox" value="1"
 							       name="dem[post_metabox_off]" <?php checked( options()->post_metabox_off, 1 ) ?> />
-							<?= esc_html__( 'Dasable post metabox.', 'democracy-poll' ) ?>
+							<?= esc_html__( 'Disable post metabox.', 'democracy-poll' ) ?>
 						</label>
-						<em><?= esc_html__( 'Check this to dasable polls metabox functionality for posts where you can attached poll to a post...', 'democracy-poll' ) ?></em>
+						<em><?= esc_html__( 'Check this to disable polls metabox functionality for posts where you can attached poll to a post...', 'democracy-poll' ) ?></em>
 					</li>
 
 					<h3><?= esc_html__( 'Others', 'democracy-poll' ) ?></h3>

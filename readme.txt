@@ -1,4 +1,3 @@
-
 === Plugin Name ===
 Stable tag: 6.0.3
 Tested up to: 6.7.1
@@ -12,57 +11,55 @@ WordPress Polls plugin with multiple choice and custom answers. Works with cache
 
 == Description ==
 
-The plugin adds a clever and convenient system to create various Polls with different features, such as:
+The plugin adds a clever and convenient system to create various polls with different features, such as:
 
-* Single and Multiple voting. Сustomizable.
-* Visitors can add new answers. Сustomizable.
+* Single and multiple voting. Customizable.
+* Visitors can add new answers. Customizable.
 * Ability to set poll's end date.
-* Unregistered users can't vote. Сustomizable.
-* Different design of a poll.
+* Unregistered users can't vote. Customizable.
+* Different poll designs.
 * And so on. See changelog.
 
-Democracy Poll works with all cache plugins like: WP Total Cache, WP Super Cache, WordFence, Quick Cache etc.
+Democracy Poll works with all cache plugins like: WP Total Cache, WP Super Cache, WordFence, Quick Cache, etc.
 
 I focus on easy-admin features and fast performance. So we have:
 
-* Quick Edit button for Admin, right above a poll
-* Plugin menu in toolbar
-* Inline css & js incuding
-* Css & js connection only where it's needed
-* and so on. See changelog
-
+* Quick Edit button for Admin, right above a poll.
+* Plugin menu in toolbar.
+* Inline CSS & JS including.
+* CSS & JS connection only where it's needed.
+* And so on. See changelog.
 
 
 ### More Info ###
 
-Democracy Poll is a reborn of once-has-been-famous plugin with the same name. Even if it hasn't been updated since far-far away 2006, it still has the great idea of adding users' own answers. So here's a completely new code. I have left only the idea and great name of the original DP by Andrew Sutherland.
+Democracy Poll is a reborn version of a once-famous plugin with the same name. Even if it hasn't been updated since far away in 2006, it still had the great idea of adding users' own answers. So here's a completely new code. I have left only the idea and the great name of the original DP by Andrew Sutherland.
 
 What can it perform?
 
-* adding new polls;
-* works with cache plugins: wp total cache, wp super cache, etc...
-* users may add their own answers (Democracy), the option may be disabled if necessary;
-* multi-voting: users may multiple answers instead of a single one (may be disabled on demand);
-* closing the poll after the date specified beforehand;
-* showing a random poll when some are available;
-* closing polls for still unregistered users;
-* a comfortable editing of a selected poll: 'Edit' key for administrators;
-* votes amount editing;
-* a user can change his opinion when re-vote option is enabled;
-* remember users by their IP, cookies, WP profiles (for authorized users). The vote history may be cleaned up;
-* inserting new polls to any posts: the [demоcracy] (shortcode). A key in visual editor is available for this function;
-* a widget (may be disabled);
-* convenient polls editing: the plugin's Panel is carried out to the WordPress toolbar; (may be disabled);
-* .css or .js files may be disabled or embedded to HTML code;
-* showing a note under the poll: a short text with any notes to the poll or anything around it;
-* changing the poll design (css themes);
+* Adding new polls.
+* Works with cache plugins: WP Total Cache, WP Super Cache, etc.
+* Users may add their own answers (Democracy); the option may be disabled if necessary.
+* Multi-voting: users may select multiple answers instead of a single one (may be disabled on demand).
+* Closing the poll after the date specified beforehand.
+* Showing a random poll when some are available.
+* Closing polls for unregistered users.
+* Comfortable editing of a selected poll: 'Edit' key for administrators.
+* Votes amount editing.
+* A user can change their opinion when the re-vote option is enabled.
+* Remember users by their IP, cookies, WP profiles (for authorized users). The vote history may be cleaned up.
+* Inserting new polls into any posts: the [democracy] (shortcode). A key in the visual editor is available for this function.
+* A widget (may be disabled).
+* Convenient polls editing: the plugin's panel is carried out to the WordPress toolbar (may be disabled).
+* CSS or JS files may be disabled or embedded into HTML code.
+* Showing a note under the poll: a short text with any notes to the poll or anything around it.
+* Changing the poll design (CSS themes).
 
 
-Multisite: support from version 5.2.4
+Multisite: support from version 5.2.4.
 
 
 Requires PHP 5.3 or later.
-
 
 
 
@@ -70,16 +67,16 @@ Requires PHP 5.3 or later.
 
 ### Usage (Widget) ###
 1. Go to `WP-Admin -> Appearance -> Widgets` and find `Democracy Poll` Widget.
-2. Add this widget to one of existing sidebar.
-3. Set Up added widget and press Save.
+2. Add this widget to one of the existing sidebars.
+3. Set up the added widget and press Save.
 4. Done!
 
 
 ### Usage (Without Widget) ###
-1. Open sidebar.php file of your theme: `wp-content/themes/<YOUR THEME NAME>/sidebar.php`
-2. Add such code in the place you want Poll is appeared:
+1. Open the sidebar.php file of your theme: `wp-content/themes/<YOUR THEME NAME>/sidebar.php`
+2. Add the following code in the place you want the poll to appear:
 
-`
+```
 <?php if( function_exists('democracy_poll') ){ ?>
 	<li>
 		<h2>Polls</h2>
@@ -88,15 +85,15 @@ Requires PHP 5.3 or later.
 		</ul>
 	</li>
 <?php } ?>
-`
+```
 
-* To show specific poll, use `<?php democracy_poll( 3 ); ?>` where 3 is your poll id.
-* To embed a specific poll in your post, use `[democracy id="2"]` where 2 is your poll id.
-* To embed a random poll in your post, use `[democracy]`
+* To show a specific poll, use `<?php democracy_poll( 3 ); ?>` where 3 is your poll ID.
+* To embed a specific poll in your post, use `[democracy id="2"]` where 2 is your poll ID.
+* To embed a random poll in your post, use `[democracy]`.
 
 
 #### Display Archive ####
-For display polls archive, use the function:
+To display the polls archive, use the function:
 
 `<?php democracy_archives( $hide_active, $before_title, $after_title ); ?>`
 
@@ -104,13 +101,11 @@ For display polls archive, use the function:
 
 
 
-
 == Frequently Asked Questions ==
 
-### Does this plugin clear yourself after uninstall?
+### Does this plugin clear itself after uninstall?
 
-Yes it is! To completely uninstall the plugin, deactivate it and then press "delete" link in admin plugins page and ther plugin delete all it's options and so on...
-
+Yes, it does! To completely uninstall the plugin, deactivate it and then press the "delete" link on the admin plugins page. The plugin deletes all its options and so on.
 
 
 
@@ -499,7 +494,7 @@ Yes it is! To completely uninstall the plugin, deactivate it and then press "del
 * FIX: revote button didn't minus votes if "keep-logs" option was disabled
 
 = 4.5.6 =
-* ADD: right working with cache plugins. Auto unable/dasable with wp total cache, wp super cache, WordFence, WP Rocket, Quick Cache. If you use the other plugin you can foorce enable this option.
+* ADD: right working with cache plugins. Auto unable/disable with wp total cache, wp super cache, WordFence, WP Rocket, Quick Cache. If you use the other plugin you can foorce enable this option.
 * ADD: add link to selected css file in settings page, to conviniently copy or view the css code
 * ADD: php 5.3+ needed check & notice if php unsuitable
 * Changed: archive page ID in option, but not link to the archive page

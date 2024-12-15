@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Democracy\n"
-"POT-Creation-Date: 2024-03-22 00:55+0500\n"
+"POT-Creation-Date: 2024-12-15 19:16+0500\n"
 "PO-Revision-Date: 2017-03-12 15:02+0500\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -12,14 +12,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.5\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;_x:1,2c\n"
 "X-Poedit-SearchPath-0: .\n"
 
 #: classes/Admin/Admin.php:42 classes/Admin/Admin_Page.php:205
-#: classes/Plugin.php:154
+#: classes/Plugin.php:158
 msgid "Settings"
 msgstr ""
 
@@ -31,7 +31,7 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:191 classes/Plugin.php:151
+#: classes/Admin/Admin_Page.php:191 classes/Plugin.php:155
 msgid "Polls List"
 msgstr ""
 
@@ -40,15 +40,15 @@ msgid "Add new poll"
 msgstr ""
 
 #: classes/Admin/Admin_Page.php:199 classes/Admin/List_Table_Polls.php:136
-#: classes/Plugin.php:153
+#: classes/Plugin.php:157
 msgid "Logs"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:210 classes/Plugin.php:155
+#: classes/Admin/Admin_Page.php:210 classes/Plugin.php:159
 msgid "Theme Settings"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:215 classes/Plugin.php:156
+#: classes/Admin/Admin_Page.php:215 classes/Plugin.php:160
 msgid "Texts changes"
 msgstr ""
 
@@ -56,15 +56,27 @@ msgstr ""
 msgid "If you like this plugin, please <a>leave your review</a>"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:508
+#: classes/Admin/Admin_Page_Design.php:51
+#: classes/Admin/Admin_Page_Settings.php:35
+#: classes/Admin/Admin_Page_l10n.php:39
+msgid "Updated"
+msgstr ""
+
+#: classes/Admin/Admin_Page_Design.php:52
+#: classes/Admin/Admin_Page_Settings.php:36
+#: classes/Admin/Admin_Page_l10n.php:40
+msgid "Nothing was updated"
+msgstr ""
+
+#: classes/Admin/Admin_Page_Design.php:515
 msgid "Results view:"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:510
+#: classes/Admin/Admin_Page_Design.php:517
 msgid "Vote view:"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:512
+#: classes/Admin/Admin_Page_Design.php:519
 msgid "AJAX loader view:"
 msgstr ""
 
@@ -113,7 +125,7 @@ msgstr ""
 msgid "Save Changes"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:287 classes/Plugin.php:152
+#: classes/Admin/Admin_Page_Edit_Poll.php:287 classes/Plugin.php:156
 msgid "Add Poll"
 msgstr ""
 
@@ -242,55 +254,47 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:80
+#: classes/Admin/Admin_Page_Settings.php:87
 msgid ""
 "Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: "
 "<code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/"
 "strong&gt;</code>."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:92
+#: classes/Admin/Admin_Page_Settings.php:99
 msgid "Go to archive page"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:98
+#: classes/Admin/Admin_Page_Settings.php:105
 msgid "Create/find archive page"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:102
+#: classes/Admin/Admin_Page_Settings.php:109
 msgid ""
 "Specify the poll archive link to be in the poll legend. Example: <code>25</"
 "code>"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:186
+#: classes/Admin/Admin_Page_Settings.php:193
 msgid "ON"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:187
+#: classes/Admin/Admin_Page_Settings.php:194
 msgid "OFF"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:189
+#: classes/Admin/Admin_Page_Settings.php:196
 #, php-format
 msgid "Force enable gear to working with cache plugins. The condition: %s"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:260
+#: classes/Admin/Admin_Page_Settings.php:267
 msgid ""
 "Role names, except 'administrator' which will have access to manage plugin."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:356
+#: classes/Admin/Admin_Page_Settings.php:363
 msgid "Polls Archive"
-msgstr ""
-
-#: classes/Admin/Admin_Page_l10n.php:39 classes/Options.php:235
-msgid "Updated"
-msgstr ""
-
-#: classes/Admin/Admin_Page_l10n.php:40 classes/Options.php:236
-msgid "Nothing was updated"
 msgstr ""
 
 #: classes/Admin/Admin_Page_l10n.php:61
@@ -309,7 +313,7 @@ msgstr ""
 msgid "IP info"
 msgstr ""
 
-#: classes/Admin/List_Table_Logs.php:135 classes/Poll_Widget.php:64
+#: classes/Admin/List_Table_Logs.php:135 classes/Poll_Widget.php:66
 msgid "Poll"
 msgstr ""
 
@@ -342,7 +346,7 @@ msgid "Poll's logs: "
 msgstr ""
 
 #: classes/Admin/List_Table_Logs.php:185 classes/Admin/List_Table_Logs.php:271
-#: classes/DemPoll.php:203
+#: classes/DemPoll.php:205
 msgid "Edit poll"
 msgstr ""
 
@@ -435,109 +439,109 @@ msgstr ""
 msgid "Insert Poll ID"
 msgstr ""
 
-#: classes/DemPoll.php:208
+#: classes/DemPoll.php:210
 msgid "Download the Democracy Poll"
 msgstr ""
 
-#: classes/DemPoll.php:333
+#: classes/DemPoll.php:335
 msgctxt "front"
 msgid "Add your answer"
 msgstr ""
 
-#: classes/DemPoll.php:341
+#: classes/DemPoll.php:343
 msgctxt "front"
 msgid "Already voted..."
 msgstr ""
 
-#: classes/DemPoll.php:342 classes/DemPoll.php:502
+#: classes/DemPoll.php:344 classes/DemPoll.php:504
 msgctxt "front"
 msgid "Vote"
 msgstr ""
 
-#: classes/DemPoll.php:384
+#: classes/DemPoll.php:386
 msgctxt "front"
 msgid "Results"
 msgstr ""
 
-#: classes/DemPoll.php:420
+#: classes/DemPoll.php:422
 msgctxt "front"
 msgid "This is Your vote."
 msgstr ""
 
-#: classes/DemPoll.php:446
+#: classes/DemPoll.php:448
 msgctxt "front"
 msgid "The answer was added by a visitor"
 msgstr ""
 
-#: classes/DemPoll.php:449
+#: classes/DemPoll.php:451
 #, php-format
 msgctxt "front"
 msgid "%s - %s%% of all votes"
 msgstr ""
 
-#: classes/DemPoll.php:449 classes/DemPoll.php:453
+#: classes/DemPoll.php:451 classes/DemPoll.php:455
 msgctxt "front"
 msgid "vote,votes,votes"
 msgstr ""
 
-#: classes/DemPoll.php:483
+#: classes/DemPoll.php:485
 #, php-format
 msgctxt "front"
 msgid "Total Votes: %s"
 msgstr ""
 
-#: classes/DemPoll.php:484
+#: classes/DemPoll.php:486
 #, php-format
 msgctxt "front"
 msgid "Voters: %s"
 msgstr ""
 
-#: classes/DemPoll.php:486
+#: classes/DemPoll.php:488
 msgctxt "front"
 msgid "Begin"
 msgstr ""
 
-#: classes/DemPoll.php:488
+#: classes/DemPoll.php:490
 msgctxt "front"
 msgid "End"
 msgstr ""
 
-#: classes/DemPoll.php:490
+#: classes/DemPoll.php:492
 msgctxt "front"
 msgid " - added by visitor"
 msgstr ""
 
-#: classes/DemPoll.php:491
+#: classes/DemPoll.php:493
 msgctxt "front"
 msgid "Voting is closed"
 msgstr ""
 
-#: classes/DemPoll.php:493
+#: classes/DemPoll.php:495
 msgctxt "front"
 msgid "Polls Archive"
 msgstr ""
 
-#: classes/DemPoll.php:549
+#: classes/DemPoll.php:551
 msgctxt "front"
 msgid "Only registered users can vote. <a>Login</a> to vote."
 msgstr ""
 
-#: classes/DemPoll.php:559
+#: classes/DemPoll.php:561
 msgctxt "front"
 msgid "Revote"
 msgstr ""
 
-#: classes/DemPoll.php:559
+#: classes/DemPoll.php:561
 msgctxt "front"
 msgid "Are you sure you want cancel the votes?"
 msgstr ""
 
-#: classes/DemPoll.php:573
+#: classes/DemPoll.php:575
 msgctxt "front"
 msgid "You or your IP had already vote."
 msgstr ""
 
-#: classes/DemPoll.php:620
+#: classes/DemPoll.php:622
 msgid "ERROR: You select more number of answers than it is allowed..."
 msgstr ""
 
@@ -550,6 +554,10 @@ msgid "Winners at the top"
 msgstr ""
 
 #: classes/Helpers/Helpers.php:11
+msgid "Alphabetically"
+msgstr ""
+
+#: classes/Helpers/Helpers.php:12
 msgid "Mix"
 msgstr ""
 
@@ -557,39 +565,39 @@ msgstr ""
 msgid "Democracy Poll Widget"
 msgstr ""
 
-#: classes/Poll_Widget.php:89
+#: classes/Poll_Widget.php:91
 msgid "- Active (random all active)"
 msgstr ""
 
-#: classes/Poll_Widget.php:90
+#: classes/Poll_Widget.php:92
 msgid "- Last open poll"
 msgstr ""
 
-#: classes/Poll_Widget.php:105
+#: classes/Poll_Widget.php:107
 msgid "Which poll to show?"
 msgstr ""
 
-#: classes/Utils/Activator.php:61
+#: classes/Utils/Activator.php:51
 msgid "What is the capital city of France?"
 msgstr ""
 
-#: classes/Utils/Activator.php:73
+#: classes/Utils/Activator.php:63
 msgid "Paris"
 msgstr ""
 
-#: classes/Utils/Activator.php:74
+#: classes/Utils/Activator.php:64
 msgid "Rome"
 msgstr ""
 
-#: classes/Utils/Activator.php:75
+#: classes/Utils/Activator.php:65
 msgid "Madrid"
 msgstr ""
 
-#: classes/Utils/Activator.php:76
+#: classes/Utils/Activator.php:66
 msgid "Berlin"
 msgstr ""
 
-#: classes/Utils/Activator.php:77
+#: classes/Utils/Activator.php:67
 msgid "London"
 msgstr ""
 
