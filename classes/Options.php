@@ -142,10 +142,8 @@ class Options {
 
 	/**
 	 * Sets $this->opt. Update options in DB if it's not set yet.
-	 *
-	 * @return void
 	 */
-	public function set_opt() {
+	public function set_opt(): void {
 
 		if( ! $this->opt ){
 			$this->opt = get_option( self::OPT_NAME, [] );
@@ -168,10 +166,10 @@ class Options {
 	// TODO: refactor and join with update_options()
 	public function update_single_option( $option_name, $value ): bool {
 
-		$newopt = $this->opt;
-		$newopt[ $option_name ] = $value;
-
 		if( $this->is_option_exists( $option_name ) ){
+			$newopt = $this->opt;
+			$newopt[ $option_name ] = $value;
+
 			return (bool) update_option( self::OPT_NAME, $newopt );
 		}
 
@@ -179,8 +177,6 @@ class Options {
 	}
 
 	/**
-	 * Updates options.
-	 *
 	 * @param string $type  What group of option to update: main, design.
 	 */
 	public function update_options( string $type ): bool {
@@ -227,10 +223,10 @@ class Options {
 	}
 
 	/**
-	 * Updates $this->opt based on request data.
-	 * Если опция не передана, то на её место будет записано 0.
+	 * Updates {@see self::$opt} based on request data.
+	 * If the option is not passed, 0 will be written in its place.
 	 */
-	private function sanitize_request_options( array $request_data, string $type ){
+	private function sanitize_request_options( array $request_data, string $type ): void {
 
 		foreach( $this->default_options[ $type ] as $key => $v ){
 
@@ -257,12 +253,8 @@ class Options {
 
 			$this->opt[ $key ] = $value;
 		}
-
 	}
 
-	/**
-	 * Checks if option name exists.
-	 */
 	private function is_option_exists( string $option_name ): bool {
 
 		foreach( $this->default_options as $part => $options ){

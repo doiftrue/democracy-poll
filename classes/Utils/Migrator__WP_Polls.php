@@ -68,11 +68,10 @@
 namespace DemocracyPoll\Utils;
 
 use function DemocracyPoll\plugin;
-use function DemocracyPoll\options;
 
 class Migrator__WP_Polls {
 
-	public function migrate() {
+	public function migrate(): void {
 		global $wpdb;
 
 		$migrate_data = get_option( 'democracy_migrated' );

@@ -37,7 +37,7 @@ class Plugin {
 		$this->msg = new Messages();
 	}
 
-	public function basic_init() {
+	public function basic_init(): void {
 		$this->opt->set_opt();
 
 		Activator::set_db_tables();
@@ -50,39 +50,52 @@ class Plugin {
 		$this->load_textdomain();
 	}
 
-	public function init() {
+	public function init(): void {
 		$this->basic_init();
 
 		$this->set_is_cachegear_on();
 
-		// admin part
-		if( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ){
-			$this->admin = new Admin();
-			$this->admin->init();
-		}
+		$this->init_admin();
 
 		( new Shortcodes() )->init();
 		$this->poll_ajax = new Poll_Ajax();
 		$this->poll_ajax->init();
 
-		// For front-end localisation and custom translation
+		// For front-end localization and custom translation
 		Admin_Page_l10n::add_gettext_filter();
 
-		// menu in the admin bar
+		$this->menu_in_admin_bar();
+		$this->hide_form_indexing();
+
+		$this->enable_widget();
+	}
+
+	private function init_admin(): void {
+		if( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ){
+			$this->admin = new Admin();
+			$this->admin->init();
+		}
+	}
+
+	private function enable_widget(): void {
+		if( options()->use_widget ){
+			add_action( 'widgets_init', static function() {
+				register_widget( Poll_Widget::class );
+			} );
+		}
+	}
+
+	private function menu_in_admin_bar(): void {
 		if( $this->admin_access && $this->opt->toolbar_menu ){
 			add_action( 'admin_bar_menu', [ $this, 'add_toolbar_node' ], 99 );
 		}
-
-		$this->hide_form_indexing();
 	}
 
 	/**
 	 * Hide duplicate content. For 5+ versions it's no need.
-	 *
-	 * @return void
 	 */
-	private function hide_form_indexing() {
-		// hide duplicate content. For 5+ versions it's no need
+	private function hide_form_indexing(): void {
+		// Hide duplicate content. For 5+ versions it's no need
 		if(
 			isset( $_GET['dem_act'] )
 			|| isset( $_GET['dem_action'] )
@@ -90,17 +103,17 @@ class Plugin {
 			|| isset( $_GET['show_addanswerfield'] )
 			|| isset( $_GET['dem_add_user_answer'] )
 		){
-			add_action( 'wp', function() {
+			add_action( 'wp', static function() {
 				status_header( 404 );
 			} );
 
-			add_action( 'wp_head', function() {
+			add_action( 'wp_head', static function() {
 				echo "\n<!--democracy-poll-->\n" . '<meta name="robots" content="noindex,nofollow">' . "\n";
 			} );
 		}
 	}
 
-	private function set_access_caps() {
+	private function set_access_caps(): void {
 		$is_adminor = current_user_can( 'manage_options' );
 
 		// access to change settings...
@@ -120,7 +133,7 @@ class Plugin {
 		}
 	}
 
-	private function set_is_cachegear_on() {
+	private function set_is_cachegear_on(): void {
 
 		if( $this->opt->force_cachegear ){
 			$this->is_cachegear_on = true;
@@ -136,14 +149,14 @@ class Plugin {
 		$this->is_cachegear_on = Helpers::is_page_cache_plugin_on();
 	}
 
-	public function load_textdomain() {
+	public function load_textdomain(): void {
 		load_plugin_textdomain( 'democracy-poll', false, basename( DEMOC_PATH ) . '/languages/' );
 	}
 
 	/**
 	 * @param \WP_Admin_Bar $toolbar
 	 */
-	public function add_toolbar_node( $toolbar ) {
+	public function add_toolbar_node( $toolbar ): void {
 
 		$toolbar->add_node( [
 			'id'    => 'dem_settings',
@@ -232,7 +245,7 @@ class Plugin {
 	/**
 	 * Adds scripts to the footer.
 	 */
-	public function add_js_once() {
+	public function add_js_once(): void {
 		static $once = 0;
 		if( $once++ ){
 			return;
@@ -248,7 +261,7 @@ class Plugin {
 		}
 	}
 
-	public static function _add_js_wp_footer() {
+	public static function _add_js_wp_footer(): void {
 		echo "\n" . '<script id="democracy-poll">' . file_get_contents( DEMOC_PATH . 'js/democracy.min.js' ) . '</script>' . "\n";
 	}
 

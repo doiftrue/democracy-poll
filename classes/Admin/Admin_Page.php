@@ -55,7 +55,7 @@ class Admin_Page {
 		add_action( "load-$hook_name", [ $this, 'admin_page_load' ] );
 	}
 
-	public function admin_page_load() {
+	public function admin_page_load(): void {
 
 		// datepicker
 		wp_enqueue_script( 'jquery-ui-datepicker' );

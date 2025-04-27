@@ -6,14 +6,14 @@ use function DemocracyPoll\plugin;
 
 class Activator {
 
-	public static function set_db_tables() {
+	public static function set_db_tables(): void {
 		global $wpdb;
 		$wpdb->democracy_q   = $wpdb->prefix . 'democracy_q';
 		$wpdb->democracy_a   = $wpdb->prefix . 'democracy_a';
 		$wpdb->democracy_log = $wpdb->prefix . 'democracy_log';
 	}
 
-	public static function activate() {
+	public static function activate(): void {
 		plugin()->basic_init();
 
 		if( is_multisite() ){
@@ -29,7 +29,7 @@ class Activator {
 		}
 	}
 
-	private static function _activate() {
+	private static function _activate(): void {
 		// create tables
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( self::db_schema() );
@@ -39,7 +39,7 @@ class Activator {
 		( new Upgrader() )->upgrade();
 	}
 
-	private static function add_sample_poll(){
+	private static function add_sample_poll(): void {
 		global $wpdb;
 
 		$is_any_poll = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q LIMIT 1" );

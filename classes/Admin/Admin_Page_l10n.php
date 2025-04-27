@@ -3,7 +3,6 @@
 namespace DemocracyPoll\Admin;
 
 use function DemocracyPoll\plugin;
-use function DemocracyPoll\options;
 
 class Admin_Page_l10n implements Admin_Subpage_Interface {
 
@@ -14,10 +13,10 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 		$this->admpage = $admin_page;
 	}
 
-	public function load(  ){
+	public function load(): void {
 	}
 
-	public function request_handler(  ){
+	public function request_handler(): void {
 		if( ! plugin()->super_access || ! Admin_Page::check_nonce() ){
 			return;
 		}
@@ -42,7 +41,7 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 		}
 	}
 
-	public function render() {
+	public function render(): void {
 		if( ! plugin()->super_access ){
 			return;
 		}
@@ -149,11 +148,11 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 	/**
 	 * For front part localization and custom translation setup.
 	 */
-	public static function add_gettext_filter(){
+	public static function add_gettext_filter(): void {
 		add_filter( 'gettext_with_context', [ __CLASS__, 'handle_front_l10n' ], 10, 4 );
 	}
 
-	public static function remove_gettext_filter(){
+	public static function remove_gettext_filter(): void {
 		remove_filter( 'gettext_with_context', [ __CLASS__, 'handle_front_l10n' ], 10 );
 	}
 
