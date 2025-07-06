@@ -1,5 +1,6 @@
 name: Deploy to WordPress.org
 
+# NOTE: To ignore folder/files specify them in tht .distignore file.
 on:
   push:
     tags:

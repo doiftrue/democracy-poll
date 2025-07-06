@@ -25,33 +25,24 @@ final class Helpers {
 	}
 
 	/**
-	 * Сортировка массива объектов.
-	 * Передаете в $array массив объектов, указываете в $args параметры
-	 * сортировки и получаете отсортированный массив объектов.
+	 * Sorts an array of objects.
+	 *
+	 * Pass an array of objects in $array, specify sorting parameters in $args,
+	 * and get a sorted array of objects/arrays as a result.
 	 */
-	public static function objects_array_sort( $array, $args = [ 'votes' => 'desc' ] ) {
+	public static function objects_array_sort( array $array, array $args = [ 'votes' => 'DESC' ] ): array {
+		$args = array_map( 'strtoupper', $args );
 
 		usort( $array, static function( $a, $b ) use ( $args ) {
-			$res = 0;
+			foreach( $args as $k => $asc_desc ){
+				$res = is_array( $a ) ? $a[$k] <=> $b[$k] : $a->$k <=> $b->$k;
 
-			if( is_array( $a ) ){
-				$a = (object) $a;
-				$b = (object) $b;
+				if( $res !== 0 ){
+					return ( $asc_desc === 'DESC' ) ? -$res : $res;
+				}
 			}
 
-			foreach( $args as $k => $v ){
-				if( $a->$k === $b->$k ){
-					continue;
-				}
-
-				$res = ( $a->$k < $b->$k ) ? -1 : 1;
-				if( $v === 'desc' ){
-					$res = -$res;
-				}
-				break;
-			}
-
-			return $res;
+			return 0;
 		} );
 
 		return $array;

@@ -114,13 +114,17 @@ class Plugin {
 	}
 
 	private function set_access_caps(): void {
-		$is_adminor = current_user_can( 'manage_options' );
+		$has_super_access = current_user_can( 'manage_options' );
 
-		// access to change settings...
-		$this->super_access = (bool) apply_filters( 'dem_super_access', $is_adminor );
+		/**
+		 * Allows to change the access to be able to change the plugin settings.
+		 *
+		 * @param bool $has_super_access  Default is true if the user has the 'manage_options' capability.
+		 */
+		$this->super_access = (bool) apply_filters( 'dem_super_access', $has_super_access );
 
 		// access to add/edit poll and so on...
-		$this->admin_access = $is_adminor;
+		$this->admin_access = $has_super_access;
 
 		// open admin manage access for other roles
 		if( ! $this->admin_access && $this->opt->access_roles ){
@@ -140,6 +144,13 @@ class Plugin {
 			return;
 		}
 
+		/**
+		 * Allows to change the status of the page cache plugin.
+		 *
+		 * @param bool|null $status  If null, the plugin will check if the page cache plugin is active.
+		 *                           If true, it means that the page cache plugin is active.
+		 *                           If false, it means that the page cache plugin is NOT active.
+		 */
 		$status = apply_filters( 'dem_cachegear_status', null );
 		if( null !== $status ){
 			$this->is_cachegear_on = (bool) $status;

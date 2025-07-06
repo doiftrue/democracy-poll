@@ -1,5 +1,5 @@
-jQuery( document ).ready( function( $ ){
-	'use strict';
+document.addEventListener('DOMContentLoaded', function(){
+	var $ = jQuery
 
 	// EDIT POLL -----------------------
 	var $answers_wrap = $( '.new-poll-answers' );
@@ -20,8 +20,8 @@ jQuery( document ).ready( function( $ ){
 
 		// добавляет li блок (поле нового ответа) после текущего li
 		$.fn.addAnswField = function(){
-			var $li = this.closest( 'li' ),
-				$_li = $li.clone().addClass( 'new' );
+			var $li = this.closest( 'li' )
+			var $_li = $li.clone().addClass( 'new' )
 
 			$_li.find( 'input' ).remove();
 

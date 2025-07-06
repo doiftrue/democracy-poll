@@ -19,6 +19,13 @@ class IP {
 			$ip = $_SERVER['REMOTE_ADDR'] ?? '';
 		}
 
+		/**
+		 * Allows to change determined user IP.
+		 * This can be useful for testing purposes or when using a proxy
+		 * (like cloudflare) that may not pass the real user IP.
+		 *
+		 * @param string $ip  The Determined user IP address.
+		 */
 		$ip = apply_filters( 'dem_get_ip', $ip );
 
 		if( ! filter_var( $ip, FILTER_VALIDATE_IP ) ){

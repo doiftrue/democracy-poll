@@ -1,0 +1,22 @@
+<!-- @see https://phpunit.readthedocs.io/en/9.5/configuration.html -->
+<phpunit
+	bootstrap="tests/unit/bootstrap/bootstrap.php"
+	cacheResultFile="tmp/.phpunit.result.cache"
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	forceCoversAnnotation="true"
+	verbose="true"
+>
+	<testsuites>
+		<testsuite name="Democracy Poll">
+			<directory suffix="Test.php">./tests/unit</directory>
+		</testsuite>
+	</testsuites>
+	<php>
+		<ini name="display_errors" value="On" />
+		<ini name="display_startup_errors" value="On" />
+	</php>
+</phpunit>

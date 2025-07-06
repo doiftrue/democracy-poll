@@ -4,21 +4,20 @@ namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Poll_Answer;
 use function DemocracyPoll\plugin;
 use function DemocracyPoll\options;
 
 class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 
-	/** @var int */
-	private $poll_id = 0;
+	private int $poll_id = 0;
 
 	/** @var \DemPoll|null */
 	private $poll = null;
 
-	/** @var Admin_Page */
-	private $admpage;
+	private Admin_Page $admpage;
 
-	public function set_poll_id( int $poll_id ){
+	public function set_poll_id( int $poll_id ): void {
 		$this->poll_id = $poll_id;
 	}
 
@@ -26,11 +25,11 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 		$this->admpage = $admin_page;
 	}
 
-	public function load() {
+	public function load(): void {
 		wp_enqueue_script( 'jquery-ui-sortable' );
 	}
 
-	public function request_handler() {
+	public function request_handler(): void {
 
 		if( ( $_GET['msg'] ?? '' ) === 'created' ){
 			plugin()->msg->add_ok( __( 'New Poll Added', 'democracy-poll' ) );
@@ -49,7 +48,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 		}
 	}
 
-	public function render() {
+	public function render(): void {
 		global $wpdb;
 
 		// no access
@@ -67,6 +66,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 		if( $this->poll_id ){
 			$this->poll = \DemPoll::get_poll_object( $this->poll_id );
 			$answers = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->democracy_a WHERE qid = %d", $this->poll_id ) );
+			$answers = array_map( static fn( $answer ) => new Poll_Answer( $answer ), $answers );
 
 			$log_link = options()->keep_logs
 				? sprintf( '<small> : <a href="%s">%s</a></small>',
@@ -112,25 +112,48 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 					$is_answers_order = ( $answers[0]->aorder > 0 );
 
 					// сортировка, по порядку или по кол. голосов
-					$_answers = Helpers::objects_array_sort( $answers, ( $is_answers_order ? [ 'aorder' => 'asc' ] : [
-						'votes' => 'desc',
-						'aid'   => 'asc',
-					] ) );
+					$_answers = Helpers::objects_array_sort( $answers, (
+						$is_answers_order
+							? [ 'aorder' => 'asc' ]
+							: [ 'votes' => 'desc', 'aid' => 'asc', ]
+					) );
 
 					foreach( $_answers as $answer ){
-						$after_answer = apply_filters( 'demadmin_after_answer', '', $answer );
+						/* @var Poll_Answer $answer */
+
+						/**
+						 * Allows to modify the answer object before rendering in admin edit poll form.
+						 *
+						 * @param Poll_Answer $answer The answer object.
+						 */
 						$answer = apply_filters( 'demadmin_edit_poll_answer', $answer );
 
-						$by_user = $answer->added_by ? '<i>*' . ( Admin_Page_Logs::is_new_answer( $answer ) ? ' new' : '' ) . '</i>' : '';
+						/**
+						 * Allows to add HTML after answer input.
+						 *
+						 * @param string      $html   HTML to add after answer input.
+						 * @param Poll_Answer $answer The answer object.
+						 */
+						$after_answer = apply_filters( 'demadmin_after_answer', '', $answer );
 
-						echo '
-						<li class="answ">
-							<input class="answ-text" type="text" name="dmc_old_answers[' . $answer->aid . '][answer]" value="' . esc_attr( $answer->answer ) . '" tabindex="2">
-							<input type="number" min="0" name="dmc_old_answers[' . $answer->aid . '][votes]" value="' . ( $answer->votes ?: '' ) . '" tabindex="3" style="width:100px;min-width:100px;">
-							<input type="hidden" name="dmc_old_answers[' . $answer->aid . '][aorder]" value="' . esc_attr( @ $answer->aorder ) . '">
-							' . $by_user . '
-							' . $after_answer . '
-						</li>';
+						echo strtr( <<<'HTML'
+							<li class="answ">
+								<input class="answ-text" type="text" name="dmc_old_answers[{AID}][answer]" value="{ANSWER}" tabindex="2">
+								<input type="number" min="0" name="dmc_old_answers[{AID}][votes]" value="{VOTES}" tabindex="3" style="width:100px;min-width:100px;">
+								<input type="hidden" name="dmc_old_answers[{AID}][aorder]" value="{AORDER}">
+								{BY_USER}
+								{AFTER_ANSWER}
+							</li>
+							HTML,
+							[
+								'{AID}'          => $answer->aid,
+								'{ANSWER}'       => esc_attr( $answer->answer ),
+								'{VOTES}'        => ( $answer->votes ?: '' ),
+								'{AORDER}'       => esc_attr( $answer->aorder ),
+								'{BY_USER}'      => $answer->added_by ? '<i>*' . ( Admin_Page_Logs::is_new_answer( $answer ) ? ' new' : '' ) . '</i>' : '',
+								'{AFTER_ANSWER}' => $after_answer,
+							]
+						);
 					}
 				}
 				else{
@@ -344,7 +367,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	 *
 	 * @return bool True when added updated, False otherwise.
 	 */
-	public function insert_poll( $data ) {
+	public function insert_poll( array $data ): bool {
 		global $wpdb;
 
 		$orig_data = $data;
@@ -376,6 +399,14 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 		$q_fields = wp_list_pluck( $wpdb->get_results( "SHOW COLUMNS FROM $wpdb->democracy_q" ), 'Field' );
 		$q_data = array_intersect_key( (array) $data, array_flip( $q_fields ) );
 
+		/**
+		 * Allows to modify the poll data before insert or update.
+		 *
+		 * @param array $q_data        The poll data to be inserted or updated.
+		 * @param array $old_answers   The old answers of the poll.
+		 * @param array $new_answers   The new answers of the poll.
+		 * @param bool  $update        Whether the poll is being updated or created.
+		 */
 		do_action_ref_array( 'dem_before_insert_quest_data', [ & $q_data, & $old_answers, & $new_answers, $update ] );
 
 		// UPDATE POLL
@@ -451,6 +482,12 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 						}
 
 						if( $deleted ){
+							/**
+							 * Allows to perform actions after answers are deleted.
+							 *
+							 * @param array $del_ids  The IDs of the deleted answers.
+							 * @param int   $poll_id  The ID of the poll from which answers were deleted.
+							 */
 							do_action( 'dem_answers_deleted', $del_ids, $poll_id );
 						}
 					}
@@ -512,6 +549,12 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 			wp_redirect( add_query_arg( [ 'msg' => 'created' ], plugin()->edit_poll_url( $poll_id ) ) );
 		}
 
+		/**
+		 * Allows to perform actions after a poll is inserted or updated.
+		 *
+		 * @param int  $poll_id The ID of the poll that was inserted or updated.
+		 * @param bool $update  Whether the poll was updated (true) or created (false).
+		 */
 		do_action( 'dem_poll_inserted', $poll_id, $update );
 
 		return true;
@@ -568,6 +611,12 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 		}
 		unset( $val );
 
+		/**
+		 * Allows to modify the poll data during sanitization (typically before inserting to DB).
+		 *
+		 * @param array $data          The sanitized poll data.
+		 * @param array $original_data The original data before sanitization.
+		 */
 		return apply_filters( 'demadmin_sanitize_poll_data', $data, $original_data );
 	}
 

@@ -3,12 +3,12 @@
 use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Helpers\IP;
 use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Poll_Answer;
 use function DemocracyPoll\plugin;
 use function DemocracyPoll\options;
 
 /**
  * Display and vote a separate poll.
- * Needs a Dem plugin class.
  */
 class DemPoll {
 
@@ -26,8 +26,8 @@ class DemPoll {
 	/** @var object|null */
 	public $data = null;
 
-	/** @var object[] */
-	public $answers = [];
+	/** @var Poll_Answer[] */
+	public array $answers = [];
 
 	/// Fields from DB
 
@@ -137,7 +137,7 @@ class DemPoll {
 	}
 
 	/**
-	 * @param int|string $poll_id Poll id to get. Or use 'rand', 'last' strings.
+	 * @param int|string $poll_id Poll id to get. Specify 'rand', 'last' when you need a random or last poll.
 	 *
 	 * @return object|null
 	 */
@@ -156,13 +156,18 @@ class DemPoll {
 			) );
 		}
 
-		return apply_filters( 'dem_get_poll', $poll_obj, $poll_id );
+		/**
+		 * Allows to modify the poll object before it is returned.
+		 *
+		 * @param object|null $poll_obj Raw poll object from DB.
+		 */
+		return apply_filters( 'dem_get_poll', $poll_obj );
 	}
 
 	/**
-	 * Получает HTML опроса.
+	 * Gets the poll HTML.
 	 *
-	 * @param string $show_screen  Какой экран показывать: vote, voted, force_vote.
+	 * @param string $show_screen  Which screen to display: vote, voted, force_vote.
 	 *
 	 * @return string|false HTML.
 	 */
@@ -290,12 +295,9 @@ class DemPoll {
 	}
 
 	/**
-	 * Получает код для голосования
-	 *
-	 * @return string HTML
+	 * Gets the voting form HTML
 	 */
-	public function get_vote_screen() {
-
+	public function get_vote_screen(): string {
 		if( ! $this->id ){
 			return false;
 		}
@@ -310,25 +312,35 @@ class DemPoll {
 				$type = $this->multiple ? 'checkbox' : 'radio';
 
 				foreach( $this->answers as $answer ){
+					/** @var Poll_Answer $answer */
+					/**
+					 * Allows to modify the answer object before it will be processed for output.
+					 *
+					 * @param Poll_Answer $answer The answer object.
+					 */
 					$answer = apply_filters( 'dem_vote_screen_answer', $answer );
 
-					$auto_vote = $auto_vote_on_select ? 'data-dem-act="vote"' : '';
-
-					$checked = $disabled = '';
-					if( $this->votedFor ){
-						if( in_array( $answer->aid, explode( ',', $this->votedFor ) ) ){
-							$checked = ' checked="checked"';
-						}
-
-						$disabled = ' disabled="disabled"';
+					$checked = '';
+					if( $this->votedFor && in_array( $answer->aid, explode( ',', $this->votedFor ) ) ){
+						$checked = ' checked="checked"';
 					}
 
-					$html .= '
-					<li data-aid="' . $answer->aid . '">
-						<label class="dem__' . $type . '_label">
-							<input class="dem__' . $type . '" ' . $auto_vote . ' type="' . $type . '" value="' . $answer->aid . '" name="answer_ids[]"' . $checked . $disabled . '><span class="dem__spot"></span> ' . $answer->answer . '
-						</label>
-					</li>';
+					$html .= strtr( <<<'HTML'
+						<li data-aid="{AID}">
+							<label class="dem__{TYPE}_label">
+								<input class="dem__{TYPE}" {AUTO_VOTE} type="{TYPE}" value="{AID}" name="answer_ids[]" {CHECKED} {DISABLED}><span class="dem__spot"></span> {ANSWER}
+							</label>
+						</li>
+						HTML,
+						[
+							'{AID}'      => $answer->aid,
+							'{TYPE}'     => $type,
+							'{AUTO_VOTE}'=> $auto_vote_on_select ? 'data-dem-act="vote"' : '',
+							'{CHECKED}'  => $checked,
+							'{DISABLED}' => $this->votedFor ? 'disabled="disabled"' : '',
+							'{ANSWER}'   => $answer->answer,
+						]
+					);
 				}
 
 				if( $this->democratic && ! $this->blockVoting ){
@@ -391,6 +403,12 @@ class DemPoll {
 
 		$html .= '</form>';
 
+		/**
+		 * Allows to modify the vote screen HTML before it is returned.
+		 *
+		 * @param string $html  The HTML of the vote screen.
+		 * @param DemPoll $poll The current poll object.
+		 */
 		return apply_filters( 'dem_vote_screen', $html, $this );
 	}
 
@@ -412,6 +430,7 @@ class DemPoll {
 		$max = $total = 0;
 
 		foreach( $answers as $answer ){
+			/** @var Poll_Answer $answer */
 			$total += $answer->votes;
 			if( $max < $answer->votes ){
 				$max = $answer->votes;
@@ -423,9 +442,8 @@ class DemPoll {
 		$html .= '<ul class="dem-answers" data-voted-class="' . $voted_class . '" data-voted-txt="' . $voted_txt . '">';
 
 		foreach( $answers as $answer ){
-
 			// склонение голосов
-			$__sclonenie = function( $number, $titles, $nonum = false ) {
+			$__sclonenie = static function( $number, $titles, $nonum = false ) {
 				$titles = explode( ',', $titles );
 
 				if( 2 === count( $titles ) ){
@@ -437,6 +455,11 @@ class DemPoll {
 				return ( $nonum ? '' : "$number " ) . $titles[ ( $number % 100 > 4 && $number % 100 < 20 ) ? 2 : $cases[ min( $number % 10, 5 ) ] ];
 			};
 
+			/**
+			 * Allows to modify the answer object before it is processed for output.
+			 *
+			 * @param Poll_Answer $answer The answer object.
+			 */
 			$answer = apply_filters( 'dem_result_screen_answer', $answer );
 
 			$votes = (int) $answer->votes;
@@ -541,6 +564,12 @@ class DemPoll {
 
 		$html .= '</div>'; // / dem-bottom
 
+		/**
+		 * Allows to modify result screen HTML before it is returned.
+		 *
+		 * @param string  $html The HTML of the result screen.
+		 * @param DemPoll $poll The current poll object.
+		 */
 		return apply_filters( 'dem_result_screen', $html, $this );
 	}
 
@@ -553,19 +582,27 @@ class DemPoll {
 	}
 
 	protected function revote_btn_html(): string {
-		return '
-		<span class="dem-revote-button-wrap">
-		<form action="#democracy-' . $this->id . '" method="POST">
-			<input type="hidden" name="dem_act" value="delVoted">
-			<input type="hidden" name="dem_pid" value="' . $this->id . '">
-			<input type="submit" value="' . _x( 'Revote', 'front', 'democracy-poll' ) . '" class="dem-revote-link dem-revote-button dem-button ' . options()->btn_class . '" data-dem-act="delVoted" data-confirm-text="' . _x( 'Are you sure you want cancel the votes?', 'front', 'democracy-poll' ) . '">
-		</form>
-		</span>';
+
+		return strtr( <<<'HTML'
+			<span class="dem-revote-button-wrap">
+			<form action="#democracy-{POLL_ID}" method="POST">
+				<input type="hidden" name="dem_act" value="delVoted">
+				<input type="hidden" name="dem_pid" value="{POLL_ID}">
+				<input type="submit" value="{REVOTE}" class="dem-revote-link dem-revote-button dem-button {BTN_CLASS}" data-dem-act="delVoted" data-confirm-text="{CONFIRM}">
+			</form>
+			</span>
+			HTML,
+			[
+				'{POLL_ID}'  => $this->id,
+				'{REVOTE}'   => _x( 'Revote', 'front', 'democracy-poll' ),
+				'{BTN_CLASS}'=> options()->btn_class,
+				'{CONFIRM}'  => _x( 'Are you sure you want cancel the votes?', 'front', 'democracy-poll' ),
+			]
+		);
 	}
 
 	/**
-	 * заметка: вы уже голосовали
-	 * @return string Текст заметки
+	 * Note: you have already voted
 	 */
 	public static function voted_notice_html( $msg = '' ): string {
 		if( ! $msg ){
@@ -584,10 +621,10 @@ class DemPoll {
 	}
 
 	/**
-	 * Добавляет голос.
+	 * Adds a vote.
 	 *
-	 * @param string|array $aids  ID ответов через запятую. Там может быть строка,
-	 *                            тогда она будет добавлена, как ответ пользователя.
+	 * @param string|array $aids  Answer IDs separated by commas. May contain a string,
+	 *                            which will be added as a user answer.
 	 *
 	 * @return WP_Error|string $aids IDs, separated
 	 */
@@ -597,7 +634,7 @@ class DemPoll {
 			return new WP_Error( 'vote_err', 'ERROR: no id' );
 		}
 
-		// установим куки повторно, был баг...
+		// set the cookie again, there was a bug...
 		if( $this->has_voted && ( $_COOKIE[ $this->cookie_key ] === 'notVote' ) ){
 			$this->set_cookie();
 		}
@@ -665,7 +702,7 @@ class DemPoll {
 		elseif( $this->multiple ){
 			$aids = array_map( 'intval', $aids );
 
-			// не больше чем разрешено...
+			// no more than allowed...
 			if( count( $aids ) > (int) $this->multiple ){
 				$aids = array_slice( $aids, 0, $this->multiple );
 			}
@@ -693,28 +730,31 @@ class DemPoll {
 		$this->has_voted   = true;
 		$this->votedFor    = $aids;
 
-		$this->set_answers(); // переустановим ответы
+		$this->set_answers(); // reinitialize answers
 
-		$this->set_cookie(); // установим куки
+		$this->set_cookie(); // set the cookie
 
 		if( options()->keep_logs ){
 			$this->insert_logs();
 		}
 
+		/**
+		 * Allows to perform actions after the user has voted.
+		 *
+		 * @param int|string $voted_for The IDs of the answers the user voted for. Or custom answer as string.
+		 * @param DemPoll    $poll      The current poll object.
+		 */
 		do_action_ref_array( 'dem_voted', [ $this->votedFor, $this ] );
 
 		return $this->votedFor;
 	}
 
 	/**
-	 * Удаляет данные пользователя о голосовании.
-	 * Отменяет установленные $this->has_voted и $this->votedFor
-	 * Должна вызываться до вывода данных на экран
-	 *
-	 * @return void
+	 * Deletes the user's voting data.
+	 * Resets the $this->has_voted and $this->votedFor properties.
+	 * Should be called before outputting data to the screen.
 	 */
-	public function delete_vote() {
-
+	public function delete_vote(): void {
 		if( ! $this->id ){
 			return;
 		}
@@ -723,16 +763,16 @@ class DemPoll {
 			return;
 		}
 
-		// Прежде чем удалять, проверим включена ли опция ведения логов и есть ли записи о голосовании в БД,
-		// так как куки могут удалить и тогда, данные о голосовании пойдут в минус
+		// Before deleting, check if the logging option is enabled and if there are voting records in the database,
+		// because cookies can be deleted and then the voting data will go negative
 		if( options()->keep_logs ){
 			if( $this->get_user_vote_logs() ){
 				$this->minus_vote();
 				$this->delete_vote_log();
 			}
 		}
-		// если опция логов не включена, то отнимаем по кукам.
-		// Тут голоса можно откручивать назад, потому что разные браузеры проверить не получится.
+		// If the logging option is not enabled, votes are subtracted based on cookies.
+		// Here votes can be rolled back, because it is not possible to check different browsers.
 		else {
 			$this->minus_vote();
 		}
@@ -743,8 +783,13 @@ class DemPoll {
 		$this->votedFor = false;
 		$this->blockVoting = ! $this->open;
 
-		$this->set_answers(); // переустановим ответы, если добавленный ответ был удален
+		$this->set_answers(); // reinitialize answers if an added answer was deleted
 
+		/**
+		 * Allows to perform actions after the user's vote has been deleted.
+		 *
+		 * @param DemPoll $poll The current poll object.
+		 */
 		do_action_ref_array( 'dem_vote_deleted', [ $this ] );
 	}
 
@@ -754,11 +799,12 @@ class DemPoll {
 		$new_answer = Kses::sanitize_answer_data( $answer, 'democratic_answer' );
 		$new_answer = wp_unslash( $new_answer );
 
-		// проверим нет ли уже такого ответа
+		// check if the answer already exists
 		$aids = $wpdb->query( $wpdb->prepare(
 			"SELECT aid FROM $wpdb->democracy_a WHERE answer = %s AND qid = %d",
 			$new_answer, $this->id
 		) );
+
 		if( $aids ){
 			return 0;
 		}
@@ -785,28 +831,35 @@ class DemPoll {
 		return $inserted ? $wpdb->insert_id : 0;
 	}
 
-	## Устанавливает глобальные переменные $this->has_voted и $this->votedFor
-	protected function set_voted_data() {
+	/**
+	 * Sets the props {@see self::$has_voted} and {@see self::$votedFor}.
+	 */
+	protected function set_voted_data(): void {
 		if( ! $this->id ){
-			return false;
+			return;
 		}
 
-		// база приоритетнее куков, потому что в одном браузере можно отменить голосование, а куки в другом будут показывать что голосовал...
-		// ЗАМЕТКА: обновим куки, если не совпадают. Потому что в разных браузерах могут быть разыне. Не работает,
-		// потому что куки нужно устанавливать перед выводом данных и вообще так делать не нужно, потмоу что проверка
-		// по кукам становится не нужной в целом...
+		// The database takes precedence over cookies, because in one browser you can cancel the vote,
+		// but in another browser cookies will still show that you have voted...
+		// NOTE: update cookies if they do not match. Because in different browsers they can be different. Does not work,
+		// because cookies need to be set before outputting data, and in general, this should not be done, because checking
+		// by cookies becomes unnecessary overall...
 		if( options()->keep_logs && ( $res = $this->get_user_vote_logs() ) ){
 			$this->has_voted = true;
 			$this->votedFor = reset( $res )->aids;
 		}
-		// проверяем куки
+		// check cookies
 		elseif( isset( $_COOKIE[ $this->cookie_key ] ) && ( $_COOKIE[ $this->cookie_key ] != 'notVote' ) ){
 			$this->has_voted = true;
 			$this->votedFor = preg_replace( '/[^0-9, ]/', '', $_COOKIE[ $this->cookie_key ] ); // чистим
 		}
 	}
 
-	## отнимает голоса в БД и удаляет ответ, если надо
+	/**
+	 * Removes votes from the database and deletes the answer if it has 0 or 1 votes.
+	 *
+	 * @return bool True on success, false on failure.
+	 */
 	protected function minus_vote(): bool {
 		global $wpdb;
 
@@ -879,36 +932,44 @@ class DemPoll {
 	}
 
 	/**
-	 * Устанавливает ответы в $this->answers и сортирует их в нужном порядке.
+	 * Sets the answers in $this->answers prop and sorts them in the required order.
 	 */
-	protected function set_answers() {
+	protected function set_answers(): void {
 		global $wpdb;
 
 		$answers = $wpdb->get_results( $wpdb->prepare(
 			"SELECT * FROM $wpdb->democracy_a WHERE qid = %d", $this->id
 		) );
 
-		if( $answers ){
-			$is_custom_order = (bool) reset( $answers )->aorder;
-			if( $is_custom_order ){
-				$answers = Helpers::objects_array_sort( $answers, [ 'aorder' => 'asc' ] );
-			}
-			else{
-				$order = $this->answers_order ?: options()->order_answers;
+		$answers = array_filter( (array) $answers );
 
-				if( $order === 'by_winner' || $order == 1 ){
-					$answers = Helpers::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
-				}
-				elseif( $order === 'alphabet' ){
-					$answers = Helpers::objects_array_sort( $answers, [ 'answer' => 'asc' ] );
-				}
-				elseif( $order === 'mix' ){
-					shuffle( $answers );
-				}
-				elseif( $order === 'by_id' ){}
+		$is_custom_order = (bool) reset( $answers )->aorder;
+		if( $is_custom_order ){
+			$answers = Helpers::objects_array_sort( $answers, [ 'aorder' => 'asc' ] );
+		}
+		else{
+			$order = $this->answers_order ?: options()->order_answers;
+
+			if( $order === 'by_winner' || $order == 1 ){
+				$answers = Helpers::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
 			}
+			elseif( $order === 'alphabet' ){
+				$answers = Helpers::objects_array_sort( $answers, [ 'answer' => 'asc' ] );
+			}
+			elseif( $order === 'mix' ){
+				shuffle( $answers );
+			}
+			elseif( $order === 'by_id' ){}
 		}
 
+		$answers = array_map( static fn( $data ) => new Poll_Answer( $data ), $answers );
+
+		/**
+		 * Allows to modify the answers before they are set in the poll object.
+		 *
+		 * @param Poll_Answer[] $answers The answers to be set for the poll.
+		 * @param DemPoll       $poll    The poll object itself.
+		 */
 		$this->answers = apply_filters( 'dem_set_answers', $answers, $this );
 	}
 

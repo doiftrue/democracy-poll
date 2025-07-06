@@ -264,6 +264,12 @@ function get_dem_polls( $args = [] ) {
 		$LIMIT = $wpdb->prepare( 'LIMIT %d, %d', $offset, $rg->per_page );
 	}
 
+	/**
+	 * Allows to modify the SQL clauses for getting polls.
+	 * This filter can be used to add custom WHERE conditions, ORDER BY clauses, or LIMIT.
+	 *
+	 * @param array $clauses  Array of SQL clauses.
+	 */
 	$clauses = (object) apply_filters( 'get_dem_polls_sql_clauses', [
 		'where'   => implode( ' AND ', $WHERE ),
 		'orderby' => 'ORDER BY ' . implode( ', ', $ORDER_BY ),
@@ -329,6 +335,8 @@ function get_dem_polls( $args = [] ) {
 /**
  * Which screen to display, based on the passed request
  *
+ * @param \DemPoll $poll
+ *
  * @return string One of: 'voted' or 'vote'.
  */
 function dem__query_poll_screen_choose( $poll ): string {
@@ -345,6 +353,12 @@ function dem__query_poll_screen_choose( $poll ): string {
 	)
 		? 'voted' : 'vote';
 
+	/**
+	 * Allows to modify the screen to display for the poll.
+	 *
+	 * @param string   $screen The screen to display: 'voted' or 'vote'.
+	 * @param \DemPoll $poll   The poll object.
+	 */
 	return (string) apply_filters( 'dem_poll_screen_choose', $screen, $poll );
 }
 

@@ -9,7 +9,6 @@ require_once __DIR__ . '/includes/theme-functions.php';
  * PSR-4 compatible autoloader.
  */
 spl_autoload_register( static function( $class ) {
-
 	if( str_starts_with( $class, __NAMESPACE__ . '\\' ) ){
 		$folder = __DIR__ . '/classes';
 		$path = str_replace( [ __NAMESPACE__, '\\' ], [ $folder, '/' ], $class );
@@ -19,7 +18,7 @@ spl_autoload_register( static function( $class ) {
 } );
 
 /**
- * We can not use PSR-4 compatible autoloader here because of legacy reason.
+ * We canNOT use PSR-4 compatible autoloader here because of legacy reason.
  */
 spl_autoload_register(
 	static function( $class ) {

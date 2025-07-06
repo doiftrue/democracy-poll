@@ -6,8 +6,11 @@ use function DemocracyPoll\plugin;
 
 class Kses {
 
-	// The tags allowed in questions and answers. Will be added to global $allowedtags.
-	private static $allowed_tags = [
+	/**
+	 * The tags allowed in questions and answers.
+	 * Will be appended for the global $allowedtags.
+	 */
+	private static array $allowed_tags = [
 		'a'      => [ 'href' => true, 'rel' => true, 'name' => true, 'target' => true, ],
 		'b'      => [],
 		'strong' => [],
@@ -25,11 +28,16 @@ class Kses {
 		'h6'     => [],
 	];
 
-	public static function set_allowed_tags() {
+	public static function set_allowed_tags(): void {
 		global $allowedtags;
 
 		self::$allowed_tags = array_merge( $allowedtags, array_map( '_wp_add_global_attributes', self::$allowed_tags ) );
 
+		/**
+		 * Allows modification of the collected allowed HTML tags for Democracy Poll.
+		 *
+		 * @param array $allowed_tags The array of computed allowed HTML tags.
+		 */
 		self::$allowed_tags = apply_filters( 'democracy__allowed_tags', self::$allowed_tags );
 	}
 
@@ -41,41 +49,50 @@ class Kses {
 	}
 
 	/**
-	 * Очищает данные ответа
+	 * Sanitizes answer data.
 	 *
-	 * @param string|array $data  Что очистить? Если передана строка, удалить из нее недопустимые HTML теги.
+	 * @param string|array $data  What to sanitize? If a string is passed, remove disallowed HTML tags from it.
+	 * @param string $filter_context  The type of filter applied. Can be used to differentiate between different sanitization contexts.
+	 *                                Passed to the `dem_sanitize_answer_data` filter.
 	 *
-	 * @return string|array Чистые данные.
+	 * @return string|array Clean data.
 	 */
-	public static function sanitize_answer_data( $data, $filter_type = '' ) {
+	public static function sanitize_answer_data( $data, $filter_context = '' ) {
 
 		if( is_string( $data ) ){
 			$value = trim( $data );
 			$data = plugin()->admin_access ? Kses::kses_html( $value ) : wp_kses( $value, 'strip' );
 		}
-		else{
+		else {
 			foreach( $data as $key => & $val ){
-
 				if( is_string( $val ) ){
 					$val = trim( $val );
 				}
 
-				// допустимые теги
+				// allowed tags
 				if( $key === 'answer' ){
 					$val = plugin()->admin_access ? Kses::kses_html( $val ) : wp_kses( $val, 'strip' );
 				}
-				// числа
+				// numbers
 				elseif( in_array( $key, [ 'qid', 'aid', 'votes' ] ) ){
 					$val = (int) $val;
 				}
-				// остальное
+				// other
 				else{
 					$val = wp_kses( $val, 'strip' );
 				}
 			}
 		}
 
-		return apply_filters( 'dem_sanitize_answer_data', $data, $filter_type );
+		/**
+		 * Allows to modify the sanitized answer data.
+		 *
+		 * @param array|string $data  The sanitized answer itself or the array of sanitized answers data.
+		 *                            If a string is passed, it means that only one answer is sanitized.
+		 * @param string $filter_context  The type of filter applied.
+		 *                                Can be used to differentiate between different sanitization contexts.
+		 */
+		return apply_filters( 'dem_sanitize_answer_data', $data, $filter_context );
 	}
 
 }

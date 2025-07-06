@@ -115,16 +115,23 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 			return false;
 		}
 
-		$res = $wpdb->query( "DELETE FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $log_ids ) ) . ")" );
+		$logid_IN = implode( ',', array_map( 'intval', $log_ids ) );
+		$result = $wpdb->query( "DELETE FROM $wpdb->democracy_log WHERE logid IN ($logid_IN)" );
 
-		plugin()->msg->add_ok( $res
-			? sprintf( __( 'Lines deleted: %s', 'democracy-poll' ), $res )
+		plugin()->msg->add_ok( $result
+			? sprintf( __( 'Lines deleted: %s', 'democracy-poll' ), $result )
 			: __( 'Failed to delete', 'democracy-poll' )
 		);
 
-		do_action( 'dem_delete_only_logs', $log_ids, $res );
+		/**
+		 * Allows to do something after deleting logs.
+		 *
+		 * @param array|int $log_ids  Log IDs array or single log ID
+		 * @param int       $result   Result of the delete query, number of deleted rows
+		 */
+		do_action( 'dem_delete_only_logs', $log_ids, $result );
 
-		return $res;
+		return $result;
 	}
 
 	/**
@@ -132,7 +139,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 	 *
 	 * @param array|int $log_ids  Log IDs array or single log ID
 	 */
-	public function del_logs_and_votes( $log_ids ) {
+	public function del_logs_and_votes( $log_ids ): void {
 		$log_ids = array_filter( (array) $log_ids );
 		if( ! $log_ids ){
 			return;
@@ -186,17 +193,25 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 		}
 
 		// now, delete logs itself
-		$res = $wpdb->query( "DELETE FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $log_ids ) ) . ")" );
+		$result = $wpdb->query( "DELETE FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $log_ids ) ) . ")" );
 
-		plugin()->msg->add_ok( $res
+		plugin()->msg->add_ok( $result
 			? sprintf(
 				__( 'Removed logs: %d. Removed answers:%d. Removed users %d.', 'democracy-poll' ),
-				$res, $minus_answ_sum, $minus_users_sum
+				$result, $minus_answ_sum, $minus_users_sum
 			)
 			: __( 'Failed to delete', 'democracy-poll' )
 		);
 
-		do_action( 'dem_delete_logs_and_votes', $log_ids, $res, $minus_answ_sum, $minus_users_sum );
+		/**
+		 * Allows to do something after deleting logs and votes.
+		 *
+		 * @param array|int $log_ids  Log IDs array or single log ID.
+		 * @param int       $result   Result of the delete query, number of deleted rows.
+		 * @param int       $minus_answ_sum   Number of answers votes minus.
+		 * @param int       $minus_users_sum  Number of users votes minus.
+		 */
+		do_action( 'dem_delete_logs_and_votes', $log_ids, $result, $minus_answ_sum, $minus_users_sum );
 	}
 
 	/**

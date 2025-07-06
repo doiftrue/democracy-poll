@@ -1,0 +1,23 @@
+{
+  "name": "doiftrue/democracy-poll",
+  "description": "WordPress polls plugin with multiple-choice, custom answers, cache compatibility, widgets, and shortcodes.",
+  "type": "wordpress-plugin",
+  "homepage": "https://github.com/doiftrue/democracy-poll",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "phpunit": "./vendor/bin/phpunit"
+  },
+  "authors": [
+    {
+      "name": "Kama",
+      "email": "tnkamaev@gmail.com",
+      "homepage": "https://wp-kama.ru/plugin/democracy-poll",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {},
+  "require": {},
+  "require-dev": {
+    "10up/wp_mock": "*"
+  }
+}
