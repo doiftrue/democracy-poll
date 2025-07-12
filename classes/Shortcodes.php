@@ -7,7 +7,7 @@ class Shortcodes {
 	public function __construct(){
 	}
 
-	public function init(){
+	public function init(): void {
 		add_shortcode( 'democracy', [ $this, 'democracy_shortcode' ] );
 		add_shortcode( 'democracy_archives', [ $this, 'democracy_archives_shortcode' ] );
 	}

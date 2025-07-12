@@ -4,13 +4,13 @@ namespace DemocracyPoll;
 
 class Poll_Ajax {
 
-	public $ajax_url;
+	public string $ajax_url;
 
 	public function __construct(){
 		$this->ajax_url = admin_url( 'admin-ajax.php' );
 	}
 
-	public function init(){
+	public function init(): void {
 		// ajax request во frontend_init нельзя, потому что срабатывает только как is_admin()
 		add_action( 'wp_ajax_dem_ajax', [ $this, 'ajax_request_handler' ] );
 		add_action( 'wp_ajax_nopriv_dem_ajax', [ $this, 'ajax_request_handler' ] );
@@ -35,7 +35,7 @@ class Poll_Ajax {
 		];
 	}
 
-	public function ajax_request_handler() {
+	public function ajax_request_handler(): void {
 
 		$vars = (object) $this->sanitize_request_vars();
 
@@ -103,7 +103,7 @@ class Poll_Ajax {
 	/**
 	 * To work without AJAX.
 	 */
-	public function not_ajax_request_handler() {
+	public function not_ajax_request_handler(): void {
 
 		$vars = (object) $this->sanitize_request_vars();
 

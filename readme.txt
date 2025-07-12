@@ -72,7 +72,7 @@ Multisite support is available from version 5.2.4.
 
 In your theme file (e.g. `sidebar.php`), add:
 
-```php
+`
 <?php if ( function_exists( 'democracy_poll' ) ) { ?>
 	<div class="sidebar-section">
 		<h2>Polls</h2>
@@ -81,7 +81,7 @@ In your theme file (e.g. `sidebar.php`), add:
 		</div>
 	</div>
 <?php } ?>
-```
+`
 
 * To show a specific poll: `<?php democracy_poll( 3 ); ?>` (replace `3` with your poll ID)
 * To embed a specific poll in a post, use `[democracy id="2"]` shortcode.
@@ -92,9 +92,9 @@ In your theme file (e.g. `sidebar.php`), add:
 
 To show the poll archive:
 
-```php
+`
 <?php democracy_archives( $hide_active, $before_title, $after_title ); ?>
-```
+`
 
 
 == Frequently Asked Questions ==
