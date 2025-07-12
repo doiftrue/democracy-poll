@@ -144,7 +144,6 @@ class Options {
 	 * Sets $this->opt. Update options in DB if it's not set yet.
 	 */
 	public function set_opt(): void {
-
 		if( ! $this->opt ){
 			$this->opt = get_option( self::OPT_NAME, [] );
 

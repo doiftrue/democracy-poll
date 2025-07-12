@@ -3,117 +3,55 @@
 namespace DemocracyPoll;
 
 use DemocracyPoll\Admin\Admin;
-use DemocracyPoll\Admin\Admin_Page_l10n;
 use DemocracyPoll\Helpers\Helpers;
-use DemocracyPoll\Helpers\Kses;
 use DemocracyPoll\Helpers\Messages;
-use DemocracyPoll\Utils\Activator;
 
 class Plugin {
 
-	/** @var bool only access to add/edit poll and so on. */
-	public $admin_access;
+	/** Plugin version. Eg: 1.2 */
+	public string $ver;
 
-	/** @var bool full access to change settings and so on. */
-	public $super_access;
+	/** URL to the plugin directory. Without trailing slash. */
+	public string $url;
 
-	/** @var Poll_Ajax */
-	public $poll_ajax;
+	/** Path to the plugin directory. Without trailing slash. */
+	public string $dir;
 
-	/** @var Options */
-	public $opt;
+	/** URL to the main plugin settings page. */
+	public string $admin_page_url;
 
-	/** @var Admin */
-	public $admin;
+	/** Only access to add/edit poll and so on. */
+	public bool $admin_access;
 
-	/** @var Messages  */
-	public $msg;
+	/** Full access to change settings and so on. */
+	public bool $super_access;
 
-	/** @var bool whether page caching is enabled */
-	public $is_cachegear_on;
+	/** Whether page caching is enabled */
+	public bool $is_cachegear_on;
 
-	public function __construct() {
+	public Plugin_Initor $initor;
+
+	public Options $opt;
+
+	public Admin $admin;
+
+	public Messages $msg;
+
+	public Poll_Ajax $poll_ajax;
+
+	public function __construct( string $main_file ) {
+		$this->ver = get_file_data( $main_file, [ 'ver' => 'Version' ] )['ver'];
+		$this->dir = dirname( $main_file );
+		$this->url = plugins_url( '', $main_file );
+
+		$this->admin_page_url = admin_url( 'options-general.php?page=' . basename( $this->dir ) );
+
 		$this->opt = new Options();
 		$this->msg = new Messages();
+		$this->initor = new Plugin_Initor();
 	}
 
-	public function basic_init(): void {
-		$this->opt->set_opt();
-
-		Activator::set_db_tables();
-		if( is_multisite() ){
-			add_action( 'switch_blog', [ Activator::class, 'set_db_tables' ] );
-		}
-
-		$this->set_access_caps();
-		Kses::set_allowed_tags();
-		$this->load_textdomain();
-	}
-
-	public function init(): void {
-		$this->basic_init();
-
-		$this->set_is_cachegear_on();
-
-		$this->init_admin();
-
-		( new Shortcodes() )->init();
-		$this->poll_ajax = new Poll_Ajax();
-		$this->poll_ajax->init();
-
-		// For front-end localization and custom translation
-		Admin_Page_l10n::add_gettext_filter();
-
-		$this->menu_in_admin_bar();
-		$this->hide_form_indexing();
-
-		$this->enable_widget();
-	}
-
-	private function init_admin(): void {
-		if( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ){
-			$this->admin = new Admin();
-			$this->admin->init();
-		}
-	}
-
-	private function enable_widget(): void {
-		if( options()->use_widget ){
-			add_action( 'widgets_init', static function() {
-				register_widget( Poll_Widget::class );
-			} );
-		}
-	}
-
-	private function menu_in_admin_bar(): void {
-		if( $this->admin_access && $this->opt->toolbar_menu ){
-			add_action( 'admin_bar_menu', [ $this, 'add_toolbar_node' ], 99 );
-		}
-	}
-
-	/**
-	 * Hide duplicate content. For 5+ versions it's no need.
-	 */
-	private function hide_form_indexing(): void {
-		// Hide duplicate content. For 5+ versions it's no need
-		if(
-			isset( $_GET['dem_act'] )
-			|| isset( $_GET['dem_action'] )
-			|| isset( $_GET['dem_pid'] )
-			|| isset( $_GET['show_addanswerfield'] )
-			|| isset( $_GET['dem_add_user_answer'] )
-		){
-			add_action( 'wp', static function() {
-				status_header( 404 );
-			} );
-
-			add_action( 'wp_head', static function() {
-				echo "\n<!--democracy-poll-->\n" . '<meta name="robots" content="noindex,nofollow">' . "\n";
-			} );
-		}
-	}
-
-	private function set_access_caps(): void {
+	public function set_access_caps(): void {
 		$has_super_access = current_user_can( 'manage_options' );
 
 		/**
@@ -137,8 +75,7 @@ class Plugin {
 		}
 	}
 
-	private function set_is_cachegear_on(): void {
-
+	public function set_is_cachegear_on(): void {
 		if( $this->opt->force_cachegear ){
 			$this->is_cachegear_on = true;
 			return;
@@ -158,122 +95,6 @@ class Plugin {
 		}
 
 		$this->is_cachegear_on = Helpers::is_page_cache_plugin_on();
-	}
-
-	public function load_textdomain(): void {
-		load_plugin_textdomain( 'democracy-poll', false, basename( DEMOC_PATH ) . '/languages/' );
-	}
-
-	/**
-	 * @param \WP_Admin_Bar $toolbar
-	 */
-	public function add_toolbar_node( $toolbar ): void {
-
-		$toolbar->add_node( [
-			'id'    => 'dem_settings',
-			'title' => 'Democracy',
-			'href'  => $this->admin_page_url(),
-		] );
-
-		$list = [
-			''                 => __( 'Polls List', 'democracy-poll' ),
-			'add_new'          => __( 'Add Poll', 'democracy-poll' ),
-			'logs'             => __( 'Logs', 'democracy-poll' ),
-			'general_settings' => __( 'Settings', 'democracy-poll' ),
-			'design'           => __( 'Theme Settings', 'democracy-poll' ),
-			'l10n'             => __( 'Texts changes', 'democracy-poll' ),
-		];
-
-		if( ! $this->super_access ){
-			unset( $list['general_settings'], $list['design'], $list['l10n'] );
-		}
-
-		foreach( $list as $subpage => $title ){
-			$toolbar->add_node( [
-				'parent' => 'dem_settings',
-				'id'     => $subpage ?: 'polls_list',
-				'title'  => $title,
-				'href'   => add_query_arg( [ 'subpage' => $subpage ], $this->admin_page_url() ),
-			] );
-		}
-	}
-
-	/**
-	 * Returns the URL to the main page of the plugin settings.
-	 */
-	public function admin_page_url(): string {
-		return admin_url( 'options-general.php?page=' . basename( DEMOC_PATH ) );
-	}
-
-	/**
-	 * A link to edit the poll.
-	 *
-	 * @param int $poll_id  Poll ID
-	 *
-	 * @return string URL
-	 */
-	public function edit_poll_url( $poll_id ): string {
-		return $this->admin_page_url() . '&edit_poll=' . (int) $poll_id;
-	}
-
-	/**
-	 * Check if current or specified user can edit specified poll.
-	 *
-	 * @param \DemPoll|object|int $poll  Poll object or poll id.
-	 */
-	public function cuser_can_edit_poll( $poll ): bool {
-
-		if( $this->super_access ){
-			return true;
-		}
-
-		if( ! $this->admin_access ){
-			return false;
-		}
-
-		// get poll object
-		if( is_numeric( $poll ) ){
-			$poll = \DemPoll::get_poll_object( $poll );
-		}
-
-		return $poll && (int) $poll->added_user === (int) get_current_user_id();
-	}
-
-	public function get_minified_styles_once(): string {
-		static $once = 0;
-		if( $once++ ){
-			return '';
-		}
-
-		$demcss = get_option( 'democracy_css' );
-		$minified = $demcss['minify'] ?? '';
-
-		return $minified
-			? "\n" . '<style id="democracy-poll">' . $minified . '</style>' . "\n"
-			: '';
-	}
-
-	/**
-	 * Adds scripts to the footer.
-	 */
-	public function add_js_once(): void {
-		static $once = 0;
-		if( $once++ ){
-			return;
-		}
-
-		// inline HTML
-		if( $this->opt->inline_js_css ){
-			wp_enqueue_script( 'jquery' );
-			add_action( ( is_admin() ? 'admin_footer' : 'wp_footer' ), [ __CLASS__, '_add_js_wp_footer' ], 0 );
-		}
-		else{
-			wp_enqueue_script( 'democracy', DEMOC_URL . 'js/democracy.min.js', [], DEM_VER, true );
-		}
-	}
-
-	public static function _add_js_wp_footer(): void {
-		echo "\n" . '<script id="democracy-poll">' . file_get_contents( DEMOC_PATH . 'js/democracy.min.js' ) . '</script>' . "\n";
 	}
 
 }

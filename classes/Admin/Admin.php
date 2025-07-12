@@ -31,11 +31,11 @@ class Admin {
 	}
 
 	public function _plugin_action_setting_page_link( $actions, $plugin_file ) {
-		if( false === strpos( $plugin_file, basename( DEMOC_PATH ) ) ){
+		if( false === strpos( $plugin_file, basename( plugin()->dir ) ) ){
 			return $actions;
 		}
 
-		$settings_link = sprintf( '<a href="%s">%s</a>', plugin()->admin_page_url(), __( 'Settings', 'democracy-poll' ) );
+		$settings_link = sprintf( '<a href="%s">%s</a>', plugin()->admin_page_url, __( 'Settings', 'democracy-poll' ) );
 		array_unshift( $actions, $settings_link );
 
 		return $actions;

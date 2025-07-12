@@ -14,7 +14,7 @@ class Activator {
 	}
 
 	public static function activate(): void {
-		plugin()->basic_init();
+		plugin()->initor->basic_init();
 
 		if( is_multisite() ){
 			$sites = get_sites();

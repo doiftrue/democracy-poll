@@ -55,8 +55,8 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 		// hack to immediately apply the option change
 		if( $up ){
 			options()->toolbar_menu
-				? add_action( 'admin_bar_menu', [ plugin(), 'add_toolbar_node', ], 99 )
-				: remove_action( 'admin_bar_menu', [ plugin(), 'add_toolbar_node' ], 99 );
+				? add_action( 'admin_bar_menu', [ plugin()->initor, 'add_toolbar_node', ], 99 )
+				: remove_action( 'admin_bar_menu', [ plugin()->initor, 'add_toolbar_node' ], 99 );
 		}
 	}
 
@@ -191,7 +191,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 						</div>
 						<?php
 						$data = [];
-						foreach( glob( DEMOC_PATH . 'styles/checkbox-radio/*' ) as $file ){
+						foreach( glob( plugin()->dir . '/styles/checkbox-radio/*' ) as $file ){
 							if( is_dir( $file ) ){
 								continue;
 							}
@@ -258,7 +258,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 							<?php
 							$data = [];
 							$i = 0;
-							foreach( glob( DEMOC_PATH . 'styles/buttons/*' ) as $file ){
+							foreach( glob( plugin()->dir . '/styles/buttons/*' ) as $file ){
 								if( is_dir( $file ) ){
 									continue;
 								}
@@ -373,7 +373,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 							<br>
 							<?php
 							$data = [];
-							foreach( glob( DEMOC_PATH . 'styles/loaders/*' ) as $file ){
+							foreach( glob( plugin()->dir . '/styles/loaders/*' ) as $file ){
 								if( is_dir( $file ) ){
 									continue;
 								}
@@ -485,8 +485,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 	 */
 	protected function _get_styles_files(): array {
 		$arr = [];
-
-		foreach( glob( DEMOC_PATH . 'styles/*.css' ) as $file ){
+		foreach( glob( plugin()->dir . '/styles/*.css' ) as $file ){
 			if( preg_match( '~\.min~', basename( $file ) ) ){
 				continue;
 			}

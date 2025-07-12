@@ -2,6 +2,7 @@
 
 namespace DemocracyPoll\Admin;
 
+use DemocracyPoll\Poll_Utils;
 use function DemocracyPoll\plugin;
 use function DemocracyPoll\options;
 
@@ -40,13 +41,11 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 
 	/**
 	 * @param List_Table_Logs $list_table
-	 *
-	 * @return void
 	 */
-	public function render() {
+	public function render(): void {
 
 		// no access
-		if( $this->list_table->poll_id && ! plugin()->cuser_can_edit_poll( $this->list_table->poll_id ) ){
+		if( $this->list_table->poll_id && ! Poll_Utils::cuser_can_edit_poll( $this->list_table->poll_id ) ){
 			plugin()->msg->add_error( 'Sorry, you are not allowed to access this page.' );
 			echo $this->admpage->subpages_menu();
 

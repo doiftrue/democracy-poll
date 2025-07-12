@@ -3,6 +3,7 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Poll_Utils;
 use function DemocracyPoll\plugin;
 use function DemocracyPoll\options;
 
@@ -102,7 +103,7 @@ class List_Table_Polls extends \WP_List_Table {
 
 		$answ = & $cache[ $poll->id ];
 
-		$admurl = plugin()->admin_page_url();
+		$admurl = plugin()->admin_page_url;
 		$date_format = get_option( 'date_format' );
 
 		// вывод
@@ -119,11 +120,11 @@ class List_Table_Polls extends \WP_List_Table {
 			// actions
 			$actions = [];
 			// user can edit
-			if( plugin()->cuser_can_edit_poll( $poll ) ){
+			if( Poll_Utils::cuser_can_edit_poll( $poll ) ){
 				// edit
 				$actions[] = sprintf(
 					'<span class="edit"><a href="%s">%s</a> | </span>',
-					plugin()->edit_poll_url( $poll->id ),
+					Poll_Utils::edit_poll_url( $poll->id ),
 					__( 'Edit', 'democracy-poll' )
 				);
 
@@ -190,11 +191,11 @@ class List_Table_Polls extends \WP_List_Table {
 		}
 
 		if( $col === 'active' ){
-			return plugin()->cuser_can_edit_poll( $poll ) ? Admin_Page_Edit_Poll::activate_button( $poll, 'reverse' ) : '';
+			return Poll_Utils::cuser_can_edit_poll( $poll ) ? Admin_Page_Edit_Poll::activate_button( $poll, 'reverse' ) : '';
 		}
 
 		if( $col === 'open' ){
-			return plugin()->cuser_can_edit_poll( $poll ) ? Admin_Page_Edit_Poll::open_button( $poll, 'reverse' ) : '';
+			return Poll_Utils::cuser_can_edit_poll( $poll ) ? Admin_Page_Edit_Poll::open_button( $poll, 'reverse' ) : '';
 		}
 
 		if( $col === 'added' ){

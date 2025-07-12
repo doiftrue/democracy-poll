@@ -36,7 +36,6 @@ class Poll_Ajax {
 	}
 
 	public function ajax_request_handler(): void {
-
 		$vars = (object) $this->sanitize_request_vars();
 
 		if( ! $vars->act ){
@@ -104,7 +103,6 @@ class Poll_Ajax {
 	 * To work without AJAX.
 	 */
 	public function not_ajax_request_handler(): void {
-
 		$vars = (object) $this->sanitize_request_vars();
 
 		if( ! $vars->act || ! $vars->pid || ! isset( $_SERVER['HTTP_REFERER'] ) ){

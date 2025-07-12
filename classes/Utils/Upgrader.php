@@ -2,6 +2,8 @@
 
 namespace DemocracyPoll\Utils;
 
+use function DemocracyPoll\plugin;
+
 class Upgrader {
 
 	private $old_ver;
@@ -13,16 +15,15 @@ class Upgrader {
 	    $this->old_ver = get_option( 'democracy_version' );
 	}
 
-	public function upgrade() {
-
-		if( $this->old_ver === DEM_VER ){
+	public function upgrade(): void {
+		if( $this->old_ver === plugin()->ver ){
 			return;
 		}
 
 		// обновим css
 		( new \DemocracyPoll\Options_CSS() )->regenerate_democracy_css( null );
 
-		update_option( 'democracy_version', DEM_VER );
+		update_option( 'democracy_version', plugin()->ver );
 
 		$this->run_staff();
 	}

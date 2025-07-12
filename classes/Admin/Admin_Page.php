@@ -2,6 +2,7 @@
 
 namespace DemocracyPoll\Admin;
 
+use DemocracyPoll\Poll_Utils;
 use function DemocracyPoll\plugin;
 
 class Admin_Page {
@@ -49,7 +50,7 @@ class Admin_Page {
 		}
 
 		$title = __( 'Democracy Poll', 'democracy-poll' );
-		$hook_name = add_options_page( $title, $title, 'edit_posts', basename( DEMOC_PATH ), [ $this, 'admin_page_output' ] );
+		$hook_name = add_options_page( $title, $title, 'edit_posts', basename( plugin()->dir ), [ $this, 'admin_page_output' ] );
 		// notice: `edit_posts` (role more then subscriber) because capability tests inside the `admin_page.php` and `admin_page_load()`
 
 		add_action( "load-$hook_name", [ $this, 'admin_page_load' ] );
@@ -59,11 +60,11 @@ class Admin_Page {
 
 		// datepicker
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		wp_enqueue_style( 'jquery-style', DEMOC_URL . 'admin/css/jquery-ui.css', [], DEM_VER );
+		wp_enqueue_style( 'jquery-style', plugin()->url . '/admin/css/jquery-ui.css', [], plugin()->ver );
 
 		// democracy
-		wp_enqueue_script( 'democracy-scripts', DEMOC_URL . 'js/admin.js', [ 'jquery' ], DEM_VER, true );
-		wp_enqueue_style( 'democracy-styles', DEMOC_URL . 'admin/css/admin.css', [], DEM_VER );
+		wp_enqueue_script( 'democracy-scripts', plugin()->url . '/js/admin.js', [ 'jquery' ], plugin()->ver, true );
+		wp_enqueue_style( 'democracy-styles', plugin()->url . '/admin/css/admin.css', [], plugin()->ver );
 
 		$this->run_upgrade();
 
@@ -111,7 +112,7 @@ class Admin_Page {
 
 			$_poll_id = (int) $_REQUEST[ $name ];
 
-			return plugin()->cuser_can_edit_poll( $_poll_id ) ? $_poll_id : 0;
+			return Poll_Utils::cuser_can_edit_poll( $_poll_id ) ? $_poll_id : 0;
 		};
 
 		if( $set_poll_id__cb( 'delete_poll' ) ){
@@ -175,7 +176,7 @@ trait Admin_Page__Additional {
 	public function subpages_menu(): string {
 
 		$referer = self::back_link();
-		$main_page = wp_make_link_relative( plugin()->admin_page_url() );
+		$main_page = wp_make_link_relative( plugin()->admin_page_url );
 
 		$current_class = function( $page ) {
 			return $this->subpage === $page ? ' nav-tab-active' : '';
@@ -234,7 +235,7 @@ trait Admin_Page__Additional {
 		$request_uri = $_SERVER['REQUEST_URI'];
 
 		$transient = 'democracy_referer';
-		$main_page = wp_make_link_relative( plugin()->admin_page_url() );
+		$main_page = wp_make_link_relative( plugin()->admin_page_url );
 		$referer = isset( $_SERVER['HTTP_REFERER'] ) ? wp_make_link_relative( $_SERVER['HTTP_REFERER'] ) : '';
 
 		// если обновляем

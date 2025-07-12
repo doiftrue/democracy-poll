@@ -5,6 +5,7 @@ namespace DemocracyPoll\Admin;
 use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Helpers\Kses;
 use DemocracyPoll\Poll_Answer;
+use DemocracyPoll\Poll_Utils;
 use function DemocracyPoll\plugin;
 use function DemocracyPoll\options;
 
@@ -42,7 +43,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 		// Add/update a poll
 		$poll_id = $_POST['dmc_create_poll'] ?? $_POST['dmc_update_poll'] ?? 0;
 		if( $poll_id ){
-			plugin()->cuser_can_edit_poll( $poll_id )
+			Poll_Utils::cuser_can_edit_poll( $poll_id )
 				? $this->insert_poll_handler()
 				: plugin()->msg->add_error( 'Low capability to add/edit poll' );
 		}
@@ -52,7 +53,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 		global $wpdb;
 
 		// no access
-		if( $this->poll_id && ! plugin()->cuser_can_edit_poll( $this->poll_id ) ){
+		if( $this->poll_id && ! Poll_Utils::cuser_can_edit_poll( $this->poll_id ) ){
 			wp_die( 'Sorry, you are not allowed to access this page.' );
 		}
 
@@ -70,7 +71,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 
 			$log_link = options()->keep_logs
 				? sprintf( '<small> : <a href="%s">%s</a></small>',
-					add_query_arg( [ 'subpage' => 'logs', 'poll' => $this->poll->id ], plugin()->admin_page_url() ),
+					add_query_arg( [ 'subpage' => 'logs', 'poll' => $this->poll->id ], plugin()->admin_page_url ),
 					__( 'Poll logs', 'democracy-poll' ) )
 				: '';
 
@@ -318,7 +319,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 
 				echo sprintf(
 					' <a href="%s" class="button" onclick="return confirm(\'%s\');" title="%s"><span class="dashicons dashicons-trash"></span></a>',
-					Admin_Page::add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], plugin()->admin_page_url() ) ),
+					Admin_Page::add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], plugin()->admin_page_url ) ),
 					__( 'Are you sure?', 'democracy-poll' ),
 					__( 'Delete', 'democracy-poll' )
 				);
@@ -546,7 +547,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 				}
 			}
 
-			wp_redirect( add_query_arg( [ 'msg' => 'created' ], plugin()->edit_poll_url( $poll_id ) ) );
+			wp_redirect( add_query_arg( [ 'msg' => 'created' ], Poll_Utils::edit_poll_url( $poll_id ) ) );
 		}
 
 		/**

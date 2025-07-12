@@ -20,19 +20,33 @@ namespace DemocracyPoll;
 
 defined( 'ABSPATH' ) || exit;
 
-$data = get_file_data( __FILE__, [ 'Version' => 'Version' ] );
-define( 'DEM_VER', $data['Version'] );
-
-define( 'DEMOC_MAIN_FILE', __FILE__ );
-define( 'DEMOC_URL', plugin_dir_url( __FILE__ ) );
-define( 'DEMOC_PATH', plugin_dir_path( __FILE__ ) );
-
 require_once __DIR__ . '/autoload.php';
 
 register_activation_hook( __FILE__, [ \DemocracyPoll\Utils\Activator::class, 'activate' ] );
 
 /**
  * NOTE: Init the plugin later on the 'after_setup_theme' hook to
- * run current_user_can() later to avoid possible conflicts.
+ * run current_user_can() later to avoid possible issues.
  */
-add_action( 'after_setup_theme', [ plugin(), 'init' ] );
+add_action( 'after_setup_theme', '\DemocracyPoll\init_plugin' );
+
+function init_plugin(): void {
+	plugin()->initor->plugin_init();
+}
+
+/**
+ * Gives access to the plugin instance and all it's components.
+ */
+function plugin(): Plugin {
+	static $inst;
+	$inst || $inst = new Plugin( __FILE__ );
+
+	return $inst;
+}
+
+/**
+ * Helper function to conveniently get the plugin options.
+ */
+function options(): Options {
+	return plugin()->opt;
+}

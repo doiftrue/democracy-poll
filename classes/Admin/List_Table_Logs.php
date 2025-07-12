@@ -3,17 +3,18 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Poll_Utils;
+use DemPoll;
 use function DemocracyPoll\plugin;
 use function DemocracyPoll\options;
 
 class List_Table_Logs extends \WP_List_Table {
 
-	private static $cache;
+	private static array $cache;
 
-	public $poll_id;
+	public int $poll_id;
 
-	/** @var Admin_Page_Logs */
-	private $logs_page;
+	private Admin_Page_Logs $logs_page;
 
 	public function __construct( Admin_Page_Logs $logs_page ) {
 		$this->logs_page = $logs_page;
@@ -167,21 +168,16 @@ class List_Table_Logs extends \WP_List_Table {
 		];
 	}
 
-	/**
-	 * @return void
-	 */
-	public function table_title() {
-
+	public function table_title(): void {
 		if( $this->poll_id ){
-
 			if( ! $poll = $this->cache( 'polls', $this->poll_id ) ){
-				$poll = $this->cache( 'polls', $this->poll_id, \DemPoll::get_poll_object( $this->poll_id ) );
+				$poll = $this->cache( 'polls', $this->poll_id, DemPoll::get_poll_object( $this->poll_id ) );
 			}
 
 			echo sprintf( '<h2><small>%s</small>%s <small><a href="%s">%s</a></small></h2>',
 				__( 'Poll\'s logs: ', 'democracy-poll' ),
 				Kses::kses_html( $poll->question ),
-				plugin()->edit_poll_url( $this->poll_id ),
+				Poll_Utils::edit_poll_url( $this->poll_id ),
 				__( 'Edit poll', 'democracy-poll' )
 			);
 		}
@@ -207,7 +203,6 @@ class List_Table_Logs extends \WP_List_Table {
 
 	## если указать $val кэш будет устанавливаться
 	function cache( $type, $key, $val = null ) {
-
 		$cache = & self::$cache[ $type ][ $key ];
 
 		if( ! isset( $cache ) && $val !== null ){
@@ -241,16 +236,16 @@ class List_Table_Logs extends \WP_List_Table {
 				}
 
 				if( $log->ip_info && ! is_numeric( $log->ip_info ) ){
-					list( $country_name, $county_code, $city ) = explode( ',', $log->ip_info );
+					[ $country_name, $county_code, $city ] = explode( ',', $log->ip_info );
 
 					// css background position
 					if( ! $flagcss = $this->cache( 'flagcss', 'flagcss' ) ){
-						$flagcss = $this->cache( 'flagcss', 'flagcss', file_get_contents( DEMOC_PATH . 'admin/country_flags/flags.css' ) );
+						$flagcss = $this->cache( 'flagcss', 'flagcss', file_get_contents( plugin()->dir . '/admin/country_flags/flags.css' ) );
 					}
 					preg_match( "~flag-" . strtolower( $county_code ) . " \{([^}]+)\}~", $flagcss, $mm );
 					$bg_pos = @ $mm[1] ?: '';
 
-					$country_img = $bg_pos ? '<span title="' . $country_name . ( $city ? ", $city" : '' ) . '" style="cursor:help; display:inline-block; width:16px; height:11px; background:url(' . DEMOC_URL . 'admin/country_flags/flags.png) no-repeat; ' . $bg_pos . '"></span> ' : '';
+					$country_img = $bg_pos ? '<span title="' . $country_name . ( $city ? ", $city" : '' ) . '" style="cursor:help; display:inline-block; width:16px; height:11px; background:url(' . plugin()->url . '/admin/country_flags/flags.png) no-repeat; ' . $bg_pos . '"></span> ' : '';
 				}
 			}
 
@@ -265,15 +260,20 @@ class List_Table_Logs extends \WP_List_Table {
 			}
 
 			$actions = '';
-			if( plugin()->cuser_can_edit_poll( $poll ) ){
-				$actions = '
-				<div class="row-actions">
-					<span class="edit"><a href="' . plugin()->edit_poll_url( $poll->id ) . '">' . __( 'Edit poll', 'democracy-poll' ) . '</a> | </span>
-					<span class="edit"><a href="' . esc_url( add_query_arg( [
-						'ip'   => null,
-						'poll' => $log->qid,
-					] ) ) . '">' . __( 'Poll logs', 'democracy-poll' ) . '</a></span>
-				</div>';
+			if( Poll_Utils::cuser_can_edit_poll( $poll ) ){
+				$actions = strtr( <<<'HTML'
+					<div class="row-actions">
+						<span class="edit"><a href="{edit_url}">{edit_text}</a> | </span>
+						<span class="edit"><a href="{logs_url}">{logs_text}</a></span>
+					</div>
+					HTML,
+					[
+						'{edit_url}'  => Poll_Utils::edit_poll_url( $poll->id ),
+						'{edit_text}' => __( 'Edit poll', 'democracy-poll' ),
+						'{logs_url}'  => esc_url( add_query_arg( [ 'ip'=>null, 'poll'=>$log->qid ] ) ),
+						'{logs_text}' => __( 'Poll logs', 'democracy-poll' ),
+					]
+				);
 			}
 
 			return Kses::kses_html( $poll->question ) . $actions;
@@ -299,7 +299,7 @@ class List_Table_Logs extends \WP_List_Table {
 				}
 
 				$new = Admin_Page_Logs::is_new_answer( $answ )
-					? sprintf( ' <a href="%s"><span style="color:red;">NEW</span></a>', plugin()->edit_poll_url( $log->qid ) )
+					? sprintf( ' <a href="%s"><span style="color:red;">NEW</span></a>', Poll_Utils::edit_poll_url( $log->qid ) )
 					: '';
 
 				$out[] = '- ' . esc_html( $answ->answer ) . $new;

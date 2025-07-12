@@ -120,6 +120,13 @@ Yes. When you deactivate and delete the plugin, it removes all its options and d
 
 == Upgrade Notice ==
 
+= 6.1.0 =
+- CHG: DEM_VER constant removed use `DemocracyPoll\plugin()->ver` instead.
+- CHG: DEMOC_URL constant removed use `DemocracyPoll\plugin()->url` instead. NOTE: Trailing slash removed.
+- CHG: DEMOC_PATH constant removed use `DemocracyPoll\plugin()->dir` instead. NOTE: Trailing slash removed.
+- CHG: DEMOC_MAIN_FILE constant removed.
+
+
 = 6.0.4 =
 * Requires PHP 7.4+
 
@@ -130,6 +137,14 @@ Yes. When you deactivate and delete the plugin, it removes all its options and d
 
 
 == Changelog ==
+
+= 6.1.0 =
+- IMP: Huge refactoring and classses decomposition.
+- CHG: DEM_VER constant removed use `DemocracyPoll\plugin()->ver` instead.
+- CHG: DEMOC_URL constant removed use `DemocracyPoll\plugin()->url` instead. NOTE: Trailing slash removed.
+- CHG: DEMOC_PATH constant removed use `DemocracyPoll\plugin()->dir` instead. NOTE: Trailing slash removed.
+- CHG: DEMOC_MAIN_FILE constant removed.
+
 
 = 6.0.5 =
 - IMP: Unit tests infrastructure added. Some Helpers methods are now tested.

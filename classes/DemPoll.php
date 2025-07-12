@@ -4,6 +4,7 @@ use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Helpers\IP;
 use DemocracyPoll\Helpers\Kses;
 use DemocracyPoll\Poll_Answer;
+use DemocracyPoll\Poll_Utils;
 use function DemocracyPoll\plugin;
 use function DemocracyPoll\options;
 
@@ -171,7 +172,7 @@ class DemPoll {
 	 *
 	 * @return string|false HTML.
 	 */
-	public function get_screen( $show_screen = 'vote', $before_title = '', $after_title = '' ) {
+	public function get_screen( string $show_screen = 'vote', string $before_title = '', string $after_title = '' ) {
 
 		if( ! $this->id ){
 			return false;
@@ -183,8 +184,7 @@ class DemPoll {
 			$show_screen = 'voted';
 		}
 
-		$html = '';
-		$html .= plugin()->get_minified_styles_once();
+		$html = Poll_Utils::get_minified_styles_once();
 
 		$js_opts = [
 			'ajax_url'         => plugin()->poll_ajax->ajax_url,
@@ -206,8 +206,8 @@ class DemPoll {
 
 		$html .= $this->note ? '<div class="dem-poll-note">' . wpautop( $this->note ) . '</div>' : '';
 
-		if( plugin()->cuser_can_edit_poll( $this ) ){
-			$html .= '<a class="dem-edit-link" href="' . plugin()->edit_poll_url( $this->id ) . '" title="' . __( 'Edit poll', 'democracy-poll' ) . '"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1.5em" height="100%" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve"><path d="M617.8,203.4l175.8,175.8l-445,445L172.9,648.4L617.8,203.4z M927,161l-78.4-78.4c-30.3-30.3-79.5-30.3-109.9,0l-75.1,75.1 l175.8,175.8l87.6-87.6C950.5,222.4,950.5,184.5,927,161z M80.9,895.5c-3.2,14.4,9.8,27.3,24.2,23.8L301,871.8L125.3,696L80.9,895.5z"/></svg></a>';
+		if( Poll_Utils::cuser_can_edit_poll( $this ) ){
+			$html .= '<a class="dem-edit-link" href="' . Poll_Utils::edit_poll_url( $this->id ) . '" title="' . __( 'Edit poll', 'democracy-poll' ) . '"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1.5em" height="100%" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve"><path d="M617.8,203.4l175.8,175.8l-445,445L172.9,648.4L617.8,203.4z M927,161l-78.4-78.4c-30.3-30.3-79.5-30.3-109.9,0l-75.1,75.1 l175.8,175.8l87.6-87.6C950.5,222.4,950.5,184.5,927,161z M80.9,895.5c-3.2,14.4,9.8,27.3,24.2,23.8L301,871.8L125.3,696L80.9,895.5z"/></svg></a>';
 		}
 
 		// copyright
@@ -219,7 +219,7 @@ class DemPoll {
 		if( options()->loader_fname ){
 			static $loader; // оптимизация, чтобы один раз выводился код на странице
 			if( ! $loader ){
-				$loader = '<div class="dem-loader"><div>' . file_get_contents( DEMOC_PATH . 'styles/loaders/' . options()->loader_fname ) . '</div></div>';
+				$loader = '<div class="dem-loader"><div>' . file_get_contents( plugin()->dir . '/styles/loaders/' . options()->loader_fname ) . '</div></div>';
 				$html .= $loader;
 			}
 		}
@@ -261,20 +261,20 @@ class DemPoll {
 		}
 
 		if( ! options()->disable_js ){
-			plugin()->add_js_once();
+			Poll_Utils::enqueue_js_once();
 		}
 
 		return $html;
 	}
 
 	/**
-	 * Получает сердце HTML опроса (изменяемую часть)
+	 * Gets the core HTML of the poll (the dynamic part).
 	 *
-	 * @param bool $show_screen
+	 * @param string $show_screen One of: vote, voted, force_vote.
 	 *
 	 * @return string HTML
 	 */
-	protected function get_screen_basis( $show_screen = 'vote' ): string {
+	protected function get_screen_basis( string $show_screen = 'vote' ): string {
 		$class_suffix = $this->for_cache ? '-cache' : '';
 
 		if( $this->not_show_results ){
@@ -413,13 +413,13 @@ class DemPoll {
 	}
 
 	/**
-	 * Получает код результатов голосования
+	 * Gets the voting results HTML code.
+	 *
 	 * @return string HTML
 	 */
-	public function get_result_screen() {
-
+	public function get_result_screen(): string {
 		if( ! $this->id ){
-			return false;
+			return '';
 		}
 
 		// отсортируем по голосам
@@ -605,19 +605,29 @@ class DemPoll {
 	 * Note: you have already voted
 	 */
 	public static function voted_notice_html( $msg = '' ): string {
+		$js = <<<'JS'
+			let el = this.parentElement; el.animate([{ opacity:1 }, { opacity:0 }], { duration:300 }).onfinish = () => { el.style.display = 'none'; };
+			JS;
+
 		if( ! $msg ){
-			return '
-			<div class="dem-notice dem-youarevote" style="display:none;">
-				<div class="dem-notice-close" onclick="jQuery(this).parent().fadeOut();">&times;</div>
-				' . _x( 'You or your IP had already vote.', 'front', 'democracy-poll' ) . '
-			</div>';
+			return strtr( <<<'HTML'
+				<div class="dem-notice dem-youarevote" style="display:none;">
+					<div class="dem-notice-close" onclick="{JS}">&times;</div>
+					{MESSAGE}
+				</div>
+				HTML,
+				[ '{JS}' => $js, '{MESSAGE}' => _x( 'You or your IP had already vote.', 'front', 'democracy-poll' ) ]
+			);
 		}
 
-		return '
-		<div class="dem-notice">
-			<div class="dem-notice-close" onclick="jQuery(this).parent().fadeOut();">&times;</div>
-			' . $msg . '
-		</div>';
+		return strtr( <<<'HTML'
+				<div class="dem-notice">
+					<div class="dem-notice-close" onclick="{JS}">&times;</div>
+					{MESSAGE}
+				</div>
+				HTML,
+			[ '{JS}' => $js, '{MESSAGE}' => $msg ]
+		);
 	}
 
 	/**
@@ -888,12 +898,12 @@ class DemPoll {
 	}
 
 	/**
-	 * Получает массив ID ответов из переданной строки, где id разделены запятой.
-	 * Чистит для БД!
+	 * Gets an array of answer IDs from a passed string, where IDs are separated by commas.
+	 * Cleans for DB!
 	 *
-	 * @param string $aids_str  Строка с ID ответов
+	 * @param string $aids_str  String with answer IDs
 	 *
-	 * @return int[]  ID ответов
+	 * @return int[]  Answer IDs
 	 */
 	protected function get_answ_aids_from_str( string $aids_str ): array {
 		$arr = explode( ',', $aids_str );
@@ -904,20 +914,22 @@ class DemPoll {
 		return $arr;
 	}
 
-	## время до которого логи будут жить
-	public function get_cookie_expire_time() {
+	/**
+	 * Time until which the logs will live.
+	 *
+	 * @return int Timestamp in seconds.
+	 */
+	public function get_cookie_expire_time(): int {
 		return current_time( 'timestamp', $utc = 1 ) + (int) ( (float) options()->cookie_days * DAY_IN_SECONDS );
 	}
 
 	/**
-	 * Устанавливает куки для текущего опроса.
+	 * Sets the cookie for the current poll.
 	 *
-	 * @param string $value   Значение куки, по умолчанию текущие голоса.
-	 * @param int    $expire  Время окончания кики.
-	 *
-	 * @return void
+	 * @param string $value  Cookie value, defaults to current votes.
+	 * @param int    $expire Cookie expiration time.
 	 */
-	public function set_cookie( $value = '', $expire = false ) {
+	public function set_cookie( $value = '', $expire = false ): void {
 		$expire = $expire ?: $this->get_cookie_expire_time();
 		$value = $value ?: $this->votedFor;
 
@@ -926,7 +938,7 @@ class DemPoll {
 		$_COOKIE[ $this->cookie_key ] = $value;
 	}
 
-	public function unset_cookie() {
+	public function unset_cookie(): void {
 		setcookie( $this->cookie_key, null, strtotime( '-1 day' ), COOKIEPATH );
 		$_COOKIE[ $this->cookie_key ] = '';
 	}
@@ -974,7 +986,8 @@ class DemPoll {
 	}
 
 	/**
-	 * Получает строку логов по ID или IP пользователя
+	 * Gets the log rows by user ID or IP address.
+	 *
 	 * @return array democracy_log table rows.
 	 */
 	protected function get_user_vote_logs(): array {
@@ -1005,9 +1018,7 @@ class DemPoll {
 	}
 
 	/**
-	 * Удаляет записи о голосовании в логах.
-	 *
-	 * @return bool
+	 * Deletes voting records from the logs.
 	 */
 	protected function delete_vote_log(): bool {
 		global $wpdb;
@@ -1026,7 +1037,6 @@ class DemPoll {
 	}
 
 	protected function insert_logs() {
-
 		if( ! $this->id ){
 			return false;
 		}

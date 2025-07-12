@@ -66,8 +66,8 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 					// get all translations from the files
 					$strs = [];
 					$files = [
-						DEMOC_PATH . 'classes/DemPoll.php',
-						DEMOC_PATH . 'classes/Poll_Widget.php',
+						plugin()->dir . '/classes/DemPoll.php',
+						plugin()->dir . '/classes/Poll_Widget.php',
 					];
 					foreach( $files as $file ){
 						preg_match_all( '~_x\(\s*[\'](.*?)(?<!\\\\)[\']~', file_get_contents( $file ), $match );

@@ -55,7 +55,7 @@ class Options_CSS {
 		$radios = options()->checkradio_fname;
 
 		$out = '';
-		$styledir = DEMOC_PATH . 'styles';
+		$styledir = plugin()->dir . '/styles';
 
 		$out .= $this->parse_css_import( "$styledir/$tpl" );
 		$out .= $radios ? "\n" . file_get_contents( "$styledir/checkbox-radio/$radios" ) : '';
@@ -124,8 +124,7 @@ class Options_CSS {
 	 * Compresses css using YUICompressor
 	 */
 	public function cssmin( string $input_css ): string {
-
-		require_once DEMOC_PATH . 'admin/CssMin/cssmin.php';
+		require_once plugin()->dir . '/admin/CssMin/cssmin.php';
 
 		$compressor = new \tubalmartin\CssMin\Minifier();
 		// $compressor->set_memory_limit('256M');

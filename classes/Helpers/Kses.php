@@ -28,7 +28,7 @@ class Kses {
 		'h6'     => [],
 	];
 
-	public static function set_allowed_tags(): void {
+	public static function setup_allowed_tags(): void {
 		global $allowedtags;
 
 		self::$allowed_tags = array_merge( $allowedtags, array_map( '_wp_add_global_attributes', self::$allowed_tags ) );

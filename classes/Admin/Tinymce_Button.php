@@ -3,6 +3,8 @@
 
 namespace DemocracyPoll\Admin;
 
+use function DemocracyPoll\plugin;
+
 class Tinymce_Button {
 
 	public static function init() {
@@ -18,7 +20,7 @@ class Tinymce_Button {
 	}
 
 	public static function tinymce_plugin( $plugin_array ) {
-		$plugin_array['demTiny'] = DEMOC_URL . 'js/tinymce.js';
+		$plugin_array['demTiny'] = plugin()->url . '/js/tinymce.js';
 
 		return $plugin_array;
 	}
