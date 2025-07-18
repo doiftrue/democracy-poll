@@ -47,39 +47,40 @@ class Poll_Ajax {
 		}
 
 		$poll = new \DemPoll( $vars->pid );
+		$render = $poll->renderer;
 
 		// vote and display results
 		if( 'vote' === $vars->act && $vars->aids ){
 			$voted = $poll->vote( $vars->aids );
 
 			if( is_wp_error( $voted ) ){
-				echo $poll::voted_notice_html( $voted->get_error_message() );
-				echo $poll->get_vote_screen();
+				echo $render::voted_notice_html( $voted->get_error_message() );
+				echo $render->get_vote_screen();
 			}
 			elseif( $poll->not_show_results ){
-				echo $poll->get_vote_screen();
+				echo $render->get_vote_screen();
 			}
 			else{
-				echo $poll->get_result_screen();
+				echo $render->get_result_screen();
 			}
 		}
 		// delete results
 		elseif( 'delVoted' === $vars->act ){
 			$poll->delete_vote();
-			echo $poll->get_vote_screen();
+			echo $render->get_vote_screen();
 		}
 		// view results
 		elseif( 'view' === $vars->act ){
 			if( $poll->not_show_results ){
-				echo $poll->get_vote_screen();
+				echo $render->get_vote_screen();
 			}
 			else{
-				echo $poll->get_result_screen();
+				echo $render->get_result_screen();
 			}
 		}
 		// back to voting
 		elseif( 'vote_screen' === $vars->act ){
-			echo $poll->get_vote_screen();
+			echo $render->get_vote_screen();
 		}
 		// get poll->votedFor value (from db)
 		elseif( 'getVotedIds' === $vars->act ){

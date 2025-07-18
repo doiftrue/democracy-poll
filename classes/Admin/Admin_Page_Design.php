@@ -495,27 +495,37 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 		return $arr;
 	}
 
-	public static function polls_preview() {
+	public static function polls_preview(): void {
 		?>
 		<ul class="group">
 			<li class="block polls-preview">
 				<?php
 				$poll = new \DemPoll( \DemPoll::get_poll_object( 'rand' ) );
+				$render = $poll->renderer;
 
 				if( $poll->id ){
 					//$poll->has_voted = 1;
 					$answers = (array) wp_list_pluck( $poll->answers, 'aid' );
 					$poll->votedFor = $answers ? $answers[ array_rand( $answers ) ] : false;
 
-					$fn__replace = static function( $val ) {
-						return str_replace( [/*'checked="checked"',*/ 'disabled="disabled"' ], '', $val );
+					$rm_disabled = static function( $val ) {
+						return str_replace( ['disabled="disabled"' ], '', $val );
 					};
 
-					echo '<div class="poll"><p class="tit">' . __( 'Results view:', 'democracy-poll' ) . '</p>' . $fn__replace( $poll->get_screen( 'voted' ) ) . '</div>';
+					$html = <<<HTML
+						<div class="poll"><p class="tit">{RESULTS_TXT}</p>{VOTED_SCREEN}</div>
+						<div class="poll"><p class="tit">{VOTE_TXT}</p>{FORCE_VOTE_SCREEN}</div>
+						<div class="poll show-loader"><p class="tit">{AJAX_TXT}</p>{VOTE_SCREEN}</div>
+						HTML;
 
-					echo '<div class="poll"><p class="tit">' . __( 'Vote view:', 'democracy-poll' ) . '</p>' . $fn__replace( $poll->get_screen( 'force_vote' ) ) . '</div>';
-
-					echo '<div class="poll show-loader"><p class="tit">' . __( 'AJAX loader view:', 'democracy-poll' ) . '</p>' . $fn__replace( $poll->get_screen( 'vote' ) ) . '</div>';
+					echo strtr( $html, [
+						'{RESULTS_TXT}'       => __( 'Results view:', 'democracy-poll' ),
+						'{VOTE_TXT}'          => __( 'Vote view:', 'democracy-poll' ),
+						'{AJAX_TXT}'          => __( 'AJAX loader view:', 'democracy-poll' ),
+						'{VOTED_SCREEN}'      => $rm_disabled( $render->get_screen( 'voted' ) ),
+						'{FORCE_VOTE_SCREEN}' => $rm_disabled( $render->get_screen( 'force_vote' ) ),
+						'{VOTE_SCREEN}'       => $rm_disabled( $render->get_screen( 'vote' ) ),
+					] );
 				}
 				else{
 					echo 'no data or no active polls...';
@@ -525,7 +535,6 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 					echo '<input type="text" class="iris_color preview-bg">';
 				}
 				?>
-
 			</li>
 		</ul>
 		<?php

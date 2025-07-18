@@ -64,7 +64,7 @@ function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = ''
 
 	$show_screen = dem__query_poll_screen_choose( $poll );
 
-	return $poll->get_screen( $show_screen, $before_title, $after_title );
+	return $poll->renderer->get_screen( $show_screen, $before_title, $after_title );
 }
 
 /**
@@ -88,7 +88,7 @@ function get_democracy_poll_results( $poll_id = 0, $before_title = '', $after_ti
 		return __( 'Poll results hidden for now...', 'democracy-poll' );
 	}
 
-	return $poll->get_screen( 'voted', $before_title, $after_title );
+	return $poll->renderer->get_screen( 'voted', $before_title, $after_title );
 }
 
 /**
@@ -301,7 +301,7 @@ function get_dem_polls( $args = [] ) {
 			? dem__query_poll_screen_choose( $poll )
 			: $rg->screen;
 
-		$elm_html = $poll->get_screen( $screen, $rg->before_title, $rg->after_title );
+		$elm_html = $poll->renderer->get_screen( $screen, $rg->before_title, $rg->after_title );
 
 		// in posts
 		if(
