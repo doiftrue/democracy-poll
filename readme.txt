@@ -1,6 +1,6 @@
 === Democracy Poll ===
 Stable tag: trunk
-Tested up to: 6.8.1
+Tested up to: 6.8.2
 Contributors: Tkama
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -125,7 +125,7 @@ Yes. When you deactivate and delete the plugin, it removes all its options and d
 - CHG: DEMOC_URL constant removed use `DemocracyPoll\plugin()->url` instead. NOTE: Trailing slash removed.
 - CHG: DEMOC_PATH constant removed use `DemocracyPoll\plugin()->dir` instead. NOTE: Trailing slash removed.
 - CHG: DEMOC_MAIN_FILE constant removed.
-
+- CHG: `DemPoll` class refactored significantly. Some of the proprerties moved to `Poll_Renderer` and `Poll_Service` classes.
 
 = 6.0.4 =
 * Requires PHP 7.4+
@@ -139,12 +139,13 @@ Yes. When you deactivate and delete the plugin, it removes all its options and d
 == Changelog ==
 
 = 6.1.0 =
-- IMP: Huge refactoring and classses decomposition.
 - CHG: DEM_VER constant removed use `DemocracyPoll\plugin()->ver` instead.
 - CHG: DEMOC_URL constant removed use `DemocracyPoll\plugin()->url` instead. NOTE: Trailing slash removed.
 - CHG: DEMOC_PATH constant removed use `DemocracyPoll\plugin()->dir` instead. NOTE: Trailing slash removed.
 - CHG: DEMOC_MAIN_FILE constant removed.
-
+- IMP: DemPoll class refactored significantly. IT was decomposed into smaller classes - two new clasees added Poll_Renderer and Poll_Service.
+- FIX: PHPStan fixes and improvements.
+- IMP: Translation POT file updated. PO files updated. `.l10n.php` files added for better performance.
 
 = 6.0.5 =
 - IMP: Unit tests infrastructure added. Some Helpers methods are now tested.
