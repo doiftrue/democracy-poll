@@ -54,7 +54,7 @@ class Poll_Renderer {
 			$show_screen = 'voted';
 		}
 
-		$html = Poll_Utils::get_minified_styles_once();
+		$html = '';
 
 		$js_opts = [
 			'ajax_url'         => plugin()->poll_ajax->ajax_url,
@@ -70,9 +70,9 @@ class Poll_Renderer {
 		$html .= Kses::kses_html( $poll->question );
 		$html .= $after_title ?: options()->after_title;
 
-		// изменяемая часть
+		// changeable part
 		$html .= $this->get_screen_basis( $show_screen );
-		// изменяемая часть
+		// / changeable part
 
 		$html .= $poll->note ? '<div class="dem-poll-note">' . wpautop( $poll->note ) . '</div>' : '';
 
@@ -97,7 +97,7 @@ class Poll_Renderer {
 		$html .= "</div><!--democracy-->";
 
 		// for page cache
-		// never use poll caching mechanism in admin
+		// never use a poll caching mechanism in admin
 		if( ! $this->in_archive && ! is_admin() && plugin()->is_cachegear_on ){
 			$html .= '
 			<!--noindex-->
@@ -107,12 +107,12 @@ class Poll_Renderer {
 			$poll->voted_for = '';
 			$this->for_cache = true;
 
-			// voted_screen
+			// voted screen
 			if( ! $this->not_show_results ){
 				$html .= self::minify_html( $this->get_screen_basis( 'voted' ) );
 			}
 
-			// vote_screen
+			// vote screen
 			if( $poll->open ){
 				$html .= self::minify_html( $this->get_screen_basis( 'force_vote' ) );
 			}
@@ -129,7 +129,7 @@ class Poll_Renderer {
 			Poll_Utils::enqueue_js_once();
 		}
 
-		return $html;
+		return Poll_Utils::get_minified_styles_once() . $html;
 	}
 
 	/**
@@ -173,13 +173,7 @@ class Poll_Renderer {
 
 		$auto_vote_on_select = ( ! $poll->multiple && $poll->revote && options()->hide_vote_button );
 
-		$html = '';
-
-		$html .= '<form method="POST" action="#democracy-' . $poll->id . '">';
-		$html .= '<ul class="dem-vote">';
-
-		$type = $poll->multiple ? 'checkbox' : 'radio';
-
+		$lis_html = '';
 		foreach( $poll->answers as $answer ){
 			/** @var Poll_Answer $answer */
 			/**
@@ -194,16 +188,16 @@ class Poll_Renderer {
 				$checked = ' checked="checked"';
 			}
 
-			$html .= strtr( <<<'HTML'
-						<li data-aid="{AID}">
-							<label class="dem__{TYPE}_label">
-								<input class="dem__{TYPE}" {AUTO_VOTE} type="{TYPE}" value="{AID}" name="answer_ids[]" {CHECKED} {DISABLED}><span class="dem__spot"></span> {ANSWER}
-							</label>
-						</li>
-						HTML,
+			$lis_html .= strtr( <<<'HTML'
+				<li data-aid="{AID}">
+					<label class="dem__{TYPE}_label">
+						<input class="dem__{TYPE}" {AUTO_VOTE} type="{TYPE}" value="{AID}" name="answer_ids[]" {CHECKED} {DISABLED}><span class="dem__spot"></span> {ANSWER}
+					</label>
+				</li>
+				HTML,
 				[
 					'{AID}'       => $answer->aid,
-					'{TYPE}'      => $type,
+					'{TYPE}'      => $poll->multiple ? 'checkbox' : 'radio',
 					'{AUTO_VOTE}' => $auto_vote_on_select ? 'data-dem-act="vote"' : '',
 					'{CHECKED}'   => $checked,
 					'{DISABLED}'  => $poll->voted_for ? 'disabled="disabled"' : '',
@@ -213,64 +207,69 @@ class Poll_Renderer {
 		}
 
 		if( $poll->democratic && ! $poll->voting_blocked ){
-			$html .= '<li class="dem-add-answer"><a href="javascript:void(0);" rel="nofollow" data-dem-act="newAnswer" class="dem-link">' . _x( 'Add your answer', 'front', 'democracy-poll' ) . '</a></li>';
+			$lis_html .= '<li class="dem-add-answer"><a href="javascript:void(0);" rel="nofollow" data-dem-act="newAnswer" class="dem-link">' . _x( 'Add your answer', 'front', 'democracy-poll' ) . '</a></li>';
 		}
-		$html .= "</ul>";
 
-		$html .= '<div class="dem-bottom">';
-		$html .= '<input type="hidden" name="dem_act" value="vote">';
-		$html .= '<input type="hidden" name="dem_pid" value="' . $poll->id . '">';
+		$bottom_html  = '<div class="dem-bottom">';
+		$bottom_html .= '<input type="hidden" name="dem_act" value="vote">';
+		$bottom_html .= '<input type="hidden" name="dem_pid" value="' . $poll->id . '">';
 
-		$btnVoted = '<div class="dem-voted-button"><input class="dem-button ' . options()->btn_class . '" type="submit" value="' . _x( 'Already voted...', 'front', 'democracy-poll' ) . '" disabled="disabled"></div>';
-		$btnVote = '<div class="dem-vote-button"><input class="dem-button ' . options()->btn_class . '" type="submit" value="' . _x( 'Vote', 'front', 'democracy-poll' ) . '" data-dem-act="vote"></div>';
+		$voted_btn = '<div class="dem-voted-button"><input class="dem-button ' . options()->btn_class . '" type="submit" value="' . _x( 'Already voted...', 'front', 'democracy-poll' ) . '" disabled="disabled"></div>';
+		$vote_btn = '<div class="dem-vote-button"><input class="dem-button ' . options()->btn_class . '" type="submit" value="' . _x( 'Vote', 'front', 'democracy-poll' ) . '" data-dem-act="vote"></div>';
 
 		if( $auto_vote_on_select ){
-			$btnVote = '';
+			$vote_btn = '';
 		}
 
 		$for_users_alert = $poll->blocked_by_not_logged ? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>' : '';
 
 		// add for cache
 		if( $this->for_cache ){
-			$html .= self::voted_notice_html();
+			$bottom_html .= self::voted_notice_html();
 
 			if( $for_users_alert ){
-				$html .= str_replace(
+				$bottom_html .= str_replace(
 					[ '<div', 'class="' ], [ '<div style="display:none;"', 'class="dem-notice ' ], $for_users_alert
 				);
 			}
 
 			if( $poll->revote ){
-				$html .= preg_replace( '/(<[^>]+)/', '$1 style="display:none;"', $this->revote_btn_html(), 1 );
+				$bottom_html .= preg_replace( '/(<[^>]+)/', '$1 style="display:none;"', $this->revote_btn_html(), 1 );
 			}
 			else{
-				$html .= substr_replace( $btnVoted, '<div style="display:none;"', 0, 4 );
+				$bottom_html .= substr_replace( $voted_btn, '<div style="display:none;"', 0, 4 );
 			}
-			$html .= $btnVote;
+			$bottom_html .= $vote_btn;
 		}
 		// not for cache
 		else{
 			if( $for_users_alert ){
-				$html .= $for_users_alert;
+				$bottom_html .= $for_users_alert;
 			}
 			else{
 				if( $poll->has_voted ){
-					$html .= $poll->revote ? $this->revote_btn_html() : $btnVoted;
+					$bottom_html .= $poll->revote ? $this->revote_btn_html() : $voted_btn;
 				}
 				else{
-					$html .= $btnVote;
+					$bottom_html .= $vote_btn;
 				}
 			}
 		}
 
 		if( ! $this->not_show_results && ! options()->dont_show_results_link ){
-			$html .= '<a href="javascript:void(0);" class="dem-link dem-results-link" data-dem-act="view" rel="nofollow">' . _x( 'Results', 'front', 'democracy-poll' ) . '</a>';
+			$bottom_html .= '<a href="javascript:void(0);" class="dem-link dem-results-link" data-dem-act="view" rel="nofollow">' . _x( 'Results', 'front', 'democracy-poll' ) . '</a>';
 		}
 
+		$bottom_html .= '</div>'; // dem-bottom
 
-		$html .= '</div>';
-
-		$html .= '</form>';
+		$html = <<<HTML
+		<form method="POST" action="#democracy-$poll->id">
+			<ul class="dem-vote">
+				$lis_html
+			</ul>
+			$bottom_html
+		</form>
+		HTML;
 
 		/**
 		 * Allows to modify the vote screen HTML before it is returned.
@@ -309,9 +308,7 @@ class Poll_Renderer {
 		$voted_class = 'dem-voted-this';
 		$voted_txt = _x( 'This is Your vote.', 'front', 'democracy-poll' );
 
-		$html = '';
-		$html .= '<ul class="dem-answers" data-voted-class="' . $voted_class . '" data-voted-txt="' . $voted_txt . '">';
-
+		$lis_html = '';
 		foreach( $answers as $answer ){
 			/**
 			 * Allows to modify the answer object before it is processed for output.
@@ -320,69 +317,127 @@ class Poll_Renderer {
 			 */
 			$answer = apply_filters( 'dem_result_screen_answer', $answer );
 
-			$votes = (int) $answer->votes;
 			$is_voted_this = ( $poll->has_voted && in_array( (string) $answer->aid, explode( ',', $poll->voted_for ), true ) );
-			$is_winner = ( $max == $votes );
+			$is_winner     = ( $max === $answer->votes );
+			$novoted_class = $answer->votes ? '' : ' dem-novoted';
+			$li_class      = trim( ( $is_winner ? 'dem-winner' : '' ) . ( $is_voted_this ? " $voted_class" : '' ) . $novoted_class );
+			$li_class_attr = $li_class ? " class=\"$li_class\"" : '';
 
-			$novoted_class = ( $votes == 0 ) ? ' dem-novoted' : '';
-			$li_class = ' class="' . ( $is_winner ? 'dem-winner' : '' ) . ( $is_voted_this ? " $voted_class" : '' ) . $novoted_class . '"';
-			$sup = $answer->added_by ? '<sup class="dem-star" title="' . _x( 'The answer was added by a visitor', 'front', 'democracy-poll' ) . '">*</sup>' : '';
-			$percent = ( $votes > 0 ) ? round( $votes / $total * 100 ) : 0;
+			$mark = $answer->added_by
+				? '<sup class="dem-star" title="' . _x( 'The answer was added by a visitor', 'front', 'democracy-poll' ) . '">*</sup>'
+				: '';
 
-			$percent_txt = sprintf( _x( '%s - %s%% of all votes', 'front', 'democracy-poll' ), self::pluralize( $votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ) ), $percent );
-			$title = ( $is_voted_this ? $voted_txt : '' ) . ' ' . $percent_txt;
-			$title = " title='$title'";
+			$percent = ( $answer->votes > 0 ) ? round( $answer->votes / $total * 100 ) : 0;
 
-			$votes_txt = $votes . ' ' . '<span class="votxt">' . self::pluralize( $votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ), false ) . '</span>';
+			$percent_txt = sprintf(
+				_x( '%s - %s%% of all votes', 'front', 'democracy-poll' ),
+				self::pluralize( $answer->votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ) ),
+				$percent
+			);
 
-			$html .= '<li' . $li_class . $title . ' data-aid="' . $answer->aid . '">';
+			$title = trim( ( $is_voted_this ? $voted_txt : '' ) . ' ' . $percent_txt );
+			$title_attr = 'title="' . esc_attr( $title ) . '"';
+
+			$votes_txt = $answer->votes . ' ' . '<span class="votxt">' . self::pluralize( $answer->votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ), false ) . '</span>';
 			$label_perc_txt = ' <span class="dem-label-percent-txt">' . $percent . '%, ' . $votes_txt . '</span>';
-			$percent_txt = '<div class="dem-percent-txt">' . $percent_txt . '</div>';
-			$votes_txt = '<div class="dem-votes-txt">
-						<span class="dem-votes-txt-votes">' . $votes_txt . '</span>
-						' . ( ( $percent > 0 ) ? ' <span class="dem-votes-txt-percent">' . $percent . '%</span>' : '' ) . '
-						</div>';
 
-			$html .= '<div class="dem-label">' . $answer->answer . $sup . $label_perc_txt . '</div>';
-
-			// css процент
-			$graph_percent = ( ( ! options()->graph_from_total && $percent != 0 ) ? round( $votes / $max * 100 ) : $percent );
+			$graph_percent = ( ! options()->graph_from_total && $percent ) ? round( $answer->votes / $max * 100 ) : $percent;
 			$graph_percent = $graph_percent ? "$graph_percent%" : '1px';
+			$width_attr    = options()->line_anim_speed
+				? 'data-width="' . $graph_percent . '"'
+				: 'style="width:' . $graph_percent . '"';
+			$percent_html  = $percent ? "<span class=\"dem-votes-txt-percent\">{$percent}%</span>" : '';
 
-			$html .= '<div class="dem-graph">';
-			$html .= '<div class="dem-fill" ' . ( options()->line_anim_speed ? 'data-width="' : 'style="width:' ) . $graph_percent . '"></div>';
-			$html .= $votes_txt;
-			$html .= $percent_txt;
-			$html .= "</div>";
-			$html .= "</li>";
+			$answer_text = $answer->answer . $mark;
+
+			$lis_html .= <<<HTML
+			<li $li_class_attr $title_attr data-aid="$answer->aid">
+				<div class="dem-label">$answer_text $label_perc_txt</div>
+				<div class="dem-graph">
+					<div class="dem-fill" $width_attr></div>
+					<div class="dem-votes-txt">
+						<span class="dem-votes-txt-votes">$votes_txt</span>
+						$percent_html
+					</div>
+					<div class="dem-percent-txt">$percent_txt</div>
+				</div>
+			</li>
+			HTML;
 		}
-		$html .= '</ul>';
 
-		// dem-bottom
-		$html .= '<div class="dem-bottom">';
-		$html .= '<div class="dem-poll-info">';
-		$html .= '<div class="dem-total-votes">' . sprintf( _x( 'Total Votes: %s', 'front', 'democracy-poll' ), $total ) . '</div>';
-		$html .= ( $poll->multiple ? '<div class="dem-users-voted">' . sprintf( _x( 'Voters: %s', 'front', 'democracy-poll' ), $poll->users_voted ) . '</div>' : '' );
+		$ul_html = <<<HTML
+		<ul class="dem-answers" data-voted-class="$voted_class" data-voted-txt="$voted_txt">
+			$lis_html
+		</ul>
+		HTML;
 
-		$html .= '
-			<div class="dem-date" title="' . _x( 'Begin', 'front', 'democracy-poll' ) . '">
-				<span class="dem-begin-date">' . date_i18n( get_option( 'date_format' ), $poll->added ) . '</span>
-				' . ( $poll->end ? ' - <span class="dem-end-date" title="' . _x( 'End', 'front', 'democracy-poll' ) . '">' . date_i18n( get_option( 'date_format' ), $poll->end ) . '</span>' : '' ) . '
-			</div>';
-		$html .= ( $answer->added_by ?? 0 ) ? '<div class="dem-added-by-user"><span class="dem-star">*</span>' . _x( ' - added by visitor', 'front', 'democracy-poll' ) . '</div>' : '';
-		$html .= ! $poll->open ? '<div>' . _x( 'Voting is closed', 'front', 'democracy-poll' ) . '</div>' : '';
+		$total_votes_txt = sprintf( _x( 'Total Votes: %s', 'front', 'democracy-poll' ), $total );
+		$begin_title     = esc_attr( _x( 'Begin', 'front', 'democracy-poll' ) );
+		$end_title       = esc_attr( _x( 'End', 'front', 'democracy-poll' ) );
+		$begin_date_txt  = date_i18n( get_option( 'date_format' ), $poll->added );
+		$end_date_txt    = date_i18n( get_option( 'date_format' ), $poll->end );
+		$end_date = $poll->end
+			? ' - <span class="dem-end-date" title="' . $end_title . '">' . $end_date_txt . '</span>'
+			: '';
+		$voters_txt = sprintf( _x( 'Voters: %s', 'front', 'democracy-poll' ), $poll->users_voted );
+		$voters_div = $poll->multiple
+			? '<div class="dem-users-voted">' . $voters_txt . '</div>'
+			: '';
+		$added_by_div = ( $answer->added_by ?? 0 )
+			? '<div class="dem-added-by-user"><span class="dem-star">*</span>' . _x( ' - added by visitor', 'front', 'democracy-poll' ) . '</div>'
+			: '';
+		$closed_div   = ! $poll->open
+			? '<div>' . _x( 'Voting is closed', 'front', 'democracy-poll' ) . '</div>'
+			: '';
+		$archive_link = ( ! $this->in_archive && options()->archive_page_id )
+			? '<a class="dem-archive-link dem-link" href="' . get_permalink( options()->archive_page_id ) . '" rel="nofollow">' . _x( 'Polls Archive', 'front', 'democracy-poll' ) . '</a>'
+			: '';
 
-		if( ! $this->in_archive && options()->archive_page_id ){
-			$html .= '<a class="dem-archive-link dem-link" href="' . get_permalink( options()->archive_page_id ) . '" rel="nofollow">' . _x( 'Polls Archive', 'front', 'democracy-poll' ) . '</a>';
-		}
-		$html .= '</div>';
+		$controls_html = $this->result_screen_controls_html();
+
+		$bottom_html = <<<HTML
+		<div class="dem-bottom">
+			<div class="dem-poll-info">
+				<div class="dem-total-votes">$total_votes_txt</div>
+				$voters_div
+				<div class="dem-date" title="$begin_title">
+					<span class="dem-begin-date">$begin_date_txt</span>$end_date
+				</div>
+				$added_by_div
+				$closed_div
+				$archive_link
+			</div>
+			$controls_html
+		</div>
+		HTML;
+
+		$html = "$ul_html\n$bottom_html";
+
+		/**
+		 * Allows to modify result screen HTML before it is returned.
+		 *
+		 * @param string  $html The HTML of the result screen.
+		 * @param DemPoll $poll The current poll object.
+		 */
+		return apply_filters( 'dem_result_screen', $html, $this->poll );
+	}
+
+	private function result_screen_controls_html(): string {
+		$poll = $this->poll; // simplify
+
+		$html = '';
 
 		if( $poll->open ){
 			// note for unregistered users
-			$for_users_alert = $poll->blocked_by_not_logged ? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>' : '';
+			$for_users_alert = $poll->blocked_by_not_logged
+				? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>'
+				: '';
 
-			// back to vouting
-			$vote_btn = '<button type="button" class="dem-button dem-vote-link ' . options()->btn_class . '" data-dem-act="vote_screen">' . _x( 'Vote', 'front', 'democracy-poll' ) . '</button>';
+			// back to voting
+			$vote_btn = sprintf( '<button type="button" class="dem-button dem-vote-link %s" data-dem-act="vote_screen">%s</button>',
+				options()->btn_class,
+				_x( 'Vote', 'front', 'democracy-poll' )
+			);
 
 			// for cache
 			if( $this->for_cache ){
@@ -420,15 +475,7 @@ class Poll_Renderer {
 			}
 		}
 
-		$html .= '</div>'; // / dem-bottom
-
-		/**
-		 * Allows to modify result screen HTML before it is returned.
-		 *
-		 * @param string  $html The HTML of the result screen.
-		 * @param DemPoll $poll The current poll object.
-		 */
-		return apply_filters( 'dem_result_screen', $html, $this->poll );
+		return $html;
 	}
 
 	protected function revote_btn_html(): string {

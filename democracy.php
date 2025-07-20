@@ -8,7 +8,7 @@
  * Plugin URI: https://wp-kama.ru/67
  *
  * Text Domain: democracy-poll
- * Domain Path: /languages/
+ * Domain Path: /languages/build
  *
  * Requires at least: 5.8
  * Requires PHP: 7.4

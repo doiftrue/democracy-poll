@@ -205,9 +205,9 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					<li class="block">
 						<label>
 							<input type="checkbox" value="1" name="dem[inline_js_css]" <?php checked( options()->inline_js_css, 1 ) ?> />
-							<?= esc_html__( 'Add styles and scripts directly in the HTML code (recommended)', 'democracy-poll' ) ?>
+							<?= esc_html__( 'Inline script code directly in the HTML', 'democracy-poll' ) ?>
 						</label>
-						<em><?= esc_html__( 'Check to make the plugin\'s styles and scripts include directly into HTML code, but not as links to .css and .js files. So you will save 2 requests to the server - it speeds up page download.', 'democracy-poll' ) ?></em>
+						<em><?= esc_html__( 'Enable to add plugin scripts directly into HTML instead of loading separate .js files. This reduces server requests and speeds up page loading.', 'democracy-poll' ) ?></em>
 					</li>
 
 					<li class="block">

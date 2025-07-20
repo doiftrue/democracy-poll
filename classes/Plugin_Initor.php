@@ -60,7 +60,7 @@ class Plugin_Initor {
 	}
 
 	public function load_textdomain(): void {
-		load_plugin_textdomain( 'democracy-poll', false, basename( plugin()->dir ) . '/languages/' );
+		load_plugin_textdomain( 'democracy-poll', false, basename( plugin()->dir ) . '/languages/build/' );
 	}
 
 	private function init_wp_widget(): void {

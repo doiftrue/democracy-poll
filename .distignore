@@ -5,6 +5,8 @@
 /vendor/
 /node_modules/
 
+/Makefile
+/languages/make-pot.sh
 /composer.json
 /composer.lock
 /phpunit.xml

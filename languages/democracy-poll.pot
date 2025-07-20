@@ -1,610 +1,798 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Democracy\n"
-"POT-Creation-Date: 2024-12-15 19:16+0500\n"
-"PO-Revision-Date: 2017-03-12 15:02+0500\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: ru\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-20 19:16+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 3.5\n"
-"X-Poedit-Basepath: ..\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_x:1,2c\n"
-"X-Poedit-SearchPath-0: .\n"
 
-#: classes/Admin/Admin.php:42 classes/Admin/Admin_Page.php:205
-#: classes/Plugin.php:158
-msgid "Settings"
+msgid "Poll results hidden for now..."
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:51 classes/Poll_Widget.php:12
+msgid "From posts:"
+msgstr ""
+
 msgid "Democracy Poll"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:186
-msgid "Back"
+msgid "Democracy Poll Widget"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:191 classes/Plugin.php:155
-msgid "Polls List"
+msgid "Poll"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:195
-msgid "Add new poll"
+msgid "Poll question = widget title?"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:199 classes/Admin/List_Table_Polls.php:136
-#: classes/Plugin.php:157
-msgid "Logs"
+msgid "Poll title:"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:210 classes/Plugin.php:159
-msgid "Theme Settings"
+msgid "- Active (random all active)"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:215 classes/Plugin.php:160
-msgid "Texts changes"
+msgid "- Last open poll"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:276
-msgid "If you like this plugin, please <a>leave your review</a>"
+msgid "Which poll to show?"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:51
-#: classes/Admin/Admin_Page_Settings.php:35
-#: classes/Admin/Admin_Page_l10n.php:39
-msgid "Updated"
+msgid "Edit poll"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:52
-#: classes/Admin/Admin_Page_Settings.php:36
-#: classes/Admin/Admin_Page_l10n.php:40
-msgid "Nothing was updated"
+msgid "Download the Democracy Poll"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:515
-msgid "Results view:"
+msgctxt "front"
+msgid "Add your answer"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:517
-msgid "Vote view:"
+msgctxt "front"
+msgid "Already voted..."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:519
-msgid "AJAX loader view:"
+msgctxt "front"
+msgid "Vote"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:36
+msgctxt "front"
+msgid "Results"
+msgstr ""
+
+msgctxt "front"
+msgid "This is Your vote."
+msgstr ""
+
+msgctxt "front"
+msgid "The answer was added by a visitor"
+msgstr ""
+
+#, php-format
+msgctxt "front"
+msgid "%s - %s%% of all votes"
+msgstr ""
+
+msgctxt "front"
+msgid "vote,votes,votes"
+msgstr ""
+
+#, php-format
+msgctxt "front"
+msgid "Total Votes: %s"
+msgstr ""
+
+msgctxt "front"
+msgid "Begin"
+msgstr ""
+
+msgctxt "front"
+msgid "End"
+msgstr ""
+
+#, php-format
+msgctxt "front"
+msgid "Voters: %s"
+msgstr ""
+
+msgctxt "front"
+msgid " - added by visitor"
+msgstr ""
+
+msgctxt "front"
+msgid "Voting is closed"
+msgstr ""
+
+msgctxt "front"
+msgid "Polls Archive"
+msgstr ""
+
+msgctxt "front"
+msgid "Revote"
+msgstr ""
+
+msgctxt "front"
+msgid "Are you sure you want cancel the votes?"
+msgstr ""
+
+msgctxt "front"
+msgid "You or your IP had already vote."
+msgstr ""
+
+msgctxt "front"
+msgid "Only registered users can vote. <a>Login</a> to vote."
+msgstr ""
+
+msgid "What is the capital city of France?"
+msgstr ""
+
+msgid "Paris"
+msgstr ""
+
+msgid "Rome"
+msgstr ""
+
+msgid "Madrid"
+msgstr ""
+
+msgid "Berlin"
+msgstr ""
+
+msgid "London"
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
 msgid "New Poll Added"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:74
-#: classes/Admin/List_Table_Logs.php:275
 msgid "Poll logs"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:78
 msgid "shortcode for use in post content"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:99
 msgid "Question:"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:105
 msgid "Answers:"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:150
 msgid "reset order"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:157
 msgid "Sum of votes:"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:158
-msgid "Users vote:"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Edit_Poll.php:160
 msgid "leave blank to update from logs"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:160
 msgid "Voices"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:287
+msgid "Users vote:"
+msgstr ""
+
+msgid "Allow users to add answers (democracy)."
+msgstr ""
+
+msgid "Activate this poll."
+msgstr ""
+
+msgid "Allow to choose multiple answers."
+msgstr ""
+
+msgid "Date, when poll was/will be closed. Format: dd-mm-yyyy."
+msgstr ""
+
+msgid "Allow to change mind (revote)."
+msgstr ""
+
+msgid "Only registered users allowed to vote."
+msgstr ""
+
+msgid "Allow to watch the results of the poll."
+msgstr ""
+
+msgid "as in settings"
+msgstr ""
+
+msgid "How to sort the answers during the vote?"
+msgstr ""
+
+msgid "Note: This text will be added under poll."
+msgstr ""
+
+msgid "Create date."
+msgstr ""
+
 msgid "Save Changes"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:287 classes/Plugin.php:156
 msgid "Add Poll"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:299
-#: classes/Admin/Admin_Page_Logs.php:82 classes/Admin/Admin_Page_Logs.php:89
-#: classes/Admin/List_Table_Polls.php:141
 msgid "Are you sure?"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:300
-#: classes/Admin/List_Table_Polls.php:141
 msgid "Delete"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:312
 msgid "Posts where the poll shortcode used:"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:473
 msgid "Poll Updated"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:593
 msgid "Deactivate"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:598
 msgid "Activate"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:618
 msgid "Close voting"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:623
 msgid "Open voting"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:646
 msgid "Poll Deleted"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:695
-#: classes/Admin/List_Table_Polls.php:69
 msgid "Poll Opened"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:696
 msgid "Poll Closed"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:720
 msgid "You can not activate closed poll..."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:729
 msgid "Poll Activated"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:730
 msgid "Poll Deactivated"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Logs.php:57
-msgid "Logs records turned off in the settings - logs are not recorded."
+msgid "Insert Poll of Democracy"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Logs.php:74
-msgid "Delete all NEW marks"
+msgid "Insert Poll ID"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Logs.php:84
+msgid "Attach a poll to the post"
+msgstr ""
+
+msgid "random active poll"
+msgstr ""
+
 #, php-format
-msgid "Delete logs of closed pols - %d"
+msgid "%s - shortcode"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Logs.php:91
-msgid "Delete all logs"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Logs.php:121
-#, php-format
-msgid "Lines deleted: %s"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Logs.php:122 classes/Admin/Admin_Page_Logs.php:196
-msgid "Failed to delete"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Logs.php:193
-#, php-format
-msgid "Removed logs: %d. Removed answers:%d. Removed users %d."
-msgstr ""
-
-#: classes/Admin/Admin_Page_Other_Migrations.php:36
 msgid "Data of migration deleted"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Other_Migrations.php:71
 msgid "Migration from WP Polls done"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Other_Migrations.php:72
 #, php-format
 msgid "Polls copied: %d. Answers copied: %d. Logs copied: %d"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Other_Migrations.php:77
 msgid "Replace WP Polls shortcodes in posts"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Other_Migrations.php:81
 msgid "Cancel the shortcode replace and reset changes"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Other_Migrations.php:89
 msgid "Delete all data about WP Polls migration"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Other_Migrations.php:129
 #, php-format
 msgid "Shortcodes replaced: %s"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Polls.php:35
-msgid "Search"
+msgid "Updated"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:87
+msgid "Nothing was updated"
+msgstr ""
+
+msgid "Original"
+msgstr ""
+
+msgid "Your variant"
+msgstr ""
+
+msgid "Save Text"
+msgstr ""
+
+msgid "Reset Options"
+msgstr ""
+
+msgid "Choose Theme"
+msgstr ""
+
+msgid "No theme"
+msgstr ""
+
+msgid "Other settings"
+msgstr ""
+
+msgid ""
+"Max height of the poll in px. When poll has very many answers, it's better "
+"to collapse it. Set '-1', in order to disable this option. Default 500."
+msgstr ""
+
+msgid "Animation speed in milliseconds."
+msgstr ""
+
+msgid "Progress line"
+msgstr ""
+
+msgid "How to fill (paint) the progress of each answer?"
+msgstr ""
+
+msgid "winner - 100%, others as % of the winner"
+msgstr ""
+
+msgid "as percent of all votes"
+msgstr ""
+
+msgid "Line Color"
+msgstr ""
+
+msgid "Line color (for voted user)"
+msgstr ""
+
+msgid "Background color"
+msgstr ""
+
+msgid "Line height"
+msgstr ""
+
+msgid ""
+"Progress line animation effect speed (default 1500). Set 0 to disable "
+"animation."
+msgstr ""
+
+msgid "No (default)"
+msgstr ""
+
+msgid "Button"
+msgstr ""
+
+msgid "Button colors"
+msgstr ""
+
+msgid "Bg color"
+msgstr ""
+
+msgid "Text Color"
+msgstr ""
+
+msgid "Border Color"
+msgstr ""
+
+msgid "Hover button colors"
+msgstr ""
+
+msgid ""
+"The colors correctly affects NOT for all buttons. You can change styles "
+"completely in \"additional styles\" field bellow."
+msgstr ""
+
+msgid ""
+"An additional css class for all buttons in the poll. When the template has a "
+"special class for buttons, for example <code>btn btn-info</code>"
+msgstr ""
+
+msgid "AJAX loader"
+msgstr ""
+
+msgid "No (dots...)"
+msgstr ""
+
+msgid ""
+"AJAX Loader. If choose \"NO\", loader replaces by dots \"...\" which appends "
+"to a link/button text. SVG images animation don't work in IE 11 or lower, "
+"other browsers are supported at  90% (according to caniuse.com statistics)."
+msgstr ""
+
+msgid "Custom/Additional CSS styles"
+msgstr ""
+
+msgid ""
+"In this field you can add some additional css properties or completely "
+"replace current css theme. Write here css and it will be added at the bottom "
+"of current Democracy css. To complete replace styles, check \"No theme\" and "
+"describe all styles."
+msgstr ""
+
+msgid ""
+"This field cleaned manually, if you reset options of this page or change/set "
+"another theme, the field will not be touched."
+msgstr ""
+
+msgid "Save All Changes"
+msgstr ""
+
+msgid "are you sure?"
+msgstr ""
+
+msgid "All CSS styles that uses now"
+msgstr ""
+
+msgid ""
+"It's all collected css styles: theme, button, options. You can copy this "
+"styles to the \"Custom/Additional CSS styles:\" field, disable theme and "
+"change copied styles by itself."
+msgstr ""
+
+msgid "Minified version (uses to include it in HTML)"
+msgstr ""
+
+msgid "Results view:"
+msgstr ""
+
+msgid "Vote view:"
+msgstr ""
+
+msgid "AJAX loader view:"
+msgstr ""
+
+msgid "Nothing was selected."
+msgstr ""
+
+msgid "IP info"
+msgstr ""
+
+msgid "Answer"
+msgstr ""
+
+msgid "User"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Expire"
+msgstr ""
+
+msgid "Delete logs only"
+msgstr ""
+
+msgid "Delete logs and votes"
+msgstr ""
+
+msgid "Poll's logs: "
+msgstr ""
+
+msgid "NEW answers logs"
+msgstr ""
+
+msgid "Search by IP"
+msgstr ""
+
+msgid "Logs records turned off in the settings - logs are not recorded."
+msgstr ""
+
+msgid "Delete all NEW marks"
+msgstr ""
+
+#, php-format
+msgid "Delete logs of closed pols - %d"
+msgstr ""
+
+msgid "Delete all logs"
+msgstr ""
+
+#, php-format
+msgid "Lines deleted: %s"
+msgstr ""
+
+msgid "Failed to delete"
+msgstr ""
+
+#, php-format
+msgid "Removed logs: %d. Removed answers:%d. Removed users %d."
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "Polls List"
+msgstr ""
+
+msgid "Add new poll"
+msgstr ""
+
+msgid "Logs"
+msgstr ""
+
+msgid "Theme Settings"
+msgstr ""
+
+msgid "Texts changes"
+msgstr ""
+
+msgid "If you like this plugin, please <a>leave your review</a>"
+msgstr ""
+
+msgid "Show on page"
+msgstr ""
+
+msgid "ID"
+msgstr ""
+
+msgid "Question"
+msgstr ""
+
+msgid "Active polls"
+msgstr ""
+
+msgid "Users vote"
+msgstr ""
+
+msgid "Answers"
+msgstr ""
+
+msgid "In posts"
+msgstr ""
+
+msgid "Added"
+msgstr ""
+
+msgid "Users can add answers (democracy)."
+msgstr ""
+
+msgid "Users can revote"
+msgstr ""
+
+msgid "Only for registered user."
+msgstr ""
+
+msgid "Users can choose many answers (multiple)."
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "voters / votes"
+msgstr ""
+
+msgid "Log data & take visitor IP into consideration? (recommended)"
+msgstr ""
+
+msgid ""
+"Saves data into Data Base. Forbids to vote several times from a single IP or "
+"to same WordPress user. If a user is logged in, then his voting is checked "
+"by WP account. If a user is not logged in, then checks the IP address. The "
+"negative side of IP checks is that a site may be visited from an enterprise "
+"network (with a common IP), so all users from this network are allowed to "
+"vote only once. If this option is disabled the voting is checked by Cookies "
+"only. Default enabled."
+msgstr ""
+
+msgid "How many days to keep Cookies alive?"
+msgstr ""
+
+msgid ""
+"How many days the user's browser remembers the votes. Default: 365. Note: "
+"works together with IP log."
+msgstr ""
+
+msgid "To set hours use float number - 0.04 = 1 hour."
+msgstr ""
+
+msgid "HTML tags to wrap the poll title."
+msgstr ""
+
+msgid "poll's question"
+msgstr ""
+
 msgid ""
 "Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: "
 "<code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/"
 "strong&gt;</code>."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:99
+msgid "Polls archive page ID."
+msgstr ""
+
 msgid "Go to archive page"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:105
 msgid "Create/find archive page"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:109
 msgid ""
 "Specify the poll archive link to be in the poll legend. Example: <code>25</"
 "code>"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:193
+msgid "Global Polls options"
+msgstr ""
+
+msgid ""
+"How to sort the answers during voting, if they don't have order? (default "
+"option)"
+msgstr ""
+
+msgid ""
+"This is the default value. Option can be changed for each poll separately."
+msgstr ""
+
+msgid "Only registered users allowed to vote (global option)"
+msgstr ""
+
+msgid ""
+"This option  is available for each poll separately, but if you heed you can "
+"turn ON the option for all polls at once, just tick."
+msgstr ""
+
+msgid "Prohibit users to add new answers (global Democracy option)."
+msgstr ""
+
+msgid ""
+"This option  is available for each poll separately, but if you heed you can "
+"turn OFF the option for all polls at once, just tick."
+msgstr ""
+
+msgid "Remove the Revote possibility (global option)."
+msgstr ""
+
+msgid "Don't show poll results (global option)."
+msgstr ""
+
+msgid "If checked, user can't see poll results if voting is open."
+msgstr ""
+
+msgid "Don't show poll results link (global option)."
+msgstr ""
+
+msgid "Users can see results after vote."
+msgstr ""
+
+msgid "Hide vote button."
+msgstr ""
+
+msgid ""
+"Hide vote button if it is NOT multiple poll with revote option. User will "
+"vote by clicking on answer itself."
+msgstr ""
+
+msgid "Disable post metabox."
+msgstr ""
+
+msgid ""
+"Check this to disable polls metabox functionality for posts where you can "
+"attached poll to a post..."
+msgstr ""
+
+msgid "Others"
+msgstr ""
+
 msgid "ON"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:194
 msgid "OFF"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:196
 #, php-format
 msgid "Force enable gear to working with cache plugins. The condition: %s"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:267
+msgid ""
+"Democracy has smart mechanism for working with page cache plugins like \"WP "
+"Total Cache\". It is ON automatically if such plugin is enabled on your "
+"site. But if you use unusual page caching plugin you can force enable this "
+"option."
+msgstr ""
+
+msgid "Inline script code directly in the HTML"
+msgstr ""
+
+msgid ""
+"Enable to add plugin scripts directly into HTML instead of loading "
+"separate .js files. This reduces server requests and speeds up page loading."
+msgstr ""
+
+msgid "Add plugin menu on the toolbar?"
+msgstr ""
+
+msgid "Uncheck to remove the plugin menu from the toolbar."
+msgstr ""
+
+msgid "Add fast Poll insert button to WordPress visual editor (TinyMCE)?"
+msgstr ""
+
+msgid "Uncheck to disable button in visual editor."
+msgstr ""
+
+msgid ""
+"Check if you see something like \"no_IP__123\" in IP column on logs page. "
+"(not recommended)"
+msgstr ""
+
+msgid "Or if IP detection is wrong. (for cloudflare)"
+msgstr ""
+
+msgid ""
+"Useful when your server does not work correctly with server variable "
+"REMOTE_ADDR. NOTE: this option give possibility to cheat voice."
+msgstr ""
+
 msgid ""
 "Role names, except 'administrator' which will have access to manage plugin."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:363
+msgid "Migration"
+msgstr ""
+
+msgid "Migrate from WP Polls plugin"
+msgstr ""
+
+msgid "All polls, answers and logs of WP Polls will be added to Democracy Poll"
+msgstr ""
+
+msgid "Save Options"
+msgstr ""
+
+msgid "Don't connect JS files. (Debug)"
+msgstr ""
+
+msgid ""
+"If checked, the plugin's .js file will NOT be connected to front end. Enable "
+"this option to test the plugin's work without JavaScript."
+msgstr ""
+
+msgid "Show copyright"
+msgstr ""
+
+msgid ""
+"Link to plugin page is shown on front page only as a &copy; icon. It helps "
+"visitors to learn about the plugin and install it for themselves. Please "
+"don't disable this option without urgent needs. Thanks!"
+msgstr ""
+
+msgid "Widget"
+msgstr ""
+
+msgid "Check to activate the widget."
+msgstr ""
+
+msgid "Force plugin versions update (debug)"
+msgstr ""
+
 msgid "Polls Archive"
 msgstr ""
 
-#: classes/Admin/Admin_Page_l10n.php:61
-msgid "Original"
-msgstr ""
-
-#: classes/Admin/Admin_Page_l10n.php:62
-msgid "Your variant"
-msgstr ""
-
-#: classes/Admin/List_Table_Logs.php:57
-msgid "Nothing was selected."
-msgstr ""
-
-#: classes/Admin/List_Table_Logs.php:134
-msgid "IP info"
-msgstr ""
-
-#: classes/Admin/List_Table_Logs.php:135 classes/Poll_Widget.php:66
-msgid "Poll"
-msgstr ""
-
-#: classes/Admin/List_Table_Logs.php:136
-msgid "Answer"
-msgstr ""
-
-#: classes/Admin/List_Table_Logs.php:137
-msgid "User"
-msgstr ""
-
-#: classes/Admin/List_Table_Logs.php:138
-msgid "Date"
-msgstr ""
-
-#: classes/Admin/List_Table_Logs.php:139
-msgid "Expire"
-msgstr ""
-
-#: classes/Admin/List_Table_Logs.php:165
-msgid "Delete logs only"
-msgstr ""
-
-#: classes/Admin/List_Table_Logs.php:166
-msgid "Delete logs and votes"
-msgstr ""
-
-#: classes/Admin/List_Table_Logs.php:182
-msgid "Poll's logs: "
-msgstr ""
-
-#: classes/Admin/List_Table_Logs.php:185 classes/Admin/List_Table_Logs.php:271
-#: classes/DemPoll.php:205
-msgid "Edit poll"
-msgstr ""
-
-#: classes/Admin/List_Table_Logs.php:200
-msgid "NEW answers logs"
-msgstr ""
-
-#: classes/Admin/List_Table_Logs.php:226
-msgid "Search by IP"
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:26
-msgid "Show on page"
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:67
-msgid "ID"
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:68
-msgid "Question"
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:70
-msgid "Active polls"
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:71
-msgid "Users vote"
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:72
-msgid "Answers"
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:73
-msgid "In posts"
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:74
-msgid "Added"
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:112
-msgid "Users can add answers (democracy)."
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:113
-msgid "Users can revote"
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:114
-msgid "Only for registered user."
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:115
-msgid "Users can choose many answers (multiple)."
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:116
-msgid "Allow to watch the results of the poll."
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:127
-msgid "Edit"
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:153
-msgid "voters / votes"
-msgstr ""
-
-#: classes/Admin/Post_Metabox.php:31
-msgid "Attach a poll to the post"
-msgstr ""
-
-#: classes/Admin/Post_Metabox.php:46
-msgid "random active poll"
-msgstr ""
-
-#: classes/Admin/Post_Metabox.php:61
-#, php-format
-msgid "%s - shortcode"
-msgstr ""
-
-#: classes/Admin/Tinymce_Button.php:29
-msgid "Insert Poll of Democracy"
-msgstr ""
-
-#: classes/Admin/Tinymce_Button.php:30
-msgid "Insert Poll ID"
-msgstr ""
-
-#: classes/DemPoll.php:210
-msgid "Download the Democracy Poll"
-msgstr ""
-
-#: classes/DemPoll.php:335
-msgctxt "front"
-msgid "Add your answer"
-msgstr ""
-
-#: classes/DemPoll.php:343
-msgctxt "front"
-msgid "Already voted..."
-msgstr ""
-
-#: classes/DemPoll.php:344 classes/DemPoll.php:504
-msgctxt "front"
-msgid "Vote"
-msgstr ""
-
-#: classes/DemPoll.php:386
-msgctxt "front"
-msgid "Results"
-msgstr ""
-
-#: classes/DemPoll.php:422
-msgctxt "front"
-msgid "This is Your vote."
-msgstr ""
-
-#: classes/DemPoll.php:448
-msgctxt "front"
-msgid "The answer was added by a visitor"
-msgstr ""
-
-#: classes/DemPoll.php:451
-#, php-format
-msgctxt "front"
-msgid "%s - %s%% of all votes"
-msgstr ""
-
-#: classes/DemPoll.php:451 classes/DemPoll.php:455
-msgctxt "front"
-msgid "vote,votes,votes"
-msgstr ""
-
-#: classes/DemPoll.php:485
-#, php-format
-msgctxt "front"
-msgid "Total Votes: %s"
-msgstr ""
-
-#: classes/DemPoll.php:486
-#, php-format
-msgctxt "front"
-msgid "Voters: %s"
-msgstr ""
-
-#: classes/DemPoll.php:488
-msgctxt "front"
-msgid "Begin"
-msgstr ""
-
-#: classes/DemPoll.php:490
-msgctxt "front"
-msgid "End"
-msgstr ""
-
-#: classes/DemPoll.php:492
-msgctxt "front"
-msgid " - added by visitor"
-msgstr ""
-
-#: classes/DemPoll.php:493
-msgctxt "front"
-msgid "Voting is closed"
-msgstr ""
-
-#: classes/DemPoll.php:495
-msgctxt "front"
-msgid "Polls Archive"
-msgstr ""
-
-#: classes/DemPoll.php:551
-msgctxt "front"
-msgid "Only registered users can vote. <a>Login</a> to vote."
-msgstr ""
-
-#: classes/DemPoll.php:561
-msgctxt "front"
-msgid "Revote"
-msgstr ""
-
-#: classes/DemPoll.php:561
-msgctxt "front"
-msgid "Are you sure you want cancel the votes?"
-msgstr ""
-
-#: classes/DemPoll.php:575
-msgctxt "front"
-msgid "You or your IP had already vote."
-msgstr ""
-
-#: classes/DemPoll.php:622
 msgid "ERROR: You select more number of answers than it is allowed..."
 msgstr ""
 
-#: classes/Helpers/Helpers.php:9
 msgid "As it was added (by ID)"
 msgstr ""
 
-#: classes/Helpers/Helpers.php:10
 msgid "Winners at the top"
 msgstr ""
 
-#: classes/Helpers/Helpers.php:11
 msgid "Alphabetically"
 msgstr ""
 
-#: classes/Helpers/Helpers.php:12
 msgid "Mix"
-msgstr ""
-
-#: classes/Poll_Widget.php:14
-msgid "Democracy Poll Widget"
-msgstr ""
-
-#: classes/Poll_Widget.php:91
-msgid "- Active (random all active)"
-msgstr ""
-
-#: classes/Poll_Widget.php:92
-msgid "- Last open poll"
-msgstr ""
-
-#: classes/Poll_Widget.php:107
-msgid "Which poll to show?"
-msgstr ""
-
-#: classes/Utils/Activator.php:51
-msgid "What is the capital city of France?"
-msgstr ""
-
-#: classes/Utils/Activator.php:63
-msgid "Paris"
-msgstr ""
-
-#: classes/Utils/Activator.php:64
-msgid "Rome"
-msgstr ""
-
-#: classes/Utils/Activator.php:65
-msgid "Madrid"
-msgstr ""
-
-#: classes/Utils/Activator.php:66
-msgid "Berlin"
-msgstr ""
-
-#: classes/Utils/Activator.php:67
-msgid "London"
-msgstr ""
-
-#: includes/theme-functions.php:88
-msgid "Poll results hidden for now..."
-msgstr ""
-
-#: includes/theme-functions.php:312
-msgid "From posts:"
 msgstr ""
