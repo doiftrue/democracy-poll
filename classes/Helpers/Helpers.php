@@ -51,7 +51,7 @@ final class Helpers {
 	/**
 	 * Retrieves the post objects to which the poll is attached (where the shortcode is used).
 	 *
-	 * @param object $poll  The current poll object from the database.
+	 * @param \DemPoll $poll  The current poll object from the database.
 	 *
 	 * @return \WP_Post[] An array of post objects or an empty array.
 	 */
@@ -62,21 +62,21 @@ final class Helpers {
 			return [];
 		}
 
-		$pids = explode( ',', $poll->in_posts );
+		$post_ids = wp_parse_id_list( $poll->in_posts );
 
 		$posts = [];
 
 		// delete the IDs of posts that no longer exist.
 		$delete_pids = [];
-		foreach( $pids as $post_id ){
-			$post = get_post( $post_id );
+		foreach( $post_ids as $post_id ){
+			$post = get_post( (int) $post_id );
 			$post
 				? ( $posts[] = $post )
 				: ( $delete_pids[] = $post_id );
 		}
 
 		if( $delete_pids ){
-			$new_in_posts = array_diff( $pids, $delete_pids );
+			$new_in_posts = array_diff( $post_ids, $delete_pids );
 			$wpdb->update( $wpdb->democracy_q, [ 'in_posts' => implode( ',', $new_in_posts ) ], [ 'id' => $poll->id ] );
 		}
 

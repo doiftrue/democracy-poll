@@ -500,16 +500,15 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 		<ul class="group">
 			<li class="block polls-preview">
 				<?php
-				$poll = new \DemPoll( \DemPoll::get_poll_object( 'rand' ) );
+				$poll = new \DemPoll( \DemPoll::get_db_data( 'rand' ) );
 				$render = $poll->renderer;
 
 				if( $poll->id ){
-					//$poll->has_voted = 1;
-					$answers = (array) wp_list_pluck( $poll->answers, 'aid' );
-					$poll->votedFor = $answers ? $answers[ array_rand( $answers ) ] : false;
+					$answers = wp_list_pluck( $poll->answers, 'aid' );
+					$poll->voted_for = (string) ( $answers ? $answers[ array_rand( $answers ) ] : '' );
 
 					$rm_disabled = static function( $val ) {
-						return str_replace( ['disabled="disabled"' ], '', $val );
+						return str_replace( 'disabled="disabled"', '', $val );
 					};
 
 					$html = <<<HTML

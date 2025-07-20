@@ -32,7 +32,7 @@ class Poll_Utils {
 		}
 
 		if( is_numeric( $poll ) ){
-			$poll = \DemPoll::get_poll_object( $poll );
+			$poll = \DemPoll::get_db_data( $poll );
 		}
 
 		return $poll && (int) $poll->added_user === (int) get_current_user_id();

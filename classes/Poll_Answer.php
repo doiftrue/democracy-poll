@@ -16,7 +16,10 @@ class Poll_Answer {
 	/** The Number of votes this answer has received. */
 	public int $votes;
 
-	/** The order of the answer in the list of answers. */
+	/**
+	 * The order of the answer in the list of answers.
+	 * If this field is not falsy, then the answers have custom order.
+	 */
 	public int $aorder;
 
 	/** The user who added this answer. */

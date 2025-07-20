@@ -35,7 +35,7 @@ class Poll_Widget extends \WP_Widget {
 			$poll_id = $post_pid;
 		}
 
-		$poll_object = \DemPoll::get_poll_object( $poll_id ?: 'rand' ); // $poll_id may be: int, 'last', 'rand'
+		$poll_object = \DemPoll::get_db_data( $poll_id ?: 'rand' ); // $poll_id may be: int, 'last', 'rand'
 
 		if( isset( $instance['questionIsTitle'] ) ){
 			echo $before_widget;

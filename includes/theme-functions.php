@@ -1,18 +1,16 @@
 <?php
 
 /**
- * Get poll object
+ * Gets poll object.
  *
- * @param int $poll_id  ID of poll.
- *
- * @return \DemPoll Poll object
+ * @param object|int $poll_id Poll ID to get. OR poll object from DB.
  */
-function democracy_get_poll( $poll_id ) {
+function democracy_get_poll( $poll_id ): \DemPoll {
 	return new \DemPoll( $poll_id );
 }
 
 /**
- * Get poll attached to current post.
+ * Gets a poll attached to the current post.
  *
  * @param int $post_id  ID or object of post, attached poll of which you want to get.
  */
@@ -36,7 +34,7 @@ function democracy_poll( $id = 0, $before_title = '', $after_title = '', $from_p
 /**
  * Get specified democracy poll.
  *
- * @param int        $poll_id       Poll ID. If 0 Random Active poll will be returned.
+ * @param object|int $poll_id       Poll ID. If 0 Random Active poll is returned.
  * @param string     $before_title  HTML/text before poll title.
  * @param string     $after_title   HTML/text after poll title.
  * @param int|object $from_post     Post ID from which the poll was called - to which the poll must be attached.
@@ -92,13 +90,11 @@ function get_democracy_poll_results( $poll_id = 0, $before_title = '', $after_ti
 }
 
 /**
- * Show archives.
+ * Display archives HTML.
  *
  * @param array $args  See {@see get_democracy_archives()}.
- *
- * @return string HTML
  */
-function democracy_archives( $args = [] ) {
+function democracy_archives( $args = [] ): void {
 	echo get_democracy_archives( $args );
 }
 
@@ -156,7 +152,6 @@ function get_democracy_archives( $args = [] ){
 
 	// pagination
 	if( $found_rows ){
-
 		$pagination = paginate_links( [
 			'base'    => esc_url( remove_query_arg( 'dem_paged', $_SERVER['REQUEST_URI'] ) ) . '%_%',
 			'format'  => '?dem_paged=%#%',
@@ -171,10 +166,10 @@ function get_democracy_archives( $args = [] ){
 }
 
 /**
- * Gets polls by parametrs.
+ * Gets polls by parameters.
  *
- * @param array $args {
- *     Array of arguments.
+ * @param array|string $args {
+ *     Array of arguments. Or 'get_found_rows' to get found rows count.
  *
  *     @type string       $wrap            HTML block wrap tag.
  *     @type string       $before_title    For single poll title.
@@ -182,14 +177,14 @@ function get_democracy_archives( $args = [] ){
  *     @type string       $screen          vote | voted.
  *     @type bool         $active          1 (active), 0 (not active) or null (param not set).
  *     @type bool         $open            1 (opened), 0 (closed) or null (param not set) polls.
- *     @type string       $add_from_posts  Add From posts: html block.
+ *     @type string       $add_from_posts  Add From posts: HTML block.
  *     @type string       $return          HTML, objects.
  *     @type int          $paged           Pagination page when 'limit' parameter is set.
  *     @type int          $per_page        Limit. 0 or -1 - no limit.
  *     @type string|array $orderby         [ 'open' => 'ASC' ] | 'open' | rand.
  * }
  *
- * @return array|string
+ * @return array|string|int Generated HTML string. OR Array or objects. OR int when 'get_found_rows' is passed.
  */
 function get_dem_polls( $args = [] ) {
 	global $wpdb;
@@ -280,23 +275,25 @@ function get_dem_polls( $args = [] ) {
 
 	$poll_ids = $wpdb->get_col( $sql );
 
-	$all_found_rows = $SET_FOUND_ROWS
+	$all_found_rows = (int) $SET_FOUND_ROWS
 		? $wpdb->get_var( "SELECT count(*) FROM $wpdb->democracy_q $clauses->where" )
-		: null;
+		: 0;
 
-	// OUT
-	$out = [];
-
-	foreach( $poll_ids as $poll_id ){
-
-		$poll = new \DemPoll( $poll_id );
-
-		if( $rg->return === 'objects' ){
-			$out[] = $poll;
-			continue;
+	// poll objects
+	$polls = [];
+	if( $rg->return === 'objects' ){
+		foreach( $poll_ids as $poll_id ){
+			$polls[] = new \DemPoll( $poll_id );
 		}
 
-		// if return html is set
+		return $polls;
+	}
+
+	// HTML
+	$out = [];
+	foreach( $poll_ids as $poll_id ){
+		$poll = new \DemPoll( $poll_id );
+
 		$screen = isset( $_REQUEST['dem_act'] )
 			? dem__query_poll_screen_choose( $poll )
 			: $rg->screen;
@@ -323,10 +320,6 @@ function get_dem_polls( $args = [] ) {
 		}
 
 		$out[] = '<div class="dem-elem-wrap">' . $elm_html . '</div>';
-	}
-
-	if( $rg->return === 'objects' ){
-		return $out;
 	}
 
 	return sprintf( $rg->wrap, implode( "\n", $out ) );

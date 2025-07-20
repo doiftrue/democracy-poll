@@ -175,7 +175,7 @@ class Migrator__WP_Polls {
 			$migrate_data = [ 'wp-polls' => $collation ];
 		}
 
-		update_option( 'democracy_migrated', $migrate_data, 'no' );
+		update_option( 'democracy_migrated', $migrate_data, false );
 
 		// options
 		// опции не мигрируют - лишняя работа...

@@ -6,12 +6,32 @@ use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Helpers\Kses;
 use DemPoll;
 
+/**
+ * Handles rendering the poll HTML for display on the front-end.
+ */
 class Poll_Renderer {
+
+	/** Flag that indicates whether the poll is displayed on an archive page */
+	private bool $in_archive = false;
+
+	/** Flag that helps determine if additional data is needed for the caching mechanism */
+	private bool $for_cache = false;
+
+	/** Flag to not show results in the poll */
+	public bool $not_show_results = false;
 
 	private \DemPoll $poll;
 
 	public function __construct( \DemPoll $poll ) {
 		$this->poll = $poll;
+
+		if(
+			$poll->open
+			&& ( ! $poll->show_results || options()->dont_show_results )
+			&& ( ! is_admin() || wp_doing_ajax() )
+		){
+			$this->not_show_results = true;
+		}
 	}
 
 	/**
@@ -28,9 +48,9 @@ class Poll_Renderer {
 			return false;
 		}
 
-		$poll->in_archive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) options()->archive_page_id ) && is_singular();
+		$this->in_archive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) options()->archive_page_id ) && is_singular();
 
-		if( $poll->blockVoting && $show_screen !== 'force_vote' ){
+		if( $poll->voting_blocked && $show_screen !== 'force_vote' ){
 			$show_screen = 'voted';
 		}
 
@@ -42,7 +62,7 @@ class Poll_Renderer {
 			'max_answs'        => (int) ( $poll->multiple ?: 0 ),
 			'answs_max_height' => options()->answs_max_height,
 			'anim_speed'       => options()->anim_speed,
-			'line_anim_speed'  => (int) options()->line_anim_speed
+			'line_anim_speed'  => (int) options()->line_anim_speed,
 		];
 
 		$html .= '<div id="democracy-' . $poll->id . '" class="democracy" data-opts=\'' . json_encode( $js_opts ) . '\' >';
@@ -78,32 +98,27 @@ class Poll_Renderer {
 
 		// for page cache
 		// never use poll caching mechanism in admin
-		if( ! $poll->in_archive && ! is_admin() && plugin()->is_cachegear_on ){
+		if( ! $this->in_archive && ! is_admin() && plugin()->is_cachegear_on ){
 			$html .= '
 			<!--noindex-->
 			<div class="dem-cache-screens" style="display:none;" data-opt_logs="' . (int) options()->keep_logs . '">';
 
-			// запоминаем
-			$voted_for = $poll->votedFor;
-			$poll->votedFor = false;
-			$poll->for_cache = 1;
-
-			$compress = static function( $str ) {
-				return preg_replace( "~[\n\r\t]~u", '', preg_replace( '~\s+~u', ' ', $str ) );
-			};
+			$saved_voted_for = $poll->voted_for;
+			$poll->voted_for = '';
+			$this->for_cache = true;
 
 			// voted_screen
-			if( ! $poll->not_show_results ){
-				$html .= $compress( $this->get_screen_basis( 'voted' ) );
+			if( ! $this->not_show_results ){
+				$html .= self::minify_html( $this->get_screen_basis( 'voted' ) );
 			}
 
 			// vote_screen
 			if( $poll->open ){
-				$html .= $compress( $this->get_screen_basis( 'force_vote' ) );
+				$html .= self::minify_html( $this->get_screen_basis( 'force_vote' ) );
 			}
 
-			$poll->for_cache = 0;
-			$poll->votedFor = $voted_for; // возвращаем
+			$this->for_cache = false;
+			$poll->voted_for = $saved_voted_for;
 
 			$html .= '
 			</div>
@@ -125,21 +140,21 @@ class Poll_Renderer {
 	 * @return string HTML
 	 */
 	protected function get_screen_basis( string $show_screen = 'vote' ): string {
-		$poll = $this->poll; // simplify
+		$class_suffix = $this->for_cache ? '-cache' : '';
 
-		$class_suffix = $poll->for_cache ? '-cache' : '';
-
-		if( $poll->not_show_results ){
+		if( $this->not_show_results ){
 			$show_screen = 'force_vote';
 		}
 
 		$screen = ( $show_screen === 'vote' || $show_screen === 'force_vote' ) ? 'vote' : 'voted';
 
 		$html = '<div class="dem-screen' . $class_suffix . ' ' . $screen . '">';
-		$html .= ( $screen === 'vote' ) ? $this->get_vote_screen() : $this->get_result_screen();
+		$html .= ( $screen === 'vote' )
+			? $this->get_vote_screen()
+			: $this->get_result_screen();
 		$html .= '</div>';
 
-		if( ! $poll->for_cache ){
+		if( ! $this->for_cache ){
 			$html .= '<noscript>Poll Options are limited because JavaScript is disabled in your browser.</noscript>';
 		}
 
@@ -153,7 +168,7 @@ class Poll_Renderer {
 		$poll = $this->poll; // simplify
 
 		if( ! $poll->id ){
-			return false;
+			return '';
 		}
 
 		$auto_vote_on_select = ( ! $poll->multiple && $poll->revote && options()->hide_vote_button );
@@ -175,7 +190,7 @@ class Poll_Renderer {
 			$answer = apply_filters( 'dem_vote_screen_answer', $answer );
 
 			$checked = '';
-			if( $poll->votedFor && in_array( $answer->aid, explode( ',', $poll->votedFor ) ) ){
+			if( in_array( $answer->aid, explode( ',', $poll->voted_for ), true ) ){
 				$checked = ' checked="checked"';
 			}
 
@@ -187,17 +202,17 @@ class Poll_Renderer {
 						</li>
 						HTML,
 				[
-					'{AID}'      => $answer->aid,
-					'{TYPE}'     => $type,
-					'{AUTO_VOTE}'=> $auto_vote_on_select ? 'data-dem-act="vote"' : '',
-					'{CHECKED}'  => $checked,
-					'{DISABLED}' => $poll->votedFor ? 'disabled="disabled"' : '',
-					'{ANSWER}'   => $answer->answer,
+					'{AID}'       => $answer->aid,
+					'{TYPE}'      => $type,
+					'{AUTO_VOTE}' => $auto_vote_on_select ? 'data-dem-act="vote"' : '',
+					'{CHECKED}'   => $checked,
+					'{DISABLED}'  => $poll->voted_for ? 'disabled="disabled"' : '',
+					'{ANSWER}'    => $answer->answer,
 				]
 			);
 		}
 
-		if( $poll->democratic && ! $poll->blockVoting ){
+		if( $poll->democratic && ! $poll->voting_blocked ){
 			$html .= '<li class="dem-add-answer"><a href="javascript:void(0);" rel="nofollow" data-dem-act="newAnswer" class="dem-link">' . _x( 'Add your answer', 'front', 'democracy-poll' ) . '</a></li>';
 		}
 		$html .= "</ul>";
@@ -213,10 +228,10 @@ class Poll_Renderer {
 			$btnVote = '';
 		}
 
-		$for_users_alert = $poll->blockForVisitor ? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>' : '';
+		$for_users_alert = $poll->blocked_by_not_logged ? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>' : '';
 
-		// для экша
-		if( $poll->for_cache ){
+		// add for cache
+		if( $this->for_cache ){
 			$html .= self::voted_notice_html();
 
 			if( $for_users_alert ){
@@ -233,7 +248,7 @@ class Poll_Renderer {
 			}
 			$html .= $btnVote;
 		}
-		// не для кэша
+		// not for cache
 		else{
 			if( $for_users_alert ){
 				$html .= $for_users_alert;
@@ -248,7 +263,7 @@ class Poll_Renderer {
 			}
 		}
 
-		if( ! $poll->not_show_results && ! options()->dont_show_results_link ){
+		if( ! $this->not_show_results && ! options()->dont_show_results_link ){
 			$html .= '<a href="javascript:void(0);" class="dem-link dem-results-link" data-dem-act="view" rel="nofollow">' . _x( 'Results', 'front', 'democracy-poll' ) . '</a>';
 		}
 
@@ -278,10 +293,8 @@ class Poll_Renderer {
 			return '';
 		}
 
-		// отсортируем по голосам
+		// sort by votes
 		$answers = Helpers::objects_array_sort( $poll->answers, [ 'votes' => 'desc' ] );
-
-		$html = '';
 
 		$max = $total = 0;
 
@@ -295,22 +308,11 @@ class Poll_Renderer {
 
 		$voted_class = 'dem-voted-this';
 		$voted_txt = _x( 'This is Your vote.', 'front', 'democracy-poll' );
+
+		$html = '';
 		$html .= '<ul class="dem-answers" data-voted-class="' . $voted_class . '" data-voted-txt="' . $voted_txt . '">';
 
 		foreach( $answers as $answer ){
-			// склонение голосов
-			$__sclonenie = static function( $number, $titles, $nonum = false ) {
-				$titles = explode( ',', $titles );
-
-				if( 2 === count( $titles ) ){
-					$titles[2] = $titles[1];
-				}
-
-				$cases = [ 2, 0, 1, 1, 1, 2 ];
-
-				return ( $nonum ? '' : "$number " ) . $titles[ ( $number % 100 > 4 && $number % 100 < 20 ) ? 2 : $cases[ min( $number % 10, 5 ) ] ];
-			};
-
 			/**
 			 * Allows to modify the answer object before it is processed for output.
 			 *
@@ -319,7 +321,7 @@ class Poll_Renderer {
 			$answer = apply_filters( 'dem_result_screen_answer', $answer );
 
 			$votes = (int) $answer->votes;
-			$is_voted_this = ( $poll->has_voted && in_array( $answer->aid, explode( ',', $poll->votedFor ) ) );
+			$is_voted_this = ( $poll->has_voted && in_array( (string) $answer->aid, explode( ',', $poll->voted_for ), true ) );
 			$is_winner = ( $max == $votes );
 
 			$novoted_class = ( $votes == 0 ) ? ' dem-novoted' : '';
@@ -327,11 +329,11 @@ class Poll_Renderer {
 			$sup = $answer->added_by ? '<sup class="dem-star" title="' . _x( 'The answer was added by a visitor', 'front', 'democracy-poll' ) . '">*</sup>' : '';
 			$percent = ( $votes > 0 ) ? round( $votes / $total * 100 ) : 0;
 
-			$percent_txt = sprintf( _x( '%s - %s%% of all votes', 'front', 'democracy-poll' ), $__sclonenie( $votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ) ), $percent );
+			$percent_txt = sprintf( _x( '%s - %s%% of all votes', 'front', 'democracy-poll' ), self::pluralize( $votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ) ), $percent );
 			$title = ( $is_voted_this ? $voted_txt : '' ) . ' ' . $percent_txt;
 			$title = " title='$title'";
 
-			$votes_txt = $votes . ' ' . '<span class="votxt">' . $__sclonenie( $votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ), 'nonum' ) . '</span>';
+			$votes_txt = $votes . ' ' . '<span class="votxt">' . self::pluralize( $votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ), false ) . '</span>';
 
 			$html .= '<li' . $li_class . $title . ' data-aid="' . $answer->aid . '">';
 			$label_perc_txt = ' <span class="dem-label-percent-txt">' . $percent . '%, ' . $votes_txt . '</span>';
@@ -344,10 +346,8 @@ class Poll_Renderer {
 			$html .= '<div class="dem-label">' . $answer->answer . $sup . $label_perc_txt . '</div>';
 
 			// css процент
-			$graph_percent = ( ( ! options()->graph_from_total && $percent != 0 ) ? round( $votes / $max * 100 ) : $percent ) . '%';
-			if( $graph_percent == 0 ){
-				$graph_percent = '1px';
-			}
+			$graph_percent = ( ( ! options()->graph_from_total && $percent != 0 ) ? round( $votes / $max * 100 ) : $percent );
+			$graph_percent = $graph_percent ? "$graph_percent%" : '1px';
 
 			$html .= '<div class="dem-graph">';
 			$html .= '<div class="dem-fill" ' . ( options()->line_anim_speed ? 'data-width="' : 'style="width:' ) . $graph_percent . '"></div>';
@@ -363,27 +363,29 @@ class Poll_Renderer {
 		$html .= '<div class="dem-poll-info">';
 		$html .= '<div class="dem-total-votes">' . sprintf( _x( 'Total Votes: %s', 'front', 'democracy-poll' ), $total ) . '</div>';
 		$html .= ( $poll->multiple ? '<div class="dem-users-voted">' . sprintf( _x( 'Voters: %s', 'front', 'democracy-poll' ), $poll->users_voted ) . '</div>' : '' );
+
 		$html .= '
-				<div class="dem-date" title="' . _x( 'Begin', 'front', 'democracy-poll' ) . '">
-					<span class="dem-begin-date">' . date_i18n( get_option( 'date_format' ), $poll->added ) . '</span>
-					' . ( $poll->end ? ' - <span class="dem-end-date" title="' . _x( 'End', 'front', 'democracy-poll' ) . '">' . date_i18n( get_option( 'date_format' ), $poll->end ) . '</span>' : '' ) . '
-				</div>';
-		$html .= $answer->added_by ? '<div class="dem-added-by-user"><span class="dem-star">*</span>' . _x( ' - added by visitor', 'front', 'democracy-poll' ) . '</div>' : '';
+			<div class="dem-date" title="' . _x( 'Begin', 'front', 'democracy-poll' ) . '">
+				<span class="dem-begin-date">' . date_i18n( get_option( 'date_format' ), $poll->added ) . '</span>
+				' . ( $poll->end ? ' - <span class="dem-end-date" title="' . _x( 'End', 'front', 'democracy-poll' ) . '">' . date_i18n( get_option( 'date_format' ), $poll->end ) . '</span>' : '' ) . '
+			</div>';
+		$html .= ( $answer->added_by ?? 0 ) ? '<div class="dem-added-by-user"><span class="dem-star">*</span>' . _x( ' - added by visitor', 'front', 'democracy-poll' ) . '</div>' : '';
 		$html .= ! $poll->open ? '<div>' . _x( 'Voting is closed', 'front', 'democracy-poll' ) . '</div>' : '';
-		if( ! $poll->in_archive && options()->archive_page_id ){
+
+		if( ! $this->in_archive && options()->archive_page_id ){
 			$html .= '<a class="dem-archive-link dem-link" href="' . get_permalink( options()->archive_page_id ) . '" rel="nofollow">' . _x( 'Polls Archive', 'front', 'democracy-poll' ) . '</a>';
 		}
 		$html .= '</div>';
 
 		if( $poll->open ){
-			// заметка для незарегистрированных пользователей
-			$for_users_alert = $poll->blockForVisitor ? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>' : '';
+			// note for unregistered users
+			$for_users_alert = $poll->blocked_by_not_logged ? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>' : '';
 
-			// вернуться к голосованию
+			// back to vouting
 			$vote_btn = '<button type="button" class="dem-button dem-vote-link ' . options()->btn_class . '" data-dem-act="vote_screen">' . _x( 'Vote', 'front', 'democracy-poll' ) . '</button>';
 
-			// для кэша
-			if( $poll->for_cache ){
+			// for cache
+			if( $this->for_cache ){
 				$html .= self::voted_notice_html();
 
 				if( $for_users_alert ){
@@ -400,7 +402,7 @@ class Poll_Renderer {
 					$html .= $vote_btn;
 				}
 			}
-			// не для кэша
+			// not for cache
 			else{
 				if( $for_users_alert ){
 					$html .= $for_users_alert;
@@ -426,7 +428,7 @@ class Poll_Renderer {
 		 * @param string  $html The HTML of the result screen.
 		 * @param DemPoll $poll The current poll object.
 		 */
-		return apply_filters( 'dem_result_screen', $html, $this );
+		return apply_filters( 'dem_result_screen', $html, $this->poll );
 	}
 
 	protected function revote_btn_html(): string {
@@ -482,6 +484,34 @@ class Poll_Renderer {
 		$login_url = wp_login_url( $_SERVER['REQUEST_URI'] );
 
 		return str_replace( '<a', sprintf( '<a href="%s" rel="nofollow"', esc_url( $login_url ) ), $text );
+	}
+
+	/**
+	 * Pluralizes the title based on the number.
+	 *
+	 * @param int    $number   The number to pluralize.
+	 * @param string $titles   Comma-separated titles for singular, plural, and other cases.
+	 * @param bool   $add_num  Whether to add the number before the title.
+	 *
+	 * @return string The pluralized title.
+	 */
+	protected static function pluralize( $number, $titles, $add_num = true ): string {
+		$titles = explode( ',', $titles );
+
+		if( 2 === count( $titles ) ){
+			$titles[2] = $titles[1];
+		}
+
+		$cases = [ 2, 0, 1, 1, 1, 2 ];
+
+		return ( $add_num ? "$number " : '' ) . $titles[ ( $number % 100 > 4 && $number % 100 < 20 ) ? 2 : $cases[ min( $number % 10, 5 ) ] ];
+	}
+
+	protected static function minify_html( string $html ): string {
+		$html = preg_replace( '~\s+~u', ' ', $html ); // remove extra spaces
+		$html = preg_replace( "~[\n\r\t]~u", '', $html ); // remove new lines and tabs
+
+		return $html;
 	}
 
 }

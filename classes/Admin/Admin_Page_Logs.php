@@ -39,11 +39,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 		}
 	}
 
-	/**
-	 * @param List_Table_Logs $list_table
-	 */
 	public function render(): void {
-
 		// no access
 		if( $this->list_table->poll_id && ! Poll_Utils::cuser_can_edit_poll( $this->list_table->poll_id ) ){
 			plugin()->msg->add_error( 'Sorry, you are not allowed to access this page.' );
@@ -153,9 +149,8 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 		$aids = wp_list_pluck( $log_data, 'aids' );
 		$qids = wp_list_pluck( $log_data, 'qid' );
 
-		// update answers table 'votes' field
-		if( 1 ){
-			// collect count how much to minus from every answer
+		if( 'update answers table `votes` field' ){ // @phpstan-ignore-line
+			// collect counts how much to minus from every answer
 			$minus_data = [];
 			foreach( $aids as $_aids ){
 				foreach( explode( ',', $_aids ) as $aid ){
@@ -163,7 +158,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 				}
 			}
 
-			// minus sql for answer 'votes' field
+			// minus SQL for answer 'votes' field
 			$minus_answ_sum = 0;
 			foreach( $minus_data as $aid => $minus_num ){
 				// IF( (votes<=%d), 0, (votes-%d) ) - for case when minus number bigger than votes. Votes can't be negative
@@ -174,15 +169,14 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 			}
 		}
 
-		// update question table 'users_voted' field
-		if( 1 ){
-			// collect count how much to minus from every question 'users_voted' field
+		if( 'update question table `users_voted` field' ){ // @phpstan-ignore-line
+			// collect counts how much to minus from every question 'users_voted' field
 			$minus_data = [];
 			foreach( $qids as $qid ){
 				$minus_data[ $qid ] = empty( $minus_data[ $qid ] ) ? 1 : ( $minus_data[ $qid ] + 1 );
 			}
 
-			// minus sql for question 'users_voted' field
+			// minus SQL for question 'users_voted' field
 			$minus_users_sum = 0;
 			foreach( $minus_data as $qid => $minus_num ){
 				if( $wpdb->query( self::users_voted_minus_sql( $minus_num, $qid ) ) ){

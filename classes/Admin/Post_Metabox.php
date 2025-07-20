@@ -4,14 +4,11 @@ namespace DemocracyPoll\Admin;
 
 class Post_Metabox {
 
-	// for Post_Metabox
-	const POLL_ID_MKEY = 'dem_poll_id';
+	public const POLL_ID_MKEY = 'dem_poll_id';
 
-	private static $pid_metakey;
-
-	public static function init() {
+	public static function init(): void {
 		add_action( 'add_meta_boxes', [ __CLASS__, 'add_meta_box' ] );
-		add_action( 'save_post', [ __CLASS__, 'save_post' ], 10, 2 );
+		add_action( 'save_post', [ __CLASS__, 'on_save_post' ], 10, 2 );
 	}
 
 	public static function get_post_poll_id( int $post_id ): int {
@@ -22,7 +19,7 @@ class Post_Metabox {
 		return (int) get_post_meta( $post_id, self::POLL_ID_MKEY, true );
 	}
 
-	public static function add_meta_box() {
+	public static function add_meta_box(): void {
 
 		$post_types = get_post_types( [ 'publicly_queryable' => true ] ) + [ 'page' => 'page' ];
 		unset( $post_types['attachment'] );
@@ -34,7 +31,7 @@ class Post_Metabox {
 		);
 	}
 
-	public static function meta_box( $post ) {
+	public static function meta_box( $post ): void {
 		global $wpdb;
 
 		$poll_id = get_post_meta( $post->ID, self::POLL_ID_MKEY, true );
@@ -63,7 +60,7 @@ class Post_Metabox {
 		<?php
 	}
 
-	public static function save_post( $post_id, $post ) {
+	public static function on_save_post( $post_id, $post ): void {
 		if(
 			! isset( $_POST['democ_metabox'] ) || // нет данных
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || // выходим, если это автосохр.

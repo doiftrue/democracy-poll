@@ -8,10 +8,15 @@ class Kses {
 
 	/**
 	 * The tags allowed in questions and answers.
-	 * Will be appended for the global $allowedtags.
+	 * Will be appended for the global {@see $allowedtags}.
 	 */
 	private static array $allowed_tags = [
-		'a'      => [ 'href' => true, 'rel' => true, 'name' => true, 'target' => true, ],
+		'a'      => [
+			'href'   => true,
+			'rel'    => true,
+			'name'   => true,
+			'target' => true,
+		],
 		'b'      => [],
 		'strong' => [],
 		'i'      => [],
@@ -20,18 +25,29 @@ class Kses {
 		'code'   => [],
 		'var'    => [],
 		'del'    => [ 'datetime' => true, ],
-		'img'    => [ 'src' => true, 'alt' => true, 'width' => true, 'height' => true, 'align' => true ],
-		'h2'     => [],
-		'h3'     => [],
-		'h4'     => [],
-		'h5'     => [],
-		'h6'     => [],
+		'img'    => [
+			'src'    => true,
+			'srcset' => true,
+			'sizes'  => true,
+			'alt'    => true,
+			'width'  => true,
+			'height' => true,
+			'align'  => true,
+		],
+		'h2' => [],
+		'h3' => [],
+		'h4' => [],
+		'h5' => [],
+		'h6' => [],
 	];
 
 	public static function setup_allowed_tags(): void {
 		global $allowedtags;
 
-		self::$allowed_tags = array_merge( $allowedtags, array_map( '_wp_add_global_attributes', self::$allowed_tags ) );
+		self::$allowed_tags = array_merge(
+			$allowedtags,
+			array_map( '_wp_add_global_attributes', self::$allowed_tags )
+		);
 
 		/**
 		 * Allows modification of the collected allowed HTML tags for Democracy Poll.

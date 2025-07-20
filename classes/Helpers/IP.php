@@ -37,17 +37,15 @@ class IP {
 	}
 
 	/**
-	 * Получает строку: Формат ip_info для таблицы логов.
+	 * Returns a string: ip_info format for the "logs" table.
 	 *
-	 * @param array|string $ip_info  IP или уже полученные данные IP в массиве.
+	 * @param array|string $ip_info  IP or already obtained IP data in an array.
 	 *
-	 * @return string Формат: 'название_страны,код_страны,город' или 'текущее UNIX метка'.
+	 * @return string Format: "country_name,country_code,city" OR "current-UNIX-timestamp".
 	 */
-	public static function prepared_ip_info( $ip_info ) {
-
-		// если передан IP
+	public static function prepared_ip_info( $ip_info ): string {
+		// IP was passed
 		if( filter_var( $ip_info, FILTER_VALIDATE_IP ) ){
-
 			$parts = array_map( 'intval', explode( '.', $ip_info ) );
 			$is_localhost = (
 				127 === $parts[0] || 10 === $parts[0] || 0 === $parts[0]
@@ -56,37 +54,37 @@ class IP {
 			);
 
 			if( $is_localhost ){
-				return time() + YEAR_IN_SECONDS * 10;
+				return (string) ( 10 * YEAR_IN_SECONDS + time() ); // на 10 лет вперед
 			}
 
 			$ip_info = self::get_ip_info( (string) $ip_info );
 		}
 
 		/**
-		  [city] =>
-		  [state] =>
-		  [country] => Uzbekistan
-		  [country_code] => UZ
-		  [continent] => Asia
-		  [continent_code] => AS
-		*/
+		 * $ip_info = [
+		 *     [city] =>
+		 *     [state] =>
+		 *     [country] => Uzbekistan
+		 *     [country_code] => UZ
+		 *     [continent] => Asia
+		 *     [continent_code] => AS
+		 * ]
+		 */
 		if( isset( $ip_info['country'] ) ){
 			return $ip_info['country'] . ',' . $ip_info['country_code'] . ',' . $ip_info['city'];
 		}
 
-		return time();
+		return (string) time();
 	}
 
 	/**
-	 * Получает данные локации переданного IP.
+	 * Gets location data for the provided IP address.
 	 *
-	 * @param string $ip       IP для проверки. По умолчанию текущий IP.
-	 * @param string $purpose  Какие данные нужно получить. Может быть: location address city state region country countrycode.
+	 * @param string $ip IP address to check. Current IP by default.
 	 *
-	 * @return array Данные в виде массива.
+	 * @return array Location data.
 	 */
 	public static function get_ip_info( string $ip = '' ): array {
-
 		if( ! $ip ){
 			$ip = self::get_user_ip();
 		}
@@ -130,7 +128,6 @@ class IP {
 			'continent'      => $continent,
 			'continent_code' => $continent_code,
 		];
-
 	}
 
 }

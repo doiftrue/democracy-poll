@@ -44,7 +44,7 @@ class Plugin_Initor {
 	}
 
 	private function admin_init(): void {
-		if( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ){
+		if( is_admin() && ! wp_doing_ajax() ){
 			plugin()->admin = new Admin();
 			plugin()->admin->init();
 		}

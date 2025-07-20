@@ -109,6 +109,8 @@ class Admin_Page_Other_Migrations implements Admin_Subpage_Interface {
 			$_new = '[democracy id="' . (int) $new . '"]';
 			$_old = '[poll id="' . (int) $old . '"]';
 
+			$rep_from = $rep_to = '';
+
 			if( $more_action === 'replace_shortcode' ){
 				$rep_from = $_old;
 				$rep_to = $_new;

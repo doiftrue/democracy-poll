@@ -269,11 +269,11 @@ function democracyInit(){
 	// показывает заметку
 	jQuery.fn.demCacheShowNotice = function( type ){
 
-		var $the = this.first(),
-			$notice = $the.find( '.dem-youarevote' ).first() // "уже голосовал"
+		var $the = this.first()
+		var $notice = $the.find( '.dem-youarevote' ).first() // "уже голосовал"
 
 		// Если могут овтечать только зарегистрированные
-		if( type === 'blockForVisitor' ){
+		if( type === 'blocked_because_not_logged_note' ){
 			$the.find( '.dem-revote-button' ).remove() // удаляем переголосовать
 			$notice = $the.find( '.dem-only-users' ).first()
 		}
