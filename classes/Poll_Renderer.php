@@ -99,30 +99,7 @@ class Poll_Renderer {
 		// for page cache
 		// never use a poll caching mechanism in admin
 		if( ! $this->in_archive && ! is_admin() && plugin()->is_cachegear_on ){
-			$html .= '
-			<!--noindex-->
-			<div class="dem-cache-screens" style="display:none;" data-opt_logs="' . (int) options()->keep_logs . '">';
-
-			$saved_voted_for = $poll->voted_for;
-			$poll->voted_for = '';
-			$this->for_cache = true;
-
-			// voted screen
-			if( ! $this->not_show_results ){
-				$html .= self::minify_html( $this->get_screen_basis( 'voted' ) );
-			}
-
-			// vote screen
-			if( $poll->open ){
-				$html .= self::minify_html( $this->get_screen_basis( 'force_vote' ) );
-			}
-
-			$this->for_cache = false;
-			$poll->voted_for = $saved_voted_for;
-
-			$html .= '
-			</div>
-			<!--/noindex-->';
+			$html .= $this->get_cache_screens();
 		}
 
 		if( ! options()->disable_js ){
@@ -130,6 +107,35 @@ class Poll_Renderer {
 		}
 
 		return Poll_Utils::get_minified_styles_once() . $html;
+	}
+
+	protected function get_cache_screens(): string {
+		$poll = $this->poll; // simplify
+
+		$saved_voted_for = $poll->voted_for;
+		$poll->voted_for = '';
+		$this->for_cache = true;
+
+		$html = '';
+		// voted screen
+		if( ! $this->not_show_results ){
+			$html .= self::minify_html( $this->get_screen_basis( 'voted' ) );
+		}
+
+		// vote screen
+		if( $poll->open ){
+			$html .= self::minify_html( $this->get_screen_basis( 'force_vote' ) );
+		}
+
+		$this->for_cache = false;
+		$poll->voted_for = $saved_voted_for;
+
+		$is_keep_logs = options()->keep_logs ? 1 : 0;
+		return <<<HTML
+			<!--noindex-->
+			<div class="dem-cache-screens" style="display:none;" data-opt_logs="$is_keep_logs">$html</div>
+			<!--/noindex-->
+			HTML;
 	}
 
 	/**
@@ -502,7 +508,7 @@ class Poll_Renderer {
 	 */
 	public static function voted_notice_html( $msg = '' ): string {
 		$js = <<<'JS'
-			let el = this.parentElement; el.animate([{ opacity:1 }, { opacity:0 }], { duration:300 }).onfinish = () => { el.style.display = 'none'; };
+			let el = this.parentElement; el.animate([{ opacity:1 }, { opacity:0 }], { duration:300 }).onfinish = () => { el.style.display = 'none' }
 			JS;
 
 		if( ! $msg ){
@@ -512,7 +518,7 @@ class Poll_Renderer {
 					{MESSAGE}
 				</div>
 				HTML,
-				[ '{JS}' => $js, '{MESSAGE}' => _x( 'You or your IP had already vote.', 'front', 'democracy-poll' ) ]
+				[ '{JS}' => esc_attr( $js ), '{MESSAGE}' => _x( 'You or your IP had already vote.', 'front', 'democracy-poll' ) ]
 			);
 		}
 
@@ -522,7 +528,7 @@ class Poll_Renderer {
 					{MESSAGE}
 				</div>
 				HTML,
-			[ '{JS}' => $js, '{MESSAGE}' => $msg ]
+			[ '{JS}' => esc_attr( $js ), '{MESSAGE}' => $msg ]
 		);
 	}
 

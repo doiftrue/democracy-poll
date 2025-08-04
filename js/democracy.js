@@ -289,7 +289,6 @@ function democracyInit(){
 
 	// устанавливает ответы пользователя в блоке результатов/голосования
 	Dem.cacheSetAnswrs = function( $screen, answrs ){
-
 		var aids = answrs.split( /,/ )
 
 		// если результаты
@@ -309,7 +308,6 @@ function democracyInit(){
 			// уберем кнопку "Голосовать"
 			$screen.find( '.dem-vote-link' ).remove()
 		}
-
 		// если голосование
 		else {
 			var $answs = $screen.find( '[data-aid]' ),
@@ -336,15 +334,11 @@ function democracyInit(){
 				$screen.find( 'input[value="vote"]' ).remove() // чтобы можно было переголосовать
 				$screen.find( '.dem-revote-button-wrap' ).show()
 			}
-
 		}
-
 	}
 
 	jQuery.fn.demCacheInit = function(){
-
 		return this.each( function(){
-
 			var $the = jQuery( this )
 
 			// ищем главный блок

@@ -120,6 +120,9 @@ Yes. When you deactivate and delete the plugin, it removes all its options and d
 
 == Upgrade Notice ==
 
+= 6.1.1 =
+- FIX: esc_attr() added for inline js to fix possible bugs on some servers.
+
 = 6.1.0 =
 - CHG: DEM_VER constant removed use `DemocracyPoll\plugin()->ver` instead.
 - CHG: DEMOC_URL constant removed use `DemocracyPoll\plugin()->url` instead. NOTE: Trailing slash removed.

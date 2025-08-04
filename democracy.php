@@ -13,7 +13,7 @@
  * Requires at least: 5.8
  * Requires PHP: 7.4
  *
- * Version: 6.1.0
+ * Version: 6.1.1
  */
 
 namespace DemocracyPoll;
