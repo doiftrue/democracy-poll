@@ -11,21 +11,20 @@ function democracyInit(){
 		return
 	}
 
-	let $demLoader = jQuery( '.dem-loader:first' )
-	let Dem = {}
+	const $demLoader = jQuery( '.dem-loader:first' )
 
-	Dem.opts = State.$dems.first().data( 'opts' )
-	Dem.ajaxurl = Dem.opts.ajax_url
-	State.answMaxHeight = Dem.opts.answs_max_height
-	State.animSpeed = parseInt( Dem.opts.anim_speed )
-	Dem.lineAnimSpeed = parseInt( Dem.opts.line_anim_speed )
+	const opts = State.$dems.first().data( 'opts' )
+	State.ajaxurl = opts.ajax_url
+	State.answMaxHeight = opts.answs_max_height
+	State.animSpeed = parseInt( opts.anim_speed )
+	State.lineAnimSpeed = parseInt( opts.line_anim_speed )
 
-	// INIT (ждем функции) ---
+	// INIT (wait for functions) ---
 	setTimeout( function(){
 
-		// Основные события Democracy для всех блоков
-		let $demScreens = State.$dems.find( State.demScreen ).filter( ':visible' )
-		let demScreensSetHeight = function(){
+		// Core Democracy events for all blocks
+		const $demScreens = State.$dems.find( State.demScreen ).filter( ':visible' )
+		const demScreensSetHeight = function(){
 			$demScreens.each( function(){
 				Utils.setHeight( jQuery( this ), 1 )
 			} )
@@ -33,18 +32,18 @@ function democracyInit(){
 
 		$demScreens.demInitActions( 1 )
 
-		jQuery( window ).on( 'resize.demsetheight', demScreensSetHeight ) // высота при ресайзе
+		jQuery( window ).on( 'resize.demsetheight', demScreensSetHeight ) // update height on resize
 
-		jQuery( window ).on( 'load', demScreensSetHeight ) // высота еще раз
+		jQuery( window ).on( 'load', demScreensSetHeight ) // update height once more
 
-		Utils.maxAnswLimitInit() // ограничение выбора мульти ответов
+		Utils.maxAnswLimitInit() // limit for multi-answer selection
 
 		/*
-		 * Обработка кэша.
-		 * Нужен установленный js-cookie
-		 * и дополнительные js переменные и методы самого Democracy.
+		 * Cache handling.
+		 * Requires js-cookie to be installed
+		 * and extra Democracy variables/methods.
 		 */
-		var $cache = jQuery( '.dem-cache-screens' )
+		const $cache = jQuery( '.dem-cache-screens' )
 		if( $cache.length > 0 ){
 			//console.log('Democracy cache gear ON');
 			$cache.demCacheInit()
@@ -52,20 +51,19 @@ function democracyInit(){
 
 	}, 1 )
 
-
-	// Инициализация всех событий связаных с внутренней частью каждого опроса: клики, высота, скрытие кнопки
-	// применяется на '.dem-screen'
+	// Initialize all events for each poll: clicks, height, button visibility
+	// applies to '.dem-screen'
 	jQuery.fn.demInitActions = function( noanimation ){
 
 		return this.each( function(){
-			// Устанавливает события клика для всех помеченных элементов в переданом элементе:
-			// тут и AJAX запрос по клику и другие интерактивные события Democracy ----------
-			var $this = jQuery( this )
-			var attr = 'data-dem-act'
+			// Attach click handlers for all marked elements inside the given element:
+			// includes AJAX on click and other Democracy interactions ----------
+			const $this = jQuery( this )
+			const attr = 'data-dem-act'
 
 			$this.find( '[' + attr + ']' ).each( function(){
-				var $the = jQuery( this )
-				$the.attr( 'href', '' ) // удалим УРЛ чтобы не было видно УРЛ запроса
+				const $the = jQuery( this )
+				$the.attr( 'href', '' ) // clear URL so the request URL isn't visible
 
 				$the.on( 'click', function( e ){
 					e.preventDefault()
@@ -73,33 +71,33 @@ function democracyInit(){
 				} )
 			} )
 
-			// Прячем кнопку сабмита, где нужно ------------
-			var autoVote = !!$this.find( 'input[type=radio][data-dem-act=vote]' ).first().length
+			// Hide the submit button where needed ------------
+			const autoVote = !!$this.find( 'input[type=radio][data-dem-act=vote]' ).first().length
 			if( autoVote ) $this.find( '.dem-vote-button' ).hide()
 
-			// прячем внутряк если слишком много вариантов ответа
+			// collapse content if there are too many answers
 			Utils.setAnswsMaxHeight( $this )
 
-			// анимация заполненных граф - line_animatin
-			if( Dem.lineAnimSpeed ){
+			// animate filled bars - line_animation
+			if( State.lineAnimSpeed ){
 				$this.find( '.dem-fill' ).each( function(){
-					var $fill = jQuery( this )
-					//setTimeout(function(){ fill.style.width = was; }, State.animSpeed + 500); // на базе CSS transition - при сбросе тоже срабатывает и мешает...
+					const $fill = jQuery( this )
+					//setTimeout(function(){ fill.style.width = was; }, State.animSpeed + 500); // based on CSS transition; also fires on reset and interferes...
 					setTimeout( function(){
-						$fill.animate( { width: $fill.data( 'width' ) }, Dem.lineAnimSpeed )
+						$fill.animate( { width: $fill.data( 'width' ) }, State.lineAnimSpeed )
 					}, State.animSpeed, 'linear' )
 				} )
 			}
 
-			// Устанавливает высоту жестко ------------
-			// Вешаем все на ресайз окна. Мобильники переворачиваются...
+			// Set height explicitly ------------
+			// Bind to window resize (mobile rotation, etc.)
 			Utils.setHeight( $this, noanimation )
 
-			// событие сабмина формы
+			// form submit event
 			$this.find( 'form' ).on( 'submit', function( e ){
 				e.preventDefault()
 
-				var act = jQuery( this ).find( 'input[name="dem_act"]' ).val()
+				const act = jQuery( this ).find( 'input[name="dem_act"]' ).val()
 				if( act )
 					jQuery( this ).demDoAction( jQuery( this ).find( 'input[name="dem_act"]' ).val() )
 			} )
@@ -114,7 +112,7 @@ function democracyInit(){
 			$the.closest( State.demScreen ).append( $demLoader.clone().css( 'display', 'table' ) )
 		}
 		else {
-			State.loader = setTimeout( () => Utils.demLoadingDots( $the[0] ), 50 )
+			State.loaderTm = setTimeout( () => Utils.demLoadingDots( $the[0] ), 50 )
 		}
 
 		return this
@@ -125,23 +123,23 @@ function democracyInit(){
 		if( $demLoader.length )
 			this.closest( State.demScreen ).find( '.dem-loader' ).remove()
 		else
-			clearTimeout( State.loader )
+			clearTimeout( State.loaderTm )
 
 		return this
 	}
 
-	// Добавить ответ пользователя (ссылка)
+	// Add user answer (link)
 	jQuery.fn.demAddAnswer = function(){
 
-		var $the = this.first()
-		var $demScreen = $the.closest( State.demScreen )
-		var isMultiple = $demScreen.find( '[type=checkbox]' ).length > 0
-		var $input = jQuery( '<input type="text" class="' + State.userAnswer.replace( /\./, '' ) + '" value="">' ) // поле добавления ответа
+		const $the = this.first()
+		const $demScreen = $the.closest( State.demScreen )
+		const isMultiple = $demScreen.find( '[type=checkbox]' ).length > 0
+		const $input = jQuery( '<input type="text" class="' + State.userAnswer.replace( /\./, '' ) + '" value="">' ) // input for adding an answer
 
-		// покажем кнопку голосования
+		// show vote button
 		$demScreen.find( '.dem-vote-button' ).show()
 
-		// обрабатывает input radio деселектим и вешаем событие клика
+		// handle radio inputs: uncheck and attach click handler
 		$demScreen.find( '[type=radio]' ).each( function(){
 
 			jQuery( this ).on( 'click', function(){
@@ -156,16 +154,16 @@ function democracyInit(){
 		$the.hide().parent( 'li' ).append( $input )
 		$input.hide().fadeIn( 300 ).focus() // animation
 
-		// добавим кнопку удаления пользовательского текста
+		// add a button to remove the user-entered text
 		if( isMultiple ){
 
-			var $ua = $demScreen.find( State.userAnswer )
+			const $ua = $demScreen.find( State.userAnswer )
 
 			jQuery( '<span class="dem-add-answer-close">×</span>' )
 				.insertBefore( $ua )
 				.css( 'line-height', $ua.outerHeight() + 'px' )
 				.on( 'click', function(){
-					var $par = jQuery( this ).parent( 'li' )
+					const $par = jQuery( this ).parent( 'li' )
 					$par.find( 'input' ).remove()
 					$par.find( 'a' ).fadeIn( 300 )
 					jQuery( this ).remove()
@@ -175,13 +173,13 @@ function democracyInit(){
 		return false // !!!
 	}
 
-	// Собирает ответы и возращает их в виде строки
+	// Collect answers and return as a string
 	jQuery.fn.demCollectAnsw = function(){
-		var $form = this.closest( 'form' )
-		var $answers = $form.find( '[type=checkbox],[type=radio],[type=text]' )
-		var userText = $form.find( State.userAnswer ).val()
-		var answ = []
-		var $checkbox = $answers.filter( '[type=checkbox]:checked' )
+		const $form = this.closest( 'form' )
+		const $answers = $form.find( '[type=checkbox],[type=radio]' )
+		const userText = $form.find( State.userAnswer ).val()
+		let answ = []
+		const $checkbox = $answers.filter( '[type=checkbox]:checked' )
 
 		// multiple
 		if( $checkbox.length > 0 ){
@@ -191,7 +189,7 @@ function democracyInit(){
 		}
 		// single
 		else {
-			var str = $answers.filter( '[type=radio]:checked' )
+			const str = $answers.filter( '[type=radio]:checked' )
 			if( str.length )
 				answ.push( str.val() )
 		}
@@ -206,12 +204,12 @@ function democracyInit(){
 		return answ ? answ : ''
 	}
 
-	// обрабатывает запросы при клике, вешается на событие клика
+	// handle requests on click
 	jQuery.fn.demDoAction = function( action ){
 
-		var $the = this.first()
-		var $dem = $the.closest( State.demmainsel )
-		var data = {
+		const $the = this.first()
+		const $dem = $the.closest( State.demmainsel )
+		const data = {
 			dem_pid: $dem.data( 'opts' ).pid,
 			dem_act: action,
 			action : 'dem_ajax'
@@ -222,7 +220,7 @@ function democracyInit(){
 			return false
 		}
 
-		// Соберем ответы
+		// Collect answers
 		if( 'vote' === action ){
 			data.answer_ids = $the.demCollectAnsw()
 			if( ! data.answer_ids ){
@@ -231,11 +229,11 @@ function democracyInit(){
 			}
 		}
 
-		// кнопка переголосовать, подтверждение
+		// revote button confirmation
 		if( 'delVoted' === action && !confirm( $the.data( 'confirm-text' ) ) )
 			return false
 
-		// кнопка добавления ответа посетителя
+		// add visitor answer button
 		if( 'newAnswer' === action ){
 			$the.demAddAnswer()
 			return false
@@ -243,13 +241,13 @@ function democracyInit(){
 
 		// AJAX
 		$the.demSetLoader()
-		jQuery.post( Dem.ajaxurl, data, function( respond ){
+		jQuery.post( State.ajaxurl, data, function( respond ){
 			$the.demUnsetLoader()
 
-			// устанавливаем все события
+			// rebind events
 			$the.closest( State.demScreen ).html( respond ).demInitActions()
 
-			// прокрутим к началу блока опроса
+			// scroll to the top of the poll block
 			setTimeout( function(){
 				jQuery( 'html:first,body:first' ).animate( { scrollTop: $dem.offset().top - 70 }, 500 )
 			}, 200 )
@@ -259,17 +257,17 @@ function democracyInit(){
 	}
 
 
-	// КЭШ ---
+	// CACHE ---
 
-	// показывает заметку
+	// show notice
 	jQuery.fn.demCacheShowNotice = function( type ){
 
-		var $the = this.first()
-		var $notice = $the.find( '.dem-youarevote' ).first() // "уже голосовал"
+		const $the = this.first()
+		let $notice = $the.find( '.dem-youarevote' ).first() // "already voted"
 
-		// Если могут овтечать только зарегистрированные
+		// If only logged-in users can vote
 		if( type === 'blocked_because_not_logged_note' ){
-			$the.find( '.dem-revote-button' ).remove() // удаляем переголосовать
+			$the.find( '.dem-revote-button' ).remove() // remove revote button
 			$notice = $the.find( '.dem-only-users' ).first()
 		}
 
@@ -282,15 +280,15 @@ function democracyInit(){
 		return this
 	}
 
-	// устанавливает ответы пользователя в блоке результатов/голосования
-	Dem.cacheSetAnswrs = function( $screen, answrs ){
-		var aids = answrs.split( /,/ )
+	// set user's answers in results/vote block
+	function cacheSetAnswrs( $screen, answrs ){
+		const aids = answrs.split( /,/ )
 
-		// если результаты
+		// results view
 		if( $screen.hasClass( 'voted' ) ){
-			var $dema = $screen.find( '.dem-answers' ),
-				votedClass = $dema.data( 'voted-class' ),
-				votedtxt = $dema.data( 'voted-txt' )
+			const $dema = $screen.find( '.dem-answers' )
+			const votedClass = $dema.data( 'voted-class' )
+			const votedtxt = $dema.data( 'voted-txt' )
 
 			jQuery.each( aids, function( key, val ){
 				$screen.find( '[data-aid="' + val + '"]' )
@@ -300,33 +298,33 @@ function democracyInit(){
 					} )
 			} )
 
-			// уберем кнопку "Голосовать"
+			// remove "Vote" button
 			$screen.find( '.dem-vote-link' ).remove()
 		}
-		// если голосование
+		// voting view
 		else {
-			var $answs = $screen.find( '[data-aid]' ),
-				$btnVoted = $screen.find( '.dem-voted-button' )
+			const $answs = $screen.find( '[data-aid]' )
+			const $btnVoted = $screen.find( '.dem-voted-button' )
 
-			// устанавливаем ответы
+			// set answers
 			jQuery.each( aids, function( key, val ){
 				$answs.filter( '[data-aid="' + val + '"]' ).find( 'input' ).prop( 'checked', 'checked' )
 			} )
 
-			// все деактивирем
+			// disable all
 			$answs.find( 'input' ).prop( 'disabled', 'disabled' )
 
-			// уберем голосовать
+			// remove voting button
 			$screen.find( '.dem-vote-button' ).remove()
 			//$screen.find('[data-dem-act="vote"]').remove();
 
-			// если есть кнопка "уже логосовали", то переголосование запрещено
+			// if "already voted" button exists, revote is disabled
 			if( $btnVoted.length ){
 				$btnVoted.show()
 			}
-			// показываем кнопку переголосовать
+			// show revote button
 			else {
-				$screen.find( 'input[value="vote"]' ).remove() // чтобы можно было переголосовать
+				$screen.find( 'input[value="vote"]' ).remove() // allow revote
 				$screen.find( '.dem-revote-button-wrap' ).show()
 			}
 		}
@@ -334,10 +332,10 @@ function democracyInit(){
 
 	jQuery.fn.demCacheInit = function(){
 		return this.each( function(){
-			var $the = jQuery( this )
+			const $the = jQuery( this )
 
-			// ищем главный блок
-			var $dem = $the.prevAll( State.demmainsel + ':first' )
+			// find the main block
+			let $dem = $the.prevAll( State.demmainsel + ':first' )
 			if( ! $dem.length )
 				$dem = $the.closest( State.demmainsel )
 
@@ -346,30 +344,30 @@ function democracyInit(){
 				return
 			}
 
-			var $screen = $dem.find( State.demScreen ).first() // основной блок результатов
-			var dem_id = $dem.data( 'opts' ).pid
-			var answrs = Cookies.get( 'demPoll_' + dem_id )
-			var notVoteFlag = answrs === 'notVote' // Если уже проверялось, что пользователь не голосовал, не отправляем запрос еще раз
-			var isAnswrs = !(typeof answrs == 'undefined') && !notVoteFlag
+			const $screen = $dem.find( State.demScreen ).first() // main results block
+			const dem_id = $dem.data( 'opts' ).pid
+			const answrs = Cookies.get( 'demPoll_' + dem_id )
+			const notVoteFlag = answrs === 'notVote' // If we already checked that user hasn't voted, don't request again
+			const isAnswrs = !(typeof answrs == 'undefined') && !notVoteFlag
 
-			// обрабатываем экраны, какой показать и что делать при этом
-			var voteHTML = $the.find( State.demScreen + '-cache.vote' ).html()
-			var votedHTML = $the.find( State.demScreen + '-cache.voted' ).html()
+			// choose which screen to show and how to handle it
+			const voteHTML = $the.find( State.demScreen + '-cache.vote' ).html()
+			const votedHTML = $the.find( State.demScreen + '-cache.voted' ).html()
 
-			// если опрос закрыт должны кэшироваться только результаты голосования. Просто выходим.
+			// if poll is closed, only results should be cached. Exit.
 			if( ! voteHTML ){
 				return
 			}
 
-			// устанавливаем нужный кэш
-			// если закрыт просмотрт ответов
-			var setVoted = isAnswrs && votedHTML
+			// apply cached view
+			// if results view is available
+			const setVoted = isAnswrs && votedHTML
 			$screen.html( (setVoted ? votedHTML : voteHTML) + '<!--cache-->' )
 				.removeClass( 'vote voted' )
 				.addClass( setVoted ? 'voted' : 'vote' )
 
 			if( isAnswrs )
-				Dem.cacheSetAnswrs( $screen, answrs )
+				cacheSetAnswrs( $screen, answrs )
 
 			$screen.demInitActions( 1 )
 
@@ -380,22 +378,22 @@ function democracyInit(){
 			// If there are no votes in cookies and the plugin option keep_logs is enabled,
 			// send a request to the database for checking, by event (mouse over a block).
 			if( ! isAnswrs && $the.data( 'opt_logs' ) == 1 ){
-				var tmout
-				var notcheck__fn = function(){
+				let tmout
+				const notcheck__fn = function(){
 					clearTimeout( tmout )
 				}
-				var check__fn = function(){
+				const check__fn = function(){
 					tmout = setTimeout( function(){
-						// Выполняем один раз!
+						// Run once!
 						if( $dem.hasClass( 'checkAnswDone' ) )
 							return
 
 						$dem.addClass( 'checkAnswDone' )
 
-						var $forDotsLoader = $dem.find( '.dem-link' ).first()
+						const $forDotsLoader = $dem.find( '.dem-link' ).first()
 						$forDotsLoader.demSetLoader()
 
-						jQuery.post( Dem.ajaxurl,
+						jQuery.post( State.ajaxurl,
 							{
 								dem_pid: $dem.data( 'opts' ).pid,
 								dem_act: 'getVotedIds',
@@ -409,7 +407,7 @@ function democracyInit(){
 								}
 
 								$screen.html( votedHTML )
-								Dem.cacheSetAnswrs( $screen, reply )
+								cacheSetAnswrs( $screen, reply )
 
 								$screen.demInitActions()
 
@@ -428,6 +426,5 @@ function democracyInit(){
 
 		} )
 	}
-
 
 }

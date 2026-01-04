@@ -32,3 +32,6 @@
 - Commit messages typically use short prefixes like `IMP:`, `FIX:`, `NEW:`, `CHG:` or version tags like `v6.1.0`.
 - PRs should describe the user impact, list key files touched, and include screenshots/GIFs for admin UI changes.
 - If you change `assets/js/democracy.mjs`, rebuild and commit `assets/js/democracy.min.js` and its sourcemap.
+
+## Browser Support & Compatibility
+- Target modern browsers with ES module support; No IE11 support.

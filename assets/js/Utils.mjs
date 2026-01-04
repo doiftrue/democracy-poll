@@ -2,27 +2,22 @@ import State from './State.mjs'
 
 export default class Utils {
 
-	// Определяет высоту указанного элемента при свойстве - height:auto
+	// Determine the height when the element uses height:auto
 	static detectRealHeight( $el ){
-
-		// получим нужную высоту
-		var $_el = $el.clone().css( { height: 'auto' } ).insertBefore( $el ) // insertAfter не подходит - глюк какой-то
-		var realHeight = ($_el.css( 'box-sizing' ) === 'border-box') ? parseInt( $_el.css( 'height' ) ) : $_el.height()
+		// get the needed height
+		const $_el = $el.clone().css( { height: 'auto' } ).insertBefore( $el ) // insertAfter doesn't work here - some glitch
+		const realHeight = ($_el.css( 'box-sizing' ) === 'border-box') ? parseInt( $_el.css( 'height' ) ) : $_el.height()
 
 		$_el.remove()
-
-		//console.log($_el.css('height'), $_el.height(), $_el[0]);
-		//setTimeout(function(){ console.log($_el.css('height'), $_el.height(), $_el[0]); }, 0);
 
 		return realHeight
 	}
 
-	// Устанавливает высоту жестко
+	// Set height explicitly
 	static setHeight( $that, noanimation ){
+		const newH = Utils.detectRealHeight( $that )
 
-		var newH = Utils.detectRealHeight( $that )
-
-		// Анимируем до нужной выстоты
+		// Animate to the target height
 		if( !noanimation ){
 			$that.css( { opacity: 0 } )
 				.animate( { height: newH }, State.animSpeed, function(){
@@ -33,34 +28,34 @@ export default class Utils {
 			$that.css( { height: newH } )
 	}
 
-	// ограничение по высоте
+	// height limit
 	static setAnswsMaxHeight( $that ){
-
-		if( State.answMaxHeight === '-1' || State.answMaxHeight === '0' || !State.answMaxHeight )
+		if( State.answMaxHeight === '-1' || State.answMaxHeight === '0' || !State.answMaxHeight ){
 			return
+		}
 
-		var $el = $that.find( '.dem-vote, .dem-answers' ).first()
-		var maxHeight = parseInt( State.answMaxHeight )
+		const $el = $that.find( '.dem-vote, .dem-answers' ).first()
+		const maxHeight = parseInt( State.answMaxHeight )
 
-		$el.css( { 'max-height': 'none', 'overflow-y': 'visible' } ) // сбросим если установлено
+		$el.css( { 'max-height': 'none', 'overflow-y': 'visible' } ) // reset if set
 
-		var elHeight = ($el.css( 'box-sizing' ) === 'border-box') ? parseInt( $el.css( 'height' ) ) : $el.height()
+		const elHeight = ($el.css( 'box-sizing' ) === 'border-box') ? parseInt( $el.css( 'height' ) ) : $el.height()
 
-		// сворачиваем, если больше чем максимальная высота и разница больше 100px - 100px прятать не резон...
-		var diff = elHeight - maxHeight
+		// collapse if above max height and diff > 100px; hiding 100px isn't worth it
+		const diff = elHeight - maxHeight
 		if( diff > 100 ){
 			$el.css( 'position', 'relative' )
 
-			var $overlay = jQuery( '<span class="dem__collapser"><span class="arr"></span></span>' ).appendTo( $el )
-			var fn__expand = function(){
+			const $overlay = jQuery( '<span class="dem__collapser"><span class="arr"></span></span>' ).appendTo( $el )
+			const fn__expand = function(){
 				$overlay.addClass( 'expanded' ).removeClass( 'collapsed' )
 			}
-			var fn__collaps = function(){
+			const fn__collaps = function(){
 				$overlay.addClass( 'collapsed' ).removeClass( 'expanded' )
 			}
-			var timeout
+			let timeout
 
-			// не сворачиваем, если было развернуто
+			// don't collapse if it was expanded
 			if( $that.data( 'expanded' ) ){
 				fn__expand()
 			}
@@ -69,7 +64,7 @@ export default class Utils {
 				$el.height( maxHeight ).css( 'overflow-y', 'hidden' )
 			}
 
-			// клик на hover, чтобы не нужно было кликать для разворачивания
+			// trigger click on hover so user doesn't need to click to expand
 			$overlay
 				.on( 'mouseenter', function(){
 					if( !$that.data( 'expanded' ) )
@@ -89,7 +84,7 @@ export default class Utils {
 					fn__collaps()
 
 					$that.data( 'expanded', false )
-					$that.height( 'auto' ) // чтобы контейнер плавно передвигался вместе с внутяком, в конеце вернем ему высоту
+					$that.height( 'auto' ) // let container move smoothly with content; restore height at the end
 					$el.stop().css( 'overflow-y', 'hidden' ).animate( { height: maxHeight }, State.animSpeed, function(){
 						Utils.setHeight( $that, true )
 					} )
@@ -98,12 +93,11 @@ export default class Utils {
 				else {
 					fn__expand()
 
-					// определим высоту без скрытия
-					var newH = Utils.detectRealHeight( $el )
-					newH += 7 // запас для "добавить свой ответ"
+					// measure height without collapsing
+					const newH = Utils.detectRealHeight( $el ) + 7 // extra space for "add your answer"
 
 					$that.data( 'expanded', true )
-					$that.height( 'auto' ) // чтобы контейнер плавно передвигался вместе с внутяком, в конеце вернем ему высоту
+					$that.height( 'auto' ) // let container move smoothly with content; restore height at the end
 					$el.stop().animate( { height: newH }, State.animSpeed, function(){
 						Utils.setHeight( $that, true )
 						$el.css( 'overflow-y', 'visible' )
@@ -119,9 +113,9 @@ export default class Utils {
 	static maxAnswLimitInit(){
 
 		State.$dems.on( 'change', 'input[type="checkbox"]', function(){
-			var maxAnsws = jQuery( this ).closest( State.demmainsel ).data( 'opts' ).max_answs
-			var $checkboxs = jQuery( this ).closest( State.demScreen ).find( 'input[type="checkbox"]' )
-			var $checked = $checkboxs.filter( ':checked' ).length
+			const maxAnsws = jQuery( this ).closest( State.demmainsel ).data( 'opts' ).max_answs
+			const $checkboxs = jQuery( this ).closest( State.demScreen ).find( 'input[type="checkbox"]' )
+			const $checked = $checkboxs.filter( ':checked' ).length
 
 			if( $checked >= maxAnsws ){
 				$checkboxs.filter( ':not(:checked)' ).each( function(){
@@ -156,8 +150,8 @@ export default class Utils {
 
 	// dots loading animation: ...
 	static demLoadingDots( el ){
-		let isInput = (el.tagName.toLowerCase() === 'input')
-		let str = isInput ? el.value : el.innerHTML
+		const isInput = (el.tagName.toLowerCase() === 'input')
+		const str = isInput ? el.value : el.innerHTML
 
 		if( str.slice( -3 ) === '...' ){
 			el[isInput ? 'value' : 'innerHTML'] = str.slice( 0, -3 )
@@ -166,7 +160,7 @@ export default class Utils {
 			el[isInput ? 'value' : 'innerHTML'] += '.'
 		}
 
-		State.loader = setTimeout( () => Utils.demLoadingDots( el ), 200 )
+		State.loaderTm = setTimeout( () => Utils.demLoadingDots( el ), 200 )
 	}
 
 }
