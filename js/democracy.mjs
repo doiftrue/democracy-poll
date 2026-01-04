@@ -1,11 +1,9 @@
-includefile = '_js-cookie.js'
-
+import Cookies from 'js-cookie'
 
 // wait for jQuery
 document.addEventListener( 'DOMContentLoaded', democracyInit )
 
 function democracyInit(){
-
 	let demmainsel = '.democracy'
 	let $dems = jQuery( demmainsel )
 

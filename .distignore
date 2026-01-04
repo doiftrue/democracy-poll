@@ -12,6 +12,10 @@
 /.distignore
 /.editorconfig
 /.gitignore
+/gulpfile.js
+/package.json
+/package-lock.json
 /TODO.md
-_tmp
+/_tmp
+
 *.map
