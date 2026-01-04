@@ -55,7 +55,7 @@ class Options_CSS {
 		$radios = options()->checkradio_fname;
 
 		$out = '';
-		$styledir = plugin()->dir . '/styles';
+		$styledir = plugin()->dir . '/assets/styles';
 
 		$out .= $this->parse_css_import( "$styledir/$tpl" );
 		$out .= $radios ? "\n" . file_get_contents( "$styledir/checkbox-radio/$radios" ) : '';

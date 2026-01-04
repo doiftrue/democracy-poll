@@ -1,36 +1,33 @@
 import Cookies from 'js-cookie'
+import Utils from './Utils.mjs'
+import State from './State.mjs'
 
 // wait for jQuery
 document.addEventListener( 'DOMContentLoaded', democracyInit )
 
 function democracyInit(){
-	let demmainsel = '.democracy'
-	let $dems = jQuery( demmainsel )
-
-	if( ! $dems.length ){
+	State.$dems = jQuery( State.demmainsel )
+	if( ! State.$dems.length ){
 		return
 	}
 
-	let demScreen = '.dem-screen' // result container selector
-	let userAnswer = '.dem-add-answer-txt' // "free" answer field class
 	let $demLoader = jQuery( '.dem-loader:first' )
-	let loader
 	let Dem = {}
 
-	Dem.opts = $dems.first().data( 'opts' )
+	Dem.opts = State.$dems.first().data( 'opts' )
 	Dem.ajaxurl = Dem.opts.ajax_url
-	Dem.answMaxHeight = Dem.opts.answs_max_height
-	Dem.animSpeed = parseInt( Dem.opts.anim_speed )
+	State.answMaxHeight = Dem.opts.answs_max_height
+	State.animSpeed = parseInt( Dem.opts.anim_speed )
 	Dem.lineAnimSpeed = parseInt( Dem.opts.line_anim_speed )
 
 	// INIT (ждем функции) ---
 	setTimeout( function(){
 
 		// Основные события Democracy для всех блоков
-		let $demScreens = $dems.find( demScreen ).filter( ':visible' )
+		let $demScreens = State.$dems.find( State.demScreen ).filter( ':visible' )
 		let demScreensSetHeight = function(){
 			$demScreens.each( function(){
-				Dem.setHeight( jQuery( this ), 1 )
+				Utils.setHeight( jQuery( this ), 1 )
 			} )
 		}
 
@@ -40,7 +37,7 @@ function democracyInit(){
 
 		jQuery( window ).on( 'load', demScreensSetHeight ) // высота еще раз
 
-		Dem.maxAnswLimitInit() // ограничение выбора мульти ответов
+		Utils.maxAnswLimitInit() // ограничение выбора мульти ответов
 
 		/*
 		 * Обработка кэша.
@@ -81,22 +78,22 @@ function democracyInit(){
 			if( autoVote ) $this.find( '.dem-vote-button' ).hide()
 
 			// прячем внутряк если слишком много вариантов ответа
-			Dem.setAnswsMaxHeight( $this )
+			Utils.setAnswsMaxHeight( $this )
 
 			// анимация заполненных граф - line_animatin
 			if( Dem.lineAnimSpeed ){
 				$this.find( '.dem-fill' ).each( function(){
 					var $fill = jQuery( this )
-					//setTimeout(function(){ fill.style.width = was; }, Dem.animSpeed + 500); // на базе CSS transition - при сбросе тоже срабатывает и мешает...
+					//setTimeout(function(){ fill.style.width = was; }, State.animSpeed + 500); // на базе CSS transition - при сбросе тоже срабатывает и мешает...
 					setTimeout( function(){
 						$fill.animate( { width: $fill.data( 'width' ) }, Dem.lineAnimSpeed )
-					}, Dem.animSpeed, 'linear' )
+					}, State.animSpeed, 'linear' )
 				} )
 			}
 
 			// Устанавливает высоту жестко ------------
 			// Вешаем все на ресайз окна. Мобильники переворачиваются...
-			Dem.setHeight( $this, noanimation )
+			Utils.setHeight( $this, noanimation )
 
 			// событие сабмина формы
 			$this.find( 'form' ).on( 'submit', function( e ){
@@ -114,10 +111,10 @@ function democracyInit(){
 		const $the = this
 
 		if( $demLoader.length ){
-			$the.closest( demScreen ).append( $demLoader.clone().css( 'display', 'table' ) )
+			$the.closest( State.demScreen ).append( $demLoader.clone().css( 'display', 'table' ) )
 		}
 		else {
-			loader = setTimeout( () => Dem.demLoadingDots( $the[0] ), 50 )
+			State.loader = setTimeout( () => Utils.demLoadingDots( $the[0] ), 50 )
 		}
 
 		return this
@@ -126,9 +123,9 @@ function democracyInit(){
 	jQuery.fn.demUnsetLoader = function(){
 
 		if( $demLoader.length )
-			this.closest( demScreen ).find( '.dem-loader' ).remove()
+			this.closest( State.demScreen ).find( '.dem-loader' ).remove()
 		else
-			clearTimeout( loader )
+			clearTimeout( State.loader )
 
 		return this
 	}
@@ -137,9 +134,9 @@ function democracyInit(){
 	jQuery.fn.demAddAnswer = function(){
 
 		var $the = this.first()
-		var $demScreen = $the.closest( demScreen )
+		var $demScreen = $the.closest( State.demScreen )
 		var isMultiple = $demScreen.find( '[type=checkbox]' ).length > 0
-		var $input = jQuery( '<input type="text" class="' + userAnswer.replace( /\./, '' ) + '" value="">' ) // поле добавления ответа
+		var $input = jQuery( '<input type="text" class="' + State.userAnswer.replace( /\./, '' ) + '" value="">' ) // поле добавления ответа
 
 		// покажем кнопку голосования
 		$demScreen.find( '.dem-vote-button' ).show()
@@ -149,7 +146,7 @@ function democracyInit(){
 
 			jQuery( this ).on( 'click', function(){
 				$the.fadeIn( 300 )
-				jQuery( userAnswer ).remove()
+				jQuery( State.userAnswer ).remove()
 			} )
 
 			if( 'radio' === jQuery( this )[0].type )
@@ -162,7 +159,7 @@ function democracyInit(){
 		// добавим кнопку удаления пользовательского текста
 		if( isMultiple ){
 
-			var $ua = $demScreen.find( userAnswer )
+			var $ua = $demScreen.find( State.userAnswer )
 
 			jQuery( '<span class="dem-add-answer-close">×</span>' )
 				.insertBefore( $ua )
@@ -182,7 +179,7 @@ function democracyInit(){
 	jQuery.fn.demCollectAnsw = function(){
 		var $form = this.closest( 'form' )
 		var $answers = $form.find( '[type=checkbox],[type=radio],[type=text]' )
-		var userText = $form.find( userAnswer ).val()
+		var userText = $form.find( State.userAnswer ).val()
 		var answ = []
 		var $checkbox = $answers.filter( '[type=checkbox]:checked' )
 
@@ -213,7 +210,7 @@ function democracyInit(){
 	jQuery.fn.demDoAction = function( action ){
 
 		var $the = this.first()
-		var $dem = $the.closest( demmainsel )
+		var $dem = $the.closest( State.demmainsel )
 		var data = {
 			dem_pid: $dem.data( 'opts' ).pid,
 			dem_act: action,
@@ -229,7 +226,7 @@ function democracyInit(){
 		if( 'vote' === action ){
 			data.answer_ids = $the.demCollectAnsw()
 			if( ! data.answer_ids ){
-				Dem.demShake( $the[0] )
+				Utils.demShake( $the[0] )
 				return false
 			}
 		}
@@ -250,7 +247,7 @@ function democracyInit(){
 			$the.demUnsetLoader()
 
 			// устанавливаем все события
-			$the.closest( demScreen ).html( respond ).demInitActions()
+			$the.closest( State.demScreen ).html( respond ).demInitActions()
 
 			// прокрутим к началу блока опроса
 			setTimeout( function(){
@@ -340,24 +337,24 @@ function democracyInit(){
 			var $the = jQuery( this )
 
 			// ищем главный блок
-			var $dem = $the.prevAll( demmainsel + ':first' )
+			var $dem = $the.prevAll( State.demmainsel + ':first' )
 			if( ! $dem.length )
-				$dem = $the.closest( demmainsel )
+				$dem = $the.closest( State.demmainsel )
 
 			if( ! $dem.length ){
 				console.warn( 'Democracy: Main dem div not found' )
 				return
 			}
 
-			var $screen = $dem.find( demScreen ).first() // основной блок результатов
+			var $screen = $dem.find( State.demScreen ).first() // основной блок результатов
 			var dem_id = $dem.data( 'opts' ).pid
 			var answrs = Cookies.get( 'demPoll_' + dem_id )
 			var notVoteFlag = answrs === 'notVote' // Если уже проверялось, что пользователь не голосовал, не отправляем запрос еще раз
 			var isAnswrs = !(typeof answrs == 'undefined') && !notVoteFlag
 
 			// обрабатываем экраны, какой показать и что делать при этом
-			var voteHTML = $the.find( demScreen + '-cache.vote' ).html()
-			var votedHTML = $the.find( demScreen + '-cache.voted' ).html()
+			var voteHTML = $the.find( State.demScreen + '-cache.vote' ).html()
+			var votedHTML = $the.find( State.demScreen + '-cache.voted' ).html()
 
 			// если опрос закрыт должны кэшироваться только результаты голосования. Просто выходим.
 			if( ! voteHTML ){
@@ -432,175 +429,5 @@ function democracyInit(){
 		} )
 	}
 
-
-	// ФУНКЦИИ ---
-
-	// Определяет высоту указанного элемента при свойстве - height:auto
-	Dem.detectRealHeight = function( $el ){
-
-		// получим нужную высоту
-		var $_el = $el.clone().css( { height: 'auto' } ).insertBefore( $el ) // insertAfter не подходит - глюк какой-то
-		var realHeight = ($_el.css( 'box-sizing' ) === 'border-box') ? parseInt( $_el.css( 'height' ) ) : $_el.height()
-
-		$_el.remove()
-
-		//console.log($_el.css('height'), $_el.height(), $_el[0]);
-		//setTimeout(function(){ console.log($_el.css('height'), $_el.height(), $_el[0]); }, 0);
-
-		return realHeight
-	}
-
-	// Устанавливает высоту жестко
-	Dem.setHeight = function( $that, noanimation ){
-
-		var newH = Dem.detectRealHeight( $that )
-
-		// Анимируем до нужной выстоты
-		if( !noanimation ){
-			$that.css( { opacity: 0 } )
-				.animate( { height: newH }, Dem.animSpeed, function(){
-					jQuery( this ).animate( { opacity: 1 }, Dem.animSpeed * 1.5 )
-				} )
-		}
-		else
-			$that.css( { height: newH } )
-	}
-
-	// ограничение по высоте
-	Dem.setAnswsMaxHeight = function( $that ){
-
-		if( Dem.answMaxHeight === '-1' || Dem.answMaxHeight === '0' || !Dem.answMaxHeight )
-			return
-
-		var $el = $that.find( '.dem-vote, .dem-answers' ).first()
-		var maxHeight = /*parseInt( $el.css('max-height') ) ||*/ parseInt( Dem.answMaxHeight )
-
-		$el.css( { 'max-height': 'none', 'overflow-y': 'visible' } ) // сбросим если установлено
-
-		var elHeight = ($el.css( 'box-sizing' ) === 'border-box') ? parseInt( $el.css( 'height' ) ) : $el.height()
-
-		// сворачиваем, если больше чем максимальная высота и разница больше 100px - 100px прятать не резон...
-		var diff = elHeight - maxHeight
-		if( diff > 100 ){
-			$el.css( 'position', 'relative' )
-
-			var $overlay = jQuery( '<span class="dem__collapser"><span class="arr"></span></span>' ).appendTo( $el )
-			var fn__expand = function(){
-				$overlay.addClass( 'expanded' ).removeClass( 'collapsed' )
-			}
-			var fn__collaps = function(){
-				$overlay.addClass( 'collapsed' ).removeClass( 'expanded' )
-			}
-			var timeout
-
-			// не сворачиваем, если было развернуто
-			if( $that.data( 'expanded' ) ){
-				fn__expand()
-			}
-			else {
-				fn__collaps()
-				$el.height( maxHeight ).css( 'overflow-y', 'hidden' )
-			}
-
-			// клик на hover, чтобы не нужно было кликать для разворачивания
-			$overlay
-				.on( 'mouseenter', function(){
-					if( !$that.data( 'expanded' ) )
-						timeout = setTimeout( function(){
-							$overlay.trigger( 'click' )
-						}, 1000 )
-				} )
-				.on( 'mouseleave', function(){
-					clearTimeout( timeout )
-				} )
-
-			$overlay.on( 'click', function(){
-				clearTimeout( timeout )
-
-				// collapse
-				if( $that.data( 'expanded' ) ){
-					fn__collaps()
-
-					$that.data( 'expanded', false )
-					$that.height( 'auto' ) // чтобы контейнер плавно передвигался вместе с внутяком, в конеце вернем ему высоту
-					$el.stop().css( 'overflow-y', 'hidden' ).animate( { height: maxHeight }, Dem.animSpeed, function(){
-						Dem.setHeight( $that, true )
-					} )
-				}
-				// expand
-				else {
-					fn__expand()
-
-					// определим высоту без скрытия
-					var newH = Dem.detectRealHeight( $el )
-					newH += 7 // запас для "добавить свой ответ"
-
-					$that.data( 'expanded', true )
-					$that.height( 'auto' ) // чтобы контейнер плавно передвигался вместе с внутяком, в конеце вернем ему высоту
-					$el.stop().animate( { height: newH }, Dem.animSpeed, function(){
-						Dem.setHeight( $that, true )
-						$el.css( 'overflow-y', 'visible' )
-
-					} )
-				}
-			} )
-		}
-
-	}
-
-	// max answers limit
-	Dem.maxAnswLimitInit = function(){
-
-		$dems.on( 'change', 'input[type="checkbox"]', function(){
-
-			var maxAnsws = jQuery( this ).closest( demmainsel ).data( 'opts' ).max_answs
-			var $checkboxs = jQuery( this ).closest( demScreen ).find( 'input[type="checkbox"]' )
-			var $checked = $checkboxs.filter( ':checked' ).length
-
-			if( $checked >= maxAnsws ){
-				$checkboxs.filter( ':not(:checked)' ).each( function(){
-					jQuery( this ).prop( 'disabled', true ).closest( 'li' ).addClass( 'dem-disabled' )
-				} )
-			}
-			else {
-				$checkboxs.each( function(){
-					jQuery( this ).prop( 'disabled', false ).closest( 'li' ).removeClass( 'dem-disabled' )
-				} )
-			}
-		} )
-	}
-
-	Dem.demShake = function( el ){
-		const position = window.getComputedStyle( el ).position
-		if( ! position || position === 'static' ){
-			el.style.position = 'relative'
-		}
-
-		const keyframes = [
-			{ left: '0px' },
-			{ left: '-10px', offset: 0.2 },
-			{ left: '10px', offset: 0.40 },
-			{ left: '-10px', offset: 0.60 },
-			{ left: '10px', offset: 0.80 },
-			{ left: '0px', offset: 1 }
-		]
-		const timing = { duration: 500, iterations: 1, easing: 'linear' }
-		el.animate( keyframes, timing )
-	}
-
-	// dots loading animation: ...
-	Dem.demLoadingDots = function( el ){
-		let isInput = (el.tagName.toLowerCase() === 'input')
-		let str = isInput ? el.value : el.innerHTML
-
-		if( str.slice( -3 ) === '...' ){
-			el[isInput ? 'value' : 'innerHTML'] = str.slice( 0, -3 )
-		}
-		else{
-			el[isInput ? 'value' : 'innerHTML'] += '.'
-		}
-
-		loader = setTimeout( () => Dem.demLoadingDots( el ), 200 )
-	}
 
 }

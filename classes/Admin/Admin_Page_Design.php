@@ -191,7 +191,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 						</div>
 						<?php
 						$data = [];
-						foreach( glob( plugin()->dir . '/styles/checkbox-radio/*' ) as $file ){
+						foreach( glob( plugin()->dir . '/assets/styles/checkbox-radio/*' ) as $file ){
 							if( is_dir( $file ) ){
 								continue;
 							}
@@ -258,7 +258,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 							<?php
 							$data = [];
 							$i = 0;
-							foreach( glob( plugin()->dir . '/styles/buttons/*' ) as $file ){
+							foreach( glob( plugin()->dir . '/assets/styles/buttons/*' ) as $file ){
 								if( is_dir( $file ) ){
 									continue;
 								}
@@ -373,7 +373,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 							<br>
 							<?php
 							$data = [];
-							foreach( glob( plugin()->dir . '/styles/loaders/*' ) as $file ){
+							foreach( glob( plugin()->dir . '/assets/styles/loaders/*' ) as $file ){
 								if( is_dir( $file ) ){
 									continue;
 								}
@@ -485,7 +485,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 	 */
 	protected function _get_styles_files(): array {
 		$arr = [];
-		foreach( glob( plugin()->dir . '/styles/*.css' ) as $file ){
+		foreach( glob( plugin()->dir . '/assets/styles/*.css' ) as $file ){
 			if( preg_match( '~\.min~', basename( $file ) ) ){
 				continue;
 			}

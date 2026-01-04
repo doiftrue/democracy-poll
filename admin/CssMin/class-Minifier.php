@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Latest commit 3cbf557 on Jan 15, 2018
  */

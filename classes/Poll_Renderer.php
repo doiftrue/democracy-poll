@@ -89,7 +89,7 @@ class Poll_Renderer {
 		if( options()->loader_fname ){
 			static $loader; // оптимизация, чтобы один раз выводился код на странице
 			if( ! $loader ){
-				$loader = '<div class="dem-loader"><div>' . file_get_contents( plugin()->dir . '/styles/loaders/' . options()->loader_fname ) . '</div></div>';
+				$loader = '<div class="dem-loader"><div>' . file_get_contents( plugin()->dir . '/assets/styles/loaders/' . options()->loader_fname ) . '</div></div>';
 				$html .= $loader;
 			}
 		}

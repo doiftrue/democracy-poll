@@ -28,8 +28,8 @@ process.on( 'SIGINT', function(){
 
 let rollupCache
 function bundleJs( isBuild ){
-	const input = 'js/democracy.mjs'
-	const dest = 'js/democracy.min.js'
+	const input = 'assets/js/democracy.mjs'
+	const dest = 'assets/js/democracy.min.js'
 
 	return rollupStream( {
 		input  : input,

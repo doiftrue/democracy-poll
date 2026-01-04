@@ -16,6 +16,7 @@
 /package.json
 /package-lock.json
 /TODO.md
+/AGENTS.md
 /_tmp
 
 *.map

@@ -67,12 +67,12 @@ class Poll_Utils {
 			add_action( ( is_admin() ? 'admin_footer' : 'wp_footer' ), [ __CLASS__, '_inline_js' ], 0 );
 		}
 		else{
-			wp_enqueue_script( 'democracy', plugin()->url . '/js/democracy.min.js', [], plugin()->ver, true );
+			wp_enqueue_script( 'democracy', plugin()->url . '/assets/js/democracy.min.js', [], plugin()->ver, true );
 		}
 	}
 
 	public static function _inline_js(): void {
-		echo "\n" . '<script id="democracy-poll">' . file_get_contents( plugin()->dir . '/js/democracy.min.js' ) . '</script>' . "\n";
+		echo "\n" . '<script id="democracy-poll">' . file_get_contents( plugin()->dir . '/assets/js/democracy.min.js' ) . '</script>' . "\n";
 	}
 
 }

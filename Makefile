@@ -3,17 +3,17 @@ define php_run
 endef
 
 php.connect:
-	$(call php_run, cd public_html/wp-content/plugins/ajax-simply; bash)
+	$(call php_run, cd public_html/wp-content/plugins/democracy-poll; bash)
 
 phpunit:
-	$(call php_run, cd public_html/wp-content/plugins/ajax-simply; composer run phpunit)
+	$(call php_run, cd public_html/wp-content/plugins/democracy-poll; composer run phpunit)
 phpunit_xdebug:
-	$(call php_run, cd public_html/wp-content/plugins/ajax-simply; composer run phpunit_xdebug)
+	$(call php_run, cd public_html/wp-content/plugins/democracy-poll; composer run phpunit_xdebug)
 
 composer_install:
-	$(call php_run, cd public_html/wp-content/plugins/ajax-simply; composer install)
+	$(call php_run, cd public_html/wp-content/plugins/democracy-poll; composer install)
 composer_update:
-	$(call php_run, cd public_html/wp-content/plugins/ajax-simply; composer update)
+	$(call php_run, cd public_html/wp-content/plugins/democracy-poll; composer update)
 
 
 define node_run
