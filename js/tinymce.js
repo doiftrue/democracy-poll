@@ -1,12 +1,8 @@
-
 document.addEventListener( 'DOMContentLoaded', function(){
 
 	tinymce.PluginManager.add( 'demTiny', function( editor ){
-
 		editor.addCommand( 'demTinyInsert', function(){
-
 			let pollID = + prompt( tinymce.translate( 'Insert Poll ID' ) )
-
 			if( pollID > 0 ){
 				editor.insertContent( '[democracy id=' + pollID + ']' )
 			}
@@ -20,7 +16,5 @@ document.addEventListener( 'DOMContentLoaded', function(){
 				tinyMCE.activeEditor.execCommand( 'demTinyInsert' )
 			}
 		} )
-
 	} )
-
 } )
