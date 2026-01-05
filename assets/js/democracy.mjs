@@ -26,7 +26,7 @@ function democracyInit(){
 		const $demScreens = State.$dems.find( State.demScreen ).filter( ':visible' )
 		const demScreensSetHeight = function(){
 			$demScreens.each( function(){
-				Utils.setHeight( jQuery( this ), 1 )
+				this.style.height = Utils.detectRealHeight( this ) + 'px'
 			} )
 		}
 
@@ -76,7 +76,7 @@ function democracyInit(){
 			if( autoVote ) $this.find( '.dem-vote-button' ).hide()
 
 			// collapse content if there are too many answers
-			Utils.setAnswsMaxHeight( $this )
+			Utils.setAnswsMaxHeight( $this[0] )
 
 			// animate filled bars - line_animation
 			if( State.lineAnimSpeed ){
@@ -91,7 +91,7 @@ function democracyInit(){
 
 			// Set height explicitly ------------
 			// Bind to window resize (mobile rotation, etc.)
-			Utils.setHeight( $this, noanimation )
+			Utils.setHeight( this, noanimation )
 
 			// form submit event
 			$this.find( 'form' ).on( 'submit', function( e ){

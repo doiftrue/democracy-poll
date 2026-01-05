@@ -11,7 +11,7 @@ const { nodeResolve } = require('@rollup/plugin-node-resolve')
 
 
 const build = gulp.series( bundleJs.bind( null, true ) )
-const watch = gulp.series( build, watchFiles )
+const watch = gulp.series( bundleJs.bind( null, false ), watchFiles )
 
 // Export for CLI
 exports.build = build;
@@ -79,7 +79,7 @@ function bundleJs( isBuild ){
 
 function watchFiles(){
 	gulp.watch(
-		['js/**/*.mjs', '!js/**/*.min.js'],
+		['assets/js/**/*.mjs', '!**/*.min.js'],
 		{ ignoreInitial: true },
 		bundleJs.bind( null, false )
 	)
