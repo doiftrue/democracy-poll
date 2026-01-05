@@ -200,7 +200,7 @@ export default class Utils {
 	}
 
 	// dots loading animation: ...
-	static demLoadingDots( el ){
+	static loadingDots( el ){
 		const isInput = (el.tagName.toLowerCase() === 'input')
 		const str = isInput ? el.value : el.innerHTML
 
@@ -211,7 +211,7 @@ export default class Utils {
 			el[isInput ? 'value' : 'innerHTML'] += '.'
 		}
 
-		State.loaderTm = setTimeout( () => Utils.demLoadingDots( el ), 200 )
+		State.loaderTm = setTimeout( () => Utils.loadingDots( el ), 200 )
 	}
 
 	static animateHeight( el, toHeight, duration, onFinish ){

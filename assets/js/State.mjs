@@ -5,8 +5,9 @@ export default class State {
 	static demScreen = '.dem-screen' // result container selector
 	static userAnswer = '.dem-add-answer-txt' // "free" answer field class
 
-	static loaderTm
 	static $dems
+	static $loader
+	static loaderTm
 
 	static ajaxurl
 

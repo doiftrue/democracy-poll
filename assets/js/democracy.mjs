@@ -2,7 +2,6 @@ import Cookies from 'js-cookie'
 import Utils from './Utils.mjs'
 import State from './State.mjs'
 
-// wait for jQuery
 document.addEventListener( 'DOMContentLoaded', democracyInit )
 
 function democracyInit(){
@@ -11,7 +10,7 @@ function democracyInit(){
 		return
 	}
 
-	const $demLoader = jQuery( '.dem-loader:first' )
+	State.$loader = document.querySelector( '.dem-loader' )
 
 	const opts = State.$dems.first().data( 'opts' )
 	State.ajaxurl = opts.ajax_url
@@ -19,9 +18,10 @@ function democracyInit(){
 	State.animSpeed = parseInt( opts.anim_speed )
 	State.lineAnimSpeed = parseInt( opts.line_anim_speed )
 
-	// INIT (wait for functions) ---
-	setTimeout( function(){
+	queueMicrotask( init ) // wait for functions
+	democracyCacheInit()
 
+	function init(){
 		// Core Democracy events for all blocks
 		const $demScreens = State.$dems.find( State.demScreen ).filter( ':visible' )
 		const demScreensSetHeight = function(){
@@ -45,11 +45,9 @@ function democracyInit(){
 		 */
 		const $cache = jQuery( '.dem-cache-screens' )
 		if( $cache.length > 0 ){
-			//console.log('Democracy cache gear ON');
 			$cache.demCacheInit()
 		}
-
-	}, 1 )
+	}
 
 	// Initialize all events for each poll: clicks, height, button visibility
 	// applies to '.dem-screen'
@@ -108,11 +106,11 @@ function democracyInit(){
 	jQuery.fn.demSetLoader = function(){
 		const $the = this
 
-		if( $demLoader.length ){
-			$the.closest( State.demScreen ).append( $demLoader.clone().css( 'display', 'table' ) )
+		if( State.$loader ){
+			$the.closest( State.demScreen ).append( jQuery(State.$loader).clone().css( 'display', 'table' ) )
 		}
 		else {
-			State.loaderTm = setTimeout( () => Utils.demLoadingDots( $the[0] ), 50 )
+			State.loaderTm = setTimeout( () => Utils.loadingDots( $the[0] ), 50 )
 		}
 
 		return this
@@ -120,7 +118,7 @@ function democracyInit(){
 
 	jQuery.fn.demUnsetLoader = function(){
 
-		if( $demLoader.length )
+		if( State.$loader )
 			this.closest( State.demScreen ).find( '.dem-loader' ).remove()
 		else
 			clearTimeout( State.loaderTm )
@@ -216,7 +214,7 @@ function democracyInit(){
 		}
 
 		if( typeof data.dem_pid === 'undefined' ){
-			console.log( 'Poll id is not defined!' )
+			console.warn( 'Poll id is not defined!' )
 			return false
 		}
 
@@ -256,9 +254,9 @@ function democracyInit(){
 		return false
 	}
 
+}
 
-	// CACHE ---
-
+function democracyCacheInit(){
 	// show notice
 	jQuery.fn.demCacheShowNotice = function( type ){
 
@@ -273,9 +271,7 @@ function democracyInit(){
 
 		$the.prepend( $notice.show() )
 		// hide
-		setTimeout( function(){
-			$notice.slideUp( 'slow' )
-		}, 10000 )
+		setTimeout( () => $notice.slideUp( 'slow' ), 10000 )
 
 		return this
 	}
@@ -426,5 +422,4 @@ function democracyInit(){
 
 		} )
 	}
-
 }
