@@ -32,9 +32,9 @@ function democracyInit(){
 
 		$demScreens.demInitActions( 1 )
 
-		jQuery( window ).on( 'resize.demsetheight', demScreensSetHeight ) // update height on resize
+		window.addEventListener( 'resize', demScreensSetHeight ) // update height on resize
 
-		jQuery( window ).on( 'load', demScreensSetHeight ) // update height once more
+		window.addEventListener( 'load', demScreensSetHeight ) // update height once more
 
 		Utils.maxAnswLimitInit() // limit for multi-answer selection
 
@@ -107,7 +107,9 @@ function democracyInit(){
 		const $the = this
 
 		if( State.$loader ){
-			$the.closest( State.demScreen ).append( jQuery(State.$loader).clone().css( 'display', 'table' ) )
+			const loaderClone = State.$loader.cloneNode( true )
+			loaderClone.style.display = 'table'
+			$the.closest( State.demScreen ).append( loaderClone )
 		}
 		else {
 			State.loaderTm = setTimeout( () => Utils.loadingDots( $the[0] ), 50 )
