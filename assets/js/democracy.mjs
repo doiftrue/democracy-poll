@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie'
 import Utils from './Utils.mjs'
 import State from './State.mjs'
+import Loader from './Loader.mjs'
 
 document.addEventListener( 'DOMContentLoaded', democracyInit )
 
@@ -20,7 +21,6 @@ function democracyInit(){
 
 	queueMicrotask( init ) // wait for functions
 	democracyCacheFuncs()
-	democracyLoaderFuncs()
 
 	function init(){
 		// Core Democracy events for all blocks
@@ -216,9 +216,9 @@ function democracyInit(){
 		}
 
 		// AJAX
-		$the.demSetLoader()
+		Loader.setLoader( $the[0] )
 		jQuery.post( State.ajaxurl, data, function( respond ){
-			$the.demUnsetLoader()
+			Loader.unsetLoader( $the[0] )
 
 			// rebind events
 			$the.closest( State.screenSel ).html( respond ).demInitActions()
@@ -232,33 +232,6 @@ function democracyInit(){
 		return false
 	}
 
-}
-
-function democracyLoaderFuncs(){
-
-	jQuery.fn.demSetLoader = function(){
-		const $the = this
-
-		if( State.$loader ){
-			const loaderClone = State.$loader.cloneNode( true )
-			loaderClone.style.display = 'table'
-			$the.closest( State.screenSel ).append( loaderClone )
-		}
-		else{
-			State.loaderTm = setTimeout( () => Utils.loadingDots( $the[0] ), 50 )
-		}
-
-		return this
-	}
-
-	jQuery.fn.demUnsetLoader = function(){
-		if( State.$loader )
-			this.closest( State.screenSel ).find( '.dem-loader' ).remove()
-		else
-			clearTimeout( State.loaderTm )
-
-		return this
-	}
 }
 
 function democracyCacheFuncs(){
@@ -392,7 +365,7 @@ function democracyCacheFuncs(){
 						$dem.addClass( 'checkAnswDone' )
 
 						const $forDotsLoader = $dem.find( '.dem-link' ).first()
-						$forDotsLoader.demSetLoader()
+						Loader.setLoader( $forDotsLoader[0] )
 
 						jQuery.post( State.ajaxurl,
 							{
@@ -401,7 +374,7 @@ function democracyCacheFuncs(){
 								action : 'dem_ajax'
 							},
 							function( reply ){
-								$forDotsLoader.demUnsetLoader()
+								Loader.unsetLoader( $forDotsLoader[0] )
 								// exit if there are no answers
 								if( ! reply ){
 									return;

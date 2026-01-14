@@ -7,7 +7,7 @@ export default class State {
 
 	static $polls
 	static $loader
-	static loaderTm
+	static loaderTmr
 
 	static ajaxurl
 

@@ -211,7 +211,7 @@ export default class Utils {
 			el[isInput ? 'value' : 'innerHTML'] += '.'
 		}
 
-		State.loaderTm = setTimeout( () => Utils.loadingDots( el ), 200 )
+		State.loaderTmr = setTimeout( () => Utils.loadingDots( el ), 200 )
 	}
 
 	static animateHeight( el, toHeight, duration, onFinish ){
