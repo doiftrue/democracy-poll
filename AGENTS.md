@@ -2,12 +2,14 @@
 
 ## Project Structure & Module Organization
 - `democracy.php` is the main plugin bootstrap; `autoload.php` and `uninstall.php` handle loading and cleanup.
-- `classes/` holds most PHP logic (namespaced classes); `includes/` contains supporting functions and helpers.
+- `classes/` holds most PHP logic (namespaced classes).
+- `includes/` contains supporting functions and helpers.
 - `admin/` contains admin UI PHP and assets.
 - `assets/styles/` stores CSS themes.
 - `assets/js/` stores ES modules and the compiled bundle.
 - `languages/` contains translations and the POT build script.
-- `tests/unit/` contains PHPUnit tests and bootstrap; `vendor/` and `node_modules/` are generated dependencies.
+- `tests/unit/` contains PHPUnit tests and bootstrap.
+- `vendor/` and `node_modules/` are generated dependencies.
 
 ## Build, Test, and Development Commands
 - `composer install` installs PHP dev dependencies.
@@ -20,7 +22,7 @@
 
 ## Coding Style & Naming Conventions
 - PHP follows WordPress conventions: tabs for indentation, `snake_case` for functions, `StudlyCaps` for classes, `UPPER_SNAKE` for constants.
-- JS uses ES modules in `assets/js/*.mjs`; keep `assets/js/democracy.min.js` as a build artifact.
+- JS uses ES modules. `assets/js/democracy.mjs` is main file; `assets/js/democracy.min.js` is build artifact of main file.
 - CSS themes in `styles/` are lower-case filenames; avoid inline edits to generated assets.
 
 ## Testing Guidelines
@@ -30,8 +32,8 @@
 
 ## Commit & Pull Request Guidelines
 - Commit messages typically use short prefixes like `IMP:`, `FIX:`, `NEW:`, `CHG:` or version tags like `v6.1.0`.
-- PRs should describe the user impact, list key files touched, and include screenshots/GIFs for admin UI changes.
-- If you change `assets/js/democracy.mjs`, rebuild and commit `assets/js/democracy.min.js` and its sourcemap.
+- PRs should describe the user impact and include screenshots/GIFs for admin UI changes.
+- If you change `assets/js/democracy.mjs`, rebuild and commit `assets/js/democracy.min.js`.
 
 ## Browser Support & Compatibility
 - Target modern browsers with ES module support; No IE11 support.

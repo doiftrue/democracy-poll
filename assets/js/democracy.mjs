@@ -5,25 +5,26 @@ import State from './State.mjs'
 document.addEventListener( 'DOMContentLoaded', democracyInit )
 
 function democracyInit(){
-	State.$dems = jQuery( State.demmainsel )
-	if( ! State.$dems.length ){
+	State.$polls = jQuery( State.mainSel )
+	if( ! State.$polls.length ){
 		return
 	}
 
 	State.$loader = document.querySelector( '.dem-loader' )
 
-	const opts = State.$dems.first().data( 'opts' )
+	const opts = State.$polls.first().data( 'opts' )
 	State.ajaxurl = opts.ajax_url
 	State.answMaxHeight = opts.answs_max_height
 	State.animSpeed = parseInt( opts.anim_speed )
 	State.lineAnimSpeed = parseInt( opts.line_anim_speed )
 
 	queueMicrotask( init ) // wait for functions
-	democracyCacheInit()
+	democracyCacheFuncs()
+	democracyLoaderFuncs()
 
 	function init(){
 		// Core Democracy events for all blocks
-		const $demScreens = State.$dems.find( State.demScreen ).filter( ':visible' )
+		const $demScreens = State.$polls.find( State.screenSel ).filter( ':visible' )
 		const demScreensSetHeight = function(){
 			$demScreens.each( function(){
 				this.style.height = Utils.detectRealHeight( this ) + 'px'
@@ -70,7 +71,7 @@ function democracyInit(){
 			} )
 
 			// Hide the submit button where needed ------------
-			const autoVote = !!$this.find( 'input[type=radio][data-dem-act=vote]' ).first().length
+			const autoVote = !! $this.find( 'input[type=radio][data-dem-act=vote]' ).first().length
 			if( autoVote ) $this.find( '.dem-vote-button' ).hide()
 
 			// collapse content if there are too many answers
@@ -102,39 +103,14 @@ function democracyInit(){
 		} )
 	}
 
-	// Loader
-	jQuery.fn.demSetLoader = function(){
-		const $the = this
-
-		if( State.$loader ){
-			const loaderClone = State.$loader.cloneNode( true )
-			loaderClone.style.display = 'table'
-			$the.closest( State.demScreen ).append( loaderClone )
-		}
-		else {
-			State.loaderTm = setTimeout( () => Utils.loadingDots( $the[0] ), 50 )
-		}
-
-		return this
-	}
-
-	jQuery.fn.demUnsetLoader = function(){
-
-		if( State.$loader )
-			this.closest( State.demScreen ).find( '.dem-loader' ).remove()
-		else
-			clearTimeout( State.loaderTm )
-
-		return this
-	}
 
 	// Add user answer (link)
 	jQuery.fn.demAddAnswer = function(){
 
 		const $the = this.first()
-		const $demScreen = $the.closest( State.demScreen )
+		const $demScreen = $the.closest( State.screenSel )
 		const isMultiple = $demScreen.find( '[type=checkbox]' ).length > 0
-		const $input = jQuery( '<input type="text" class="' + State.userAnswer.replace( /\./, '' ) + '" value="">' ) // input for adding an answer
+		const $input = jQuery( '<input type="text" class="' + State.userAnswerSel.replace( /\./, '' ) + '" value="">' ) // input for adding an answer
 
 		// show vote button
 		$demScreen.find( '.dem-vote-button' ).show()
@@ -144,7 +120,7 @@ function democracyInit(){
 
 			jQuery( this ).on( 'click', function(){
 				$the.fadeIn( 300 )
-				jQuery( State.userAnswer ).remove()
+				jQuery( State.userAnswerSel ).remove()
 			} )
 
 			if( 'radio' === jQuery( this )[0].type )
@@ -157,7 +133,7 @@ function democracyInit(){
 		// add a button to remove the user-entered text
 		if( isMultiple ){
 
-			const $ua = $demScreen.find( State.userAnswer )
+			const $ua = $demScreen.find( State.userAnswerSel )
 
 			jQuery( '<span class="dem-add-answer-close">×</span>' )
 				.insertBefore( $ua )
@@ -177,7 +153,7 @@ function democracyInit(){
 	jQuery.fn.demCollectAnsw = function(){
 		const $form = this.closest( 'form' )
 		const $answers = $form.find( '[type=checkbox],[type=radio]' )
-		const userText = $form.find( State.userAnswer ).val()
+		const userText = $form.find( State.userAnswerSel ).val()
 		let answ = []
 		const $checkbox = $answers.filter( '[type=checkbox]:checked' )
 
@@ -188,7 +164,7 @@ function democracyInit(){
 			} )
 		}
 		// single
-		else {
+		else{
 			const str = $answers.filter( '[type=radio]:checked' )
 			if( str.length )
 				answ.push( str.val() )
@@ -208,7 +184,7 @@ function democracyInit(){
 	jQuery.fn.demDoAction = function( action ){
 
 		const $the = this.first()
-		const $dem = $the.closest( State.demmainsel )
+		const $dem = $the.closest( State.mainSel )
 		const data = {
 			dem_pid: $dem.data( 'opts' ).pid,
 			dem_act: action,
@@ -230,7 +206,7 @@ function democracyInit(){
 		}
 
 		// revote button confirmation
-		if( 'delVoted' === action && !confirm( $the.data( 'confirm-text' ) ) )
+		if( 'delVoted' === action && ! confirm( $the.data( 'confirm-text' ) ) )
 			return false
 
 		// add visitor answer button
@@ -245,7 +221,7 @@ function democracyInit(){
 			$the.demUnsetLoader()
 
 			// rebind events
-			$the.closest( State.demScreen ).html( respond ).demInitActions()
+			$the.closest( State.screenSel ).html( respond ).demInitActions()
 
 			// scroll to the top of the poll block
 			setTimeout( function(){
@@ -258,7 +234,34 @@ function democracyInit(){
 
 }
 
-function democracyCacheInit(){
+function democracyLoaderFuncs(){
+
+	jQuery.fn.demSetLoader = function(){
+		const $the = this
+
+		if( State.$loader ){
+			const loaderClone = State.$loader.cloneNode( true )
+			loaderClone.style.display = 'table'
+			$the.closest( State.screenSel ).append( loaderClone )
+		}
+		else{
+			State.loaderTm = setTimeout( () => Utils.loadingDots( $the[0] ), 50 )
+		}
+
+		return this
+	}
+
+	jQuery.fn.demUnsetLoader = function(){
+		if( State.$loader )
+			this.closest( State.screenSel ).find( '.dem-loader' ).remove()
+		else
+			clearTimeout( State.loaderTm )
+
+		return this
+	}
+}
+
+function democracyCacheFuncs(){
 	// show notice
 	jQuery.fn.demCacheShowNotice = function( type ){
 
@@ -300,7 +303,7 @@ function democracyCacheInit(){
 			$screen.find( '.dem-vote-link' ).remove()
 		}
 		// voting view
-		else {
+		else{
 			const $answs = $screen.find( '[data-aid]' )
 			const $btnVoted = $screen.find( '.dem-voted-button' )
 
@@ -321,7 +324,7 @@ function democracyCacheInit(){
 				$btnVoted.show()
 			}
 			// show revote button
-			else {
+			else{
 				$screen.find( 'input[value="vote"]' ).remove() // allow revote
 				$screen.find( '.dem-revote-button-wrap' ).show()
 			}
@@ -333,24 +336,24 @@ function democracyCacheInit(){
 			const $the = jQuery( this )
 
 			// find the main block
-			let $dem = $the.prevAll( State.demmainsel + ':first' )
+			let $dem = $the.prevAll( State.mainSel + ':first' )
 			if( ! $dem.length )
-				$dem = $the.closest( State.demmainsel )
+				$dem = $the.closest( State.mainSel )
 
 			if( ! $dem.length ){
 				console.warn( 'Democracy: Main dem div not found' )
 				return
 			}
 
-			const $screen = $dem.find( State.demScreen ).first() // main results block
+			const $screen = $dem.find( State.screenSel ).first() // main results block
 			const dem_id = $dem.data( 'opts' ).pid
 			const answrs = Cookies.get( 'demPoll_' + dem_id )
 			const notVoteFlag = answrs === 'notVote' // If we already checked that user hasn't voted, don't request again
-			const isAnswrs = !(typeof answrs == 'undefined') && !notVoteFlag
+			const isAnswrs = ! (typeof answrs == 'undefined') && ! notVoteFlag
 
 			// choose which screen to show and how to handle it
-			const voteHTML = $the.find( State.demScreen + '-cache.vote' ).html()
-			const votedHTML = $the.find( State.demScreen + '-cache.voted' ).html()
+			const voteHTML = $the.find( State.screenSel + '-cache.vote' ).html()
+			const votedHTML = $the.find( State.screenSel + '-cache.voted' ).html()
 
 			// if poll is closed, only results should be cached. Exit.
 			if( ! voteHTML ){

@@ -4,16 +4,16 @@ export default class Utils {
 
 	// Determine the height when the element uses height:auto
 	static detectRealHeight( el ){
-		if( !el.parentElement ){
+		if( ! el.parentElement ){
 			return el.getBoundingClientRect().height
 		}
 
-		const clone = el.cloneNode(true)
-		Object.assign(clone.style, {
-			height: 'auto', maxHeight: 'none',
-			position: 'absolute', left: '-9999px', top: '0', width: window.getComputedStyle(el).width,
-			visibility: 'hidden', pointerEvents: 'none',
-		})
+		const clone = el.cloneNode( true )
+		Object.assign( clone.style, {
+			height    : 'auto', maxHeight: 'none',
+			position  : 'absolute', left: '-9999px', top: '0', width: window.getComputedStyle( el ).width,
+			visibility: 'hidden', pointerEvents: 'none'
+		} )
 
 		el.before( clone )
 
@@ -34,7 +34,7 @@ export default class Utils {
 		if( noanimation ){
 			el.style.height = newH + 'px'
 		}
-		else {
+		else{
 			const duration = State.animSpeed || 0
 			Utils.animateHeight( el, newH, duration )
 		}
@@ -44,7 +44,7 @@ export default class Utils {
 	 * @param {HTMLElement} root
 	 */
 	static setAnswsMaxHeight( root ){
-		if( State.answMaxHeight === '-1' || State.answMaxHeight === '0' || !State.answMaxHeight ){
+		if( State.answMaxHeight === '-1' || State.answMaxHeight === '0' || ! State.answMaxHeight ){
 			return
 		}
 
@@ -82,9 +82,9 @@ export default class Utils {
 			if( isExpanded ){
 				fn__expand()
 			}
-			else {
+			else{
 				fn__collaps()
-				el.style.height = `${maxHeight}px`
+				el.style.height = `${ maxHeight }px`
 				el.style.overflowY = 'hidden'
 			}
 
@@ -113,7 +113,7 @@ export default class Utils {
 					} )
 				}
 				// expand
-				else {
+				else{
 					fn__expand()
 
 					// measure height without collapsing
@@ -140,12 +140,12 @@ export default class Utils {
 
 		document.addEventListener( 'change', function( event ){
 			const target = event.target
-			if( !(target instanceof HTMLInputElement) || target.type !== 'checkbox' ){
+			if( ! (target instanceof HTMLInputElement) || target.type !== 'checkbox' ){
 				return
 			}
 
-			const poll = target.closest( State.demmainsel )
-			if( !poll ){
+			const poll = target.closest( State.mainSel )
+			if( ! poll ){
 				return
 			}
 
@@ -154,7 +154,7 @@ export default class Utils {
 				return
 			}
 
-			const screen = target.closest( State.demScreen )
+			const screen = target.closest( State.screenSel )
 			if( ! screen ){
 				return
 			}
@@ -172,7 +172,7 @@ export default class Utils {
 				} )
 			}
 			// else re-enable all
-			else {
+			else{
 				checkboxes.forEach( checkbox => {
 					checkbox.disabled = false
 					checkbox.closest( 'li' ).classList.remove( 'dem-disabled' )
@@ -227,7 +227,7 @@ export default class Utils {
 		}
 
 		const anim = el.animate(
-			[ { height: `${fromHeight}px` }, { height: `${toHeight}px` } ],
+			[{ height: `${ fromHeight }px` }, { height: `${ toHeight }px` }],
 			{ duration, easing: 'ease-out', fill: 'forwards' }
 		)
 		el._heightAnim = anim
