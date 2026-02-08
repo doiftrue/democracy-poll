@@ -1,5 +1,8 @@
 # Repository Guidelines
 
+## Overview
+This is WordPress plugin that distributed to oficial WordPress plugin repository.
+
 ## Project Structure & Module Organization
 - `democracy.php` is the main plugin bootstrap; `autoload.php` and `uninstall.php` handle loading and cleanup.
 - `classes/` holds most PHP logic (namespaced classes).

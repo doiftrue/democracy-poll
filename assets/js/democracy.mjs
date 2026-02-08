@@ -1,7 +1,7 @@
-import Cookies from 'js-cookie'
 import Utils from './Utils.mjs'
 import State from './State.mjs'
 import Loader from './Loader.mjs'
+import Cache from './Cache.mjs'
 
 document.addEventListener( 'DOMContentLoaded', democracyInit )
 
@@ -20,7 +20,6 @@ function democracyInit(){
 	State.lineAnimSpeed = parseInt( opts.line_anim_speed )
 
 	queueMicrotask( init ) // wait for functions
-	democracyCacheFuncs()
 
 	function init(){
 		// Core Democracy events for all blocks
@@ -44,10 +43,8 @@ function democracyInit(){
 		 * Requires js-cookie to be installed
 		 * and extra Democracy variables/methods.
 		 */
-		const $cache = jQuery( '.dem-cache-screens' )
-		if( $cache.length > 0 ){
-			$cache.demCacheInit()
-		}
+		Cache.actionsHandler = ( screen, noanimation ) => jQuery( screen ).demInitActions( noanimation )
+		Cache.initAll()
 	}
 
 	// Initialize all events for each poll: clicks, height, button visibility
@@ -232,172 +229,4 @@ function democracyInit(){
 		return false
 	}
 
-}
-
-function democracyCacheFuncs(){
-	// show notice
-	jQuery.fn.demCacheShowNotice = function( type ){
-
-		const $the = this.first()
-		let $notice = $the.find( '.dem-youarevote' ).first() // "already voted"
-
-		// If only logged-in users can vote
-		if( type === 'blocked_because_not_logged_note' ){
-			$the.find( '.dem-revote-button' ).remove() // remove revote button
-			$notice = $the.find( '.dem-only-users' ).first()
-		}
-
-		$the.prepend( $notice.show() )
-		// hide
-		setTimeout( () => $notice.slideUp( 'slow' ), 10000 )
-
-		return this
-	}
-
-	// set user's answers in results/vote block
-	function cacheSetAnswrs( $screen, answrs ){
-		const aids = answrs.split( /,/ )
-
-		// results view
-		if( $screen.hasClass( 'voted' ) ){
-			const $dema = $screen.find( '.dem-answers' )
-			const votedClass = $dema.data( 'voted-class' )
-			const votedtxt = $dema.data( 'voted-txt' )
-
-			jQuery.each( aids, function( key, val ){
-				$screen.find( '[data-aid="' + val + '"]' )
-					.addClass( votedClass )
-					.attr( 'title', function(){
-						return votedtxt + jQuery( this ).attr( 'title' )
-					} )
-			} )
-
-			// remove "Vote" button
-			$screen.find( '.dem-vote-link' ).remove()
-		}
-		// voting view
-		else{
-			const $answs = $screen.find( '[data-aid]' )
-			const $btnVoted = $screen.find( '.dem-voted-button' )
-
-			// set answers
-			jQuery.each( aids, function( key, val ){
-				$answs.filter( '[data-aid="' + val + '"]' ).find( 'input' ).prop( 'checked', 'checked' )
-			} )
-
-			// disable all
-			$answs.find( 'input' ).prop( 'disabled', 'disabled' )
-
-			// remove voting button
-			$screen.find( '.dem-vote-button' ).remove()
-			//$screen.find('[data-dem-act="vote"]').remove();
-
-			// if "already voted" button exists, revote is disabled
-			if( $btnVoted.length ){
-				$btnVoted.show()
-			}
-			// show revote button
-			else{
-				$screen.find( 'input[value="vote"]' ).remove() // allow revote
-				$screen.find( '.dem-revote-button-wrap' ).show()
-			}
-		}
-	}
-
-	jQuery.fn.demCacheInit = function(){
-		return this.each( function(){
-			const $the = jQuery( this )
-
-			// find the main block
-			let $dem = $the.prevAll( State.mainSel + ':first' )
-			if( ! $dem.length )
-				$dem = $the.closest( State.mainSel )
-
-			if( ! $dem.length ){
-				console.warn( 'Democracy: Main dem div not found' )
-				return
-			}
-
-			const $screen = $dem.find( State.screenSel ).first() // main results block
-			const dem_id = $dem.data( 'opts' ).pid
-			const answrs = Cookies.get( 'demPoll_' + dem_id )
-			const notVoteFlag = answrs === 'notVote' // If we already checked that user hasn't voted, don't request again
-			const isAnswrs = ! (typeof answrs == 'undefined') && ! notVoteFlag
-
-			// choose which screen to show and how to handle it
-			const voteHTML = $the.find( State.screenSel + '-cache.vote' ).html()
-			const votedHTML = $the.find( State.screenSel + '-cache.voted' ).html()
-
-			// if poll is closed, only results should be cached. Exit.
-			if( ! voteHTML ){
-				return
-			}
-
-			// apply cached view
-			// if results view is available
-			const setVoted = isAnswrs && votedHTML
-			$screen.html( (setVoted ? votedHTML : voteHTML) + '<!--cache-->' )
-				.removeClass( 'vote voted' )
-				.addClass( setVoted ? 'voted' : 'vote' )
-
-			if( isAnswrs )
-				cacheSetAnswrs( $screen, answrs )
-
-			$screen.demInitActions( 1 )
-
-			if( notVoteFlag ){
-				return; // exit if it has already been checked that the user has not voted.
-			}
-
-			// If there are no votes in cookies and the plugin option keep_logs is enabled,
-			// send a request to the database for checking, by event (mouse over a block).
-			if( ! isAnswrs && $the.data( 'opt_logs' ) == 1 ){
-				let tmout
-				const notcheck__fn = function(){
-					clearTimeout( tmout )
-				}
-				const check__fn = function(){
-					tmout = setTimeout( function(){
-						// Run once!
-						if( $dem.hasClass( 'checkAnswDone' ) )
-							return
-
-						$dem.addClass( 'checkAnswDone' )
-
-						const $forDotsLoader = $dem.find( '.dem-link' ).first()
-						Loader.setLoader( $forDotsLoader[0] )
-
-						jQuery.post( State.ajaxurl,
-							{
-								dem_pid: $dem.data( 'opts' ).pid,
-								dem_act: 'getVotedIds',
-								action : 'dem_ajax'
-							},
-							function( reply ){
-								Loader.unsetLoader( $forDotsLoader[0] )
-								// exit if there are no answers
-								if( ! reply ){
-									return;
-								}
-
-								$screen.html( votedHTML )
-								cacheSetAnswrs( $screen, reply )
-
-								$screen.demInitActions()
-
-								// a message that you have voted or for users only
-								$screen.demCacheShowNotice( reply )
-							}
-						)
-					}, 700 )
-					// 700 for optimization, so that the request is not sent instantly if you just swipe the mouse on the survey...
-				}
-
-				// hover
-				$dem.on( 'mouseenter', check__fn ).on( 'mouseleave', notcheck__fn )
-				$dem.on( 'click', check__fn )
-			}
-
-		} )
-	}
 }

@@ -67,7 +67,7 @@ class Poll_Utils {
 			add_action( ( is_admin() ? 'admin_footer' : 'wp_footer' ), [ __CLASS__, '_inline_js' ], 0 );
 		}
 		else{
-			wp_enqueue_script( 'democracy', plugin()->url . '/assets/js/democracy.min.js', [], plugin()->ver, true );
+			wp_enqueue_script( 'democracy', plugin()->url . '/assets/js/democracy.min.js', [ 'jquery' ], plugin()->ver, true );
 		}
 	}
 
