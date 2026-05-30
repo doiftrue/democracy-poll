@@ -347,7 +347,7 @@ class Poll_Service {
 	 * @return int Timestamp in seconds.
 	 */
 	public function get_cookie_expire_time(): int {
-		return current_time( 'timestamp', $utc = 1 ) + (int) ( (float) options()->cookie_days * DAY_IN_SECONDS );
+		return current_time( 'timestamp', $utc = true ) + (int) ( (float) options()->cookie_days * DAY_IN_SECONDS );
 	}
 
 	/**
