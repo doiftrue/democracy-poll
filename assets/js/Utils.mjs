@@ -274,4 +274,36 @@ export default class Utils {
 		return div.firstChild
 	}
 
+	static fadeIn( el, duration = 300 ){
+		Utils.showElement( el )
+
+		if( ! el.animate || ! duration ){
+			el.style.opacity = null
+			return
+		}
+
+		el.style.opacity = '0'
+
+		const anim = el.animate(
+			[{ opacity: 0 }, { opacity: 1 }],
+			{ duration, easing: 'linear' }
+		)
+		anim.onfinish = () => el.style.opacity = null
+		anim.oncancel = () => el.style.opacity = null
+	}
+
+	static showElement( el ){
+		el.hidden = false
+		if( el.style.display === 'none' ){
+			el.style.display = null
+		}
+		else if( getComputedStyle( el ).display === 'none' ){
+			el.style.display = 'block'
+		}
+	}
+
+	static hideElement( el ){
+		el.style.display = 'none'
+	}
+
 }

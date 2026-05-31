@@ -48,7 +48,7 @@ class Poll_Utils {
 		$minified = $demcss['minify'] ?? '';
 
 		return $minified
-			? "\n" . '<style id="democracy-poll">' . $minified . '</style>' . "\n"
+			? "\n" . '<style id="democracy-poll-css">' . $minified . '</style>' . "\n"
 			: '';
 	}
 
@@ -62,17 +62,7 @@ class Poll_Utils {
 		}
 
 		// inline HTML
-		if( options()->inline_js_css ){
-			wp_enqueue_script( 'jquery' );
-			add_action( ( is_admin() ? 'admin_footer' : 'wp_footer' ), [ __CLASS__, '_inline_js' ], 0 );
-		}
-		else{
-			wp_enqueue_script( 'democracy', plugin()->url . '/assets/js/democracy.min.js', [ 'jquery' ], plugin()->ver, true );
-		}
-	}
-
-	public static function _inline_js(): void {
-		echo "\n" . '<script id="democracy-poll">' . file_get_contents( plugin()->dir . '/assets/js/democracy.min.js' ) . '</script>' . "\n";
+		wp_enqueue_script( 'democracy', plugin()->url . '/assets/js/democracy.min.js', [], plugin()->ver, true );
 	}
 
 }

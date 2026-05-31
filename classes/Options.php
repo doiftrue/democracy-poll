@@ -4,7 +4,6 @@ namespace DemocracyPoll;
 
 /**
  * Main:
- * @property-read int    $inline_js_css          Eg: 1
  * @property-read int    $keep_logs              Eg: 1
  * @property-read string $before_title           Eg: '<strong class="dem-poll-title">'
  * @property-read string $after_title            Eg: '</strong>'
@@ -15,7 +14,6 @@ namespace DemocracyPoll;
  * @property-read int    $hide_vote_button       Eg: 0
  * @property-read int    $toolbar_menu           Eg: 1
  * @property-read int    $tinymce_button         Eg: 1
- * @property-read int    $show_copyright         Eg: 1
  * @property-read int    $only_for_users         Eg: 0
  * @property-read int    $dont_show_results      Eg: 0
  * @property-read int    $dont_show_results_link Eg: 0
@@ -57,8 +55,6 @@ class Options {
 
 	private $default_options = [
 		'main'   => [
-			// встараивать стили и скрипты в HTML
-			'inline_js_css'          => 1,
 			// вести лог в БД
 			'keep_logs'              => 1,
 			'before_title'           => '<strong class="dem-poll-title">',
@@ -71,7 +67,6 @@ class Options {
 			'hide_vote_button'       => 0,
 			'toolbar_menu'           => 1,
 			'tinymce_button'         => 1,
-			'show_copyright'         => 1,
 			'only_for_users'         => 0,
 			// Не показывать результаты опроса. До закрытия голосования. Глобальная опция.
 			'dont_show_results'      => 0,

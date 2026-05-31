@@ -78,9 +78,7 @@ function democracyInit(){
 		// animate filled bars - line_animation
 		if( State.lineAnimSpeed ){
 			screen.querySelectorAll( '.dem-fill' ).forEach( fill => {
-				setTimeout( function(){
-					jQuery( fill ).animate( { width: fill.dataset.width }, State.lineAnimSpeed )
-				}, State.animSpeed, 'linear' )
+				setTimeout( () => animateFill( fill ), State.animSpeed )
 			} )
 		}
 
@@ -101,45 +99,65 @@ function democracyInit(){
 		} )
 	}
 
+	function animateFill( fill ){
+		const targetWidth = fill.dataset['width']
+		if( ! targetWidth ){
+			return
+		}
+
+		if( ! fill.animate ){
+			fill.style.width = targetWidth
+			return
+		}
+
+		fill.animate( [
+				{ width: window.getComputedStyle( fill ).width },
+				{ width: targetWidth }
+			],
+			{ duration: State.lineAnimSpeed, easing: 'linear', fill: 'forwards' }
+		)
+			.onfinish = () => fill.style.width = targetWidth
+	}
+
 	// Add user answer (link)
 	function addAnswer( the ){
-		const $the = jQuery( the )
-		const $demScreen = $the.closest( State.screenSel )
-		const isMultiple = $demScreen.find( '[type=checkbox]' ).length > 0
-		const $input = jQuery( '<input type="text" class="dem-add-answer-txt" value="">' ) // input for adding an answer
+		const screen = the.closest( State.screenSel )
+		const isMultiple = screen.querySelector( '[type=checkbox]' )
+		const input = Utils.newEl( '<input type="text" class="dem-add-answer-txt" value="">' )
 
 		// show vote button
-		$demScreen.find( '.dem-vote-button' ).show()
+		const btn = screen.querySelector( '.dem-vote-button' )
+		btn && Utils.showElement( btn )
 
 		// handle radio inputs: uncheck and attach click handler
-		$demScreen.find( '[type=radio]' ).each( function(){
-
-			jQuery( this ).on( 'click', function(){
-				$the.fadeIn( 300 )
-				jQuery( State.userAnswerSel ).remove()
+		screen.querySelectorAll( '[type=radio]' ).forEach( radio => {
+			radio.checked = false // uncheck
+			radio.addEventListener( 'click', () => {
+				Utils.fadeIn( the )
+				document.querySelectorAll( State.userAnswerSel ).forEach( node => node.remove() )
 			} )
-
-			if( 'radio' === jQuery( this )[0].type )
-				this.checked = false // uncheck
 		} )
 
-		$the.hide().parent( 'li' ).append( $input )
-		$input.hide().fadeIn( 300 ).focus() // animation
+		//
+		Utils.hideElement( the )
+		the.parentElement.append( input )
+		Utils.hideElement( input )
+		Utils.fadeIn( input )
+		input.focus()
 
 		// add a button to remove the user-entered text
 		if( isMultiple ){
+			const close = Utils.newEl( '<span class="dem-add-answer-close">×</span>' )
+			close.style.lineHeight = input.offsetHeight + 'px'
+			input.before( close )
 
-			const $ua = $demScreen.find( State.userAnswerSel )
-
-			jQuery( '<span class="dem-add-answer-close">×</span>' )
-				.insertBefore( $ua )
-				.css( 'line-height', $ua.outerHeight() + 'px' )
-				.on( 'click', function(){
-					const $par = jQuery( this ).parent( 'li' )
-					$par.find( 'input' ).remove()
-					$par.find( 'a' ).fadeIn( 300 )
-					jQuery( this ).remove()
-				} )
+			close.addEventListener( 'click', ev => {
+				const parent = close.parentElement
+				const link = parent.querySelector( 'a' )
+				parent.querySelector( 'input' ).remove()
+				close.remove()
+				Utils.fadeIn( link )
+			} )
 		}
 
 		return false // !!!

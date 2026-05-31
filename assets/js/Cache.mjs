@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie'
 import State from './State.mjs'
 import Loader from './Loader.mjs'
+import Utils from './Utils.mjs'
 
 export default class Cache {
 
@@ -136,7 +137,7 @@ export default class Cache {
 			return
 		}
 
-		Cache.showElement( notice )
+		Utils.showElement( notice )
 		screen.prepend( notice )
 		// hide
 		setTimeout( () => Cache.slideUp( notice, 600 ), 10000 )
@@ -197,12 +198,12 @@ export default class Cache {
 
 			// if "already voted" button exists, revote is disabled
 			if( btnVoted ){
-				Cache.showElement( btnVoted )
+				Utils.showElement( btnVoted )
 			}
 			// show revote button
 			else{
 				screen.querySelectorAll( 'input[value="vote"]' ).forEach( node => node.remove() ) // allow revote
-				screen.querySelectorAll( '.dem-revote-button-wrap' ).forEach( node => Cache.showElement( node ) )
+				screen.querySelectorAll( '.dem-revote-button-wrap' ).forEach( Utils.showElement )
 			}
 		}
 	}
@@ -236,16 +237,6 @@ export default class Cache {
 	static queryAidNodes( screen, aid ){
 		const safeAid = (window.CSS && CSS.escape) ? CSS.escape( aid ) : aid
 		return Array.from( screen.querySelectorAll( '[data-aid="' + safeAid + '"]' ) )
-	}
-
-	static showElement( el ){
-		el.hidden = false
-		if( getComputedStyle( el ).display === 'none' ){
-			el.style.display = 'block'
-		}
-		else if( el.style.display === 'none' ){
-			el.style.display = ''
-		}
 	}
 
 	static slideUp( el, duration ){
