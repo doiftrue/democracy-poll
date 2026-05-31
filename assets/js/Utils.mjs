@@ -28,27 +28,32 @@ export default class Utils {
 	}
 
 	// Set height explicitly
-	static setHeight( el, noanimation ){
+	static setHeight( el, doAnimation = false ){
 		const newH = Utils.detectRealHeight( el )
 
-		if( noanimation ){
-			el.style.height = newH + 'px'
-		}
-		else{
+		if( doAnimation ){
 			const duration = State.animSpeed || 0
 			Utils.animateHeight( el, newH, duration )
 		}
+		else{
+			el.style.height = newH + 'px'
+		}
+	}
+
+	// jQuery :visible equivalent.
+	static isVisible( el ){
+		return !! (el.offsetWidth || el.offsetHeight || el.getClientRects().length)
 	}
 
 	/**
-	 * @param {HTMLElement} root
+	 * @param {HTMLElement} screen
 	 */
-	static setAnswsMaxHeight( root ){
+	static setAnswsMaxHeight( screen ){
 		if( State.answMaxHeight === '-1' || State.answMaxHeight === '0' || ! State.answMaxHeight ){
 			return
 		}
 
-		const el = root.querySelector( '.dem-vote, .dem-answers' )
+		const el = screen.querySelector( '.dem-vote, .dem-answers' )
 		const maxHeight = parseInt( State.answMaxHeight )
 
 		el.style.maxHeight = 'none'
@@ -78,7 +83,7 @@ export default class Utils {
 			let timeout
 
 			// don't collapse if it was expanded
-			const isExpanded = root.dataset['expanded'] === 'true'
+			const isExpanded = screen.dataset['expanded'] === 'true'
 			if( isExpanded ){
 				fn__expand()
 			}
@@ -90,7 +95,7 @@ export default class Utils {
 
 			// trigger click on hover so user doesn't need to click to expand
 			overlay.addEventListener( 'mouseenter', function(){
-				if( root.dataset['expanded'] !== 'true' ){
+				if( screen.dataset['expanded'] !== 'true' ){
 					timeout = setTimeout( () => overlay.dispatchEvent( new Event( 'click' ) ), 1000 )
 				}
 			} )
@@ -102,14 +107,14 @@ export default class Utils {
 				clearTimeout( timeout )
 
 				// collapse
-				if( root.dataset['expanded'] === 'true' ){
+				if( screen.dataset['expanded'] === 'true' ){
 					fn__collaps()
 
-					delete root.dataset['expanded']
-					root.style.height = 'auto'
+					delete screen.dataset['expanded']
+					screen.style.height = 'auto'
 					el.style.overflowY = 'hidden'
 					Utils.animateHeight( el, maxHeight, State.animSpeed, () => {
-						root.style.height = Utils.detectRealHeight( root ) + 'px'
+						screen.style.height = Utils.detectRealHeight( screen ) + 'px'
 					} )
 				}
 				// expand
@@ -119,10 +124,10 @@ export default class Utils {
 					// measure height without collapsing
 					const newH = Utils.detectRealHeight( el ) + 7 // extra space for "add your answer"
 
-					root.dataset['expanded'] = 'true'
-					root.style.height = 'auto'
+					screen.dataset['expanded'] = 'true'
+					screen.style.height = 'auto'
 					Utils.animateHeight( el, newH, State.animSpeed, () => {
-						root.style.height = Utils.detectRealHeight( root ) + 'px'
+						screen.style.height = Utils.detectRealHeight( screen ) + 'px'
 						el.style.overflowY = 'visible'
 					} )
 				}
@@ -131,7 +136,7 @@ export default class Utils {
 
 	}
 
-	// max answers limit
+	// max answers limit - limit for multi-answer selection
 	static maxAnswLimitInit(){
 		if( Utils.maxAnswLimitBound ){
 			return
@@ -214,30 +219,43 @@ export default class Utils {
 		State.loaderTmr = setTimeout( () => Utils.loadingDots( el ), 200 )
 	}
 
+	static resetHeight( el ){
+		Utils.clear_hAnim( el )
+		el.getAnimations().forEach( animation => animation.cancel() )
+		el.style.height = 'auto'
+	}
+
 	static animateHeight( el, toHeight, duration, onFinish ){
 		const fromHeight = el.getBoundingClientRect().height
-		if( el._heightAnim ){
-			el._heightAnim.cancel()
-		}
+		Utils.clear_hAnim( el )
 
+		// no animation
 		if( ! duration ){
 			el.style.height = toHeight + `px`
 			onFinish && onFinish()
 			return
 		}
 
-		const anim = el.animate(
+		// animation
+		el._hAnim = el.animate(
 			[{ height: `${ fromHeight }px` }, { height: `${ toHeight }px` }],
 			{ duration, easing: 'ease-out', fill: 'forwards' }
 		)
-		el._heightAnim = anim
-		anim.onfinish = () => {
+		el._hAnim.onfinish = () => {
 			el.style.height = toHeight + `px`
-			delete el._heightAnim
+			Utils.clear_hAnim( el )
 			onFinish && onFinish()
 		}
-		anim.oncancel = () => {
-			delete el._heightAnim
+		el._hAnim.oncancel = () => {
+			delete el._hAnim
+		}
+	}
+
+	static clear_hAnim( el ){
+		if( el._hAnim ){
+			el._hAnim.oncancel = null
+			el._hAnim.cancel()
+			delete el._hAnim
 		}
 	}
 

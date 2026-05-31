@@ -5,7 +5,6 @@ export default class State {
 	static screenSel = '.dem-screen'             // result container selector
 	static userAnswerSel = '.dem-add-answer-txt' // "free" answer field class
 
-	static $polls
 	static $loader
 	static loaderTmr
 

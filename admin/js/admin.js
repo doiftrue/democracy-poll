@@ -138,9 +138,7 @@ document.addEventListener('DOMContentLoaded', function(){
 			return jQuery( this ).outerHeight();
 		} );
 
-		jQuery( '[data-dem-act], .democracy a' ).on( 'click', function( e ){
-			e.preventDefault();
-		} ); // отменяем клики
+		jQuery( '[data-dem-act], .democracy a' ).on( 'click', e => e.preventDefault() ); // отменяем клики
 
 		// предпросмотр
 		var $demLoader = jQuery( document ).find( '.dem-loader' ).first(); // loader

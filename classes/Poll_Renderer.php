@@ -253,12 +253,9 @@ class Poll_Renderer {
 				$bottom_html .= $for_users_alert;
 			}
 			else{
-				if( $poll->has_voted ){
-					$bottom_html .= $poll->revote ? $this->revote_btn_html() : $voted_btn;
-				}
-				else{
-					$bottom_html .= $vote_btn;
-				}
+				$bottom_html .= $poll->has_voted
+					? ( $poll->revote ? $this->revote_btn_html() : $voted_btn )
+					: $vote_btn;
 			}
 		}
 
@@ -490,7 +487,7 @@ class Poll_Renderer {
 			<form action="#democracy-{POLL_ID}" method="POST">
 				<input type="hidden" name="dem_act" value="delVoted">
 				<input type="hidden" name="dem_pid" value="{POLL_ID}">
-				<input type="submit" value="{REVOTE}" class="dem-revote-link dem-revote-button dem-button {BTN_CLASS}" data-dem-act="delVoted" data-confirm-text="{CONFIRM}">
+				<input type="submit" value="{REVOTE}" class="dem-revote-link dem-revote-button dem-button {BTN_CLASS}" data-dem-act="delVoted" data-confirm_text="{CONFIRM}">
 			</form>
 			</span>
 			HTML,

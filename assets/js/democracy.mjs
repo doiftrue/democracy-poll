@@ -6,14 +6,14 @@ import Cache from './Cache.mjs'
 document.addEventListener( 'DOMContentLoaded', democracyInit )
 
 function democracyInit(){
-	State.$polls = jQuery( State.mainSel )
-	if( ! State.$polls.length ){
+	const polls = document.querySelectorAll( State.mainSel )
+	if( ! polls.length ){
 		return
 	}
 
 	State.$loader = document.querySelector( '.dem-loader' )
 
-	const opts = State.$polls.first().data( 'opts' )
+	const opts = Cache.getOpts( polls[0] )
 	State.ajaxurl = opts.ajax_url
 	State.answMaxHeight = opts.answs_max_height
 	State.animSpeed = parseInt( opts.anim_speed )
@@ -21,93 +21,92 @@ function democracyInit(){
 
 	queueMicrotask( init ) // wait for functions
 
+	// Core Democracy events for all blocks
 	function init(){
-		// Core Democracy events for all blocks
-		const $demScreens = State.$polls.find( State.screenSel ).filter( ':visible' )
-		const demScreensSetHeight = function(){
-			$demScreens.each( function(){
-				this.style.height = Utils.detectRealHeight( this ) + 'px'
-			} )
-		}
+		const demScreens = []
+		polls.forEach( poll => {
+			const screen = poll.querySelector( State.screenSel )
+			if( screen && Utils.isVisible( screen ) ){
+				demScreens.push( screen )
+			}
+		} )
 
-		$demScreens.demInitActions( 1 )
+		demScreens.forEach( screen => initActions( screen, false ) )
 
-		window.addEventListener( 'resize', demScreensSetHeight ) // update height on resize
+		const setScreenHeight = () => demScreens.forEach( screen => Utils.setHeight( screen ) )
+		window.addEventListener( 'load', setScreenHeight ) // update height once more
+		window.addEventListener( 'resize', setScreenHeight ) // update height
 
-		window.addEventListener( 'load', demScreensSetHeight ) // update height once more
-
-		Utils.maxAnswLimitInit() // limit for multi-answer selection
+		Utils.maxAnswLimitInit()
 
 		/*
 		 * Cache handling.
 		 * Requires js-cookie to be installed
 		 * and extra Democracy variables/methods.
 		 */
-		Cache.actionsHandler = ( screen, noanimation ) => jQuery( screen ).demInitActions( noanimation )
+		Cache.actionsHandler = ( screen, doAnimation = true ) => initActions( screen, doAnimation )
 		Cache.initAll()
 	}
 
 	// Initialize all events for each poll: clicks, height, button visibility
 	// applies to '.dem-screen'
-	jQuery.fn.demInitActions = function( noanimation ){
+	function initActions( screen, doAnimation = true ){
+		// Attach click handlers for all marked elements inside the given element:
+		// includes AJAX on click and other Democracy interactions ----------
+		const attr = 'data-dem-act'
 
-		return this.each( function(){
-			// Attach click handlers for all marked elements inside the given element:
-			// includes AJAX on click and other Democracy interactions ----------
-			const $this = jQuery( this )
-			const attr = 'data-dem-act'
-
-			$this.find( '[' + attr + ']' ).each( function(){
-				const $the = jQuery( this )
-				$the.attr( 'href', '' ) // clear URL so the request URL isn't visible
-
-				$the.on( 'click', function( e ){
-					e.preventDefault()
-					$the.blur().demDoAction( $the.attr( attr ) )
-				} )
+		// Add Click events
+		screen.querySelectorAll( '[' + attr + ']' ).forEach( act => {
+			act.setAttribute( 'href', '' ) // clear URL so the request URL isn't visible
+			act.addEventListener( 'click', ( ev ) => {
+				ev.preventDefault()
+				act.blur()
+				doAction( act, act.getAttribute( attr ) )
 			} )
+		} )
 
-			// Hide the submit button where needed ------------
-			const autoVote = !! $this.find( 'input[type=radio][data-dem-act=vote]' ).first().length
-			if( autoVote ) $this.find( '.dem-vote-button' ).hide()
+		// Hide submit button
+		if( screen.querySelector( 'input[type=radio][data-dem-act=vote]' ) ){
+			screen.querySelectorAll( '.dem-vote-button' ).forEach( button => button.style.display = 'none' )
+		}
 
-			// collapse content if there are too many answers
-			Utils.setAnswsMaxHeight( $this[0] )
+		Utils.resetHeight( screen )
 
-			// animate filled bars - line_animation
-			if( State.lineAnimSpeed ){
-				$this.find( '.dem-fill' ).each( function(){
-					const $fill = jQuery( this )
-					//setTimeout(function(){ fill.style.width = was; }, State.animSpeed + 500); // based on CSS transition; also fires on reset and interferes...
-					setTimeout( function(){
-						$fill.animate( { width: $fill.data( 'width' ) }, State.lineAnimSpeed )
-					}, State.animSpeed, 'linear' )
-				} )
-			}
+		// collapse content if there are too many answers
+		Utils.setAnswsMaxHeight( screen )
 
-			// Set height explicitly ------------
-			// Bind to window resize (mobile rotation, etc.)
-			Utils.setHeight( this, noanimation )
+		// animate filled bars - line_animation
+		if( State.lineAnimSpeed ){
+			screen.querySelectorAll( '.dem-fill' ).forEach( fill => {
+				setTimeout( function(){
+					jQuery( fill ).animate( { width: fill.dataset.width }, State.lineAnimSpeed )
+				}, State.animSpeed, 'linear' )
+			} )
+		}
 
-			// form submit event
-			$this.find( 'form' ).on( 'submit', function( e ){
+		// Set height explicitly ------------
+		// Bind to window resize (mobile rotation, etc.)
+		Utils.setHeight( screen, doAnimation )
+
+		// form submit event
+		screen.querySelectorAll( 'form' ).forEach( form => {
+			form.addEventListener( 'submit', function( e ){
 				e.preventDefault()
 
-				const act = jQuery( this ).find( 'input[name="dem_act"]' ).val()
-				if( act )
-					jQuery( this ).demDoAction( jQuery( this ).find( 'input[name="dem_act"]' ).val() )
+				const actInput = form.querySelector( 'input[name="dem_act"]' )
+				if( actInput?.value ){
+					doAction( form, actInput.value )
+				}
 			} )
 		} )
 	}
 
-
 	// Add user answer (link)
-	jQuery.fn.demAddAnswer = function(){
-
-		const $the = this.first()
+	function addAnswer( the ){
+		const $the = jQuery( the )
 		const $demScreen = $the.closest( State.screenSel )
 		const isMultiple = $demScreen.find( '[type=checkbox]' ).length > 0
-		const $input = jQuery( '<input type="text" class="' + State.userAnswerSel.replace( /\./, '' ) + '" value="">' ) // input for adding an answer
+		const $input = jQuery( '<input type="text" class="dem-add-answer-txt" value="">' ) // input for adding an answer
 
 		// show vote button
 		$demScreen.find( '.dem-vote-button' ).show()
@@ -147,24 +146,21 @@ function democracyInit(){
 	}
 
 	// Collect answers and return as a string
-	jQuery.fn.demCollectAnsw = function(){
-		const $form = this.closest( 'form' )
-		const $answers = $form.find( '[type=checkbox],[type=radio]' )
-		const userText = $form.find( State.userAnswerSel ).val()
+	function collectAnsw( the ){
+		const form = the.closest( 'form' )
+		const userTextInput = form.querySelector( State.userAnswerSel )
+		const userText = userTextInput ? userTextInput.value : ''
 		let answ = []
-		const $checkbox = $answers.filter( '[type=checkbox]:checked' )
 
 		// multiple
-		if( $checkbox.length > 0 ){
-			$checkbox.each( function(){
-				answ.push( jQuery( this ).val() )
-			} )
+		const checkbox = form.querySelectorAll( '[type=checkbox]:checked' )
+		if( checkbox.length ){
+			checkbox.forEach( input => answ.push( input.value ) )
 		}
 		// single
 		else{
-			const str = $answers.filter( '[type=radio]:checked' )
-			if( str.length )
-				answ.push( str.val() )
+			const radio = form.querySelector( '[type=radio]:checked' )
+			radio && answ.push( radio.value )
 		}
 
 		// user_added
@@ -174,16 +170,14 @@ function democracyInit(){
 
 		answ = answ.join( '~' )
 
-		return answ ? answ : ''
+		return answ || ''
 	}
 
 	// handle requests on click
-	jQuery.fn.demDoAction = function( action ){
-
-		const $the = this.first()
-		const $dem = $the.closest( State.mainSel )
+	function doAction( the, action ){
+		const poll = the.closest( State.mainSel )
 		const data = {
-			dem_pid: $dem.data( 'opts' ).pid,
+			dem_pid: Cache.getOpts( poll ).pid,
 			dem_act: action,
 			action : 'dem_ajax'
 		}
@@ -195,36 +189,55 @@ function democracyInit(){
 
 		// Collect answers
 		if( 'vote' === action ){
-			data.answer_ids = $the.demCollectAnsw()
+			data.answer_ids = collectAnsw( the )
 			if( ! data.answer_ids ){
-				Utils.demShake( $the[0] )
+				Utils.demShake( the )
 				return false
 			}
 		}
 
 		// revote button confirmation
-		if( 'delVoted' === action && ! confirm( $the.data( 'confirm-text' ) ) )
+		if( 'delVoted' === action && ! confirm( the.dataset['confirm_text'] ) ){
 			return false
+		}
 
 		// add visitor answer button
 		if( 'newAnswer' === action ){
-			$the.demAddAnswer()
+			addAnswer( the )
 			return false
 		}
 
 		// AJAX
-		Loader.setLoader( $the[0] )
-		jQuery.post( State.ajaxurl, data, function( respond ){
-			Loader.unsetLoader( $the[0] )
+		const screen = the.closest( State.screenSel )
+		if( ! screen ){
+			return false
+		}
 
-			// rebind events
-			$the.closest( State.screenSel ).html( respond ).demInitActions()
+		Loader.setLoader( the )
+		Cache.post( State.ajaxurl, data ).then( html => {
+			Loader.unsetLoader( screen )
+
+			if( ! html ){
+				return
+			}
+
+			delete screen.dataset['expanded']
+
+			screen.innerHTML = html
+			initActions( screen ) // rebind events
 
 			// scroll to the top of the poll block
-			setTimeout( function(){
-				jQuery( 'html:first,body:first' ).animate( { scrollTop: $dem.offset().top - 70 }, 500 )
+			setTimeout( () => {
+				window.scrollTo( {
+					top     : poll.getBoundingClientRect().top + window.pageYOffset - 70,
+					behavior: 'smooth'
+				} )
 			}, 200 )
 		} )
+			.catch( error => {
+				Loader.unsetLoader( screen )
+				console.warn( 'Democracy: AJAX request failed', error )
+			} )
 
 		return false
 	}

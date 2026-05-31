@@ -55,7 +55,7 @@ export default class Cache {
 			Cache.setAnswers( screen, answrs )
 		}
 
-		Cache.actionsHandler( screen, true )
+		Cache.actionsHandler( screen, false )
 
 		if( notVoteFlag ){
 			return // exit if it has already been checked that the user has not voted.
@@ -88,22 +88,25 @@ export default class Cache {
 						action : 'dem_ajax'
 					} )
 						.then( reply => {
-							if( forDotsLoader ){
-								Loader.unsetLoader( forDotsLoader )
-							}
+							forDotsLoader && Loader.unsetLoader( screen )
 
 							// exit if there are no answers
 							if( ! reply ){
 								return
 							}
 
+							delete screen.dataset['expanded']
+
 							screen.innerHTML = votedHTML
 							Cache.setAnswers( screen, reply )
-
 							Cache.actionsHandler( screen )
 
 							// a message that you have voted or for users only
 							Cache.showNotice( screen, reply )
+						} )
+						.catch( error => {
+							forDotsLoader && Loader.unsetLoader( screen )
+							console.warn( 'Democracy: AJAX request failed', error )
 						} )
 				}, 700 )
 				// 700 for optimization, so that the request is not sent instantly if you just swipe the mouse on the survey...
@@ -284,8 +287,12 @@ export default class Cache {
 			},
 			body
 		} )
-			.then( response => response.text() )
-			.catch( () => '' )
+			.then( response => {
+				if( ! response.ok ){
+					throw new Error( 'Bad network response' )
+				}
+				return response.text()
+			} )
 	}
 
 }
