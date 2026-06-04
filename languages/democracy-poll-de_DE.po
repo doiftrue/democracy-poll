@@ -131,7 +131,7 @@ msgstr "Erlaube das Anzeigen der Umfrageergebnisse."
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: classes/Admin/Admin_Page.php:200
+#: classes/Admin/Admin_Page.php:199
 #: classes/Admin/List_Table_Polls.php:140
 #: classes/Plugin_Initor.php:115
 msgid "Logs"
@@ -293,7 +293,7 @@ msgid "Hide vote button if it is NOT multiple poll with revote option. User will
 msgstr "Button zum Abstimmen ausblenden. Abstimmung erfolgt durch klicken auf die Antwort."
 
 #: classes/Admin/Admin_Page_Settings.php:186
-#: classes/Admin/Admin_Page_Settings.php:285
+#: classes/Admin/Admin_Page_Settings.php:277
 msgid "Others"
 msgstr "Sonstige"
 
@@ -314,45 +314,37 @@ msgstr "Erzwinge die Funktion des Plugins bei aktiviertem Caching. Die Bedingung
 msgid "Democracy has smart mechanism for working with page cache plugins like \"WP Total Cache\". It is ON automatically if such plugin is enabled on your site. But if you use unusual page caching plugin you can force enable this option."
 msgstr "Democracy hat smarte Mechanismen um mit Caching-Plugins wie z.B. \"WP Total Cache\" zusammen zu arbeiten. Die Funktion ist automatisch eingeschaltet, wenn ein solches Plugin auf deiner Seite aktiviert ist. Wenn du ein anderes, Wordpress untypisches oder externes Caching verwendest kannst du die Funktion hiermit erzwingen."
 
-#: classes/Admin/Admin_Page_Settings.php:216
+#: classes/Admin/Admin_Page_Settings.php:208
 msgid "Add plugin menu on the toolbar?"
 msgstr "Umfrage-Menu im Toolbar zeigen"
 
-#: classes/Admin/Admin_Page_Settings.php:218
+#: classes/Admin/Admin_Page_Settings.php:210
 msgid "Uncheck to remove the plugin menu from the toolbar."
 msgstr "Umfrage-Menu im Toolbar zeigen"
 
-#: classes/Admin/Admin_Page_Settings.php:224
+#: classes/Admin/Admin_Page_Settings.php:216
 msgid "Add fast Poll insert button to WordPress visual editor (TinyMCE)?"
 msgstr "Button zum leichten Einfugen von Umfragen im WordPress-Editor(TinyMCE) hinzufugen"
 
-#: classes/Admin/Admin_Page_Settings.php:226
+#: classes/Admin/Admin_Page_Settings.php:218
 msgid "Uncheck to disable button in visual editor."
 msgstr "Den Umfragebutton mit Shortcode im Editor zeigen"
 
-#: classes/Admin/Admin_Page_Settings.php:278
+#: classes/Admin/Admin_Page_Settings.php:270
 msgid "Save Options"
 msgstr "Einstellungen speichern"
 
 #: classes/Admin/Admin_Page_l10n.php:109
 #: classes/Admin/Admin_Page_Design.php:444
-#: classes/Admin/Admin_Page_Settings.php:280
+#: classes/Admin/Admin_Page_Settings.php:272
 msgid "Reset Options"
 msgstr "Einstellungen zurucksetzen"
 
-#: classes/Admin/Admin_Page_Settings.php:295
-msgid "If checked, the plugin's .js file will NOT be connected to front end. Enable this option to test the plugin's work without JavaScript."
-msgstr "JS-Dateien des Plugin nicht im Frontend bereitgestellen. Aktiviere diese Option fur Debugging-Zwecke und um zu testen ob das Plugin ohne JavaScript funktioniert."
-
-#: classes/Admin/Admin_Page_Settings.php:302
-msgid "Show copyright"
-msgstr "Zeige Copyright-Hinweis"
-
-#: classes/Admin/Admin_Page_Settings.php:313
+#: classes/Admin/Admin_Page_Settings.php:287
 msgid "Check to activate the widget."
 msgstr "Umfrage-Widget aktivieren"
 
-#: classes/Admin/Admin_Page_Settings.php:320
+#: classes/Admin/Admin_Page_Settings.php:294
 msgid "Force plugin versions update (debug)"
 msgstr "Erzwinge Update des Plugins. (Debugging)"
 
@@ -384,27 +376,27 @@ msgstr "Deine Variante"
 msgid "Save Text"
 msgstr "Text speichern"
 
-#: classes/Admin/Admin_Page.php:192
+#: classes/Admin/Admin_Page.php:191
 #: classes/Plugin_Initor.php:113
 msgid "Polls List"
 msgstr "Liste der Umfragen"
 
-#: classes/Admin/Admin_Page.php:196
+#: classes/Admin/Admin_Page.php:195
 msgid "Add new poll"
 msgstr "Neue Umfrage hinzufugen"
 
 #: classes/Admin/Admin.php:38
-#: classes/Admin/Admin_Page.php:206
+#: classes/Admin/Admin_Page.php:205
 #: classes/Plugin_Initor.php:116
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: classes/Admin/Admin_Page.php:211
+#: classes/Admin/Admin_Page.php:210
 #: classes/Plugin_Initor.php:117
 msgid "Theme Settings"
 msgstr "Anpassen des Designs"
 
-#: classes/Admin/Admin_Page.php:216
+#: classes/Admin/Admin_Page.php:215
 #: classes/Plugin_Initor.php:118
 msgid "Texts changes"
 msgstr "Texte andern"
@@ -472,87 +464,83 @@ msgstr "Umfrage wurde deaktiviert"
 msgid "Poll Updated"
 msgstr "Die Umfrage wurde aktualisiert"
 
-#: classes/Admin/Admin_Page_Settings.php:352
+#: classes/Admin/Admin_Page_Settings.php:326
 msgid "Polls Archive"
 msgstr "Umfragen-Archiv"
 
-#: classes/Poll_Renderer.php:85
-msgid "Download the Democracy Poll"
-msgstr "Democracy Poll herunterladen"
-
-#: classes/Poll_Renderer.php:210
+#: classes/Poll_Renderer.php:205
 msgctxt "front"
 msgid "Add your answer"
 msgstr "Fuge deine Antwort hinzu"
 
-#: classes/Poll_Renderer.php:217
+#: classes/Poll_Renderer.php:210
 msgctxt "front"
 msgid "Already voted..."
 msgstr "Linienfarbe (fur abgestimmte User)"
 
-#: classes/Poll_Renderer.php:218
-#: classes/Poll_Renderer.php:439
+#: classes/Poll_Renderer.php:211
+#: classes/Poll_Renderer.php:429
 msgctxt "front"
 msgid "Vote"
 msgstr "Abstimmung"
 
-#: classes/Poll_Renderer.php:260
+#: classes/Poll_Renderer.php:250
 msgctxt "front"
 msgid "Results"
 msgstr "Ergebnisse"
 
-#: classes/Poll_Renderer.php:309
+#: classes/Poll_Renderer.php:299
 msgctxt "front"
 msgid "This is Your vote."
 msgstr "Deine Abstimmung"
 
-#: classes/Poll_Renderer.php:327
+#: classes/Poll_Renderer.php:317
 msgctxt "front"
 msgid "The answer was added by a visitor"
 msgstr "Diese Antwort wurde von einem Besucher hinzugefugt"
 
-#: classes/Poll_Renderer.php:374
+#: classes/Poll_Renderer.php:364
 #, php-format
 msgctxt "front"
 msgid "Total Votes: %s"
 msgstr "Abstimmungen insgesamt: %s"
 
-#: classes/Poll_Renderer.php:375
+#: classes/Poll_Renderer.php:365
 msgctxt "front"
 msgid "Begin"
 msgstr "Anfang"
 
-#: classes/Poll_Renderer.php:376
+#: classes/Poll_Renderer.php:366
 msgctxt "front"
 msgid "End"
 msgstr "Ende"
 
-#: classes/Poll_Renderer.php:387
+#: classes/Poll_Renderer.php:377
 msgctxt "front"
 msgid " - added by visitor"
 msgstr " - von einem Benutzer hinzugefugt"
 
-#: classes/Poll_Renderer.php:390
+#: classes/Poll_Renderer.php:380
 msgctxt "front"
 msgid "Voting is closed"
 msgstr "Umfrage beendet"
 
-#: classes/Poll_Renderer.php:393
+#: classes/Poll_Renderer.php:383
 msgctxt "front"
 msgid "Polls Archive"
 msgstr "Umfragen-Archiv"
 
-#: classes/Poll_Renderer.php:493
+#: classes/Poll_Renderer.php:478
 msgctxt "front"
 msgid "Revote"
 msgstr "Anders antworten"
 
-#: classes/Poll_Renderer.php:495
+#: classes/Poll_Renderer.php:480
 msgctxt "front"
 msgid "Are you sure you want cancel the votes?"
 msgstr "Bist du sicher, dass du die Abstimmung abbrechen willst?"
 
-#: classes/Poll_Renderer.php:515
+#: classes/Poll_Renderer.php:500
 msgctxt "front"
 msgid "You or your IP had already vote."
 msgstr "Von deiner IP-Adresse wurde bereits abgestimmt."
@@ -662,35 +650,31 @@ msgstr "Link zu Umfrageergebnissen nicht anzeigen (global)."
 msgid "Users can see results after vote."
 msgstr "Ergebnisse sind nach dem Abstimmen sichtbar."
 
-#: classes/Admin/Admin_Page_Settings.php:232
+#: classes/Admin/Admin_Page_Settings.php:224
 msgid "Check if you see something like \"no_IP__123\" in IP column on logs page. (not recommended)"
 msgstr "Prüfen, ob „no_IP__123“ in der IP-Spalte auf der Protokollseite erscheint (nicht empfohlen)."
 
-#: classes/Admin/Admin_Page_Settings.php:235
+#: classes/Admin/Admin_Page_Settings.php:227
 msgid "Useful when your server does not work correctly with server variable REMOTE_ADDR. NOTE: this option give possibility to cheat voice."
 msgstr "Nützlich, wenn der Server die Variable REMOTE_ADDR nicht korrekt verarbeitet. HINWEIS: Diese Option ermöglicht Betrug."
 
-#: classes/Admin/Admin_Page_Settings.php:257
+#: classes/Admin/Admin_Page_Settings.php:249
 msgid "Role names, except 'administrator' which will have access to manage plugin."
 msgstr "Rollen (außer 'Administrator') mit Zugriff auf das Plugin."
 
-#: classes/Admin/Admin_Page_Settings.php:262
+#: classes/Admin/Admin_Page_Settings.php:254
 msgid "Migration"
 msgstr "Migration"
 
-#: classes/Admin/Admin_Page_Settings.php:268
+#: classes/Admin/Admin_Page_Settings.php:260
 msgid "Migrate from WP Polls plugin"
 msgstr "Migration von WP Polls Plugin"
 
-#: classes/Admin/Admin_Page_Settings.php:270
+#: classes/Admin/Admin_Page_Settings.php:262
 msgid "All polls, answers and logs of WP Polls will be added to Democracy Poll"
 msgstr "Alle Umfragen, Antworten und Protokolle von WP Polls werden übernommen."
 
-#: classes/Admin/Admin_Page_Settings.php:304
-msgid "Link to plugin page is shown on front page only as a &copy; icon. It helps visitors to learn about the plugin and install it for themselves. Please don't disable this option without urgent needs. Thanks!"
-msgstr "Link zur Plugin-Seite wird als &copy;-Symbol angezeigt. So erfahren Besucher mehr über das Plugin. Bitte nur bei dringendem Bedarf deaktivieren."
-
-#: classes/Admin/Admin_Page_Settings.php:311
+#: classes/Admin/Admin_Page_Settings.php:285
 msgid "Widget"
 msgstr "Widget"
 
@@ -763,7 +747,7 @@ msgstr "Shortcode-Ersetzung abbrechen und Änderungen zurücksetzen"
 msgid "Delete all data about WP Polls migration"
 msgstr "Alle Daten zur WP Polls-Migration löschen"
 
-#: classes/Admin/Admin_Page.php:187
+#: classes/Admin/Admin_Page.php:186
 msgid "Back"
 msgstr "Zurück"
 
@@ -782,19 +766,19 @@ msgstr "Geschlossene Umfrage kann nicht aktiviert werden."
 msgid "Failed to delete"
 msgstr "Löschen fehlgeschlagen"
 
-#: classes/Poll_Renderer.php:333
+#: classes/Poll_Renderer.php:323
 #, php-format
 msgctxt "front"
 msgid "%s - %s%% of all votes"
 msgstr "%s – %s%% aller Stimmen"
 
-#: classes/Poll_Renderer.php:334
-#: classes/Poll_Renderer.php:341
+#: classes/Poll_Renderer.php:324
+#: classes/Poll_Renderer.php:331
 msgctxt "front"
 msgid "vote,votes,votes"
 msgstr "Stimme,Stimmen,Stimmen"
 
-#: classes/Poll_Renderer.php:382
+#: classes/Poll_Renderer.php:372
 #, php-format
 msgctxt "front"
 msgid "Voters: %s"
@@ -804,15 +788,15 @@ msgstr "Wähler: %s"
 msgid "- Last open poll"
 msgstr "- Letzte offene Umfrage"
 
-#: includes/theme-functions.php:86
+#: includes/theme-functions.php:84
 msgid "Poll results hidden for now..."
 msgstr "Umfrageergebnisse derzeit verborgen..."
 
-#: includes/theme-functions.php:315
+#: includes/theme-functions.php:309
 msgid "From posts:"
 msgstr "Aus Beiträgen:"
 
-#: classes/Poll_Renderer.php:530
+#: classes/Poll_Renderer.php:515
 msgctxt "front"
 msgid "Only registered users can vote. <a>Login</a> to vote."
 msgstr "Nur registrierte Benutzer können abstimmen. <a>Anmelden</a> zum Abstimmen."
@@ -953,7 +937,7 @@ msgstr "%s Zeilen gelöscht"
 msgid "Removed logs: %d. Removed answers:%d. Removed users %d."
 msgstr "Gelöschte Protokolle: %d. Gelöschte Antworten: %d. Gelöschte Benutzer: %d."
 
-#: classes/Admin/Admin_Page.php:277
+#: classes/Admin/Admin_Page.php:276
 msgid "If you like this plugin, please <a>leave your review</a>"
 msgstr "Wenn Ihnen das Plugin gefällt, <a>hinterlassen Sie bitte eine Bewertung</a>"
 
@@ -977,21 +961,9 @@ msgstr "Metabox bei Beiträgen deaktivieren."
 msgid "Check this to disable polls metabox functionality for posts where you can attached poll to a post..."
 msgstr "Ankreuzen, um die Metabox-Funktion für Umfragen in Beiträgen zu deaktivieren."
 
-#: classes/Admin/Admin_Page_Settings.php:208
-msgid "Inline script code directly in the HTML"
-msgstr "Skript direkt ins HTML einbinden"
-
-#: classes/Admin/Admin_Page_Settings.php:210
-msgid "Enable to add plugin scripts directly into HTML instead of loading separate .js files. This reduces server requests and speeds up page loading."
-msgstr "Plugin-Skripte direkt im HTML einfügen, nicht als separate .js-Dateien. Reduziert Server-Anfragen, schnellere Ladezeit."
-
-#: classes/Admin/Admin_Page_Settings.php:233
+#: classes/Admin/Admin_Page_Settings.php:225
 msgid "Or if IP detection is wrong. (for cloudflare)"
 msgstr "Oder wenn die IP-Erkennung falsch ist (für Cloudflare)."
-
-#: classes/Admin/Admin_Page_Settings.php:293
-msgid "Don't connect JS files. (Debug)"
-msgstr "JS-Dateien nicht einbinden (Debug)."
 
 #: classes/Poll_Service.php:68
 msgid "ERROR: You select more number of answers than it is allowed..."
@@ -1000,4 +972,3 @@ msgstr "FEHLER: Es wurden mehr Antworten gewählt als erlaubt..."
 #: classes/Helpers/Helpers.php:11
 msgid "Alphabetically"
 msgstr "Alphabetisch"
-

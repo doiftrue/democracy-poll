@@ -202,7 +202,6 @@ export default class Cache {
 			}
 			// show revote button
 			else{
-				screen.querySelectorAll( 'input[value="vote"]' ).forEach( node => node.remove() ) // allow revote
 				screen.querySelectorAll( '.dem-revote-button-wrap' ).forEach( Utils.showElement )
 			}
 		}

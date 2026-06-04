@@ -57,7 +57,9 @@ function democracyInit(){
 
 		// Add Click events
 		screen.querySelectorAll( '[' + attr + ']' ).forEach( act => {
-			act.setAttribute( 'href', '' ) // clear URL so the request URL isn't visible
+			if( act.tagName === 'A' ){
+				act.setAttribute( 'href', '' ) // clear URL so the request URL isn't visible
+			}
 			act.addEventListener( 'click', ( ev ) => {
 				ev.preventDefault()
 				act.blur()
@@ -65,7 +67,7 @@ function democracyInit(){
 			} )
 		} )
 
-		// Hide submit button
+		// Hide vote button
 		if( screen.querySelector( 'input[type=radio][data-dem-act=vote]' ) ){
 			screen.querySelectorAll( '.dem-vote-button' ).forEach( button => button.style.display = 'none' )
 		}
@@ -85,18 +87,6 @@ function democracyInit(){
 		// Set height explicitly ------------
 		// Bind to window resize (mobile rotation, etc.)
 		Utils.setHeight( screen, doAnimation )
-
-		// form submit event
-		screen.querySelectorAll( 'form' ).forEach( form => {
-			form.addEventListener( 'submit', function( e ){
-				e.preventDefault()
-
-				const actInput = form.querySelector( 'input[name="dem_act"]' )
-				if( actInput?.value ){
-					doAction( form, actInput.value )
-				}
-			} )
-		} )
 	}
 
 	function animateFill( fill ){
@@ -165,19 +155,23 @@ function democracyInit(){
 
 	// Collect answers and return as a string
 	function collectAnsw( the ){
-		const form = the.closest( 'form' )
-		const userTextInput = form.querySelector( State.userAnswerSel )
+		const screen = the.closest( State.screenSel )
+		if( ! screen ){
+			return ''
+		}
+
+		const userTextInput = screen.querySelector( State.userAnswerSel )
 		const userText = userTextInput ? userTextInput.value : ''
 		let answ = []
 
 		// multiple
-		const checkbox = form.querySelectorAll( '[type=checkbox]:checked' )
+		const checkbox = screen.querySelectorAll( '[type=checkbox]:checked' )
 		if( checkbox.length ){
 			checkbox.forEach( input => answ.push( input.value ) )
 		}
 		// single
 		else{
-			const radio = form.querySelector( '[type=radio]:checked' )
+			const radio = screen.querySelector( '[type=radio]:checked' )
 			radio && answ.push( radio.value )
 		}
 
@@ -194,21 +188,21 @@ function democracyInit(){
 	// handle requests on click
 	function doAction( the, action ){
 		const poll = the.closest( State.mainSel )
-		const data = {
+		const ajaxData = {
 			dem_pid: Cache.getOpts( poll ).pid,
 			dem_act: action,
 			action : 'dem_ajax'
 		}
 
-		if( typeof data.dem_pid === 'undefined' ){
+		if( typeof ajaxData.dem_pid === 'undefined' ){
 			console.warn( 'Poll id is not defined!' )
 			return false
 		}
 
 		// Collect answers
 		if( 'vote' === action ){
-			data.answer_ids = collectAnsw( the )
-			if( ! data.answer_ids ){
+			ajaxData.answer_ids = collectAnsw( the )
+			if( ! ajaxData.answer_ids ){
 				Utils.demShake( the )
 				return false
 			}
@@ -232,7 +226,7 @@ function democracyInit(){
 		}
 
 		Loader.setLoader( the )
-		Cache.post( State.ajaxurl, data ).then( html => {
+		Cache.post( State.ajaxurl, ajaxData ).then( html => {
 			Loader.unsetLoader( screen )
 
 			if( ! html ){

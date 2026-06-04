@@ -280,17 +280,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 					<li class="block">
 						<label>
-							<input type="checkbox" value="1"
-							       name="dem[disable_js]" <?php checked( options()->disable_js, 1 ) ?> />
-							<?= esc_html__( 'Don\'t connect JS files. (Debug)', 'democracy-poll' ) ?>
-						</label>
-						<em><?= esc_html__( 'If checked, the plugin\'s .js file will NOT be connected to front end. Enable this option to test the plugin\'s work without JavaScript.', 'democracy-poll' ) ?></em>
-					</li>
-
-					<li class="block">
-						<label>
-							<input type="checkbox" value="1"
-							       name="dem[use_widget]" <?php checked( options()->use_widget, 1 ) ?> />
+							<input type="checkbox" value="1" name="dem[use_widget]" <?php checked( options()->use_widget, 1 ) ?> />
 							<?= esc_html__( 'Widget', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'Check to activate the widget.', 'democracy-poll' ) ?></em>

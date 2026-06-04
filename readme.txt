@@ -1,6 +1,6 @@
 === Democracy Poll ===
 Stable tag: trunk
-Tested up to: 6.8.2
+Tested up to: 7.0
 Contributors: Tkama
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -140,6 +140,21 @@ Yes. When you deactivate and delete the plugin, it removes all its options and d
 
 
 == Changelog ==
+
+= 6.2.0 =
+- CHG: "disable_js" option removed. Ability to work plugin without JS in browser removed. Now JS is required for better UX and performance.
+- CHG: jQuery dependency complitelly removed.
+- CHG: Options "show_copyright" & "inline_js_css" and them logic removed.
+- IMP: Translate comments and replace var with const/let; Other imp
+- IMP: Minor code improvements & refactor
+- IMP: package.json added, ES modules gulpfile.js added - some functions extracted to Utils.mjs. js/css moved to assets
+- IMP: Add Gulp build system and update JavaScript files to ES6 modules
+
+= 6.1.2 =
+- UPD: Tested up to WP 7.0.
+
+= 6.1.1 =
+- FIX: esc_attr() added for inline js to fix possible bugs on some servers.
 
 = 6.1.0 =
 - CHG: DEM_VER constant removed use `DemocracyPoll\plugin()->ver` instead.

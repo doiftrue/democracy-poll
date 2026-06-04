@@ -52,9 +52,6 @@ class Poll_Utils {
 			: '';
 	}
 
-	/**
-	 * Adds scripts to the footer.
-	 */
 	public static function enqueue_js_once(): void {
 		static $once = 0;
 		if( $once++ ){
@@ -62,7 +59,10 @@ class Poll_Utils {
 		}
 
 		// inline HTML
-		wp_enqueue_script( 'democracy', plugin()->url . '/assets/js/democracy.min.js', [], plugin()->ver, true );
+		wp_enqueue_script( 'democracy', plugin()->url . '/assets/js/democracy.min.js', [], plugin()->ver, [
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		] );
 	}
 
 }

@@ -23,7 +23,6 @@ namespace DemocracyPoll;
  * @property-read array  $access_roles           Eg: []
  * @property-read int    $soft_ip_detect         Eg: 0
  * @property-read int    $post_metabox_off       Eg: 0
- * @property-read int    $disable_js             Eg: 0
  *
  * Design:
  * @property-read string $loader_fname         Eg: 'css-roller.css3'
@@ -82,8 +81,6 @@ class Options {
 			// определять IP не только через REMOTE_ADDR
 			'post_metabox_off'       => 0,
 			// выключить ли метабокс для записей?
-			'disable_js'             => 0,
-			// Дебаг: отключает JS
 		],
 		'design' => [
 			'loader_fname'         => 'css-roller.css3',

@@ -97,9 +97,7 @@ class Poll_Renderer {
 			$html .= $this->get_cache_screens();
 		}
 
-		if( ! options()->disable_js ){
-			Poll_Utils::enqueue_js_once();
-		}
+		Poll_Utils::enqueue_js_once();
 
 		return Poll_Utils::get_minified_styles_once() . $html;
 	}
@@ -155,10 +153,6 @@ class Poll_Renderer {
 			: $this->get_result_screen();
 		$html .= '</div>';
 
-		if( ! $this->for_cache ){
-			$html .= '<noscript>Poll Options are limited because JavaScript is disabled in your browser.</noscript>';
-		}
-
 		return $html;
 	}
 
@@ -192,7 +186,7 @@ class Poll_Renderer {
 			$lis_html .= strtr( <<<'HTML'
 				<li data-aid="{AID}">
 					<label class="dem__{TYPE}_label">
-						<input class="dem__{TYPE}" {AUTO_VOTE} type="{TYPE}" value="{AID}" name="answer_ids[]" {CHECKED} {DISABLED}><span class="dem__spot"></span> {ANSWER}
+						<input class="dem__{TYPE}" {AUTO_VOTE} type="{TYPE}" value="{AID}" {CHECKED} {DISABLED}><span class="dem__spot"></span> {ANSWER}
 					</label>
 				</li>
 				HTML,
@@ -211,12 +205,10 @@ class Poll_Renderer {
 			$lis_html .= '<li class="dem-add-answer"><a href="javascript:void(0);" rel="nofollow" data-dem-act="newAnswer" class="dem-link">' . _x( 'Add your answer', 'front', 'democracy-poll' ) . '</a></li>';
 		}
 
-		$bottom_html  = '<div class="dem-bottom">';
-		$bottom_html .= '<input type="hidden" name="dem_act" value="vote">';
-		$bottom_html .= '<input type="hidden" name="dem_pid" value="' . $poll->id . '">';
+		$bottom_html = '<div class="dem-bottom">';
 
-		$voted_btn = '<div class="dem-voted-button"><input class="dem-button ' . options()->btn_class . '" type="submit" value="' . _x( 'Already voted...', 'front', 'democracy-poll' ) . '" disabled="disabled"></div>';
-		$vote_btn = '<div class="dem-vote-button"><input class="dem-button ' . options()->btn_class . '" type="submit" value="' . _x( 'Vote', 'front', 'democracy-poll' ) . '" data-dem-act="vote"></div>';
+		$voted_btn = '<div class="dem-voted-button"><input class="dem-button ' . options()->btn_class . '" type="button" value="' . _x( 'Already voted...', 'front', 'democracy-poll' ) . '" disabled="disabled"></div>';
+		$vote_btn = '<div class="dem-vote-button"><input class="dem-button ' . options()->btn_class . '" type="button" value="' . _x( 'Vote', 'front', 'democracy-poll' ) . '" data-dem-act="vote"></div>';
 
 		if( $auto_vote_on_select ){
 			$vote_btn = '';
@@ -261,12 +253,12 @@ class Poll_Renderer {
 		$bottom_html .= '</div>'; // dem-bottom
 
 		$html = <<<HTML
-		<form method="POST" action="#democracy-$poll->id">
+		<div class="dem-vote-wrap">
 			<ul class="dem-vote">
 				$lis_html
 			</ul>
 			$bottom_html
-		</form>
+		</div>
 		HTML;
 
 		/**
@@ -479,18 +471,13 @@ class Poll_Renderer {
 	protected function revote_btn_html(): string {
 		return strtr( <<<'HTML'
 			<span class="dem-revote-button-wrap">
-			<form action="#democracy-{POLL_ID}" method="POST">
-				<input type="hidden" name="dem_act" value="delVoted">
-				<input type="hidden" name="dem_pid" value="{POLL_ID}">
-				<input type="submit" value="{REVOTE}" class="dem-revote-link dem-revote-button dem-button {BTN_CLASS}" data-dem-act="delVoted" data-confirm_text="{CONFIRM}">
-			</form>
+				<input type="button" value="{REVOTE}" class="dem-revote-link dem-revote-button dem-button {BTN_CLASS}" data-dem-act="delVoted" data-confirm_text="{CONFIRM}">
 			</span>
 			HTML,
 			[
-				'{POLL_ID}'  => $this->poll->id,
-				'{REVOTE}'   => _x( 'Revote', 'front', 'democracy-poll' ),
-				'{BTN_CLASS}'=> options()->btn_class,
-				'{CONFIRM}'  => _x( 'Are you sure you want cancel the votes?', 'front', 'democracy-poll' ),
+				'{REVOTE}'    => _x( 'Revote', 'front', 'democracy-poll' ),
+				'{BTN_CLASS}' => options()->btn_class,
+				'{CONFIRM}'   => _x( 'Are you sure you want cancel the votes?', 'front', 'democracy-poll' ),
 			]
 		);
 	}
