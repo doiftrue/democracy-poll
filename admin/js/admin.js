@@ -147,8 +147,8 @@ document.addEventListener('DOMContentLoaded', function(){
 		// wpColorPicker
 		jQuery( '.iris_color' ).wpColorPicker();
 
-		var myOptions = {},
-			$preview = jQuery( '.polls-preview' );
+		var myOptions = {}
+		var	$preview = jQuery( '.polls-preview' );
 		myOptions.change = function( event, ui ){
 			var hexcolor = jQuery( this ).wpColorPicker( 'color' );
 			$preview.css( 'background-color', hexcolor );

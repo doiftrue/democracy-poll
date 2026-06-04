@@ -6,28 +6,16 @@
   min-height:40px;
   max-width:70px;
   max-height:70px;
-  background-color: #fccc2d;
+  background-color: var(--dem-loader-color, #fccc2d);
 
   margin: 0 auto;
-  -webkit-animation: dem-cube 1.2s infinite ease-in-out; animation: dem-cube 1.2s infinite ease-in-out;}
-
-@-webkit-keyframes dem-cube {
-  0% { -webkit-transform: perspective(120px) }
-  50% { -webkit-transform: perspective(120px) rotateY(180deg) }
-  100% { -webkit-transform: perspective(120px) rotateY(180deg)  rotateX(180deg) }
+  animation: dem-cube 1.2s infinite ease-in-out;
 }
 
 @keyframes dem-cube {
-  0% { 
-    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
-    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg) 
-  } 50% { 
-    transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
-    -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg) 
-  } 100% { 
-    transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
-    -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
-  }
+  0% { transform: perspective(120px) rotateX(0deg) rotateY(0deg); }
+  50% { transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg); }
+  100% { transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg); }
 }</style>
 
 <div class="dem-cube css-fill"></div>

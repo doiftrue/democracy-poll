@@ -60,8 +60,10 @@ background: #fff; }
 .polls-preview .poll .tit{ text-align: center; opacity:.5; }
 .polls-preview .wp-picker-container{ position: absolute; bottom: 0; right:0; }
 
-.wp-picker-container{ position: relative; bottom: -.7em; }
-.wp-picker-holder{ position: absolute; z-index: 999; }
+.dempage_design {
+	.wp-picker-container{ position: relative; }
+	.wp-picker-holder{ position: absolute; z-index: 999; }
+}
 
 
 /* Polls list */

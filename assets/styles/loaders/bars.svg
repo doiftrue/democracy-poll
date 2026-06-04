@@ -1,4 +1,4 @@
-<svg viewBox="0 0 135 140" xmlns="http://www.w3.org/2000/svg" class="fill" fill="#cc007e">
+<svg viewBox="0 0 135 140" xmlns="http://www.w3.org/2000/svg" class="fill" fill="var(--dem-loader-color, #cc007e)">
     <rect y="10" width="15" height="120" rx="6">
         <animate attributeName="height"
              begin="0.5s" dur=".7s"

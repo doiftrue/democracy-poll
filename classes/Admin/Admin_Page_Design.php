@@ -60,7 +60,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 		}
 	}
 
-	public function render() {
+	public function render(): void {
 		if( ! plugin()->super_access ){
 			return;
 		}
@@ -122,8 +122,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 				<ul class="group">
 					<li class="title"><?= esc_html__( 'Progress line', 'democracy-poll' ); ?></li>
 					<li class="block">
-
-						<?= esc_html__( 'How to fill (paint) the progress of each answer?', 'democracy-poll' ) ?><br>
+						<p><?= esc_html__( 'How to fill (paint) the progress of each answer:', 'democracy-poll' ) ?></p>
 						<label style="margin-left:1em;">
 							<input type="radio" name="dem[graph_from_total]"
 							       value="0" <?php checked( options()->graph_from_total, 0 ) ?> />
@@ -139,22 +138,19 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 						<br><br>
 
 						<label>
-							<input type="text" class="iris_color" name="dem[line_fill]"
-							       value="<?= options()->line_fill ?>"/>
+							<input type="text" class="iris_color" name="dem[line_fill]" value="<?= esc_attr( options()->line_fill ) ?>"/>
 							<?= esc_html__( 'Line Color', 'democracy-poll' ) ?>
 						</label>
 						<br>
 
 						<label>
-							<input type="text" class="iris_color" name="dem[line_fill_voted]"
-							       value="<?= options()->line_fill_voted ?>">
-							<?= esc_html__( 'Line color (for voted user)', 'democracy-poll' ) ?>
+							<input type="text" class="iris_color" name="dem[line_fill_voted]" value="<?= esc_attr( options()->line_fill_voted ) ?>">
+							<span><?= esc_html__( 'Line color (for voted user)', 'democracy-poll' ) ?></span>
 						</label>
 						<br>
 
 						<label>
-							<input type="text" class="iris_color" name="dem[line_bg]"
-							       value="<?= options()->line_bg ?>"/>
+							<input type="text" class="iris_color" name="dem[line_bg]" value="<?= esc_attr( options()->line_bg ) ?>"/>
 							<?= esc_html__( 'Background color', 'democracy-poll' ) ?>
 						</label>
 						<br><br>
@@ -242,14 +238,13 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 
 
 				<!--Button-->
-				<ul class="group">
-					<li class="title"><?= esc_html__( 'Button', 'democracy-poll' ); ?></li>
-					<li class="block buttons">
+				<div class="group">
+					<div class="title">Button</div>
+					<div class="block buttons">
 
 						<div class="btn_select_wrap selectable_els">
 							<label>
-								<input type="radio" value=""
-								       name="dem[css_button]" <?php checked( options()->css_button, '' ) ?> />
+								<input type="radio" value="" name="dem[css_button]" <?php checked( options()->css_button, '' ) ?> />
 								<span class="radio_content">
 									<input type="button" value="<?= esc_attr__( 'No (default)', 'democracy-poll' ); ?>"/>
 								</span>
@@ -265,35 +260,29 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 
 								$fname = basename( $file );
 								$button_class = 'dem-button' . ++$i;
-								$css = "/*reset*/\n.$button_class{position: relative; display:inline-block; text-decoration: none; user-select: none; outline: none; line-height: 1; border:0;}\n";
-								$css .= str_replace( 'dem-button', $button_class, file_get_contents( $file ) ); // стили кнопки
+								$css = ".$button_class{ position: relative; display:inline-block; text-decoration:none; user-select: none; outline:none; line-height:1; border:0; }\n"; // reset
+								$css .= str_replace( '.dem-button', ".$button_class", file_get_contents( $file ) );
 
 								if( options()->css_button ){
-									$bbg = options()->btn_bg_color;
-									$bcolor = options()->btn_color;
+									$bbg     = options()->btn_bg_color;
+									$bcolor  = options()->btn_color;
 									$bbcolor = options()->btn_border_color;
 									// hover
-									$bh_bg = options()->btn_hov_bg;
-									$bh_color = options()->btn_hov_color;
+									$bh_bg     = options()->btn_hov_bg;
+									$bh_color  = options()->btn_hov_color;
 									$bh_bcolor = options()->btn_hov_border_color;
 
-									if( $bbg ){
-										$css .= "\n.$button_class{ background-color:$bbg !important; }\n";
-									}
-									if( $bcolor ){
-										$css .= ".$button_class{ color:$bcolor !important; }\n";
-									}
-									if( $bbcolor ){
-										$css .= ".$button_class{ border-color:$bbcolor !important; }\n";
-									}
-									if( $bh_bg ){
-										$css .= "\n.$button_class:hover{ background-color:$bh_bg !important; }\n";
-									}
-									if( $bh_color ){
-										$css .= ".$button_class:hover{ color:$bh_color !important; }\n";
-									}
-									if( $bh_bcolor ){
-										$css .= ".$button_class:hover{ border-color:$bh_bcolor !important; }\n";
+									$button_vars = array_filter( [
+										$bbg       ? "--dem-button-bg: $bbg"                       : '',
+										$bcolor    ? "--dem-button-color: $bcolor"                 : '',
+										$bbcolor   ? "--dem-button-border-color: $bbcolor"         : '',
+										$bh_bg     ? "--dem-button-hover-bg: $bh_bg"               : '',
+										$bh_color  ? "--dem-button-hover-color: $bh_color"         : '',
+										$bh_bcolor ? "--dem-button-hover-border-color: $bh_bcolor" : '',
+									] );
+
+									if( $button_vars ){
+										$css .= "\n.$button_class{ " . implode( "; ", $button_vars ) . "; }\n";
 									}
 								}
 								?>
@@ -311,63 +300,78 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 							}
 							?>
 						</div>
-						<div class="clearfix"></div>
-						<br>
 
-						<p style="float:left; margin-right:3em;">
-							<?= esc_html__( 'Button colors', 'democracy-poll' ) ?><br>
+						<div style="display:flex; gap:1rem;">
+							<div style="flex-basis: 33%">
+								<p><?= esc_html__( 'Button colors', 'democracy-poll' ) ?></p>
+								<?php
+								self::color_picker_html( [
+									'title' => __( 'Bg color', 'democracy-poll' ),
+									'name'  => 'dem[btn_bg_color]',
+									'value' => options()->btn_bg_color
+								] );
 
-							<input type="text" class="iris_color" name="dem[btn_bg_color]"
-							       value="<?= options()->btn_bg_color ?>">
-							<?= esc_html__( 'Bg color', 'democracy-poll' ) ?><br>
+								self::color_picker_html( [
+									'title' => __( 'Text Color', 'democracy-poll' ),
+									'name'  => 'dem[btn_color]',
+									'value' => options()->btn_color
+								] );
 
-							<input type="text" class="iris_color" name="dem[btn_color]"
-							       value="<?= options()->btn_color ?>">
-							<?= esc_html__( 'Text Color', 'democracy-poll' ) ?><br>
+								self::color_picker_html( [
+									'title' => __( 'Border Color', 'democracy-poll' ),
+									'name'  => 'dem[btn_border_color]',
+									'value' => options()->btn_border_color
+								] );
+								?>
+							</div>
+							<div style="flex-basis: 33%">
+								<p><?= esc_html__( 'Hover button colors', 'democracy-poll' ) ?></p>
+								<?php
+								self::color_picker_html( [
+									'title' => __( 'Bg color', 'democracy-poll' ),
+									'name'  => 'dem[btn_hov_bg]',
+									'value' => options()->btn_hov_bg
+								] );
 
-							<input type="text" class="iris_color" name="dem[btn_border_color]"
-							       value="<?= options()->btn_border_color ?>">
-							<?= esc_html__( 'Border Color', 'democracy-poll' ) ?>
-						</p>
-						<p style="float:left; margin-right:3em;">
-							<?= esc_html__( 'Hover button colors', 'democracy-poll' ) ?><br>
+								self::color_picker_html( [
+									'title' => __( 'Text Color', 'democracy-poll' ),
+									'name'  => 'dem[btn_hov_color]',
+									'value' => options()->btn_hov_color
+								] );
 
-							<input type="text" class="iris_color" name="dem[btn_hov_bg]"
-							       value="<?= options()->btn_hov_bg ?>">
-							<?= esc_html__( 'Bg color', 'democracy-poll' ) ?><br>
+								self::color_picker_html( [
+									'title' => __( 'Border Color', 'democracy-poll' ),
+									'name'  => 'dem[btn_hov_border_color]',
+									'value' => options()->btn_hov_border_color
+								] );
+								?>
+							</div>
+							<div style="flex-basis: 33%">
+								<em>
+									<?= esc_html__( 'The colors correctly affects NOT for all buttons. You can change styles completely in "additional styles" field bellow.', 'democracy-poll' ) ?>
+								</em>
 
-							<input type="text" class="iris_color" name="dem[btn_hov_color]"
-							       value="<?= options()->btn_hov_color ?>">
-							<?= esc_html__( 'Text Color', 'democracy-poll' ) ?><br>
+								<!--<hr>-->
+								<label style="margin-top:3em;">
+									<input type="text" name="dem[btn_class]" value="<?= options()->btn_class ?>">
+									<em><?= esc_html__( 'An additional css class for all buttons in the poll. When the template has a special class for buttons, for example:', 'democracy-poll' ) ?> <code>btn btn-info</code></em>
+								</label>
+							</div>
 
-							<input type="text" class="iris_color" name="dem[btn_hov_border_color]"
-							       value="<?= options()->btn_hov_border_color ?>">
-							<?= esc_html__( 'Border Color', 'democracy-poll' ) ?>
-						</p>
-						<div class="clearfix"></div>
-						<em>
-							<?= esc_html__( 'The colors correctly affects NOT for all buttons. You can change styles completely in "additional styles" field bellow.', 'democracy-poll' ) ?>
-						</em>
+						</div><!--flex-->
 
-						<!--<hr>-->
-						<label style="margin-top:3em;">
-							<input type="text" name="dem[btn_class]" value="<?= options()->btn_class ?>">
-							<em><?= esc_html__( 'An additional css class for all buttons in the poll. When the template has a special class for buttons, for example <code>btn btn-info</code>', 'democracy-poll' ) ?></em>
-						</label>
-					</li>
+					</div>
 
-				</ul>
+				</div>
 
 
 				<!-- AJAX loader -->
-				<ul class="group">
-					<li class="title"><?= esc_html__( 'AJAX loader', 'democracy-poll' ); ?></li>
-					<li class="block loaders" style="text-align:center;">
-
+				<div class="group">
+					<div class="title">Loader</div>
+					<div class="block loaders" style="text-align:center;">
 						<div class="selectable_els">
 							<label class="lo_item" style="display: block; height:30px;">
-								<input type="radio" value=""
-								       name="dem[loader_fname]" <?php checked( options()->loader_fname, '' ) ?>>
+								<input type="radio" value="" name="dem[loader_fname]" <?php checked( options()->loader_fname, '' ) ?>>
 								<span class="radio_content"><?= esc_html__( 'No (dots...)', 'democracy-poll' ); ?></span>
 							</label>
 							<br>
@@ -386,8 +390,8 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 
 								// поправим стили
 								if( options()->loader_fill ){
-									preg_match_all( '~\.dem-loader\s+\.(?:fill|stroke|css-fill)[^\{]*\{.*?\}~s', $demcss['base_css'], $match );
-									echo "<style>" . str_replace( '.dem-loader', '.loader', implode( "\n", $match[0] ) ) . "</style>";
+									$loader_css = ".loader{ --dem-loader-color: " . options()->loader_fill . "; }";
+									echo "<style>$loader_css</style>";
 								}
 
 								foreach( $val as $fname => $file ){
@@ -412,12 +416,11 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 							<?= esc_html__( 'AJAX Loader. If choose "NO", loader replaces by dots "..." which appends to a link/button text. SVG images animation don\'t work in IE 11 or lower, other browsers are supported at  90% (according to caniuse.com statistics).', 'democracy-poll' ) ?>
 						</em>
 
-						<input class="iris_color fill" name="dem[loader_fill]" type="text"
-						       value="<?= options()->loader_fill ?>">
+						<input class="iris_color fill" name="dem[loader_fill]" type="text" value="<?= options()->loader_fill ?>">
 
-					</li>
+					</div>
 
-				</ul>
+				</div>
 
 				<!-- Custom styles -->
 				<ul class="group">
@@ -475,6 +478,15 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 
 			</form>
 
+		</div>
+		<?php
+	}
+
+	private static function color_picker_html( $args ): void {
+		?>
+		<div style="display: flex; align-items: center; gap: .5rem;">
+			<input type="text" class="iris_color" name="<?= esc_attr( $args['name'] ) ?>" value="<?= esc_attr( $args['value'] ) ?>">
+			<span><?= esc_html__( $args['title'] ) ?></span>
 		</div>
 		<?php
 	}

@@ -41,7 +41,6 @@ class Options_CSS {
 	 * @return string css styles code or empty string if the template is disabled.
 	 */
 	private function collect_base_css(): string {
-
 		$tpl = options()->css_file_name;
 
 		// выходим если не указан шаблон
@@ -49,8 +48,8 @@ class Options_CSS {
 			return '';
 		}
 
-		$button = options()->css_button;
-		$loader = options()->loader_fill;
+		$button      = options()->css_button;
+		$loader_fill = options()->loader_fill;
 
 		$radios = options()->checkradio_fname;
 
@@ -61,60 +60,46 @@ class Options_CSS {
 		$out .= $radios ? "\n" . file_get_contents( "$styledir/checkbox-radio/$radios" ) : '';
 		$out .= $button ? "\n" . file_get_contents( "$styledir/buttons/$button" ) : '';
 
-		if( $loader ){
-			$out .= "\n.dem-loader .fill{ fill: $loader !important; }\n";
-			$out .= ".dem-loader .css-fill{ background-color: $loader !important; }\n";
-			$out .= ".dem-loader .stroke{ stroke: $loader !important; }\n";
+		if( $loader_fill ){
+			$out .= "\n.democracy{ --dem-loader-color: $loader_fill; }\n";
 		}
 
 		// progress line
-		$d_bg       = options()->line_bg;
-		$d_fill     = options()->line_fill;
-		$d_height   = options()->line_height;
-		$d_fillThis = options()->line_fill_voted;
+		$d_bg         = options()->line_bg;
+		$d_fill       = options()->line_fill;
+		$d_height     = options()->line_height;
+		$d_fill_voted = options()->line_fill_voted;
 
-		if( $d_bg ){
-			$out .= "\n.dem-graph{ background: $d_bg !important; }\n";
-		}
-		if( $d_fill ){
-			$out .= "\n.dem-fill{ background-color: $d_fill !important; }\n";
-		}
-		if( $d_fillThis ){
-			$out .= ".dem-voted-this .dem-fill{ background-color:$d_fillThis !important; }\n";
-		}
-		if( $d_height ){
-			$out .= ".dem-graph{ height:{$d_height}px; line-height:{$d_height}px; }\n";
-		}
+		$css_vars = array_filter( [
+			$d_bg         ? "--dem-graph-bg: $d_bg"             : '',
+			$d_fill       ? "--dem-fill: $d_fill"               : '',
+			$d_height     ? "--dem-graph-height: {$d_height}px" : '',
+			$d_fill_voted ? "--dem-fill-voted: $d_fill_voted"   : '',
+		] );
 
 		if( $button ){
 			// button
-			$bbackground = options()->btn_bg_color;
-			$bcolor      = options()->btn_color;
-			$bbcolor     = options()->btn_border_color;
-			// hover
+			$bbg     = options()->btn_bg_color;
+			$bcolor  = options()->btn_color;
+			$bbcolor = options()->btn_border_color;
+			// button hover
 			$bh_bg     = options()->btn_hov_bg;
 			$bh_color  = options()->btn_hov_color;
 			$bh_bcolor = options()->btn_hov_border_color;
 
-			if( $bbackground ){
-				$out .= "\n.dem-button{ background-color:$bbackground !important; }\n";
-			}
-			if( $bcolor ){
-				$out .= ".dem-button{ color:$bcolor !important; }\n";
-			}
-			if( $bbcolor ){
-				$out .= ".dem-button{ border-color:$bbcolor !important; }\n";
-			}
+			$css_vars = array_filter( [
+				...$css_vars,
+				$bbg       ? "--dem-button-bg: $bbg"                       : '',
+				$bcolor    ? "--dem-button-color: $bcolor"                 : '',
+				$bbcolor   ? "--dem-button-border-color: $bbcolor"         : '',
+				$bh_bg     ? "--dem-button-hover-bg: $bh_bg"               : '',
+				$bh_color  ? "--dem-button-hover-color: $bh_color"         : '',
+				$bh_bcolor ? "--dem-button-hover-border-color: $bh_bcolor" : '',
+			] );
+		}
 
-			if( $bh_bg ){
-				$out .= "\n.dem-button:hover{ background-color:$bh_bg !important; }\n";
-			}
-			if( $bh_color ){
-				$out .= ".dem-button:hover{ color:$bh_color !important; }\n";
-			}
-			if( $bh_bcolor ){
-				$out .= ".dem-button:hover{ border-color:$bh_bcolor !important; }\n";
-			}
+		if( $css_vars ){
+			$out .= "\n.democracy{ " . implode( "; ", $css_vars ) . "; }\n";
 		}
 
 		return $out;
