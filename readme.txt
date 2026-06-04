@@ -142,11 +142,13 @@ Yes. When you deactivate and delete the plugin, it removes all its options and d
 == Changelog ==
 
 = 6.2.0 =
-- CHG: "disable_js" option removed. Ability to work plugin without JS in browser removed. Now JS is required for better UX and performance.
 - CHG: jQuery dependency complitelly removed.
+- IMP: Vote/Revote Height Animations improvements.
+- IMP: Modernize styling - variables added
+- IMP: Options "Max height" & "Line height" supports css unit (not only px).
 - CHG: Options "show_copyright" & "inline_js_css" and them logic removed.
-- IMP: Translate comments and replace var with const/let; Other imp
-- IMP: Minor code improvements & refactor
+- CHG: Option "disable_js" removed. Ability to work plugin without JS in browser removed. Now JS is required for better UX and performance.
+- IMP: Code improvements & refactor. Translate code comments; Replace var with const/let; etc.
 - IMP: package.json added, ES modules gulpfile.js added - some functions extracted to Utils.mjs. js/css moved to assets
 - IMP: Add Gulp build system and update JavaScript files to ES6 modules
 
