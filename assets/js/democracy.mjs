@@ -31,7 +31,7 @@ function democracyInit(){
 			}
 		} )
 
-		demScreens.forEach( screen => initActions( screen, false ) )
+		demScreens.forEach( screen => initActions( screen ) )
 
 		const setScreenHeight = () => demScreens.forEach( screen => Utils.setHeight( screen ) )
 		window.addEventListener( 'load', setScreenHeight ) // update height once more
@@ -44,13 +44,13 @@ function democracyInit(){
 		 * Requires js-cookie to be installed
 		 * and extra Democracy variables/methods.
 		 */
-		Cache.actionsHandler = ( screen, doAnimation = true ) => initActions( screen, doAnimation )
+		Cache.actionsHandler = initActions
 		Cache.initAll()
 	}
 
 	// Initialize all events for each poll: clicks, height, button visibility
 	// applies to '.dem-screen'
-	function initActions( screen, doAnimation = true ){
+	function initActions( screen ){
 		// Attach click handlers for all marked elements inside the given element:
 		// includes AJAX on click and other Democracy interactions ----------
 		const attr = 'data-dem-act'
@@ -86,7 +86,7 @@ function democracyInit(){
 
 		// Set height explicitly ------------
 		// Bind to window resize (mobile rotation, etc.)
-		Utils.setHeight( screen, doAnimation )
+		Utils.setHeight( screen, false )
 	}
 
 	function animateFill( fill ){
@@ -226,32 +226,36 @@ function democracyInit(){
 		}
 
 		Loader.setLoader( the )
-		Cache.post( State.ajaxurl, ajaxData ).then( html => {
-			Loader.unsetLoader( screen )
+		Cache.post( State.ajaxurl, ajaxData )
+			.finally( () => Loader.unsetLoader( screen ) )
+			.then( html => {
+				if( ! html ){
+					return
+				}
 
-			if( ! html ){
-				return
-			}
+				screen.dataset['expanded'] = 'true'
 
-			delete screen.dataset['expanded']
-
-			screen.innerHTML = html
-			initActions( screen ) // rebind events
-
-			// scroll to the top of the poll block
-			setTimeout( () => {
-				window.scrollTo( {
-					top     : poll.getBoundingClientRect().top + window.pageYOffset - 70,
-					behavior: 'smooth'
-				} )
-			}, 200 )
-		} )
+				const fadeDuration = 500
+				screen.style.transition = `opacity ${fadeDuration}ms ease`
+				screen.style.opacity = 0
+				setTimeout( () => {
+					screen.innerHTML = html
+					initActions( screen ) // rebind events
+					isElemVisibleInViewport( poll ) || poll.scrollIntoView( { behavior: 'smooth', block: 'start' } )
+					screen.style.opacity = 1
+				}, fadeDuration )
+			} )
 			.catch( error => {
 				Loader.unsetLoader( screen )
 				console.warn( 'Democracy: AJAX request failed', error )
 			} )
 
 		return false
+	}
+
+	function isElemVisibleInViewport( el ) {
+		const rect = el.getBoundingClientRect();
+		return rect.bottom > 200 && rect.top < window.innerHeight; // bottom visible > 200px
 	}
 
 }

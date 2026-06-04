@@ -56,7 +56,7 @@ export default class Cache {
 			Cache.setAnswers( screen, answrs )
 		}
 
-		Cache.actionsHandler( screen, false )
+		Cache.actionsHandler( screen )
 
 		if( notVoteFlag ){
 			return // exit if it has already been checked that the user has not voted.
@@ -96,8 +96,7 @@ export default class Cache {
 								return
 							}
 
-							delete screen.dataset['expanded']
-
+							screen.dataset['expanded'] = 'true'
 							screen.innerHTML = votedHTML
 							Cache.setAnswers( screen, reply )
 							Cache.actionsHandler( screen )

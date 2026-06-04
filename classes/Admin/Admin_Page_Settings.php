@@ -220,6 +220,14 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 					<li class="block">
 						<label>
+							<input type="checkbox" value="1" name="dem[use_widget]" <?php checked( options()->use_widget, 1 ) ?> />
+							<?= esc_html__( 'Widget', 'democracy-poll' ) ?>
+						</label>
+						<em><?= esc_html__( 'Check to activate the widget.', 'democracy-poll' ) ?></em>
+					</li>
+
+					<li class="block">
+						<label>
 							<input type="checkbox" value="1" name="dem[soft_ip_detect]" <?php checked( options()->soft_ip_detect, 1 ) ?> />
 							<?= esc_html__( 'Check if you see something like "no_IP__123" in IP column on logs page. (not recommended)', 'democracy-poll' ) ?>
 							<?= esc_html__( 'Or if IP detection is wrong. (for cloudflare)', 'democracy-poll' ) ?>
@@ -264,6 +272,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					</ul>
 				<?php } ?>
 
+
 				<br>
 				<p>
 					<input type="submit" name="dem_save_main_options" class="button-primary"
@@ -277,14 +286,6 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 				<h3><?= esc_html__( 'Others', 'democracy-poll' ) ?></h3>
 
 				<ul style="margin:1em;">
-
-					<li class="block">
-						<label>
-							<input type="checkbox" value="1" name="dem[use_widget]" <?php checked( options()->use_widget, 1 ) ?> />
-							<?= esc_html__( 'Widget', 'democracy-poll' ) ?>
-						</label>
-						<em><?= esc_html__( 'Check to activate the widget.', 'democracy-poll' ) ?></em>
-					</li>
 
 					<li class="block">
 						<label>
