@@ -465,10 +465,11 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 							echo $demcss['base_css'] . "\n\n\n/* custom styles ------------------------------ */\n" . $demcss['additional_css'];
 							?></textarea>
 
-						<p><?= esc_html__( 'Minified version (uses to include it in HTML)', 'democracy-poll' ); ?></p>
-
-						<textarea onmouseup="select_kdfgu(this);" readonly="true"
-						          style="width:100%; min-height:10em;"><?= $demcss['minify'] ?></textarea>
+						<p>
+							<?= esc_html__( 'Minified version (uses to include it in HTML)', 'democracy-poll' ) ?>
+							<button type="button" onclick="const el = this.parentElement.nextElementSibling; el.hidden = ! el.hidden">show</button>
+						</p>
+						<pre hidden style="width:auto; white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; padding: 1em; background:rgba(0 0 0 / .1)"><?= $demcss['minify'] ?></pre>
 					</li>
 				</ul>
 
