@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-05 00:03+0500\n"
+"POT-Creation-Date: 2026-06-07 20:51+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -394,12 +394,12 @@ msgstr ""
 msgid "Shortcodes replaced: %s"
 msgstr ""
 
-#: classes/Admin/Admin_Page_l10n.php:38 classes/Admin/Admin_Page_Design.php:51
+#: classes/Admin/Admin_Page_l10n.php:38 classes/Admin/Admin_Page_Design.php:48
 #: classes/Admin/Admin_Page_Settings.php:35
 msgid "Updated"
 msgstr ""
 
-#: classes/Admin/Admin_Page_l10n.php:39 classes/Admin/Admin_Page_Design.php:52
+#: classes/Admin/Admin_Page_l10n.php:39 classes/Admin/Admin_Page_Design.php:49
 #: classes/Admin/Admin_Page_Settings.php:36
 msgid "Nothing was updated"
 msgstr ""
@@ -417,135 +417,128 @@ msgid "Save Text"
 msgstr ""
 
 #: classes/Admin/Admin_Page_l10n.php:109
-#: classes/Admin/Admin_Page_Design.php:444
-#: classes/Admin/Admin_Page_Settings.php:272
+#: classes/Admin/Admin_Page_Design.php:446
+#: classes/Admin/Admin_Page_Settings.php:281
 msgid "Reset Options"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:83
+#: classes/Admin/Admin_Page_Design.php:81
 msgid "Choose Theme"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:88
+#: classes/Admin/Admin_Page_Design.php:86
 msgid "No theme"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:107
+#: classes/Admin/Admin_Page_Design.php:105
 msgid "Other settings"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:111
+#: classes/Admin/Admin_Page_Design.php:108
 msgid ""
-"Max height of the poll in px. When poll has very many answers, it's better "
-"to collapse it. Set '-1', in order to disable this option. Default 500."
+"Max height of the poll in pixels (if no unit is set). When a poll has many "
+"answers, collapsing it improves readability. `-1` - disables this option. "
+"Default: 500."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:116
-msgid "Animation speed in milliseconds."
+#: classes/Admin/Admin_Page_Design.php:112
+msgid "Animation speed (in milliseconds)."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:123
+#: classes/Admin/Admin_Page_Design.php:119
 msgid "Progress line"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:126
-msgid "How to fill (paint) the progress of each answer?"
+#: classes/Admin/Admin_Page_Design.php:121
+msgid "How to fill (paint) the progress of each answer:"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:130
+#: classes/Admin/Admin_Page_Design.php:125
 msgid "winner - 100%, others as % of the winner"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:136
+#: classes/Admin/Admin_Page_Design.php:131
 msgid "as percent of all votes"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:144
+#: classes/Admin/Admin_Page_Design.php:138
 msgid "Line Color"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:151
+#: classes/Admin/Admin_Page_Design.php:144
 msgid "Line color (for voted user)"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:158
+#: classes/Admin/Admin_Page_Design.php:150
 msgid "Background color"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:165
-msgid "Line height"
+#: classes/Admin/Admin_Page_Design.php:160
+msgid "Line height (in px if unit not set)"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:172
+#: classes/Admin/Admin_Page_Design.php:167
 msgid ""
 "Progress line animation effect speed (default 1500). Set 0 to disable "
 "animation."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:188
-#: classes/Admin/Admin_Page_Design.php:254
+#: classes/Admin/Admin_Page_Design.php:183
+#: classes/Admin/Admin_Page_Design.php:248
 msgid "No (default)"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:246
-msgid "Button"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:318
+#: classes/Admin/Admin_Page_Design.php:305
 msgid "Button colors"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:322
-#: classes/Admin/Admin_Page_Design.php:337
+#: classes/Admin/Admin_Page_Design.php:308
+#: classes/Admin/Admin_Page_Design.php:330
 msgid "Bg color"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:326
-#: classes/Admin/Admin_Page_Design.php:341
+#: classes/Admin/Admin_Page_Design.php:314
+#: classes/Admin/Admin_Page_Design.php:336
 msgid "Text Color"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:330
-#: classes/Admin/Admin_Page_Design.php:345
+#: classes/Admin/Admin_Page_Design.php:320
+#: classes/Admin/Admin_Page_Design.php:342
 msgid "Border Color"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:333
+#: classes/Admin/Admin_Page_Design.php:327
 msgid "Hover button colors"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:349
+#: classes/Admin/Admin_Page_Design.php:350
 msgid ""
 "The colors correctly affects NOT for all buttons. You can change styles "
 "completely in \"additional styles\" field bellow."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:355
+#: classes/Admin/Admin_Page_Design.php:356
 msgid ""
 "An additional css class for all buttons in the poll. When the template has a "
-"special class for buttons, for example <code>btn btn-info</code>"
+"special class for buttons, for example:"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:364
-msgid "AJAX loader"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:371
+#: classes/Admin/Admin_Page_Design.php:374
 msgid "No (dots...)"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:412
+#: classes/Admin/Admin_Page_Design.php:415
 msgid ""
 "AJAX Loader. If choose \"NO\", loader replaces by dots \"...\" which appends "
 "to a link/button text. SVG images animation don't work in IE 11 or lower, "
 "other browsers are supported at  90% (according to caniuse.com statistics)."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:424
+#: classes/Admin/Admin_Page_Design.php:426
 msgid "Custom/Additional CSS styles"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:429
+#: classes/Admin/Admin_Page_Design.php:431
 msgid ""
 "In this field you can add some additional css properties or completely "
 "replace current css theme. Write here css and it will be added at the bottom "
@@ -553,44 +546,44 @@ msgid ""
 "describe all styles."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:430
+#: classes/Admin/Admin_Page_Design.php:432
 msgid ""
 "This field cleaned manually, if you reset options of this page or change/set "
 "another theme, the field will not be touched."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:440
+#: classes/Admin/Admin_Page_Design.php:442
 msgid "Save All Changes"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:445
+#: classes/Admin/Admin_Page_Design.php:447
 msgid "are you sure?"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:451
+#: classes/Admin/Admin_Page_Design.php:453
 msgid "All CSS styles that uses now"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:460
+#: classes/Admin/Admin_Page_Design.php:462
 msgid ""
 "It's all collected css styles: theme, button, options. You can copy this "
 "styles to the \"Custom/Additional CSS styles:\" field, disable theme and "
 "change copied styles by itself."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:468
+#: classes/Admin/Admin_Page_Design.php:471
 msgid "Minified version (uses to include it in HTML)"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:521
+#: classes/Admin/Admin_Page_Design.php:533
 msgid "Results view:"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:522
+#: classes/Admin/Admin_Page_Design.php:534
 msgid "Vote view:"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:523
+#: classes/Admin/Admin_Page_Design.php:535
 msgid "AJAX loader view:"
 msgstr ""
 
@@ -898,7 +891,7 @@ msgid ""
 msgstr ""
 
 #: classes/Admin/Admin_Page_Settings.php:186
-#: classes/Admin/Admin_Page_Settings.php:277
+#: classes/Admin/Admin_Page_Settings.php:286
 msgid "Others"
 msgstr ""
 
@@ -940,48 +933,48 @@ msgid "Uncheck to disable button in visual editor."
 msgstr ""
 
 #: classes/Admin/Admin_Page_Settings.php:224
+msgid "Widget"
+msgstr ""
+
+#: classes/Admin/Admin_Page_Settings.php:226
+msgid "Check to activate the widget."
+msgstr ""
+
+#: classes/Admin/Admin_Page_Settings.php:232
 msgid ""
 "Check if you see something like \"no_IP__123\" in IP column on logs page. "
 "(not recommended)"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:225
+#: classes/Admin/Admin_Page_Settings.php:233
 msgid "Or if IP detection is wrong. (for cloudflare)"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:227
+#: classes/Admin/Admin_Page_Settings.php:235
 msgid ""
 "Useful when your server does not work correctly with server variable "
 "REMOTE_ADDR. NOTE: this option give possibility to cheat voice."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:249
+#: classes/Admin/Admin_Page_Settings.php:257
 msgid ""
 "Role names, except 'administrator' which will have access to manage plugin."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:254
+#: classes/Admin/Admin_Page_Settings.php:262
 msgid "Migration"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:260
+#: classes/Admin/Admin_Page_Settings.php:268
 msgid "Migrate from WP Polls plugin"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:262
+#: classes/Admin/Admin_Page_Settings.php:270
 msgid "All polls, answers and logs of WP Polls will be added to Democracy Poll"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:270
+#: classes/Admin/Admin_Page_Settings.php:279
 msgid "Save Options"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Settings.php:285
-msgid "Widget"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Settings.php:287
-msgid "Check to activate the widget."
 msgstr ""
 
 #: classes/Admin/Admin_Page_Settings.php:294

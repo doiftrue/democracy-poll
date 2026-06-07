@@ -293,7 +293,7 @@ msgid "Hide vote button if it is NOT multiple poll with revote option. User will
 msgstr "Button zum Abstimmen ausblenden. Abstimmung erfolgt durch klicken auf die Antwort."
 
 #: classes/Admin/Admin_Page_Settings.php:186
-#: classes/Admin/Admin_Page_Settings.php:277
+#: classes/Admin/Admin_Page_Settings.php:286
 msgid "Others"
 msgstr "Sonstige"
 
@@ -330,17 +330,17 @@ msgstr "Button zum leichten Einfugen von Umfragen im WordPress-Editor(TinyMCE) h
 msgid "Uncheck to disable button in visual editor."
 msgstr "Den Umfragebutton mit Shortcode im Editor zeigen"
 
-#: classes/Admin/Admin_Page_Settings.php:270
+#: classes/Admin/Admin_Page_Settings.php:279
 msgid "Save Options"
 msgstr "Einstellungen speichern"
 
 #: classes/Admin/Admin_Page_l10n.php:109
-#: classes/Admin/Admin_Page_Design.php:444
-#: classes/Admin/Admin_Page_Settings.php:272
+#: classes/Admin/Admin_Page_Design.php:446
+#: classes/Admin/Admin_Page_Settings.php:281
 msgid "Reset Options"
 msgstr "Einstellungen zurucksetzen"
 
-#: classes/Admin/Admin_Page_Settings.php:287
+#: classes/Admin/Admin_Page_Settings.php:226
 msgid "Check to activate the widget."
 msgstr "Umfrage-Widget aktivieren"
 
@@ -348,19 +348,15 @@ msgstr "Umfrage-Widget aktivieren"
 msgid "Force plugin versions update (debug)"
 msgstr "Erzwinge Update des Plugins. (Debugging)"
 
-#: classes/Admin/Admin_Page_Design.php:130
+#: classes/Admin/Admin_Page_Design.php:125
 msgid "winner - 100%, others as % of the winner"
 msgstr "Gewinner - 100%, der Rest % vom Gewinner"
 
-#: classes/Admin/Admin_Page_Design.php:126
-msgid "How to fill (paint) the progress of each answer?"
-msgstr "Wie kann man uber den Fortschrittsbalken einfarben?"
-
-#: classes/Admin/Admin_Page_Design.php:349
+#: classes/Admin/Admin_Page_Design.php:350
 msgid "The colors correctly affects NOT for all buttons. You can change styles completely in \"additional styles\" field bellow."
 msgstr "Die Farben betreffen nicht alle Buttons. Du kannst die Button-Styles zusatzlichen in den personlichen / erweiterten CSS-Syles andern."
 
-#: classes/Admin/Admin_Page_Design.php:460
+#: classes/Admin/Admin_Page_Design.php:462
 msgid "It's all collected css styles: theme, button, options. You can copy this styles to the \"Custom/Additional CSS styles:\" field, disable theme and change copied styles by itself."
 msgstr "It's all collected css styles: theme, button, options. You can copy this styles to the \"Custom/Additional CSS styles:\" field, disable theme and change copied styles by itself."
 
@@ -417,19 +413,19 @@ msgstr "Schlie?en Vote"
 msgid "Open voting"
 msgstr "Umfrage"
 
-#: classes/Admin/Admin_Page_Design.php:521
+#: classes/Admin/Admin_Page_Design.php:533
 msgid "Results view:"
 msgstr "Vorschau Ergebnisse:"
 
-#: classes/Admin/Admin_Page_Design.php:522
+#: classes/Admin/Admin_Page_Design.php:534
 msgid "Vote view:"
 msgstr "Vorschau Abstimmung:"
 
-#: classes/Admin/Admin_Page_Design.php:523
+#: classes/Admin/Admin_Page_Design.php:535
 msgid "AJAX loader view:"
 msgstr "Vorschau AJAX-Loader:"
 
-#: classes/Admin/Admin_Page_Design.php:440
+#: classes/Admin/Admin_Page_Design.php:442
 msgid "Save All Changes"
 msgstr "Alle Anderungen speichern"
 
@@ -443,7 +439,7 @@ msgid "New Poll Added"
 msgstr "Neue Umfrage wurde erstellt"
 
 #: classes/Admin/Admin_Page_l10n.php:38
-#: classes/Admin/Admin_Page_Design.php:51
+#: classes/Admin/Admin_Page_Design.php:48
 #: classes/Admin/Admin_Page_Settings.php:35
 msgid "Updated"
 msgstr "Aktualisiert"
@@ -650,75 +646,55 @@ msgstr "Link zu Umfrageergebnissen nicht anzeigen (global)."
 msgid "Users can see results after vote."
 msgstr "Ergebnisse sind nach dem Abstimmen sichtbar."
 
-#: classes/Admin/Admin_Page_Settings.php:224
+#: classes/Admin/Admin_Page_Settings.php:232
 msgid "Check if you see something like \"no_IP__123\" in IP column on logs page. (not recommended)"
 msgstr "Prüfen, ob „no_IP__123“ in der IP-Spalte auf der Protokollseite erscheint (nicht empfohlen)."
 
-#: classes/Admin/Admin_Page_Settings.php:227
+#: classes/Admin/Admin_Page_Settings.php:235
 msgid "Useful when your server does not work correctly with server variable REMOTE_ADDR. NOTE: this option give possibility to cheat voice."
 msgstr "Nützlich, wenn der Server die Variable REMOTE_ADDR nicht korrekt verarbeitet. HINWEIS: Diese Option ermöglicht Betrug."
 
-#: classes/Admin/Admin_Page_Settings.php:249
+#: classes/Admin/Admin_Page_Settings.php:257
 msgid "Role names, except 'administrator' which will have access to manage plugin."
 msgstr "Rollen (außer 'Administrator') mit Zugriff auf das Plugin."
 
-#: classes/Admin/Admin_Page_Settings.php:254
+#: classes/Admin/Admin_Page_Settings.php:262
 msgid "Migration"
 msgstr "Migration"
 
-#: classes/Admin/Admin_Page_Settings.php:260
+#: classes/Admin/Admin_Page_Settings.php:268
 msgid "Migrate from WP Polls plugin"
 msgstr "Migration von WP Polls Plugin"
 
-#: classes/Admin/Admin_Page_Settings.php:262
+#: classes/Admin/Admin_Page_Settings.php:270
 msgid "All polls, answers and logs of WP Polls will be added to Democracy Poll"
 msgstr "Alle Umfragen, Antworten und Protokolle von WP Polls werden übernommen."
 
-#: classes/Admin/Admin_Page_Settings.php:285
+#: classes/Admin/Admin_Page_Settings.php:224
 msgid "Widget"
 msgstr "Widget"
 
-#: classes/Admin/Admin_Page_Design.php:83
+#: classes/Admin/Admin_Page_Design.php:81
 msgid "Choose Theme"
 msgstr "Theme auswählen"
 
-#: classes/Admin/Admin_Page_Design.php:107
+#: classes/Admin/Admin_Page_Design.php:105
 msgid "Other settings"
 msgstr "Weitere Einstellungen"
 
-#: classes/Admin/Admin_Page_Design.php:111
-msgid "Max height of the poll in px. When poll has very many answers, it's better to collapse it. Set '-1', in order to disable this option. Default 500."
-msgstr "Maximale Höhe der Umfrage in px. Bei vielen Antworten besser einklappen. Mit '-1' deaktivieren. Standard: 500."
-
-#: classes/Admin/Admin_Page_Design.php:116
-msgid "Animation speed in milliseconds."
-msgstr "Animationsgeschwindigkeit in Millisekunden."
-
-#: classes/Admin/Admin_Page_Design.php:123
+#: classes/Admin/Admin_Page_Design.php:119
 msgid "Progress line"
 msgstr "Fortschrittsbalken"
 
-#: classes/Admin/Admin_Page_Design.php:246
-msgid "Button"
-msgstr "Button"
-
-#: classes/Admin/Admin_Page_Design.php:355
-msgid "An additional css class for all buttons in the poll. When the template has a special class for buttons, for example <code>btn btn-info</code>"
-msgstr "Zusätzliche CSS-Klasse für alle Buttons, z.B. <code>btn btn-info</code>"
-
-#: classes/Admin/Admin_Page_Design.php:364
-msgid "AJAX loader"
-msgstr "AJAX-Lader"
-
-#: classes/Admin/Admin_Page_Design.php:412
+#: classes/Admin/Admin_Page_Design.php:415
 msgid "AJAX Loader. If choose \"NO\", loader replaces by dots \"...\" which appends to a link/button text. SVG images animation don't work in IE 11 or lower, other browsers are supported at  90% (according to caniuse.com statistics)."
 msgstr "AJAX-Lader. Wenn \"NEIN\" gewählt wird, erscheinen stattdessen Punkte \"...\" im Button. SVG-Animationen funktionieren nicht in IE 11 oder älter, andere Browser werden zu 90% unterstützt (laut caniuse.com)."
 
-#: classes/Admin/Admin_Page_Design.php:424
+#: classes/Admin/Admin_Page_Design.php:426
 msgid "Custom/Additional CSS styles"
 msgstr "Eigene/zusätzliche CSS-Styles"
 
-#: classes/Admin/Admin_Page_Design.php:451
+#: classes/Admin/Admin_Page_Design.php:453
 msgid "All CSS styles that uses now"
 msgstr "Alle aktuell verwendeten CSS-Styles"
 
@@ -752,7 +728,7 @@ msgid "Back"
 msgstr "Zurück"
 
 #: classes/Admin/Admin_Page_l10n.php:39
-#: classes/Admin/Admin_Page_Design.php:52
+#: classes/Admin/Admin_Page_Design.php:49
 #: classes/Admin/Admin_Page_Settings.php:36
 msgid "Nothing was updated"
 msgstr "Nichts wurde aktualisiert"
@@ -847,79 +823,75 @@ msgstr "%s – Shortcode"
 msgid "Polls copied: %d. Answers copied: %d. Logs copied: %d"
 msgstr "Umfragen kopiert: %d. Antworten kopiert: %d. Protokolle kopiert: %d"
 
-#: classes/Admin/Admin_Page_Design.php:88
+#: classes/Admin/Admin_Page_Design.php:86
 msgid "No theme"
 msgstr "Kein Theme"
 
-#: classes/Admin/Admin_Page_Design.php:136
+#: classes/Admin/Admin_Page_Design.php:131
 msgid "as percent of all votes"
 msgstr "als Prozent aller Stimmen"
 
-#: classes/Admin/Admin_Page_Design.php:144
+#: classes/Admin/Admin_Page_Design.php:138
 msgid "Line Color"
 msgstr "Linienfarbe"
 
-#: classes/Admin/Admin_Page_Design.php:151
+#: classes/Admin/Admin_Page_Design.php:144
 msgid "Line color (for voted user)"
 msgstr "Linienfarbe (für gewählten Nutzer)"
 
-#: classes/Admin/Admin_Page_Design.php:158
+#: classes/Admin/Admin_Page_Design.php:150
 msgid "Background color"
 msgstr "Hintergrundfarbe"
 
-#: classes/Admin/Admin_Page_Design.php:165
-msgid "Line height"
-msgstr "Linienstärke"
-
-#: classes/Admin/Admin_Page_Design.php:172
+#: classes/Admin/Admin_Page_Design.php:167
 msgid "Progress line animation effect speed (default 1500). Set 0 to disable animation."
 msgstr "Animationsgeschwindigkeit für Fortschrittslinie (Standard 1500). 0 = Animation aus."
 
-#: classes/Admin/Admin_Page_Design.php:188
-#: classes/Admin/Admin_Page_Design.php:254
+#: classes/Admin/Admin_Page_Design.php:183
+#: classes/Admin/Admin_Page_Design.php:248
 msgid "No (default)"
 msgstr "Nein (Standard)"
 
-#: classes/Admin/Admin_Page_Design.php:318
+#: classes/Admin/Admin_Page_Design.php:305
 msgid "Button colors"
 msgstr "Button-Farben"
 
-#: classes/Admin/Admin_Page_Design.php:322
-#: classes/Admin/Admin_Page_Design.php:337
+#: classes/Admin/Admin_Page_Design.php:308
+#: classes/Admin/Admin_Page_Design.php:330
 msgid "Bg color"
 msgstr "Hintergrundfarbe"
 
-#: classes/Admin/Admin_Page_Design.php:326
-#: classes/Admin/Admin_Page_Design.php:341
+#: classes/Admin/Admin_Page_Design.php:314
+#: classes/Admin/Admin_Page_Design.php:336
 msgid "Text Color"
 msgstr "Textfarbe"
 
-#: classes/Admin/Admin_Page_Design.php:330
-#: classes/Admin/Admin_Page_Design.php:345
+#: classes/Admin/Admin_Page_Design.php:320
+#: classes/Admin/Admin_Page_Design.php:342
 msgid "Border Color"
 msgstr "Rahmenfarbe"
 
-#: classes/Admin/Admin_Page_Design.php:333
+#: classes/Admin/Admin_Page_Design.php:327
 msgid "Hover button colors"
 msgstr "Button-Farben beim Hover"
 
-#: classes/Admin/Admin_Page_Design.php:371
+#: classes/Admin/Admin_Page_Design.php:374
 msgid "No (dots...)"
 msgstr "Nein (Punkte...)"
 
-#: classes/Admin/Admin_Page_Design.php:429
+#: classes/Admin/Admin_Page_Design.php:431
 msgid "In this field you can add some additional css properties or completely replace current css theme. Write here css and it will be added at the bottom of current Democracy css. To complete replace styles, check \"No theme\" and describe all styles."
 msgstr "Hier können eigene CSS-Styles ergänzt oder das gesamte Theme ersetzt werden. Für kompletten Ersatz „Kein Theme“ wählen und alle Styles definieren."
 
-#: classes/Admin/Admin_Page_Design.php:430
+#: classes/Admin/Admin_Page_Design.php:432
 msgid "This field cleaned manually, if you reset options of this page or change/set another theme, the field will not be touched."
 msgstr "Dieses Feld wird nur manuell geleert. Beim Wechsel oder Zurücksetzen des Themes bleibt es erhalten."
 
-#: classes/Admin/Admin_Page_Design.php:445
+#: classes/Admin/Admin_Page_Design.php:447
 msgid "are you sure?"
 msgstr "Sind Sie sicher?"
 
-#: classes/Admin/Admin_Page_Design.php:468
+#: classes/Admin/Admin_Page_Design.php:471
 msgid "Minified version (uses to include it in HTML)"
 msgstr "Minifizierte Version (für Einbindung in HTML)"
 
@@ -961,7 +933,7 @@ msgstr "Metabox bei Beiträgen deaktivieren."
 msgid "Check this to disable polls metabox functionality for posts where you can attached poll to a post..."
 msgstr "Ankreuzen, um die Metabox-Funktion für Umfragen in Beiträgen zu deaktivieren."
 
-#: classes/Admin/Admin_Page_Settings.php:225
+#: classes/Admin/Admin_Page_Settings.php:233
 msgid "Or if IP detection is wrong. (for cloudflare)"
 msgstr "Oder wenn die IP-Erkennung falsch ist (für Cloudflare)."
 
@@ -972,3 +944,23 @@ msgstr "FEHLER: Es wurden mehr Antworten gewählt als erlaubt..."
 #: classes/Helpers/Helpers.php:11
 msgid "Alphabetically"
 msgstr "Alphabetisch"
+
+#: classes/Admin/Admin_Page_Design.php:108
+msgid "Max height of the poll in pixels (if no unit is set). When a poll has many answers, collapsing it improves readability. `-1` - disables this option. Default: 500."
+msgstr "Maximale Höhe der Umfrage in Pixeln (wenn keine Einheit angegeben ist). Wenn eine Umfrage viele Antworten enthält, verbessert das Einklappen die Lesbarkeit. `-1` deaktiviert diese Option. Standard: 500."
+
+#: classes/Admin/Admin_Page_Design.php:112
+msgid "Animation speed (in milliseconds)."
+msgstr "Animationsgeschwindigkeit (in Millisekunden)."
+
+#: classes/Admin/Admin_Page_Design.php:121
+msgid "How to fill (paint) the progress of each answer:"
+msgstr "Wie soll der Fortschritt jeder Antwort gefüllt (eingefärbt) werden:"
+
+#: classes/Admin/Admin_Page_Design.php:160
+msgid "Line height (in px if unit not set)"
+msgstr "Linienhöhe (in px, wenn keine Einheit angegeben ist)"
+
+#: classes/Admin/Admin_Page_Design.php:356
+msgid "An additional css class for all buttons in the poll. When the template has a special class for buttons, for example:"
+msgstr "Eine zusätzliche CSS-Klasse für alle Buttons in der Umfrage. Wenn das Template eine spezielle Klasse für Buttons hat, zum Beispiel:"
