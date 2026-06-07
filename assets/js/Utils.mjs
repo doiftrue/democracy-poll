@@ -54,7 +54,8 @@ export default class Utils {
 		}
 
 		const el = screen.querySelector( '.dem-vote, .dem-answers' )
-		const maxHeight = parseInt( State.answMaxHeight )
+		const maxHeight = State.answMaxHeight
+		const maxHeightPx = Utils.heightToPixels( maxHeight, el )
 
 		el.style.maxHeight = 'none'
 		el.style.overflowY = 'visible'
@@ -65,7 +66,7 @@ export default class Utils {
 			: el.getBoundingClientRect().height
 
 		// collapse if above max height and diff > 100px; hiding 100px isn't worth it
-		const diff = elHeight - maxHeight
+		const diff = elHeight - maxHeightPx
 		if( diff > 100 ){
 			el.style.position = 'relative'
 
@@ -89,7 +90,7 @@ export default class Utils {
 			}
 			else{
 				fn__collaps()
-				el.style.height = `${ maxHeight }px`
+				el.style.height = maxHeight
 				el.style.overflowY = 'hidden'
 			}
 
@@ -113,7 +114,7 @@ export default class Utils {
 					delete screen.dataset['expanded']
 					screen.style.height = 'auto'
 					el.style.overflowY = 'hidden'
-					Utils.animateHeight( el, maxHeight, State.animSpeed, () => {
+					Utils.animateHeight( el, maxHeightPx, State.animSpeed, () => {
 						screen.style.height = Utils.detectRealHeight( screen ) + 'px'
 					} )
 				}
@@ -134,6 +135,21 @@ export default class Utils {
 			} )
 		}
 
+	}
+
+	static heightToPixels(cssValue, forEl) {
+		const value = parseFloat(cssValue)
+		const unit = cssValue.replace(value, '').trim()
+
+		switch (unit) {
+			case 'px':  return value
+			case 'rem': return value * parseFloat(getComputedStyle(document.documentElement).fontSize)
+			case 'em':  return value * parseFloat(getComputedStyle(forEl).fontSize)
+			case 'vh':  return value / 100 * window.innerHeight
+			case 'vw':  return value / 100 * window.innerWidth
+			case '%':   return value / 100 * forEl.getBoundingClientRect().height
+			default:    return parseFloat(cssValue) // fallback
+		}
 	}
 
 	// max answers limit - limit for multi-answer selection

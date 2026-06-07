@@ -41,17 +41,18 @@ class Options_CSS {
 	 * @return string css styles code or empty string if the template is disabled.
 	 */
 	private function collect_base_css(): string {
-		$tpl = options()->css_file_name;
+		$opt = options();
+		$tpl = $opt->css_file_name;
 
 		// выходим если не указан шаблон
 		if( ! $tpl ){
 			return '';
 		}
 
-		$button      = options()->css_button;
-		$loader_fill = options()->loader_fill;
+		$button      = $opt->css_button;
+		$loader_fill = $opt->loader_fill;
 
-		$radios = options()->checkradio_fname;
+		$radios = $opt->checkradio_fname;
 
 		$out = '';
 		$styledir = plugin()->dir . '/assets/styles';
@@ -65,27 +66,27 @@ class Options_CSS {
 		}
 
 		// progress line
-		$d_bg         = options()->line_bg;
-		$d_fill       = options()->line_fill;
-		$d_height     = options()->line_height;
-		$d_fill_voted = options()->line_fill_voted;
+		$d_bg         = $opt->line_bg;
+		$d_fill       = $opt->line_fill;
+		$d_height     = is_numeric( $opt->line_height ) ? "{$opt->line_height}px" : $opt->line_height;
+		$d_fill_voted = $opt->line_fill_voted;
 
 		$css_vars = array_filter( [
-			$d_bg         ? "--dem-graph-bg: $d_bg"             : '',
-			$d_fill       ? "--dem-fill: $d_fill"               : '',
-			$d_height     ? "--dem-graph-height: {$d_height}px" : '',
-			$d_fill_voted ? "--dem-fill-voted: $d_fill_voted"   : '',
+			$d_bg         ? "--dem-graph-bg: $d_bg"            : '',
+			$d_fill       ? "--dem-fill: $d_fill"              : '',
+			$d_height     ? "--dem-graph-height: $d_height"    : '',
+			$d_fill_voted ? "--dem-fill-voted: $d_fill_voted"  : '',
 		] );
 
 		if( $button ){
 			// button
-			$bbg     = options()->btn_bg_color;
-			$bcolor  = options()->btn_color;
-			$bbcolor = options()->btn_border_color;
+			$bbg     = $opt->btn_bg_color;
+			$bcolor  = $opt->btn_color;
+			$bbcolor = $opt->btn_border_color;
 			// button hover
-			$bh_bg     = options()->btn_hov_bg;
-			$bh_color  = options()->btn_hov_color;
-			$bh_bcolor = options()->btn_hov_border_color;
+			$bh_bg     = $opt->btn_hov_bg;
+			$bh_color  = $opt->btn_hov_color;
+			$bh_bcolor = $opt->btn_hov_border_color;
 
 			$css_vars = array_filter( [
 				...$css_vars,
@@ -123,10 +124,12 @@ class Options_CSS {
 	 */
 	private function parse_css_import( $css_filepath ) {
 		$filecode = file_get_contents( $css_filepath );
+		$maindir  = dirname( $css_filepath );
 
-		$filecode = preg_replace_callback( '~@import [\'"](.*?)[\'"];~', static function( $m ) use ( $css_filepath ) {
-			return file_get_contents( dirname( $css_filepath ) . '/' . $m[1] );
-		}, $filecode );
+		$filecode = preg_replace_callback( '~@import [\'"](.*?)[\'"];~',
+			static fn( $m ) => file_get_contents( "$maindir/$m[1]" ),
+			$filecode
+		);
 
 		return $filecode;
 	}

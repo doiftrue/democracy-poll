@@ -1,22 +1,27 @@
-/* reset -------------------------------- */
+/** RESET -------------------------------- */
 
 .democracy{ display:flow-root; }
 
-.democracy :where(ul, ul li){ background:none; padding:0; margin:0; }
-.democracy :where(ul){ list-style:none !important; border:none !important; }
-.democracy :where(ul li){ list-style:none !important; }
-.democracy ul li::before{ display:none; } /* li reset */
+.democracy[class] {
+	:where(ul, ul li){ background:none; padding:0; margin:0; } /* reset */
+	:where(ul){ list-style:none; border:none; } /* reset */
+	:where(ul li){ list-style:none; } /* reset */
+	ul li::before{ display:none; } /* reset */
 
-.democracy :where(input[type='radio'], input[type='checkbox']){
-	margin:0; vertical-align:middle;
+	:where(input[type='radio'], input[type='checkbox']){
+		margin:0; vertical-align:middle;
+
+		&:focus { outline:none; }
+	}
 }
-.democracy :where(input[type='radio'], input[type='checkbox']):focus{ outline:none; }
 
-.dem-button{
-	position:relative; display:inline-block; text-decoration:none; line-height:1; border:0; margin:0; padding:0; cursor:pointer; white-space:nowrap; user-select:none;
+.dem-button {
+	position:relative; display:inline-block; line-height:1; border:0; margin:0; padding:0;
+	text-decoration:none; cursor:pointer; white-space:nowrap; user-select:none;
+
+	&:focus{ outline:none; }
+	&:disabled{ opacity:.6; cursor:not-allowed; }
+	&:hover{ text-decoration:none !important; }
 }
-.dem-button:focus{ outline:none; }
-.dem-button:disabled{ opacity:.6; cursor:not-allowed; }
-.dem-button:hover{ text-decoration:none !important; }
 
-/* / reset --------------------------------- */
+/** / RESET --------------------------------- */

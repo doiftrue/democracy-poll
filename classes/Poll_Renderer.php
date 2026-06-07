@@ -42,13 +42,13 @@ class Poll_Renderer {
 	 * @return string|false HTML.
 	 */
 	public function get_screen( string $show_screen = 'vote', string $before_title = '', string $after_title = '' ) {
+		$opt = options();
 		$poll = $this->poll; // simplify
-
 		if( ! $poll->id ){
 			return false;
 		}
 
-		$this->in_archive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) options()->archive_page_id ) && is_singular();
+		$this->in_archive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) $opt->archive_page_id ) && is_singular();
 
 		if( $poll->voting_blocked && $show_screen !== 'force_vote' ){
 			$show_screen = 'voted';
@@ -58,17 +58,17 @@ class Poll_Renderer {
 
 		$js_opts = [
 			'ajax_url'         => plugin()->poll_ajax->ajax_url,
-			'pid'              => $poll->id,
+			'pid'              => (int) $poll->id,
 			'max_answs'        => (int) ( $poll->multiple ?: 0 ),
-			'answs_max_height' => options()->answs_max_height,
-			'anim_speed'       => options()->anim_speed,
-			'line_anim_speed'  => (int) options()->line_anim_speed,
+			'answs_max_height' => is_numeric( $opt->answs_max_height ) ? "{$opt->answs_max_height}px" : $opt->answs_max_height,
+			'anim_speed'       => (int) $opt->anim_speed,
+			'line_anim_speed'  => (int) $opt->line_anim_speed,
 		];
 
-		$html .= '<div id="democracy-' . $poll->id . '" class="democracy" data-opts=\'' . json_encode( $js_opts ) . '\' >';
-		$html .= $before_title ?: options()->before_title;
+		$html .= sprintf( '<div id="democracy-%d" class="democracy" data-opts=\'%s\' >', $poll->id, json_encode( $js_opts ) );
+		$html .= $before_title ?: $opt->before_title;
 		$html .= Kses::kses_html( $poll->question );
-		$html .= $after_title ?: options()->after_title;
+		$html .= $after_title ?: $opt->after_title;
 
 		// changeable part
 		$html .= $this->get_screen_basis( $show_screen );
@@ -81,10 +81,10 @@ class Poll_Renderer {
 		}
 
 		// loader
-		if( options()->loader_fname ){
+		if( $opt->loader_fname ){
 			static $loader; // оптимизация, чтобы один раз выводился код на странице
 			if( ! $loader ){
-				$loader = '<div class="dem-loader"><div>' . file_get_contents( plugin()->dir . '/assets/styles/loaders/' . options()->loader_fname ) . '</div></div>';
+				$loader = '<div class="dem-loader"><div>' . file_get_contents( plugin()->dir . '/assets/styles/loaders/' . $opt->loader_fname ) . '</div></div>';
 				$html .= $loader;
 			}
 		}

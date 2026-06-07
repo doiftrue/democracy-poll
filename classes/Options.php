@@ -30,7 +30,7 @@ namespace DemocracyPoll;
  * @property-read string $css_button           Eg: 'flat.css'
  * @property-read string $loader_fill          Eg: ''
  * @property-read int    $graph_from_total     Eg: 1
- * @property-read int    $answs_max_height     Eg: 500
+ * @property-read string $answs_max_height     Eg: 35rem
  * @property-read int    $anim_speed           Eg: 400
  * @property-read string $checkradio_fname     Eg: ''
  * @property-read string $line_bg              Eg: ''
@@ -48,11 +48,11 @@ namespace DemocracyPoll;
  */
 class Options {
 
-	const OPT_NAME = 'democracy_options';
+	public const OPT_NAME = 'democracy_options';
 
-	private $opt = [];
+	private array $opt = [];
 
-	private $default_options = [
+	private array $default_options = [
 		'main'   => [
 			// вести лог в БД
 			'keep_logs'              => 1,
@@ -90,7 +90,7 @@ class Options {
 			'loader_fill'          => '',
 			// как заполнять шкалу прогресса
 			'graph_from_total'     => 1,
-			'answs_max_height'     => 500,
+			'answs_max_height'     => '35em',
 			// px
 			'anim_speed'           => 400,
 			// msec
@@ -156,7 +156,6 @@ class Options {
 
 	// TODO: refactor and join with update_options()
 	public function update_single_option( $option_name, $value ): bool {
-
 		if( $this->is_option_exists( $option_name ) ){
 			$newopt = $this->opt;
 			$newopt[ $option_name ] = $value;
@@ -171,7 +170,6 @@ class Options {
 	 * @param string $type  What group of option to update: main, design.
 	 */
 	public function update_options( string $type ): bool {
-
 		// sanitize on POST request
 		$POSTDATA = wp_unslash( $_POST ); // TODO: move it out of here
 		if( isset( $POSTDATA['dem'] ) && ( $type === 'main' || $type === 'design' ) ){
@@ -191,7 +189,6 @@ class Options {
 	}
 
 	public function reset_options( $type ): bool {
-
 		if( $type === 'all' ){
 			foreach( $this->default_options[ 'main' ] as $key => $value ){
 				$this->opt[ $key ] = $value;
@@ -218,9 +215,7 @@ class Options {
 	 * If the option is not passed, 0 will be written in its place.
 	 */
 	private function sanitize_request_options( array $request_data, string $type ): void {
-
 		foreach( $this->default_options[ $type ] as $key => $v ){
-
 			$value = $request_data['dem'][ $key ] ?? 0; // именно 0/null, а не $v для checkbox
 
 			if( in_array( $key, [ 'before_title', 'after_title' ] ) ){
