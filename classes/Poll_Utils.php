@@ -18,7 +18,7 @@ class Poll_Utils {
 	}
 
 	/**
-	 * Check if current or specified user can edit a specified poll.
+	 * Check whether current user can edit a specified poll.
 	 *
 	 * @param \DemPoll|object|int $poll  Poll object or poll id.
 	 */

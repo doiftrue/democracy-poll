@@ -61,7 +61,8 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 							       name="dem[keep_logs]" <?php checked( options()->keep_logs, 1 ) ?> />
 							<?= esc_html__( 'Log data & take visitor IP into consideration? (recommended)', 'democracy-poll' ) ?>
 						</label>
-						<em><?= esc_html__( 'Saves data into Data Base. Forbids to vote several times from a single IP or to same WordPress user. If a user is logged in, then his voting is checked by WP account. If a user is not logged in, then checks the IP address. The negative side of IP checks is that a site may be visited from an enterprise network (with a common IP), so all users from this network are allowed to vote only once. If this option is disabled the voting is checked by Cookies only. Default enabled.', 'democracy-poll' ) ?></em>
+						<em><?= esc_html__( 'Saves voting data in the database. This enables the re-voting mechanism and prevents logged-in users from voting multiple times, or non-logged-in users from voting multiple times from the same IP address. If this option is disabled, voting is checked by cookies only.', 'democracy-poll' ) ?></em>
+						<em><?= esc_html__( 'INFO: If a user is logged in, their vote is checked by their WP account. If a user is not logged in, their IP address is checked. The downside of IP checks is that a site may be visited from an enterprise network with a shared IP address, so all users from that network are allowed to vote only once.', 'democracy-poll' ) ?></em>
 					</li>
 
 					<li class="block">
@@ -272,7 +273,6 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					</ul>
 				<?php } ?>
 
-
 				<br>
 				<p>
 					<input type="submit" name="dem_save_main_options" class="button-primary"
@@ -281,21 +281,19 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					       value="<?= esc_attr__( 'Reset Options', 'democracy-poll' ) ?>">
 				</p>
 
-				<br><br>
-
-				<h3><?= esc_html__( 'Others', 'democracy-poll' ) ?></h3>
-
-				<ul style="margin:1em;">
-
-					<li class="block">
-						<label>
-							<!--<input type="checkbox" value="1" name="dem_forse_upgrade">-->
-							<input name="dem_forse_upgrade" type="submit" class="button"
-							       value="<?= esc_attr__( 'Force plugin versions update (debug)', 'democracy-poll' ) ?>"/>
-						</label>
-					</li>
-
-				</ul>
+				<?php if( WP_DEBUG ){ ?>
+					<br><br>
+					<h3><?= esc_html__( 'Others', 'democracy-poll' ) ?></h3>
+					<ul style="margin:1em;">
+						<li class="block">
+							<label>
+								<!--<input type="checkbox" value="1" name="dem_forse_upgrade">-->
+								<input name="dem_forse_upgrade" type="submit" class="button"
+								       value="<?= esc_attr__( 'Force plugin versions update (debug)', 'democracy-poll' ) ?>"/>
+							</label>
+						</li>
+					</ul>
+				<?php } ?>
 
 			</form>
 		</div>
