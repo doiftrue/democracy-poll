@@ -161,27 +161,19 @@ class Poll_Service {
 	public function delete_vote(): void {
 		$poll = $this->poll;
 
-		if( ! $poll->id ){
+		if( ! $poll->id || ! $poll->revote || ! options()->keep_logs ){
 			return;
 		}
 
-		if( ! $poll->revote ){
+		$logs = $this->get_user_vote_logs();
+		if( ! $logs ){
 			return;
 		}
 
-		// Before deleting, check if the logging option is enabled and if there are voting records in the database,
-		// because cookies can be deleted and then the voting data will go negative
-		if( options()->keep_logs ){
-			if( $this->get_user_vote_logs() ){
-				$this->minus_vote();
-				$this->delete_vote_log();
-			}
-		}
-		// If the logging option is not enabled, votes are subtracted based on cookies.
-		// Here votes can be rolled back, because it is not possible to check different browsers.
-		else {
-			$this->minus_vote();
-		}
+		// Use only server-side voting data. The public cookie is user-controlled.
+		$poll->voted_for = (string) reset( $logs )->aids;
+		$this->minus_vote();
+		$this->delete_vote_log( $logs );
 
 		$this->unset_cookie();
 
@@ -208,24 +200,24 @@ class Poll_Service {
 		global $wpdb;
 		$poll = $this->poll;
 
-		$aids_IN = implode( ',', $this->get_answ_aids_from_str( $poll->voted_for ) ); // clean for DB!
+		$aids_IN = implode( ',', $this->get_answ_aids_from_str( $poll->voted_for ) ); // already escaped for DB!
 		if( ! $aids_IN ){
 			return false;
 		}
 
 		// first, delete user-added answers if they exist and have 0 or 1 votes
 		$r1 = $wpdb->query(
-			"DELETE FROM $wpdb->democracy_a WHERE added_by != '' AND votes IN (0,1) AND aid IN ($aids_IN) ORDER BY aid DESC LIMIT 1"
+			"DELETE FROM $wpdb->democracy_a WHERE qid = $poll->id AND added_by != '' AND votes IN (0,1) AND aid IN ($aids_IN) ORDER BY aid DESC LIMIT 1"
 		);
 
 		// subtract votes
 		$r2 = $wpdb->query(
-			"UPDATE $wpdb->democracy_a SET votes = IF( votes>0, votes-1, 0 ) WHERE aid IN ($aids_IN)"
+			"UPDATE $wpdb->democracy_a SET votes = IF( votes>0, votes-1, 0 ) WHERE qid = $poll->id AND aid IN ($aids_IN)"
 		);
 
 		// subtract number of voted users
 		$r3 = $wpdb->query(
-			"UPDATE $wpdb->democracy_q SET users_voted = IF( users_voted>0, users_voted-1, 0 ) WHERE id = " . (int) $poll->id
+			"UPDATE $wpdb->democracy_q SET users_voted = IF( users_voted>0, users_voted-1, 0 ) WHERE id = $poll->id"
 		);
 
 		return $r1 || $r2;
@@ -292,11 +284,13 @@ class Poll_Service {
 
 	/**
 	 * Deletes voting records from the logs.
+	 *
+	 * @param object[] $logs `democracy_log` table rows.
 	 */
-	protected function delete_vote_log(): bool {
+	protected function delete_vote_log( array $logs = [] ): bool {
 		global $wpdb;
 
-		$logs = $this->get_user_vote_logs();
+		$logs = $logs ?: $this->get_user_vote_logs();
 		if( ! $logs ){
 			return true;
 		}

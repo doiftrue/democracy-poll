@@ -2,12 +2,9 @@
 
 namespace DemocracyPoll\Admin;
 
-use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Helpers\Kses;
-use DemocracyPoll\Poll_Answer;
 use DemocracyPoll\Poll_Utils;
 use function DemocracyPoll\plugin;
-use function DemocracyPoll\options;
 
 class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 
@@ -30,334 +27,83 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	}
 
 	public function request_handler(): void {
-
 		if( ( $_GET['msg'] ?? '' ) === 'created' ){
 			plugin()->msg->add_ok( __( 'New Poll Added', 'democracy-poll' ) );
 		}
 
-		if( ! plugin()->admin_access || ! Admin_Page::check_nonce() ){
+		if( ! Admin_Page::check_nonce() ){
 			return;
 		}
 
-		// Add/update a poll
-		$poll_id = $_POST['dmc_create_poll'] ?? $_POST['dmc_update_poll'] ?? 0;
-		if( $poll_id ){
-			Poll_Utils::cuser_can_edit_poll( $poll_id )
-				? $this->insert_poll_handler()
-				: plugin()->msg->add_error( 'Low capability to add/edit poll' );
+		$is_update = isset( $_POST['dmc_update_poll'] );
+		$is_create = isset( $_POST['dmc_create_poll'] );
+		$poll_id = (int) ( $_POST['dmc_update_poll'] ?? $_POST['dmc_create_poll'] ?? 0 );
+
+		if( $is_update ){
+			if( ! $poll_id ){
+				plugin()->msg->add_error( 'Poll ID to be edited not set' );
+				return;
+			}
+
+			if( ! Poll_Utils::cuser_can_edit_poll( $poll_id ) ){
+				plugin()->msg->add_error( 'Low cap to update poll' );
+				return;
+			}
+
+			$this->insert_poll_handler( $poll_id );
+		}
+		elseif( $is_create ){
+			if( ! plugin()->admin_access ){
+				plugin()->msg->add_error( 'Low cap to create poll' );
+				return;
+			}
+
+			$this->insert_poll_handler( 0 );
 		}
 	}
 
 	public function render(): void {
-		global $wpdb;
-
 		// no access
 		if( $this->poll_id && ! Poll_Utils::cuser_can_edit_poll( $this->poll_id ) ){
 			wp_die( 'Sorry, you are not allowed to access this page.' );
 		}
 
 		$this->poll = $this->poll_id ? new \DemPoll( $this->poll_id ) : null;
-		$poll = $this->poll; // for convenience
 
-		$edit = (bool) $this->poll_id;
-
-		$title = '';
-		$shortcode = '';
-		if( $this->poll_id ){
-			$log_link = options()->keep_logs
-				? sprintf( '<small> : <a href="%s">%s</a></small>',
-					add_query_arg( [ 'subpage' => 'logs', 'poll' => $this->poll->id ], plugin()->admin_page_url ),
-					__( 'Poll logs', 'democracy-poll' ) )
-				: '';
-
-			$title = Kses::kses_html( $this->poll->question ) . $log_link;
-			$shortcode = self::shortcode_html( $this->poll_id ) . ' — ' . __( 'shortcode for use in post content', 'democracy-poll' );
-
-			$hidden_inputs = '<input type="hidden" name="dmc_update_poll" value="' . (int) $this->poll_id . '">';
-		}
-		else{
-			$hidden_inputs = "<input type='hidden' name='dmc_create_poll' value='1'>";
-		}
-
-		echo $this->admpage->subpages_menu();
-
-		echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
-		?>
-		<form action="<?= esc_url( remove_query_arg( 'msg' ) ) ?>" method="POST" class="dem-new-poll">
-
-			<input type="hidden" name="dmc_qid" value="<?= (int) $this->poll_id ?>">
-			<?= wp_nonce_field( 'dem_adminform', '_demnonce', false, false ) ?>
-
-			<label>
-				<?= __( 'Question:', 'democracy-poll' ) ?>
-				<input type="text" id="the-question" name="dmc_question" value="<?= esc_attr( $poll->question ?? '' ) ?>" tabindex="1">
-			</label>
-
-			<?= apply_filters( 'demadmin_after_question', '', $poll ) ?>
-
-			<?= __( 'Answers:', 'democracy-poll' ) ?>
-
-			<ol class="new-poll-answers">
-				<?php
-				$is_answers_order = (bool) ( $poll->answers[0]->aorder ?? false );
-
-				if( $poll->answers ){
-					$answers = Helpers::objects_array_sort( $poll->answers, (
-						$is_answers_order
-							? [ 'aorder' => 'asc' ]
-							: [ 'votes' => 'desc', 'aid' => 'asc', ]
-					) );
-
-					foreach( $answers as $answer ){
-						/* @var Poll_Answer $answer */
-
-						/**
-						 * Allows to modify the answer object before rendering in admin edit poll form.
-						 *
-						 * @param Poll_Answer $answer The answer object.
-						 */
-						$answer = apply_filters( 'demadmin_edit_poll_answer', $answer );
-
-						/**
-						 * Allows to add HTML after answer input.
-						 *
-						 * @param string      $html   HTML to add after answer input.
-						 * @param Poll_Answer $answer The answer object.
-						 */
-						$after_answer = apply_filters( 'demadmin_after_answer', '', $answer );
-
-						echo strtr( <<<'HTML'
-							<li class="answ">
-								<input class="answ-text" type="text" name="dmc_old_answers[{AID}][answer]" value="{ANSWER}" tabindex="2">
-								<input type="number" min="0" name="dmc_old_answers[{AID}][votes]" value="{VOTES}" tabindex="3" style="width:100px;min-width:100px;">
-								<input type="hidden" name="dmc_old_answers[{AID}][aorder]" value="{AORDER}">
-								{BY_USER}
-								{AFTER_ANSWER}
-							</li>
-							HTML,
-							[
-								'{AID}'          => $answer->aid,
-								'{ANSWER}'       => esc_attr( $answer->answer ),
-								'{VOTES}'        => ( $answer->votes ?: '' ),
-								'{AORDER}'       => esc_attr( $answer->aorder ),
-								'{BY_USER}'      => $answer->added_by ? '<i>*' . ( Admin_Page_Logs::is_new_answer( $answer ) ? ' new' : '' ) . '</i>' : '',
-								'{AFTER_ANSWER}' => $after_answer,
-							]
-						);
-					}
-				}
-				else{
-					for( $i = 0; $i < 2; $i++ ){
-						?>
-						<li class="answ new"><input type="text" name="dmc_new_answers[]" value=""></li>
-						<?php
-					}
-				}
-
-				// users_voted filed
-				if( $edit ){
-					// сбросить порядок, если установлен
-					?>
-					<li class="not__answer reset__aorder" style="list-style:none; <?= ( $is_answers_order ? '' : 'display:none;' ) ?>">
-						<span class="dashicons dashicons-menu"></span>
-						<span style="cursor:pointer; border-bottom:1px dashed #999;">&#215; <?= __( 'reset order', 'democracy-poll' ) ?></span>
-					</li>
-					<?php
-					echo strtr(<<<'HTML'
-						<li class="not__answer" style="list-style:none;">
-							<div style="width:80%; min-width:400px; max-width:800px; display:inline-block; text-align:right;">
-								{SUM_VOTES}
-								{USERS_VOTE}
-							</div>
-							<input type="number" min="0" title="{TITLE}" style="min-width:100px; width:100px; cursor:help;" name="dmc_users_voted" value="{USERS_VOTED}" {READONLY} />
-						</li>
-						HTML,
-						[
-							'{SUM_VOTES}'   => $poll->multiple
-								? __( 'Sum of votes:', 'democracy-poll' ) . ' ' . array_sum( wp_list_pluck( $poll->answers, 'votes' ) ) . '.'
-								: '',
-							'{TITLE}'       => $poll->multiple
-								? __( 'leave blank to update from logs', 'democracy-poll' )
-								: __( 'Voices', 'democracy-poll' ),
-							'{USERS_VOTE}'  => __( 'Users vote:', 'democracy-poll' ),
-							'{USERS_VOTED}' => $poll->users_voted ?: '',
-							'{READONLY}'    => $poll->multiple ? '' : 'readonly',
-						]
-					);
-				}
-
-				if( ! options()->democracy_off ){
-					?>
-					<li class="not__answer" style="list-style:none;">
-						<label>
-							<span class="dashicons dashicons-megaphone"></span>
-							<input type="hidden" name="dmc_democratic" value=""/>
-							<input type="checkbox" name="dmc_democratic"
-							       value="1" <?php checked( ( ! isset( $poll->democratic ) || $poll->democratic ), 1 ) ?> />
-							<?= esc_html__( 'Allow users to add answers (democracy).', 'democracy-poll' ) ?>
-						</label>
-					</li>
-					<?php
-				}
-				?>
-			</ol>
-
-			<hr>
-
-			<ol class="poll-options">
-				<li>
-					<label>
-						<span class="dashicons dashicons-controls-play"></span>
-						<input type="hidden" name="dmc_active" value=""/>
-						<input type="checkbox" name="dmc_active"
-						       value='1' <?php $edit ? checked( @ $poll->active, 1 ) : 'checked="true"' ?> />
-						<?= esc_html__( 'Activate this poll.', 'democracy-poll' ) ?>
-					</label>
-				</li>
-
-				<li>
-					<label>
-						<span class="dashicons dashicons-image-filter"></span>
-						<?php $ml = (int) @ $poll->multiple; ?>
-						<input type="hidden" name='dmc_multiple' value=''>
-						<input type="checkbox" name="dmc_multiple"
-						       value="<?= $ml ?>" <?= $ml ? 'checked="checked"' : '' ?> >
-						<input type="number" min="0" value="<?= $ml ?>"
-						       style="width:50px; <?= $ml ? '' : 'display:none;' ?>">
-						<?= esc_html__( 'Allow to choose multiple answers.', 'democracy-poll' ) ?>
-					</label>
-				</li>
-
-				<li>
-					<label>
-						<span class="dashicons dashicons-no"></span>
-						<input type="text" name="dmc_end" value="<?= @ $poll->end ? date( 'd-m-Y', $poll->end ) : '' ?>"
-						       style="width:120px; min-width:120px;">
-						<?= esc_html__( 'Date, when poll was/will be closed. Format: dd-mm-yyyy.', 'democracy-poll' ) ?>
-					</label>
-				</li>
-
-				<?php if( ! options()->revote_off ){ ?>
-					<li>
-						<label>
-							<span class="dashicons dashicons-update"></span>
-							<input type="hidden" name='dmc_revote' value=''>
-							<input type="checkbox" name="dmc_revote"
-							       value="1" <?php checked( ( ! isset( $poll->revote ) || $poll->revote ), 1 ) ?> >
-							<?= esc_html__( 'Allow to change mind (revote).', 'democracy-poll' ) ?>
-						</label>
-					</li>
-				<?php } ?>
-
-				<?php if( ! options()->only_for_users ){ ?>
-					<li>
-						<label>
-							<span class="dashicons dashicons-admin-users"></span>
-							<input type="hidden" name="dmc_forusers" value="">
-							<input type="checkbox" name="dmc_forusers" value="1" <?php checked( $poll->forusers ?? 0, 1 ) ?> >
-							<?= esc_html__( 'Only registered users allowed to vote.', 'democracy-poll' ) ?>
-						</label>
-					</li>
-				<?php } ?>
-
-				<?php if( ! options()->dont_show_results ){ ?>
-					<li>
-						<label>
-							<span class="dashicons dashicons-visibility"></span>
-							<input type="hidden" name='dmc_show_results' value=''>
-							<input type="checkbox" name="dmc_show_results"
-							       value="1" <?php checked( ( ! isset( $poll->show_results ) || @ $poll->show_results ), 1 ) ?> >
-							<?= esc_html__( 'Allow to watch the results of the poll.', 'democracy-poll' ) ?>
-						</label>
-					</li>
-				<?php } ?>
-
-				<li class="answers__order" style="<?= $is_answers_order ? 'display:none;' : '' ?>">
-					<span class="dashicons dashicons-menu"></span>
-					<select name="dmc_answers_order">
-						<option value="" <?php selected( @ $poll->answers_order, '' ) ?>>
-							-- <?= esc_html__( 'as in settings', 'democracy-poll' ) ?>:
-							<?= Helpers::allowed_answers_orders()[ options()->order_answers ] ?> --
-						</option>
-						<?= Helpers::answers_order_select_options( $poll->answers_order ?? '' ) ?>
-					</select>
-					<?= esc_html__( 'How to sort the answers during the vote?', 'democracy-poll' ) ?><br>
-				</li>
-
-				<li><label>
-						<textarea name="dmc_note" style="height:3.5em;"><?= esc_textarea( $poll->note ?? '' ) ?></textarea>
-						<br><span
-							class="description"><?= esc_html__( 'Note: This text will be added under poll.', 'democracy-poll' ); ?></span>
-
-					</label>
-				</li>
-
-				<li>
-					<label>
-						<span class="dashicons dashicons-calendar-alt"></span>
-						<input type="text" name="dmc_added"
-						       value="<?= date( 'd-m-Y', ( ( $poll->added ?? '' ) ?: current_time( 'timestamp' ) ) ) ?>"
-						       style="width:120px;min-width:120px;" disabled/>
-						<span class="dashicons dashicons-edit"
-						      onclick="jQuery(this).prev().removeAttr('disabled'); jQuery(this).remove();"
-						      style="padding-top:.1em;"></span>
-						<?= esc_html__( 'Create date.', 'democracy-poll' ) ?>
-					</label>
-				</li>
-			</ol>
-
-			<?php
-			echo $hidden_inputs;
-			$btn_value = ( $edit ? __( 'Save Changes', 'democracy-poll' ) : __( 'Add Poll', 'democracy-poll' ) );
-			echo '<input type="submit" class="button-primary" value="' . $btn_value . '">';
-
-			// buttons
-			if( $edit ){
-				echo ' ' . self::open_button( $poll );
-
-				echo ' ' . self::activate_button( $poll );
-
-				echo sprintf(
-					' <a href="%s" class="button" onclick="return confirm(\'%s\');" title="%s"><span class="dashicons dashicons-trash"></span></a>',
-					Admin_Page::add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], plugin()->admin_page_url ) ),
-					__( 'Are you sure?', 'democracy-poll' ),
-					__( 'Delete', 'democracy-poll' )
-				);
-
-				// in posts
-				$posts = Helpers::get_posts_with_poll( $poll );
-				if( $posts ){
-					$links = [];
-					foreach( $posts as $post ){
-						$links[] = sprintf( '<a href="%s">%s</a>', get_permalink( $post ), esc_html( $post->post_title ) );
-					}
-
-					echo '
-					<div style="margin-top:4em;">
-						<h4>' . __( 'Posts where the poll shortcode used:', 'democracy-poll' ) . '</h4>
-						<ol>
-							<li>' . implode( "</li>\n<li>", $links ) . '</li>
-						</ol>
-					</div>
-					';
-				}
-			}
-			?>
-		</form>
-		<?php
+		require __DIR__ . '/tpl/edit-poll.php';
 	}
 
-	public function insert_poll_handler() {
+	public function insert_poll_handler( int $poll_id = 0 ): void {
 		$data = [];
 
 		// collect all fields which start with 'dmc_'
 		foreach( (array) $_POST as $key => $val ){
+			/**
+			 * dmc_qid
+			 * dmc_added
+			 * dmc_added_user
+			 * dmc_open
+			 * dmc_multiple
+			 * dmc_users_voted
+			 * dmc_question
+			 * dmc_old_answers
+			 * dmc_new_answers
+			 * dmc_democratic
+			 * dmc_active
+			 * dmc_end
+			 * dmc_revote
+			 * dmc_forusers
+			 * dmc_show_results
+			 * dmc_answers_order
+			 * dmc_note
+			 */
 			if( str_starts_with( $key, 'dmc_' ) ){
 				$data[ substr( $key, 4 ) ] = $val;
 			}
 		}
 
 		$data = wp_unslash( $data );
+		$data['qid'] = $poll_id;
 
 		$this->insert_poll( $data );
 	}
