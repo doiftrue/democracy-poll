@@ -199,7 +199,7 @@ class DemPoll {
 		$this->open          = (bool) $this->dbdata->open;
 		$this->multiple      = (int) $this->dbdata->multiple;
 		$this->forusers      = (bool) $this->dbdata->forusers;
-		$this->revote        = (bool) ( options()->revote_off ? false : $this->dbdata->revote );
+		$this->revote        = (bool) ( options()->keep_logs && ! options()->revote_off && $this->dbdata->revote );
 		$this->show_results  = (bool) $this->dbdata->show_results;
 		$this->answers_order = (string) $this->dbdata->answers_order;
 		$this->in_posts      = (string) $this->dbdata->in_posts;

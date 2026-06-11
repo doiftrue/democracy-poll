@@ -52,17 +52,10 @@ class Plugin {
 	}
 
 	public function set_access_caps(): void {
-		$has_super_access = current_user_can( 'manage_options' );
-
-		/**
-		 * Allows to change the access to be able to change the plugin settings.
-		 *
-		 * @param bool $has_super_access  Default is true if the user has the 'manage_options' capability.
-		 */
-		$this->super_access = (bool) apply_filters( 'dem_super_access', $has_super_access );
+		$is_administrator = current_user_can( 'manage_options' );
 
 		// access to add/edit poll and so on...
-		$this->admin_access = $has_super_access;
+		$this->admin_access = $is_administrator;
 
 		// open admin manage access for other roles
 		if( ! $this->admin_access && $this->opt->access_roles ){
@@ -73,6 +66,16 @@ class Plugin {
 				}
 			}
 		}
+
+		/**
+		 * Allows to grant full access to users who do not already have admin access.
+		 *
+		 * NOTE: The filter can grant super access, but cannot revoke super access inherited
+		 * from admin access.
+		 *
+		 * @param bool $is_administrator  Default is true if the user has the 'manage_options' capability.
+		 */
+		$this->super_access = $this->admin_access || apply_filters( 'dem_super_access', $is_administrator );
 	}
 
 	public function set_is_cachegear_on(): void {

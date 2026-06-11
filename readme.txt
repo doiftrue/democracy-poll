@@ -141,47 +141,55 @@ Yes. When you deactivate and delete the plugin, it removes all its options and d
 
 == Changelog ==
 
+= 6.3.0 =
+* Vote cancellation is now possible only via the server log; without logs, revote is disabled.
+* Minor Patchstack/WPScan bug fixed - `CVE-2024-33920` (Missing Authorization / Broken Access Control):
+	* Public `delVoted` could subtract votes using a user-controlled cookie.
+	* SQL did not restrict answers to the current `qid`.
+* Fixed admin IDOR via tampering with `POST['dmc_qid']`.
+* Translation for `fr_FR`, `hi_IN`, `zh_CN` added.
+
 = 6.2.0 =
-- CHG: jQuery dependency complitelly removed.
-- IMP: Vote/Revote Height Animations improvements.
-- IMP: Modernize styling - variables added
-- IMP: Options "Max height" & "Line height" supports css unit (not only px).
-- CHG: Options "show_copyright" & "inline_js_css" and them logic removed.
-- CHG: Option "disable_js" removed. Ability to work plugin without JS in browser removed. Now JS is required for better UX and performance.
-- IMP: Code improvements & refactor. Translate code comments; Replace var with const/let; etc.
-- IMP: package.json added, ES modules gulpfile.js added - some functions extracted to Utils.mjs. js/css moved to assets
-- IMP: Add Gulp build system and update JavaScript files to ES6 modules
+* CHG: jQuery dependency complitelly removed.
+* IMP: Vote/Revote Height Animations improvements.
+* IMP: Modernize styling - variables added
+* IMP: Options "Max height" & "Line height" supports css unit (not only px).
+* CHG: Options "show_copyright" & "inline_js_css" and them logic removed.
+* CHG: Option "disable_js" removed. Ability to work plugin without JS in browser removed. Now JS is required for better UX and performance.
+* IMP: Code improvements & refactor. Translate code comments; Replace var with const/let; etc.
+* IMP: package.json added, ES modules gulpfile.js added - some functions extracted to Utils.mjs. js/css moved to assets
+* IMP: Add Gulp build system and update JavaScript files to ES6 modules
 
 = 6.1.2 =
-- UPD: Tested up to WP 7.0.
+* UPD: Tested up to WP 7.0.
 
 = 6.1.1 =
-- FIX: esc_attr() added for inline js to fix possible bugs on some servers.
+* FIX: esc_attr() added for inline js to fix possible bugs on some servers.
 
 = 6.1.0 =
-- CHG: DEM_VER constant removed use `DemocracyPoll\plugin()->ver` instead.
-- CHG: DEMOC_URL constant removed use `DemocracyPoll\plugin()->url` instead. NOTE: Trailing slash removed.
-- CHG: DEMOC_PATH constant removed use `DemocracyPoll\plugin()->dir` instead. NOTE: Trailing slash removed.
-- CHG: DEMOC_MAIN_FILE constant removed.
-- IMP: DemPoll class refactored significantly. IT was decomposed into smaller classes - two new clasees added Poll_Renderer and Poll_Service.
-- FIX: PHPStan fixes and improvements.
-- IMP: Translation POT file updated. PO files updated. `.l10n.php` files added for better performance.
+* CHG: DEM_VER constant removed use `DemocracyPoll\plugin()->ver` instead.
+* CHG: DEMOC_URL constant removed use `DemocracyPoll\plugin()->url` instead. NOTE: Trailing slash removed.
+* CHG: DEMOC_PATH constant removed use `DemocracyPoll\plugin()->dir` instead. NOTE: Trailing slash removed.
+* CHG: DEMOC_MAIN_FILE constant removed.
+* IMP: DemPoll class refactored significantly. IT was decomposed into smaller classes * two new clasees added Poll_Renderer and Poll_Service.
+* FIX: PHPStan fixes and improvements.
+* IMP: Translation POT file updated. PO files updated. `.l10n.php` files added for better performance.
 
 = 6.0.5 =
-- IMP: Unit tests infrastructure added. Some Helpers methods are now tested.
-- IMP: PHP Typehint added for some palces of the code.
-- NEW: Poll_Answer class added to encapsulate poll answer data and improve code readability.
-- DOC: All filters and actions documented.
-- IMP: Other minor improvements.
+* IMP: Unit tests infrastructure added. Some Helpers methods are now tested.
+* IMP: PHP Typehint added for some palces of the code.
+* NEW: Poll_Answer class added to encapsulate poll answer data and improve code readability.
+* DOC: All filters and actions documented.
+* IMP: Other minor improvements.
 
 = 6.0.4 =
-- FIX: Init moved to `after_setup_theme` hook.
-- NEW: Alphabet answers order added.
-- IMP: democracy.js minor improvements (part refactored to vanilla js).
-- IMP: CSS minor refactor.
-- IMP: Minor improvements.
-- UPD: Tested up to: WP 6.8.0
-- UPD: js-cookie 2.2.0 >> 3.0.5.
+* FIX: Init moved to `after_setup_theme` hook.
+* NEW: Alphabet answers order added.
+* IMP: democracy.js minor improvements (part refactored to vanilla js).
+* IMP: CSS minor refactor.
+* IMP: Minor improvements.
+* UPD: Tested up to: WP 6.8.0
+* UPD: js-cookie 2.2.0 >> 3.0.5.
 
 = 6.0.3 =
 * FIX: Poll widget did not work correctly if "select random poll" option was set.
