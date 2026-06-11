@@ -4,7 +4,6 @@ namespace DemocracyPoll;
 
 /**
  * Main:
- * @property-read int    $inline_js_css          Eg: 1
  * @property-read int    $keep_logs              Eg: 1
  * @property-read string $before_title           Eg: '<strong class="dem-poll-title">'
  * @property-read string $after_title            Eg: '</strong>'
@@ -15,7 +14,6 @@ namespace DemocracyPoll;
  * @property-read int    $hide_vote_button       Eg: 0
  * @property-read int    $toolbar_menu           Eg: 1
  * @property-read int    $tinymce_button         Eg: 1
- * @property-read int    $show_copyright         Eg: 1
  * @property-read int    $only_for_users         Eg: 0
  * @property-read int    $dont_show_results      Eg: 0
  * @property-read int    $dont_show_results_link Eg: 0
@@ -25,7 +23,6 @@ namespace DemocracyPoll;
  * @property-read array  $access_roles           Eg: []
  * @property-read int    $soft_ip_detect         Eg: 0
  * @property-read int    $post_metabox_off       Eg: 0
- * @property-read int    $disable_js             Eg: 0
  *
  * Design:
  * @property-read string $loader_fname         Eg: 'css-roller.css3'
@@ -33,7 +30,7 @@ namespace DemocracyPoll;
  * @property-read string $css_button           Eg: 'flat.css'
  * @property-read string $loader_fill          Eg: ''
  * @property-read int    $graph_from_total     Eg: 1
- * @property-read int    $answs_max_height     Eg: 500
+ * @property-read string $answs_max_height     Eg: 35rem
  * @property-read int    $anim_speed           Eg: 400
  * @property-read string $checkradio_fname     Eg: ''
  * @property-read string $line_bg              Eg: ''
@@ -51,14 +48,12 @@ namespace DemocracyPoll;
  */
 class Options {
 
-	const OPT_NAME = 'democracy_options';
+	public const OPT_NAME = 'democracy_options';
 
-	private $opt = [];
+	private array $opt = [];
 
-	private $default_options = [
+	private array $default_options = [
 		'main'   => [
-			// встараивать стили и скрипты в HTML
-			'inline_js_css'          => 1,
 			// вести лог в БД
 			'keep_logs'              => 1,
 			'before_title'           => '<strong class="dem-poll-title">',
@@ -71,7 +66,6 @@ class Options {
 			'hide_vote_button'       => 0,
 			'toolbar_menu'           => 1,
 			'tinymce_button'         => 1,
-			'show_copyright'         => 1,
 			'only_for_users'         => 0,
 			// Не показывать результаты опроса. До закрытия голосования. Глобальная опция.
 			'dont_show_results'      => 0,
@@ -87,8 +81,6 @@ class Options {
 			// определять IP не только через REMOTE_ADDR
 			'post_metabox_off'       => 0,
 			// выключить ли метабокс для записей?
-			'disable_js'             => 0,
-			// Дебаг: отключает JS
 		],
 		'design' => [
 			'loader_fname'         => 'css-roller.css3',
@@ -98,7 +90,7 @@ class Options {
 			'loader_fill'          => '',
 			// как заполнять шкалу прогресса
 			'graph_from_total'     => 1,
-			'answs_max_height'     => 500,
+			'answs_max_height'     => '35em',
 			// px
 			'anim_speed'           => 400,
 			// msec
@@ -164,7 +156,6 @@ class Options {
 
 	// TODO: refactor and join with update_options()
 	public function update_single_option( $option_name, $value ): bool {
-
 		if( $this->is_option_exists( $option_name ) ){
 			$newopt = $this->opt;
 			$newopt[ $option_name ] = $value;
@@ -179,7 +170,6 @@ class Options {
 	 * @param string $type  What group of option to update: main, design.
 	 */
 	public function update_options( string $type ): bool {
-
 		// sanitize on POST request
 		$POSTDATA = wp_unslash( $_POST ); // TODO: move it out of here
 		if( isset( $POSTDATA['dem'] ) && ( $type === 'main' || $type === 'design' ) ){
@@ -199,7 +189,6 @@ class Options {
 	}
 
 	public function reset_options( $type ): bool {
-
 		if( $type === 'all' ){
 			foreach( $this->default_options[ 'main' ] as $key => $value ){
 				$this->opt[ $key ] = $value;
@@ -226,9 +215,7 @@ class Options {
 	 * If the option is not passed, 0 will be written in its place.
 	 */
 	private function sanitize_request_options( array $request_data, string $type ): void {
-
 		foreach( $this->default_options[ $type ] as $key => $v ){
-
 			$value = $request_data['dem'][ $key ] ?? 0; // именно 0/null, а не $v для checkbox
 
 			if( in_array( $key, [ 'before_title', 'after_title' ] ) ){

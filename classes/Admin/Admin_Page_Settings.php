@@ -204,14 +204,6 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 					<li class="block">
 						<label>
-							<input type="checkbox" value="1" name="dem[inline_js_css]" <?php checked( options()->inline_js_css, 1 ) ?> />
-							<?= esc_html__( 'Inline script code directly in the HTML', 'democracy-poll' ) ?>
-						</label>
-						<em><?= esc_html__( 'Enable to add plugin scripts directly into HTML instead of loading separate .js files. This reduces server requests and speeds up page loading.', 'democracy-poll' ) ?></em>
-					</li>
-
-					<li class="block">
-						<label>
 							<input type="checkbox" value="1" name="dem[toolbar_menu]" <?php checked( options()->toolbar_menu, 1 ) ?> />
 							<?= esc_html__( 'Add plugin menu on the toolbar?', 'democracy-poll' ) ?>
 						</label>
@@ -224,6 +216,14 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 							<?= esc_html__( 'Add fast Poll insert button to WordPress visual editor (TinyMCE)?', 'democracy-poll' ) ?>
 						</label>
 						<em><?= esc_html__( 'Uncheck to disable button in visual editor.', 'democracy-poll' ) ?></em>
+					</li>
+
+					<li class="block">
+						<label>
+							<input type="checkbox" value="1" name="dem[use_widget]" <?php checked( options()->use_widget, 1 ) ?> />
+							<?= esc_html__( 'Widget', 'democracy-poll' ) ?>
+						</label>
+						<em><?= esc_html__( 'Check to activate the widget.', 'democracy-poll' ) ?></em>
 					</li>
 
 					<li class="block">
@@ -272,6 +272,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 					</ul>
 				<?php } ?>
 
+
 				<br>
 				<p>
 					<input type="submit" name="dem_save_main_options" class="button-primary"
@@ -285,33 +286,6 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 				<h3><?= esc_html__( 'Others', 'democracy-poll' ) ?></h3>
 
 				<ul style="margin:1em;">
-
-					<li class="block">
-						<label>
-							<input type="checkbox" value="1"
-							       name="dem[disable_js]" <?php checked( options()->disable_js, 1 ) ?> />
-							<?= esc_html__( 'Don\'t connect JS files. (Debug)', 'democracy-poll' ) ?>
-						</label>
-						<em><?= esc_html__( 'If checked, the plugin\'s .js file will NOT be connected to front end. Enable this option to test the plugin\'s work without JavaScript.', 'democracy-poll' ) ?></em>
-					</li>
-
-					<li class="block">
-						<label>
-							<input type="checkbox" value="1"
-							       name="dem[show_copyright]" <?php checked( options()->show_copyright, 1 ) ?> />
-							<?= esc_html__( 'Show copyright', 'democracy-poll' ) ?>
-						</label>
-						<em><?= esc_html__( 'Link to plugin page is shown on front page only as a &copy; icon. It helps visitors to learn about the plugin and install it for themselves. Please don\'t disable this option without urgent needs. Thanks!', 'democracy-poll' ) ?></em>
-					</li>
-
-					<li class="block">
-						<label>
-							<input type="checkbox" value="1"
-							       name="dem[use_widget]" <?php checked( options()->use_widget, 1 ) ?> />
-							<?= esc_html__( 'Widget', 'democracy-poll' ) ?>
-						</label>
-						<em><?= esc_html__( 'Check to activate the widget.', 'democracy-poll' ) ?></em>
-					</li>
 
 					<li class="block">
 						<label>

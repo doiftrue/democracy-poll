@@ -57,13 +57,12 @@ class Admin_Page {
 	}
 
 	public function admin_page_load(): void {
-
 		// datepicker
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 		wp_enqueue_style( 'jquery-style', plugin()->url . '/admin/css/jquery-ui.css', [], plugin()->ver );
 
 		// democracy
-		wp_enqueue_script( 'democracy-scripts', plugin()->url . '/js/admin.js', [ 'jquery' ], plugin()->ver, true );
+		wp_enqueue_script( 'democracy-scripts', plugin()->url . '/admin/js/admin.js', [ 'jquery' ], plugin()->ver, true );
 		wp_enqueue_style( 'democracy-styles', plugin()->url . '/admin/css/admin.css', [], plugin()->ver );
 
 		$this->run_upgrade();

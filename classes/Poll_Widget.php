@@ -110,16 +110,15 @@ class Poll_Widget extends \WP_Widget {
 		</p>';
 	}
 
-	public function dem_widget_footer_js() {
+	public function dem_widget_footer_js(): void {
 		?>
-		<script type="text/javascript">
-			let getTitleObj = function( that ){
-				return jQuery( that ).closest( '.widget-content' ).find( '.demTitleWrap' );
-			}
-
+		<script id="democracy-poll-wg-js">
 			window.demHideTitle = function( that ){
-				if( that.checked ) getTitleObj( that ).slideUp( 300 );
-				else               getTitleObj( that ).slideDown( 300 );
+				let getTitleObj = ( that ) => jQuery( that ).closest( '.widget-content' ).find( '.demTitleWrap' );
+
+				that.checked
+					? getTitleObj( that ).slideUp( 300 )
+					: getTitleObj( that ).slideDown( 300 );
 			}
 		</script>
 		<?php

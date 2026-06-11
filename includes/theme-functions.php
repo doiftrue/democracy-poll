@@ -60,9 +60,7 @@ function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = ''
 		$wpdb->update( $wpdb->democracy_q, [ 'in_posts' => $new_in_posts ], [ 'id' => $poll_id ] );
 	}
 
-	$show_screen = dem__query_poll_screen_choose( $poll );
-
-	return $poll->renderer->get_screen( $show_screen, $before_title, $after_title );
+	return $poll->renderer->get_screen( 'vote', $before_title, $after_title );
 }
 
 /**
@@ -294,11 +292,7 @@ function get_dem_polls( $args = [] ) {
 	foreach( $poll_ids as $poll_id ){
 		$poll = new \DemPoll( $poll_id );
 
-		$screen = isset( $_REQUEST['dem_act'] )
-			? dem__query_poll_screen_choose( $poll )
-			: $rg->screen;
-
-		$elm_html = $poll->renderer->get_screen( $screen, $rg->before_title, $rg->after_title );
+		$elm_html = $poll->renderer->get_screen( $rg->screen, $rg->before_title, $rg->after_title );
 
 		// in posts
 		if(
@@ -323,35 +317,5 @@ function get_dem_polls( $args = [] ) {
 	}
 
 	return sprintf( $rg->wrap, implode( "\n", $out ) );
-}
-
-/**
- * Which screen to display, based on the passed request
- *
- * @param \DemPoll $poll
- *
- * @return string One of: 'voted' or 'vote'.
- */
-function dem__query_poll_screen_choose( $poll ): string {
-
-	// view results is closed in options
-	if( $poll->open && ! $poll->show_results ){
-		return 'vote';
-	}
-
-	$screen = (
-		isset( $_REQUEST['dem_act'], $_REQUEST['dem_pid'] ) &&
-		$_REQUEST['dem_act'] === 'view' &&
-		(int) $_REQUEST['dem_pid'] === (int) $poll->id
-	)
-		? 'voted' : 'vote';
-
-	/**
-	 * Allows to modify the screen to display for the poll.
-	 *
-	 * @param string   $screen The screen to display: 'voted' or 'vote'.
-	 * @param \DemPoll $poll   The poll object.
-	 */
-	return (string) apply_filters( 'dem_poll_screen_choose', $screen, $poll );
 }
 

@@ -42,13 +42,13 @@ class Poll_Renderer {
 	 * @return string|false HTML.
 	 */
 	public function get_screen( string $show_screen = 'vote', string $before_title = '', string $after_title = '' ) {
+		$opt = options();
 		$poll = $this->poll; // simplify
-
 		if( ! $poll->id ){
 			return false;
 		}
 
-		$this->in_archive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) options()->archive_page_id ) && is_singular();
+		$this->in_archive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) $opt->archive_page_id ) && is_singular();
 
 		if( $poll->voting_blocked && $show_screen !== 'force_vote' ){
 			$show_screen = 'voted';
@@ -58,17 +58,17 @@ class Poll_Renderer {
 
 		$js_opts = [
 			'ajax_url'         => plugin()->poll_ajax->ajax_url,
-			'pid'              => $poll->id,
+			'pid'              => (int) $poll->id,
 			'max_answs'        => (int) ( $poll->multiple ?: 0 ),
-			'answs_max_height' => options()->answs_max_height,
-			'anim_speed'       => options()->anim_speed,
-			'line_anim_speed'  => (int) options()->line_anim_speed,
+			'answs_max_height' => is_numeric( $opt->answs_max_height ) ? "{$opt->answs_max_height}px" : $opt->answs_max_height,
+			'anim_speed'       => (int) $opt->anim_speed,
+			'line_anim_speed'  => (int) $opt->line_anim_speed,
 		];
 
-		$html .= '<div id="democracy-' . $poll->id . '" class="democracy" data-opts=\'' . json_encode( $js_opts ) . '\' >';
-		$html .= $before_title ?: options()->before_title;
+		$html .= sprintf( '<div id="democracy-%d" class="democracy" data-opts=\'%s\' >', $poll->id, json_encode( $js_opts ) );
+		$html .= $before_title ?: $opt->before_title;
 		$html .= Kses::kses_html( $poll->question );
-		$html .= $after_title ?: options()->after_title;
+		$html .= $after_title ?: $opt->after_title;
 
 		// changeable part
 		$html .= $this->get_screen_basis( $show_screen );
@@ -80,16 +80,11 @@ class Poll_Renderer {
 			$html .= '<a class="dem-edit-link" href="' . Poll_Utils::edit_poll_url( $poll->id ) . '" title="' . __( 'Edit poll', 'democracy-poll' ) . '"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1.5em" height="100%" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve"><path d="M617.8,203.4l175.8,175.8l-445,445L172.9,648.4L617.8,203.4z M927,161l-78.4-78.4c-30.3-30.3-79.5-30.3-109.9,0l-75.1,75.1 l175.8,175.8l87.6-87.6C950.5,222.4,950.5,184.5,927,161z M80.9,895.5c-3.2,14.4,9.8,27.3,24.2,23.8L301,871.8L125.3,696L80.9,895.5z"/></svg></a>';
 		}
 
-		// copyright
-		if( options()->show_copyright && ( is_home() || is_front_page() ) ){
-			$html .= '<a class="dem-copyright" href="http://wp-kama.ru/?p=67" target="_blank" rel="noopener" title="' . __( 'Download the Democracy Poll', 'democracy-poll' ) . '" onmouseenter="var $el = jQuery(this).find(\'span\'); $el.stop().animate({width:\'toggle\'},200); setTimeout(function(){ $el.stop().animate({width:\'toggle\'},200); }, 4000);"> © <span style="display:none;white-space:nowrap;">Kama</span></a>';
-		}
-
 		// loader
-		if( options()->loader_fname ){
+		if( $opt->loader_fname ){
 			static $loader; // оптимизация, чтобы один раз выводился код на странице
 			if( ! $loader ){
-				$loader = '<div class="dem-loader"><div>' . file_get_contents( plugin()->dir . '/styles/loaders/' . options()->loader_fname ) . '</div></div>';
+				$loader = '<div class="dem-loader"><div>' . file_get_contents( plugin()->dir . '/assets/styles/loaders/' . $opt->loader_fname ) . '</div></div>';
 				$html .= $loader;
 			}
 		}
@@ -102,9 +97,7 @@ class Poll_Renderer {
 			$html .= $this->get_cache_screens();
 		}
 
-		if( ! options()->disable_js ){
-			Poll_Utils::enqueue_js_once();
-		}
+		Poll_Utils::enqueue_js_once();
 
 		return Poll_Utils::get_minified_styles_once() . $html;
 	}
@@ -160,10 +153,6 @@ class Poll_Renderer {
 			: $this->get_result_screen();
 		$html .= '</div>';
 
-		if( ! $this->for_cache ){
-			$html .= '<noscript>Poll Options are limited because JavaScript is disabled in your browser.</noscript>';
-		}
-
 		return $html;
 	}
 
@@ -197,7 +186,7 @@ class Poll_Renderer {
 			$lis_html .= strtr( <<<'HTML'
 				<li data-aid="{AID}">
 					<label class="dem__{TYPE}_label">
-						<input class="dem__{TYPE}" {AUTO_VOTE} type="{TYPE}" value="{AID}" name="answer_ids[]" {CHECKED} {DISABLED}><span class="dem__spot"></span> {ANSWER}
+						<input class="dem__{TYPE}" {AUTO_VOTE} type="{TYPE}" value="{AID}" {CHECKED} {DISABLED}><span class="dem__spot"></span> {ANSWER}
 					</label>
 				</li>
 				HTML,
@@ -216,12 +205,10 @@ class Poll_Renderer {
 			$lis_html .= '<li class="dem-add-answer"><a href="javascript:void(0);" rel="nofollow" data-dem-act="newAnswer" class="dem-link">' . _x( 'Add your answer', 'front', 'democracy-poll' ) . '</a></li>';
 		}
 
-		$bottom_html  = '<div class="dem-bottom">';
-		$bottom_html .= '<input type="hidden" name="dem_act" value="vote">';
-		$bottom_html .= '<input type="hidden" name="dem_pid" value="' . $poll->id . '">';
+		$bottom_html = '<div class="dem-bottom">';
 
-		$voted_btn = '<div class="dem-voted-button"><input class="dem-button ' . options()->btn_class . '" type="submit" value="' . _x( 'Already voted...', 'front', 'democracy-poll' ) . '" disabled="disabled"></div>';
-		$vote_btn = '<div class="dem-vote-button"><input class="dem-button ' . options()->btn_class . '" type="submit" value="' . _x( 'Vote', 'front', 'democracy-poll' ) . '" data-dem-act="vote"></div>';
+		$voted_btn = '<div class="dem-voted-button"><input class="dem-button ' . options()->btn_class . '" type="button" value="' . _x( 'Already voted...', 'front', 'democracy-poll' ) . '" disabled="disabled"></div>';
+		$vote_btn = '<div class="dem-vote-button"><input class="dem-button ' . options()->btn_class . '" type="button" value="' . _x( 'Vote', 'front', 'democracy-poll' ) . '" data-dem-act="vote"></div>';
 
 		if( $auto_vote_on_select ){
 			$vote_btn = '';
@@ -253,12 +240,9 @@ class Poll_Renderer {
 				$bottom_html .= $for_users_alert;
 			}
 			else{
-				if( $poll->has_voted ){
-					$bottom_html .= $poll->revote ? $this->revote_btn_html() : $voted_btn;
-				}
-				else{
-					$bottom_html .= $vote_btn;
-				}
+				$bottom_html .= $poll->has_voted
+					? ( $poll->revote ? $this->revote_btn_html() : $voted_btn )
+					: $vote_btn;
 			}
 		}
 
@@ -269,12 +253,12 @@ class Poll_Renderer {
 		$bottom_html .= '</div>'; // dem-bottom
 
 		$html = <<<HTML
-		<form method="POST" action="#democracy-$poll->id">
+		<div class="dem-vote-wrap">
 			<ul class="dem-vote">
 				$lis_html
 			</ul>
 			$bottom_html
-		</form>
+		</div>
 		HTML;
 
 		/**
@@ -487,18 +471,13 @@ class Poll_Renderer {
 	protected function revote_btn_html(): string {
 		return strtr( <<<'HTML'
 			<span class="dem-revote-button-wrap">
-			<form action="#democracy-{POLL_ID}" method="POST">
-				<input type="hidden" name="dem_act" value="delVoted">
-				<input type="hidden" name="dem_pid" value="{POLL_ID}">
-				<input type="submit" value="{REVOTE}" class="dem-revote-link dem-revote-button dem-button {BTN_CLASS}" data-dem-act="delVoted" data-confirm-text="{CONFIRM}">
-			</form>
+				<input type="button" value="{REVOTE}" class="dem-revote-link dem-revote-button dem-button {BTN_CLASS}" data-dem-act="delVoted" data-confirm_text="{CONFIRM}">
 			</span>
 			HTML,
 			[
-				'{POLL_ID}'  => $this->poll->id,
-				'{REVOTE}'   => _x( 'Revote', 'front', 'democracy-poll' ),
-				'{BTN_CLASS}'=> options()->btn_class,
-				'{CONFIRM}'  => _x( 'Are you sure you want cancel the votes?', 'front', 'democracy-poll' ),
+				'{REVOTE}'    => _x( 'Revote', 'front', 'democracy-poll' ),
+				'{BTN_CLASS}' => options()->btn_class,
+				'{CONFIRM}'   => _x( 'Are you sure you want cancel the votes?', 'front', 'democracy-poll' ),
 			]
 		);
 	}

@@ -4,7 +4,7 @@
  * Description: Allows creation of democratic polls. Visitors can vote for multiple answers and add their own answers.
  *
  * Author: Kama
- * Author URI: https://wp-kama.com/
+ * Author URI: https://wp-kama.com
  * Plugin URI: https://wp-kama.ru/67
  *
  * Text Domain: democracy-poll
@@ -13,7 +13,7 @@
  * Requires at least: 5.8
  * Requires PHP: 7.4
  *
- * Version: 6.1.1
+ * Version: 6.2.0
  */
 
 namespace DemocracyPoll;

@@ -14,14 +14,6 @@ class Poll_Ajax {
 		// ajax request во frontend_init нельзя, потому что срабатывает только как is_admin()
 		add_action( 'wp_ajax_dem_ajax', [ $this, 'ajax_request_handler' ] );
 		add_action( 'wp_ajax_nopriv_dem_ajax', [ $this, 'ajax_request_handler' ] );
-
-		// to work without AJAX
-		if(
-			isset( $_POST['dem_act'] )
-		    && ( ! isset( $_POST['action'] ) || 'dem_ajax' !== $_POST['action'] )
-		){
-			add_action( 'init', [ $this, 'not_ajax_request_handler' ], 99 );
-		}
 	}
 
 	/**
@@ -99,34 +91,6 @@ class Poll_Ajax {
 		}
 
 		wp_die();
-	}
-
-	/**
-	 * To work without AJAX.
-	 */
-	public function not_ajax_request_handler(): void {
-		$vars = (object) $this->sanitize_request_vars();
-
-		if( ! $vars->act || ! $vars->pid || ! isset( $_SERVER['HTTP_REFERER'] ) ){
-			return;
-		}
-
-		$poll = new \DemPoll( $vars->pid );
-		$service = $poll->service;
-
-		if( 'vote' === $vars->act && $vars->aids ){
-			$service->vote( $vars->aids );
-			wp_safe_redirect( remove_query_arg( [ 'dem_act', 'dem_pid' ], $_SERVER['HTTP_REFERER'] ) );
-
-			exit;
-		}
-
-		if( 'delVoted' === $vars->act ){
-			$service->delete_vote();
-			wp_safe_redirect( remove_query_arg( [ 'dem_act', 'dem_pid' ], $_SERVER['HTTP_REFERER'] ) );
-
-			exit;
-		}
 	}
 
 }

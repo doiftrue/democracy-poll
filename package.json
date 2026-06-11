@@ -1,0 +1,26 @@
+{
+  "scripts": {
+    "watch": "gulp watch",
+    "build": "gulp build"
+  },
+  "dependencies": {
+    "js-cookie": "^3.0.5"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.5",
+    "gulp": "^5.0.1",
+    "gulp-terser": "^2.1.0",
+    "gulp-noop": "^1.0.1",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0",
+    "rollup": "^4.53.3",
+    "@rollup/stream": "^3.0.1",
+    "@rollup/plugin-babel": "^6.1.0",
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.3"
+  },
+  "engines": {
+    "node": ">=24.12.0"
+  }
+}
