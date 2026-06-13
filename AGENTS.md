@@ -30,6 +30,7 @@ This is WordPress plugin that distributed to oficial WordPress plugin repository
 
 ## Testing Guidelines
 - PHPUnit + WP_Mock are used; tests live in `tests/unit/` and must end with `Test.php`.
+- Tests use `https://github.com/doiftrue/unitest-wp-copy`, a lightweight copy of the WordPress runtime that provides core WordPress functions, classes, and constants without bootstrapping a full WordPress installation. Before mocking or defining a WordPress symbol in a test, check whether it is already provided; the complete list of available symbols is documented in `vendor/doiftrue/unitest-wp-copy/wp-runtime/SYMBOLS-INFO.md`.
 - `phpunit.xml` enables `forceCoversAnnotation`; add `@covers` or `@coversNothing` to new tests.
 - There is no explicit coverage threshold configured.
 
@@ -39,3 +40,6 @@ This is WordPress plugin that distributed to oficial WordPress plugin repository
 
 ## Browser Support & Compatibility
 - Target modern browsers with ES module support; No IE11 support.
+
+## External Services
+- IP geolocation uses the free `https://ipwho.is/` endpoint. It is limited to 60 requests per minute per client IP and is licensed for non-commercial use only. See https://ipwhois.io/documentation.

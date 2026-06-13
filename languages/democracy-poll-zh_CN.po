@@ -1,22 +1,23 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version:  Democracy\n"
+"Project-Id-Version: Democracy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 03:47+0500\n"
-"PO-Revision-Date: 2026-06-12 04:15+0500\n"
 "Last-Translator: Democracy Poll contributors\n"
-"Language: zh_CN\n"
 "Language-Team: zh_CN <LL@li.org>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.10.3\n"
+"POT-Creation-Date: 2026-06-12 03:47+0500\n"
+"PO-Revision-Date: 2026-06-12 04:15+0500\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SearchPathExcluded-0: node_modules\n"
+"X-Poedit-SearchPathExcluded-1: vendor\n"
+"X-Poedit-SearchPathExcluded-2: assets/build\n"
+"X-Poedit-KeywordsList: __;_e;esc_html__;esc_html_e;esc_attr__;esc_attr_e;_ex:1,2c;_x:1,2c;_n:1,2;_nx:1,2,3c;_n_noop:1,2;_nx_noop:1,2,3c\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
 #: includes/theme-functions.php:84
 msgid "Poll results hidden for now..."
@@ -26,7 +27,8 @@ msgstr "投票结果暂时隐藏..."
 msgid "From posts:"
 msgstr "来自帖子："
 
-#: classes/Admin/Admin_Page.php:52 classes/Poll_Widget.php:12
+#: classes/Poll_Widget.php:12
+#: classes/Admin/Admin_Page.php:52
 msgid "Democracy Poll"
 msgstr "Democracy Poll"
 
@@ -34,7 +36,8 @@ msgstr "Democracy Poll"
 msgid "Democracy Poll Widget"
 msgstr "Democracy Poll 小工具"
 
-#: classes/Admin/List_Table_Logs.php:128 classes/Poll_Widget.php:66
+#: classes/Poll_Widget.php:66
+#: classes/Admin/List_Table_Logs.php:128
 msgid "Poll"
 msgstr "民意调查"
 
@@ -58,8 +61,9 @@ msgstr "- 最后一次公开投票"
 msgid "Which poll to show?"
 msgstr "显示哪个民意调查？"
 
-#: classes/Admin/List_Table_Logs.php:174 classes/Admin/List_Table_Logs.php:280
 #: classes/Poll_Renderer.php:80
+#: classes/Admin/List_Table_Logs.php:174
+#: classes/Admin/List_Table_Logs.php:294
 msgid "Edit poll"
 msgstr "编辑投票"
 
@@ -73,7 +77,8 @@ msgctxt "front"
 msgid "Already voted..."
 msgstr "已经投票了..."
 
-#: classes/Poll_Renderer.php:211 classes/Poll_Renderer.php:429
+#: classes/Poll_Renderer.php:211
+#: classes/Poll_Renderer.php:429
 msgctxt "front"
 msgid "Vote"
 msgstr "投票"
@@ -94,18 +99,19 @@ msgid "The answer was added by a visitor"
 msgstr "答案是由访客添加的"
 
 #: classes/Poll_Renderer.php:323
-#, php-format, python-format
+#, php-format,python-format
 msgctxt "front"
 msgid "%s - %s%% of all votes"
 msgstr "%s - 所有投票的 %s%%"
 
-#: classes/Poll_Renderer.php:324 classes/Poll_Renderer.php:331
+#: classes/Poll_Renderer.php:324
+#: classes/Poll_Renderer.php:331
 msgctxt "front"
 msgid "vote,votes,votes"
 msgstr "票,票,票"
 
 #: classes/Poll_Renderer.php:364
-#, php-format, python-format
+#, php-format,python-format
 msgctxt "front"
 msgid "Total Votes: %s"
 msgstr "总票数：%s"
@@ -121,7 +127,7 @@ msgid "End"
 msgstr "结束"
 
 #: classes/Poll_Renderer.php:372
-#, php-format, python-format
+#, php-format,python-format
 msgctxt "front"
 msgid "Voters: %s"
 msgstr "投票者：%s"
@@ -185,7 +191,8 @@ msgstr "柏林"
 msgid "London"
 msgstr "伦敦"
 
-#: classes/Admin/List_Table_Logs.php:282 classes/Admin/tpl/edit-poll.php:25
+#: classes/Admin/tpl/edit-poll.php:25
+#: classes/Admin/List_Table_Logs.php:296
 msgid "Poll logs"
 msgstr "民意调查日志"
 
@@ -245,7 +252,8 @@ msgstr "允许改变主意（投票）。"
 msgid "Only registered users allowed to vote."
 msgstr "只有注册用户才可以投票。"
 
-#: classes/Admin/List_Table_Polls.php:120 classes/Admin/tpl/edit-poll.php:225
+#: classes/Admin/tpl/edit-poll.php:225
+#: classes/Admin/List_Table_Polls.php:120
 msgid "Allow to watch the results of the poll."
 msgstr "允许观看投票结果。"
 
@@ -269,17 +277,21 @@ msgstr "创建日期。"
 msgid "Save Changes"
 msgstr "保存更改"
 
-#: classes/Admin/tpl/edit-poll.php:266 classes/Plugin_Initor.php:114
+#: classes/Admin/tpl/edit-poll.php:266
+#: classes/Plugin_Initor.php:114
 msgid "Add Poll"
 msgstr "添加投票"
 
-#: classes/Admin/Admin_Page_Logs.php:77 classes/Admin/Admin_Page_Logs.php:84
-#: classes/Admin/Admin_Page_Other_Migrations.php:88 classes/Admin/List_Table_Polls.php:145
 #: classes/Admin/tpl/edit-poll.php:277
+#: classes/Admin/Admin_Page_Other_Migrations.php:88
+#: classes/Admin/Admin_Page_Logs.php:77
+#: classes/Admin/Admin_Page_Logs.php:84
+#: classes/Admin/List_Table_Polls.php:145
 msgid "Are you sure?"
 msgstr "你确定吗？"
 
-#: classes/Admin/List_Table_Polls.php:145 classes/Admin/tpl/edit-poll.php:278
+#: classes/Admin/tpl/edit-poll.php:278
+#: classes/Admin/List_Table_Polls.php:145
 msgid "Delete"
 msgstr "删除"
 
@@ -319,7 +331,8 @@ msgstr "公开投票"
 msgid "Poll Deleted"
 msgstr "投票已删除"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:489 classes/Admin/List_Table_Polls.php:71
+#: classes/Admin/Admin_Page_Edit_Poll.php:489
+#: classes/Admin/List_Table_Polls.php:71
 msgid "Poll Opened"
 msgstr "投票开始"
 
@@ -356,7 +369,7 @@ msgid "random active poll"
 msgstr "随机主动轮询"
 
 #: classes/Admin/Post_Metabox.php:58
-#, php-format, python-format
+#, php-format,python-format
 msgid "%s - shortcode"
 msgstr "%s - 简码"
 
@@ -369,7 +382,7 @@ msgid "Migration from WP Polls done"
 msgstr "WP Polls 迁移完成"
 
 #: classes/Admin/Admin_Page_Other_Migrations.php:72
-#, php-format, python-format
+#, php-format,python-format
 msgid "Polls copied: %d. Answers copied: %d. Logs copied: %d"
 msgstr "民意调查复制：%d。复制答案：%d。复制的日志：%d"
 
@@ -386,17 +399,19 @@ msgid "Delete all data about WP Polls migration"
 msgstr "删除有关 WP Polls 迁移的所有数据"
 
 #: classes/Admin/Admin_Page_Other_Migrations.php:131
-#, php-format, python-format
+#, php-format,python-format
 msgid "Shortcodes replaced: %s"
 msgstr "替换的短代码：%s"
 
-#: classes/Admin/Admin_Page_Design.php:48 classes/Admin/Admin_Page_Settings.php:35
 #: classes/Admin/Admin_Page_l10n.php:38
+#: classes/Admin/Admin_Page_Design.php:48
+#: classes/Admin/Admin_Page_Settings.php:35
 msgid "Updated"
 msgstr "已更新"
 
-#: classes/Admin/Admin_Page_Design.php:49 classes/Admin/Admin_Page_Settings.php:36
 #: classes/Admin/Admin_Page_l10n.php:39
+#: classes/Admin/Admin_Page_Design.php:49
+#: classes/Admin/Admin_Page_Settings.php:36
 msgid "Nothing was updated"
 msgstr "没有更新任何内容"
 
@@ -412,8 +427,9 @@ msgstr "你的变体"
 msgid "Save Text"
 msgstr "保存文本"
 
-#: classes/Admin/Admin_Page_Design.php:444 classes/Admin/Admin_Page_Settings.php:281
 #: classes/Admin/Admin_Page_l10n.php:109
+#: classes/Admin/Admin_Page_Design.php:444
+#: classes/Admin/Admin_Page_Settings.php:281
 msgid "Reset Options"
 msgstr "重置选项"
 
@@ -430,10 +446,8 @@ msgid "Other settings"
 msgstr "其他设置"
 
 #: classes/Admin/Admin_Page_Design.php:108
-msgid ""
-"Max height of the poll in pixels (if no unit is set). When a poll has many answers, collapsing it"
-" improves readability. `-1` - disables this option. Default: 500."
-msgstr "轮询的最大高度（以像素为单位）（如果未设置单位）。当民意调查有很多答案时，折叠它可以提高可读性。 `-1` - 禁用此选项。默认值：500。"
+msgid "Max height of the poll (in pixels if no unit is set). When a poll has many answers, collapsing it improves readability. `-1` - disables this option. Default: 500."
+msgstr "投票的最大高度（未指定单位时以像素为单位）。当投票选项较多时，将其折叠可提高可读性。`-1` 表示禁用此选项。默认值：500。"
 
 #: classes/Admin/Admin_Page_Design.php:112
 msgid "Animation speed (in milliseconds)."
@@ -476,29 +490,31 @@ msgstr "行高（如果未设置单位，则以 px 为单位）"
 msgid "Progress line animation effect speed (default 1500). Set 0 to disable animation."
 msgstr "进度线动画效果速度（默认1500）。设置 0 禁用动画。"
 
-#: classes/Admin/Admin_Page_Design.php:183 classes/Admin/Admin_Page_Design.php:247
+#: classes/Admin/Admin_Page_Design.php:183
+#: classes/Admin/Admin_Page_Design.php:247
 msgid "No (default)"
 msgstr "否（默认）"
 
 #: classes/Admin/Admin_Page_Design.php:301
-msgid ""
-"The colors correctly affects NOT for all buttons. You can change styles completely in "
-"\"additional styles\" field bellow."
+msgid "The colors correctly affects NOT for all buttons. You can change styles completely in \"additional styles\" field bellow."
 msgstr "颜色不会正确影响所有按钮。您可以在下面的“其他样式”字段中完全更改样式。"
 
 #: classes/Admin/Admin_Page_Design.php:307
 msgid "Button colors"
 msgstr "按钮颜色"
 
-#: classes/Admin/Admin_Page_Design.php:310 classes/Admin/Admin_Page_Design.php:332
+#: classes/Admin/Admin_Page_Design.php:310
+#: classes/Admin/Admin_Page_Design.php:332
 msgid "Bg color"
 msgstr "背景颜色"
 
-#: classes/Admin/Admin_Page_Design.php:316 classes/Admin/Admin_Page_Design.php:338
+#: classes/Admin/Admin_Page_Design.php:316
+#: classes/Admin/Admin_Page_Design.php:338
 msgid "Text Color"
 msgstr "文字颜色"
 
-#: classes/Admin/Admin_Page_Design.php:322 classes/Admin/Admin_Page_Design.php:344
+#: classes/Admin/Admin_Page_Design.php:322
+#: classes/Admin/Admin_Page_Design.php:344
 msgid "Border Color"
 msgstr "边框颜色"
 
@@ -507,9 +523,7 @@ msgid "Hover button colors"
 msgstr "悬停按钮颜色"
 
 #: classes/Admin/Admin_Page_Design.php:354
-msgid ""
-"An additional css class for all buttons in the poll. When the template has a special class for "
-"buttons, for example:"
+msgid "An additional css class for all buttons in the poll. When the template has a special class for buttons, for example:"
 msgstr "投票中所有按钮的附加 css 类。当模板有特殊的按钮类时，例如："
 
 #: classes/Admin/Admin_Page_Design.php:372
@@ -517,29 +531,19 @@ msgid "No (dots...)"
 msgstr "没有（点...）"
 
 #: classes/Admin/Admin_Page_Design.php:413
-msgid ""
-"AJAX Loader. If choose \"NO\", loader replaces by dots \"...\" which appends to a link/button "
-"text. SVG images animation don't work in IE 11 or lower, other browsers are supported at  90% "
-"(according to caniuse.com statistics)."
-msgstr ""
-"AJAX 加载器。如果选择“否”，加载程序将替换为附加到链接/按钮文本的点“...”。 SVG 图像动画在 IE 11 或更低版本中不工作，其他浏览器支持 90%（根据 caniuse.com "
-"统计）。"
+msgid "AJAX Loader. If choose \"NO\", loader replaces by dots \"...\" which appends to a link/button text. SVG images animation don't work in IE 11 or lower, other browsers are supported at  90% (according to caniuse.com statistics)."
+msgstr "AJAX 加载器。如果选择“否”，加载程序将替换为附加到链接/按钮文本的点“...”。 SVG 图像动画在 IE 11 或更低版本中不工作，其他浏览器支持 90%（根据 caniuse.com 统计）。"
 
 #: classes/Admin/Admin_Page_Design.php:424
 msgid "Custom/Additional CSS styles"
 msgstr "自定义/附加 CSS 样式"
 
 #: classes/Admin/Admin_Page_Design.php:429
-msgid ""
-"In this field you can add some additional css properties or completely replace current css theme."
-" Write here css and it will be added at the bottom of current Democracy css. To complete replace "
-"styles, check \"No theme\" and describe all styles."
+msgid "In this field you can add some additional css properties or completely replace current css theme. Write here css and it will be added at the bottom of current Democracy css. To complete replace styles, check \"No theme\" and describe all styles."
 msgstr "在此字段中，您可以添加一些额外的 css 属性或完全替换当前的 css 主题。在此写入 css，它将添加到当前 Democracy css 的底部。要完成替换样式，请选中“无主题”并描述所有样式。"
 
 #: classes/Admin/Admin_Page_Design.php:430
-msgid ""
-"This field cleaned manually, if you reset options of this page or change/set another theme, the "
-"field will not be touched."
+msgid "This field cleaned manually, if you reset options of this page or change/set another theme, the field will not be touched."
 msgstr "该字段是手动清理的，如果您重置该页面的选项或更改/设置其他主题，该字段将不会被触及。"
 
 #: classes/Admin/Admin_Page_Design.php:440
@@ -555,9 +559,7 @@ msgid "All CSS styles that uses now"
 msgstr "现在使用的所有 CSS 样式"
 
 #: classes/Admin/Admin_Page_Design.php:460
-msgid ""
-"It's all collected css styles: theme, button, options. You can copy this styles to the "
-"\"Custom/Additional CSS styles:\" field, disable theme and change copied styles by itself."
+msgid "It's all collected css styles: theme, button, options. You can copy this styles to the \"Custom/Additional CSS styles:\" field, disable theme and change copied styles by itself."
 msgstr "这是所有收集的 css 样式：主题、按钮、选项。您可以将此样式复制到“自定义/附加 CSS 样式：”字段，禁用主题并自行更改复制的样式。"
 
 #: classes/Admin/Admin_Page_Design.php:469
@@ -616,7 +618,7 @@ msgstr "民意调查日志： "
 msgid "NEW answers logs"
 msgstr "新答案日志"
 
-#: classes/Admin/List_Table_Logs.php:227
+#: classes/Admin/List_Table_Logs.php:273
 msgid "Search by IP"
 msgstr "按IP搜索"
 
@@ -629,7 +631,7 @@ msgid "Delete all NEW marks"
 msgstr "删除所有新标记"
 
 #: classes/Admin/Admin_Page_Logs.php:79
-#, php-format, python-format
+#, php-format,python-format
 msgid "Delete logs of closed pols - %d"
 msgstr "删除已关闭 pol 的日志 - %d"
 
@@ -638,20 +640,23 @@ msgid "Delete all logs"
 msgstr "删除所有日志"
 
 #: classes/Admin/Admin_Page_Logs.php:117
-#, php-format, python-format
+#, php-format,python-format
 msgid "Lines deleted: %s"
 msgstr "删除行：%s"
 
-#: classes/Admin/Admin_Page_Logs.php:118 classes/Admin/Admin_Page_Logs.php:196
+#: classes/Admin/Admin_Page_Logs.php:118
+#: classes/Admin/Admin_Page_Logs.php:196
 msgid "Failed to delete"
 msgstr "删除失败"
 
 #: classes/Admin/Admin_Page_Logs.php:193
-#, php-format, python-format
+#, php-format,python-format
 msgid "Removed logs: %d. Removed answers:%d. Removed users %d."
 msgstr "已删除的日志：%d。删除答案：%d。删除了用户 %d。"
 
-#: classes/Admin/Admin.php:38 classes/Admin/Admin_Page.php:205 classes/Plugin_Initor.php:116
+#: classes/Admin/Admin.php:38
+#: classes/Admin/Admin_Page.php:205
+#: classes/Plugin_Initor.php:116
 msgid "Settings"
 msgstr "设置"
 
@@ -659,7 +664,8 @@ msgstr "设置"
 msgid "Back"
 msgstr "返回"
 
-#: classes/Admin/Admin_Page.php:191 classes/Plugin_Initor.php:113
+#: classes/Admin/Admin_Page.php:191
+#: classes/Plugin_Initor.php:113
 msgid "Polls List"
 msgstr "投票列表"
 
@@ -667,16 +673,19 @@ msgstr "投票列表"
 msgid "Add new poll"
 msgstr "添加新的民意调查"
 
-#: classes/Admin/Admin_Page.php:199 classes/Admin/List_Table_Polls.php:140
+#: classes/Admin/Admin_Page.php:199
+#: classes/Admin/List_Table_Polls.php:140
 #: classes/Plugin_Initor.php:115
 msgid "Logs"
 msgstr "日志"
 
-#: classes/Admin/Admin_Page.php:210 classes/Plugin_Initor.php:117
+#: classes/Admin/Admin_Page.php:210
+#: classes/Plugin_Initor.php:117
 msgid "Theme Settings"
 msgstr "主题设置"
 
-#: classes/Admin/Admin_Page.php:215 classes/Plugin_Initor.php:118
+#: classes/Admin/Admin_Page.php:215
+#: classes/Plugin_Initor.php:118
 msgid "Texts changes"
 msgstr "文本更改"
 
@@ -745,30 +754,19 @@ msgid "Log data & take visitor IP into consideration? (recommended)"
 msgstr "记录数据并考虑访问者 IP？ （推荐）"
 
 #: classes/Admin/Admin_Page_Settings.php:64
-msgid ""
-"Saves voting data in the database. This enables the re-voting mechanism and prevents logged-in "
-"users from voting multiple times, or non-logged-in users from voting multiple times from the same"
-" IP address. If this option is disabled, voting is checked by cookies only."
+msgid "Saves voting data in the database. This enables the re-voting mechanism and prevents logged-in users from voting multiple times, or non-logged-in users from voting multiple times from the same IP address. If this option is disabled, voting is checked by cookies only."
 msgstr "将投票数据保存在数据库中。这启用了重新投票机制，并防止登录用户多次投票，或非登录用户从同一 IP 地址多次投票。如果禁用此选项，则仅通过 cookie 检查投票。"
 
 #: classes/Admin/Admin_Page_Settings.php:65
-msgid ""
-"INFO: If a user is logged in, their vote is checked by their WP account. If a user is not logged "
-"in, their IP address is checked. The downside of IP checks is that a site may be visited from an "
-"enterprise network with a shared IP address, so all users from that network are allowed to vote "
-"only once."
-msgstr ""
-"信息：如果用户登录，他们的投票将由他们的 WP 帐户检查。如果用户未登录，则会检查其 IP 地址。 IP 检查的缺点是可以从具有共享 IP "
-"地址的企业网络访问站点，因此该网络的所有用户只能投票一次。"
+msgid "INFO: If a user is logged in, their vote is checked by their WP account. If a user is not logged in, their IP address is checked. The downside of IP checks is that a site may be visited from an enterprise network with a shared IP address, so all users from that network are allowed to vote only once."
+msgstr "信息：如果用户登录，他们的投票将由他们的 WP 帐户检查。如果用户未登录，则会检查其 IP 地址。 IP 检查的缺点是可以从具有共享 IP 地址的企业网络访问站点，因此该网络的所有用户只能投票一次。"
 
 #: classes/Admin/Admin_Page_Settings.php:72
 msgid "How many days to keep Cookies alive?"
 msgstr "Cookie 的有效期是多少天？"
 
 #: classes/Admin/Admin_Page_Settings.php:75
-msgid ""
-"How many days the user's browser remembers the votes. Default: 365. Note: works together with IP "
-"log."
+msgid "How many days the user's browser remembers the votes. Default: 365. Note: works together with IP log."
 msgstr "用户的浏览器会记住投票多少天。默认值：365。 注意：与 IP 日志一起使用。"
 
 #: classes/Admin/Admin_Page_Settings.php:77
@@ -784,12 +782,8 @@ msgid "poll's question"
 msgstr "民意调查的问题"
 
 #: classes/Admin/Admin_Page_Settings.php:88
-msgid ""
-"Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong "
-"class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>."
-msgstr ""
-"示例：<code>&lt;h2&gt;</code> 和 <code>&lt;/h2&gt;</code>。默认值：<code>&lt;strong class=&quot;dem-poll-"
-"title&quot;&gt;</code> 和 <code>&lt;/strong&gt;</code>。"
+msgid "Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>."
+msgstr "示例：<code>&lt;h2&gt;</code> 和 <code>&lt;/h2&gt;</code>。默认值：<code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> 和 <code>&lt;/strong&gt;</code>。"
 
 #: classes/Admin/Admin_Page_Settings.php:94
 msgid "Polls archive page ID."
@@ -824,19 +818,16 @@ msgid "Only registered users allowed to vote (global option)"
 msgstr "仅允许注册用户投票（全局选项）"
 
 #: classes/Admin/Admin_Page_Settings.php:130
-msgid ""
-"This option  is available for each poll separately, but if you heed you can turn ON the option "
-"for all polls at once, just tick."
+msgid "This option  is available for each poll separately, but if you heed you can turn ON the option for all polls at once, just tick."
 msgstr "此选项可单独用于每个民意调查，但如果您注意到可以一次为所有民意调查打开该选项，只需勾选即可。"
 
 #: classes/Admin/Admin_Page_Settings.php:137
 msgid "Prohibit users to add new answers (global Democracy option)."
 msgstr "禁止用户添加新答案（全局民主选项）。"
 
-#: classes/Admin/Admin_Page_Settings.php:139 classes/Admin/Admin_Page_Settings.php:148
-msgid ""
-"This option  is available for each poll separately, but if you heed you can turn OFF the option "
-"for all polls at once, just tick."
+#: classes/Admin/Admin_Page_Settings.php:139
+#: classes/Admin/Admin_Page_Settings.php:148
+msgid "This option  is available for each poll separately, but if you heed you can turn OFF the option for all polls at once, just tick."
 msgstr "此选项可单独用于每个民意调查，但如果您注意可以一次关闭所有民意调查的选项，只需勾选即可。"
 
 #: classes/Admin/Admin_Page_Settings.php:146
@@ -864,9 +855,7 @@ msgid "Hide vote button."
 msgstr "隐藏投票按钮。"
 
 #: classes/Admin/Admin_Page_Settings.php:175
-msgid ""
-"Hide vote button if it is NOT multiple poll with revote option. User will vote by clicking on "
-"answer itself."
+msgid "Hide vote button if it is NOT multiple poll with revote option. User will vote by clicking on answer itself."
 msgstr "如果不是带有重新投票选项的多重投票，则隐藏投票按钮。用户将通过点击答案本身进行投票。"
 
 #: classes/Admin/Admin_Page_Settings.php:182
@@ -874,12 +863,11 @@ msgid "Disable post metabox."
 msgstr "禁用后元框。"
 
 #: classes/Admin/Admin_Page_Settings.php:184
-msgid ""
-"Check this to disable polls metabox functionality for posts where you can attached poll to a "
-"post..."
+msgid "Check this to disable polls metabox functionality for posts where you can attached poll to a post..."
 msgstr "选中此选项可禁用帖子的民意调查元框功能，您可以在其中将民意调查附加到帖子..."
 
-#: classes/Admin/Admin_Page_Settings.php:187 classes/Admin/Admin_Page_Settings.php:286
+#: classes/Admin/Admin_Page_Settings.php:187
+#: classes/Admin/Admin_Page_Settings.php:286
 msgid "Others"
 msgstr "其他"
 
@@ -892,15 +880,12 @@ msgid "OFF"
 msgstr "关闭"
 
 #: classes/Admin/Admin_Page_Settings.php:198
-#, php-format, python-format
+#, php-format,python-format
 msgid "Force enable gear to working with cache plugins. The condition: %s"
 msgstr "强制启用齿轮与缓存插件一起使用。条件：%s"
 
 #: classes/Admin/Admin_Page_Settings.php:203
-msgid ""
-"Democracy has smart mechanism for working with page cache plugins like \"WP Total Cache\". It is "
-"ON automatically if such plugin is enabled on your site. But if you use unusual page caching "
-"plugin you can force enable this option."
+msgid "Democracy has smart mechanism for working with page cache plugins like \"WP Total Cache\". It is ON automatically if such plugin is enabled on your site. But if you use unusual page caching plugin you can force enable this option."
 msgstr "Democracy 具有使用页面缓存插件（例如“WP Total Cache”）的智能机制。如果您的网站上启用了此类插件，它会自动打开。但如果您使用不寻常的页面缓存插件，您可以强制启用此选项。"
 
 #: classes/Admin/Admin_Page_Settings.php:209
@@ -936,9 +921,7 @@ msgid "Or if IP detection is wrong. (for cloudflare)"
 msgstr "或者 IP 检测有误时。（适用于 Cloudflare）"
 
 #: classes/Admin/Admin_Page_Settings.php:236
-msgid ""
-"Useful when your server does not work correctly with server variable REMOTE_ADDR. NOTE: this "
-"option give possibility to cheat voice."
+msgid "Useful when your server does not work correctly with server variable REMOTE_ADDR. NOTE: this option give possibility to cheat voice."
 msgstr "当服务器无法正确使用 REMOTE_ADDR 服务器变量时，此选项很有用。注意：此选项可能使用户作弊投票。"
 
 #: classes/Admin/Admin_Page_Settings.php:258
@@ -988,4 +971,3 @@ msgstr "按字母顺序"
 #: classes/Helpers/Helpers.php:12
 msgid "Mix"
 msgstr "混合"
-

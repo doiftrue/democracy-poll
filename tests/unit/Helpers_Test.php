@@ -3,6 +3,8 @@
 namespace DemocracyPoll\unit;
 
 use DemocracyPoll\Helpers\Helpers;
+use DemocracyPoll\Helpers\IP;
+use WP_Mock;
 
 class Helpers_Test extends \DemocracyPoll\DemocTestCase {
 
@@ -48,6 +50,50 @@ class Helpers_Test extends \DemocracyPoll\DemocTestCase {
 				[ 'votes' => 3, 'id' => 3 ],
 			] ),
 		];
+	}
+
+	/**
+	 * @covers IP::get_ip_info()
+	 */
+	public function test__get_ip_info(): void {
+		$response = [
+			'response' => [ 'code' => 200 ],
+			'body'     => json_encode( [
+				'success'      => true,
+				'country'      => 'Uzbekistan',
+				'country_code' => 'UZ',
+				'city'         => 'Tashkent',
+			] ),
+		];
+
+		WP_Mock::userFunction( 'wp_safe_remote_get' )->andReturn( $response );
+		WP_Mock::userFunction( 'wp_remote_retrieve_response_code' )->andReturn( 200 );
+		WP_Mock::userFunction( 'wp_remote_retrieve_body' )->andReturn( $response['body'] );
+
+		$this->assertSame( [
+			'city'         => 'Tashkent',
+			'country'      => 'Uzbekistan',
+			'country_code' => 'UZ',
+		], IP::get_ip_info( '217.25.239.59' ) );
+	}
+
+	/**
+	 * @covers IP::get_ip_info()
+	 */
+	public function test__get_ip_info_returns_empty_array_for_api_error(): void {
+		$response = [
+			'response' => [ 'code' => 200 ],
+			'body'     => json_encode( [
+				'success' => false,
+				'message' => 'Invalid IP address',
+			] ),
+		];
+
+		WP_Mock::userFunction( 'wp_safe_remote_get' )->andReturn( $response );
+		WP_Mock::userFunction( 'wp_remote_retrieve_response_code' )->andReturn( 200 );
+		WP_Mock::userFunction( 'wp_remote_retrieve_body' )->andReturn( $response['body'] );
+
+		$this->assertSame( [], IP::get_ip_info( '217.25.239.59' ) );
 	}
 
 }

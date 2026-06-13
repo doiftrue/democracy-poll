@@ -4,13 +4,14 @@ namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Kses;
 use DemocracyPoll\Poll_Utils;
+use DemPoll;
 use function DemocracyPoll\plugin;
 
 class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 
 	private int $poll_id = 0;
 
-	private ?\DemPoll $poll = null;
+	private ?DemPoll $poll = null;
 
 	private Admin_Page $admpage;
 
@@ -68,7 +69,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 			wp_die( 'Sorry, you are not allowed to access this page.' );
 		}
 
-		$this->poll = $this->poll_id ? new \DemPoll( $this->poll_id ) : null;
+		$this->poll = $this->poll_id ? new DemPoll( $this->poll_id ) : null;
 
 		require __DIR__ . '/tpl/edit-poll.php';
 	}
@@ -366,7 +367,6 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	}
 
 	public static function shortcode_html( $poll_id ): string {
-
 		if( ! $poll_id ){
 			return '';
 		}
@@ -376,55 +376,56 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	}
 
 	/**
-	 * Выводит кнопки активации/деактивации опроса.
-	 *
-	 * @param \DemPoll $poll  Объект опроса.
-	 * @param bool     $icon_reverse  Использовать ли альтернативные иконки для кнопок?
+	 * Displays poll activation/deactivation button.
 	 */
-	public static function activate_button( $poll, $icon_reverse = false ): string {
+	public static function activate_button( DemPoll $poll, $reverse = false, $size = 'big' ): string {
 		if( $poll->active ){
 			$url = esc_url( Admin_Page::add_nonce( add_query_arg( [ 'dmc_deactivate_poll' => $poll->id, 'dmc_activate_poll' => null, ] ) ) );
 			$title = __( 'Deactivate', 'democracy-poll' );
-			$icon = $icon_reverse ? 'dashicons-controls-play' : 'dashicons-controls-pause';
+			$icon = $reverse ? 'dashicons-controls-play' : 'dashicons-controls-pause';
 		}
 		else{
 			$url = esc_url( Admin_Page::add_nonce( add_query_arg( [ 'dmc_deactivate_poll' => null, 'dmc_activate_poll' => $poll->id, ] ) ) );
 			$title = __( 'Activate', 'democracy-poll' );
-			$icon = $icon_reverse ? 'dashicons-controls-pause' : 'dashicons-controls-play';
+			$icon = $reverse ? 'dashicons-controls-pause' : 'dashicons-controls-play';
 		}
 
 		return sprintf(
-			'<a class="button" href="%s" title="%s"><span class="dashicons %s"></span></a>',
-			esc_url( $url ), esc_html( $title ), $icon
+			'<a class="button %s" href="%s" title="%s"><span class="dashicons %s"></span></a>',
+			( $size === 'small' ? 'button-small' : '' ), esc_url( $url ), esc_html( $title ), $icon
 		);
 	}
 
 	/**
-	 * Выводит кнопки открытия/закрытия опроса.
-	 *
-	 * @param \DemPoll $poll  Объект опроса.
-	 * @param bool     $icon_reverse  Использовать ли альтернативные иконки для кнопок?
- */
-	public static function open_button( $poll, $icon_reverse = false ): string {
-
+	 * Displays poll open/close button.
+	 */
+	public static function open_button( $poll, $reverse = false, $size = 'big' ): string {
 		if( $poll->open ){
 			$url = esc_url( Admin_Page::add_nonce( add_query_arg( [ 'dmc_close_poll' => $poll->id, 'dmc_open_poll' => null ] ) ) );
 			$title = __( 'Close voting', 'democracy-poll' );
-			$icon = $icon_reverse ? 'dashicons-yes' : 'dashicons-no';
+			$icon = $reverse ? 'dashicons-yes' : 'dashicons-no';
 		}
 		else{
 			$url = esc_url( Admin_Page::add_nonce( add_query_arg( [ 'dmc_close_poll' => null, 'dmc_open_poll' => $poll->id ] ) ) );
 			$title = __( 'Open voting', 'democracy-poll' );
-			$icon = $icon_reverse ? 'dashicons-no' : 'dashicons-yes';
+			$icon = $reverse ? 'dashicons-no' : 'dashicons-yes';
 		}
 
 		return sprintf(
-			'<a class="button" href="%s" title="%s"><span class="dashicons %s"></span></a>',
-			esc_url( $url ), esc_html( $title ), $icon
+			'<a class="button %s" href="%s" title="%s"><span class="dashicons %s"></span></a>',
+			( $size === 'small' ? 'button-small' : '' ), esc_url( $url ), esc_html( $title ), $icon
 		);
 	}
 
-	## deletes specified poll
+	public static function delete_button( $poll ): string {
+		return sprintf(
+			' <a href="%s" class="button" onclick="return confirm(\'%s\');" title="%s"><span class="dashicons dashicons-trash"></span></a>',
+			Admin_Page::add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], plugin()->admin_page_url ) ),
+			__( 'Are you sure?', 'democracy-poll' ),
+			__( 'Delete', 'democracy-poll' )
+		);
+	}
+
 	public static function delete_poll( $poll_id ): void {
 		global $wpdb;
 
@@ -465,7 +466,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	private static function _poll_opening( int $poll_id, string $action ): bool {
 		global $wpdb;
 
-		$poll = \DemPoll::get_db_data( $poll_id );
+		$poll = DemPoll::get_db_data( $poll_id );
 		if( ! $poll ){
 			return false;
 		}
@@ -503,7 +504,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	private static function _poll_activation( int $poll_id, string $action ): bool {
 		global $wpdb;
 
-		$poll = \DemPoll::get_db_data( $poll_id );
+		$poll = DemPoll::get_db_data( $poll_id );
 		if( ! $poll ){
 			return false;
 		}

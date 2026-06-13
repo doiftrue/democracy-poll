@@ -16,7 +16,7 @@ define( 'THIS_PLUG_ROOT_URL', str_replace( WP_ROOT_DIR, WP_ROOT_URL, THIS_PLUG_R
 // load
 
 require_once THIS_PLUG_ROOT_DIR . '/vendor/autoload.php';
-require_once dirname( WP_ROOT_DIR ) . '/vendor/doiftrue/unitest-wp-copy/zero.php';
+\Unitest_WP_Copy\Bootstrap::init();
 require_once __DIR__ . '/DemocTestCase.php';
 
 // global setup

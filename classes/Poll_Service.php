@@ -365,15 +365,12 @@ class Poll_Service {
 	}
 
 	protected function insert_logs() {
-		$poll = $this->poll;
+		global $wpdb;
 
+		$poll = $this->poll;
 		if( ! $poll->id ){
 			return false;
 		}
-
-		global $wpdb;
-
-		$ip = IP::get_user_ip();
 
 		return $wpdb->insert( $wpdb->democracy_log, [
 			'qid'     => $poll->id,
@@ -381,8 +378,8 @@ class Poll_Service {
 			'userid'  => (int) get_current_user_id(),
 			'date'    => current_time( 'mysql' ),
 			'expire'  => $this->get_cookie_expire_time(),
-			'ip'      => $ip,
-			'ip_info' => IP::prepared_ip_info( $ip ),
+			'ip'      => IP::get_user_ip(),
+			'ip_info' => '',
 		] );
 	}
 

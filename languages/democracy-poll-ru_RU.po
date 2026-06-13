@@ -1,17 +1,21 @@
 msgid ""
 msgstr ""
-"Content-Transfer-Encoding: 8bit\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Language: ru_RU\n"
-"Last-Translator: Kama <tnkamaev@gmail.com>\n"
-"MIME-Version: 1.0\n"
-"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
-"PO-Revision-Date: 2024-03-21 21:46:18+0000\n"
-"POT-Creation-Date: 2025-07-20T18:39:28+05:00\n"
 "Project-Id-Version: Plugins - Democracy Poll - Stable (latest release)\n"
 "Report-Msgid-Bugs-To: \n"
+"Last-Translator: Kama <tnkamaev@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-07-20T18:39:28+05:00\n"
+"PO-Revision-Date: 2024-03-21 21:46:18+0000\n"
+"Language: ru_RU\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
 "X-Generator: Poedit 1.8.12\n"
 "X-Poedit-Basepath: ..\n"
+"X-Poedit-SearchPathExcluded-0: node_modules\n"
+"X-Poedit-SearchPathExcluded-1: vendor\n"
+"X-Poedit-SearchPathExcluded-2: assets/build\n"
 "X-Poedit-KeywordsList: __;_e;esc_html__;esc_html_e;esc_attr__;esc_attr_e;_ex:1,2c;_x:1,2c;_n:1,2;_nx:1,2,3c;_n_noop:1,2;_nx_noop:1,2,3c\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -827,11 +831,11 @@ msgid "ID"
 msgstr "ID"
 
 #: classes/Admin/tpl/edit-poll.php:25
-#: classes/Admin/List_Table_Logs.php:282
+#: classes/Admin/List_Table_Logs.php:296
 msgid "Poll logs"
 msgstr "Логи опроса"
 
-#: classes/Admin/List_Table_Logs.php:227
+#: classes/Admin/List_Table_Logs.php:273
 msgid "Search by IP"
 msgstr "Поиск по IP"
 
@@ -841,7 +845,7 @@ msgstr "Логи \"NEW\" ответов"
 
 #: classes/Poll_Renderer.php:80
 #: classes/Admin/List_Table_Logs.php:174
-#: classes/Admin/List_Table_Logs.php:280
+#: classes/Admin/List_Table_Logs.php:294
 msgid "Edit poll"
 msgstr "Редак. опрос"
 
@@ -941,8 +945,8 @@ msgid "Nothing was selected."
 msgstr "Ничего не выбрано."
 
 #: classes/Admin/Admin_Page_Design.php:108
-msgid "Max height of the poll in pixels (if no unit is set). When a poll has many answers, collapsing it improves readability. `-1` - disables this option. Default: 500."
-msgstr "Максимальная высота опроса в пикселях (если единица измерения не указана). Когда в опросе много вариантов ответа, его сворачивание улучшает читаемость. `-1` отключает эту опцию. По умолчанию: 500."
+msgid "Max height of the poll (in pixels if no unit is set). When a poll has many answers, collapsing it improves readability. `-1` - disables this option. Default: 500."
+msgstr "Максимальная высота опроса (в пикселях, если единица измерения не указана). Сворачивание опроса с большим количеством вариантов ответа улучшает читаемость. `-1` отключает эту настройку. По умолчанию: 500."
 
 #: classes/Admin/Admin_Page_Design.php:112
 msgid "Animation speed (in milliseconds)."

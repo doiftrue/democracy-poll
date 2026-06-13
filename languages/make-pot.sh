@@ -38,6 +38,8 @@ EXCLUDE=(
 	-o -path '*__NOTUSED__*'
 	-o -path '*/tmp/*'
 	-o -path '*/tests/*'
+	-o -path '*/vendor/*'
+	-o -path '*/node_modules/*'
 )
 
 build_pot() {

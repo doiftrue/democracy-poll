@@ -270,13 +270,7 @@ echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
 	if( $edit ){
 		echo ' ' . $this::open_button( $poll );
 		echo ' ' . $this::activate_button( $poll );
-
-		echo sprintf(
-			' <a href="%s" class="button" onclick="return confirm(\'%s\');" title="%s"><span class="dashicons dashicons-trash"></span></a>',
-			Admin_Page::add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], plugin()->admin_page_url ) ),
-			__( 'Are you sure?', 'democracy-poll' ),
-			__( 'Delete', 'democracy-poll' )
-		);
+		echo ' ' . $this::delete_button( $poll );
 
 		// in posts
 		$posts = Helpers::get_posts_with_poll( $poll );
