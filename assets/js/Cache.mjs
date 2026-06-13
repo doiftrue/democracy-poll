@@ -30,9 +30,9 @@ export default class Cache {
 
 		const demOpts = Cache.getOpts( dem )
 		const demId = demOpts.pid
-		const answrs = Cookies.get( 'demPoll_' + demId )
-		const notVoteFlag = answrs === 'notVote' // If we already checked that user hasn't voted, don't request again
-		const isAnswrs = typeof answrs !== 'undefined' && ! notVoteFlag
+		const answrs = Cache.getPollCookie( demId, demOpts.cookie_days )
+		const notVotedFlag = answrs === 'notVoted' // If we already checked that user hasn't voted, don't request again
+		const isAnswrs = answrs && ! notVotedFlag
 
 		// choose which screen to show and how to handle it
 		const voteBlock = cacheBlock.querySelector( State.screenSel + '-cache.vote' )
@@ -58,7 +58,7 @@ export default class Cache {
 
 		Cache.actionsHandler( screen )
 
-		if( notVoteFlag ){
+		if( notVotedFlag ){
 			return // exit if it has already been checked that the user has not voted.
 		}
 
@@ -230,6 +230,35 @@ export default class Cache {
 		catch( e ){
 			return {}
 		}
+	}
+
+	static getPollCookie( pollId, cookieDays ){
+		const raw = Cookies.get( 'demPoll' )
+		if( ! raw ){
+			return null
+		}
+
+		const targetPid = String( pollId )
+		const voteTTL = Math.trunc( Number( cookieDays ) * 86400 )
+		const now = Date.now() / 1000
+		let value = null
+
+		for( const record of raw.split( '|' ) ){
+			const match = record.match( /^(\d+):(0|[1-9]\d*(?:_[1-9]\d*)*)-([0-9a-z]+)$/ )
+			if( ! match || match[1] !== targetPid ){
+				continue
+			}
+
+			const aids = match[2]
+			const timestamp = parseInt( match[3], 36 )
+			const ttl = (aids === '0') ? 43200 : voteTTL
+
+			if( timestamp && ttl > 0 && timestamp + ttl > now ){
+				value = aids === '0' ? 'notVoted' : aids.replaceAll( '_', ',' )
+			}
+		}
+
+		return value
 	}
 
 	static queryAidNodes( screen, aid ){

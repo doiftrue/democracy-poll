@@ -7,25 +7,21 @@ use DemocracyPoll\Helpers\Kses;
 use DemPoll;
 use WP_Error;
 
-/**
- * TODO: decompose:
- * Poll_Cookie   –  set_cookie(), unset_cookie(), expire helpers
- * DemPoll_Log   –  insert_logs(), delete_vote_log(), get_user_vote_logs()
- */
+// TODO: Extract log operations into a dedicated class.
 
 /**
  * Handles voting logic for a poll.
  * Provides methods to vote, delete votes, manage logs etc.
  */
-class Poll_Service {
+class Poll_Controller {
 
-	public string $cookie_key;
+	private DemPoll $poll;
 
-	private \DemPoll $poll;
+	public Poll_Cookies $poll_cookie;
 
-	public function __construct( \DemPoll $poll ) {
+	public function __construct( DemPoll $poll ) {
 		$this->poll = $poll;
-		$this->cookie_key = "demPoll_$poll->id";
+		$this->poll_cookie = new Poll_Cookies( $poll );
 	}
 
 	/**
@@ -46,8 +42,8 @@ class Poll_Service {
 		}
 
 		// set the cookie again, there was a bug...
-		if( $poll->has_voted && ( $_COOKIE[ $this->cookie_key ] === 'notVote' ) ){
-			$this->set_cookie();
+		if( $poll->has_voted && $this->poll_cookie->is_not_voted() ){
+			$this->poll_cookie->set();
 		}
 
 		// must run after "$poll->has_voted" check, because if $poll->has_voted then $poll->voting_blocked always true
@@ -136,7 +132,7 @@ class Poll_Service {
 
 		$poll->re_set_answers();
 
-		$this->set_cookie(); // set the cookie
+		$this->poll_cookie->set();
 
 		if( options()->keep_logs ){
 			$this->insert_logs();
@@ -175,7 +171,7 @@ class Poll_Service {
 		$this->minus_vote();
 		$this->delete_vote_log( $logs );
 
-		$this->unset_cookie();
+		$this->poll_cookie->delete();
 
 		$poll->has_voted = false;
 		$poll->voted_for = '';
@@ -275,8 +271,8 @@ class Poll_Service {
 			$voted_for = reset( $res )->aids;
 		}
 		// check cookies
-		elseif( isset( $_COOKIE[ $this->cookie_key ] ) && ( $_COOKIE[ $this->cookie_key ] !== 'notVote' ) ){
-			$voted_for = preg_replace( '/[^0-9, ]/', '', $_COOKIE[ $this->cookie_key ] ); // clear
+		elseif( ! $this->poll_cookie->is_not_voted() ){
+			$voted_for = $this->poll_cookie->get();
 		}
 
 		return $voted_for ?? '';
@@ -335,35 +331,6 @@ class Poll_Service {
 		return $wpdb->get_results( $sql );
 	}
 
-	/**
-	 * Time until which the logs will live.
-	 *
-	 * @return int Timestamp in seconds.
-	 */
-	public function get_cookie_expire_time(): int {
-		return current_time( 'timestamp', $utc = true ) + (int) ( (float) options()->cookie_days * DAY_IN_SECONDS );
-	}
-
-	/**
-	 * Sets the cookie for the current poll.
-	 *
-	 * @param string $value  Cookie value, defaults to current votes.
-	 * @param int    $expire Cookie expiration time.
-	 */
-	public function set_cookie( string $value = '', int $expire = 0 ): void {
-		$expire = $expire ?: $this->get_cookie_expire_time();
-		$value = $value ?: $this->poll->voted_for;
-
-		setcookie( $this->cookie_key, $value, $expire, COOKIEPATH );
-
-		$_COOKIE[ $this->cookie_key ] = $value;
-	}
-
-	public function unset_cookie(): void {
-		setcookie( $this->cookie_key, '', strtotime( '-1 day' ), COOKIEPATH );
-		$_COOKIE[ $this->cookie_key ] = '';
-	}
-
 	protected function insert_logs() {
 		global $wpdb;
 
@@ -377,7 +344,7 @@ class Poll_Service {
 			'aids'    => $poll->voted_for,
 			'userid'  => (int) get_current_user_id(),
 			'date'    => current_time( 'mysql' ),
-			'expire'  => $this->get_cookie_expire_time(),
+			'expire'  => current_time( 'timestamp', $utc = true ) + (int) ( (float) options()->cookie_days * DAY_IN_SECONDS ),
 			'ip'      => IP::get_user_ip(),
 			'ip_info' => '',
 		] );

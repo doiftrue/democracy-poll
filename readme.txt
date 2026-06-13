@@ -125,7 +125,7 @@ Yes. Deleting the plugin removes all of its options and data.
 * CHG: Removed the `DEMOC_URL` constant; use `DemocracyPoll\plugin()->url` instead. Note that the trailing slash was removed.
 * CHG: Removed the `DEMOC_PATH` constant; use `DemocracyPoll\plugin()->dir` instead. Note that the trailing slash was removed.
 * CHG: Removed the `DEMOC_MAIN_FILE` constant.
-* CHG: Significantly refactored the `DemPoll` class. Some properties moved to the `Poll_Renderer` and `Poll_Service` classes.
+* CHG: Significantly refactored the `DemPoll` class. Some properties moved to the `Poll_Renderer` and `Poll_Controller` classes.
 
 = 6.0.4 =
 * Requires PHP 7.4+
@@ -137,6 +137,9 @@ Yes. Deleting the plugin removes all of its options and data.
 
 
 == Changelog ==
+
+= 6.3.2 =
+* IMP: Store votes for all polls in one cookie instead of creating a separate cookie per poll.
 
 = 6.3.1 =
 * FIX: Restored the Text Customization settings page after a previous refactor.
@@ -175,7 +178,7 @@ Yes. Deleting the plugin removes all of its options and data.
 * CHG: Removed the `DEMOC_URL` constant; use `DemocracyPoll\plugin()->url` instead. Note that the trailing slash was removed.
 * CHG: Removed the `DEMOC_PATH` constant; use `DemocracyPoll\plugin()->dir` instead. Note that the trailing slash was removed.
 * CHG: Removed the `DEMOC_MAIN_FILE` constant.
-* IMP: Significantly refactored `DemPoll` by decomposing it into smaller classes, including the new `Poll_Renderer` and `Poll_Service` classes.
+* IMP: Significantly refactored `DemPoll` by decomposing it into smaller classes, including the new `Poll_Renderer` and `Poll_Controller` classes.
 * FIX: PHPStan fixes and improvements.
 * IMP: Updated the POT and PO translation files and added `.l10n.php` files for better performance.
 

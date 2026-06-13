@@ -2,6 +2,8 @@
 
 namespace DemocracyPoll;
 
+use DemPoll;
+
 class Poll_Ajax {
 
 	public string $ajax_url;
@@ -38,13 +40,13 @@ class Poll_Ajax {
 			wp_die( 'error: unknown poll id' );
 		}
 
-		$poll = new \DemPoll( $vars->pid );
+		$poll = new DemPoll( $vars->pid );
 		$render = $poll->renderer;
-		$service = $poll->service;
+		$control = $poll->control;
 
 		// vote and display results
 		if( 'vote' === $vars->act && $vars->aids ){
-			$voted = $service->vote( $vars->aids );
+			$voted = $control->vote( $vars->aids );
 
 			if( is_wp_error( $voted ) ){
 				echo $render::voted_notice_html( $voted->get_error_message() );
@@ -59,7 +61,7 @@ class Poll_Ajax {
 		}
 		// delete results
 		elseif( 'delVoted' === $vars->act ){
-			$service->delete_vote();
+			$control->delete_vote();
 			echo $render->get_vote_screen();
 		}
 		// view results
@@ -78,15 +80,15 @@ class Poll_Ajax {
 		/** Get {@see \DemPoll::$voted_for} value */
 		elseif( 'getVotedIds' === $vars->act ){
 			if( $poll->voted_for ){
-				$service->set_cookie(); // request is only made if cookies are not set
+				$control->poll_cookie->set(); // request is only made if cookies are not set
 				echo $poll->voted_for;
 			}
 			elseif( $poll->blocked_by_not_logged ){
 				echo 'blocked_because_not_logged_note'; // to display a note
 			}
 			else{
-				// If not voted, set a cookie for half a day to don't do this check every time.
-				$service->set_cookie( 'notVote', ( time() + ( DAY_IN_SECONDS / 2 ) ) );
+				// Cache a missing vote for half a day to avoid repeating this check.
+				$control->poll_cookie->set_not_voted();
 			}
 		}
 

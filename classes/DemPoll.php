@@ -3,7 +3,7 @@
 use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Poll_Answer;
 use DemocracyPoll\Poll_Renderer;
-use DemocracyPoll\Poll_Service;
+use DemocracyPoll\Poll_Controller;
 use function DemocracyPoll\options;
 
 /**
@@ -22,7 +22,8 @@ use function DemocracyPoll\options;
 class DemPoll {
 
 	public Poll_Renderer $renderer;
-	public Poll_Service $service;
+
+	public Poll_Controller $control;
 
 	/**
 	 * Flag that means the poll is closed because the user
@@ -206,7 +207,7 @@ class DemPoll {
 		$this->note          = $this->dbdata->note;
 
 		$this->renderer = new Poll_Renderer( $this ); // after DB data is set
-		$this->service  = new Poll_Service( $this );  // after DB data is set
+		$this->control  = new Poll_Controller( $this );  // after DB data is set
 
 		$this->check_poll_close();
 
@@ -276,7 +277,7 @@ class DemPoll {
 			return;
 		}
 
-		$this->voted_for = $this->service->get_voted_for();
+		$this->voted_for = $this->control->get_voted_for();
 		$this->has_voted = (bool) $this->voted_for;
 	}
 

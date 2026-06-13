@@ -59,6 +59,7 @@ class Poll_Renderer {
 		$js_opts = [
 			'ajax_url'         => plugin()->poll_ajax->ajax_url,
 			'pid'              => (int) $poll->id,
+			'cookie_days'      => (float) $opt->cookie_days,
 			'max_answs'        => (int) ( $poll->multiple ?: 0 ),
 			'answs_max_height' => is_numeric( $opt->answs_max_height ) ? "{$opt->answs_max_height}px" : $opt->answs_max_height,
 			'anim_speed'       => (int) $opt->anim_speed,
