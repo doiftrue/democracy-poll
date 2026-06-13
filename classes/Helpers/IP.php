@@ -6,6 +6,8 @@ use function DemocracyPoll\options;
 
 class IP {
 
+	private const IP_INFO_SERVICE_URL = 'https://ipwho.is/{IP}?fields=success,country,country_code,city';
+
 	public static function get_user_ip(): string {
 
 		if( options()->soft_ip_detect ){
@@ -54,24 +56,14 @@ class IP {
 			);
 
 			if( $is_localhost ){
-				return (string) ( 10 * YEAR_IN_SECONDS + time() ); // на 10 лет вперед
+				return 'localhost,VA';
 			}
 
 			$ip_info = self::get_ip_info( (string) $ip_info );
 		}
 
-		/**
-		 * $ip_info = [
-		 *     [city] =>
-		 *     [state] =>
-		 *     [country] => Uzbekistan
-		 *     [country_code] => UZ
-		 *     [continent] => Asia
-		 *     [continent_code] => AS
-		 * ]
-		 */
 		if( isset( $ip_info['country'] ) ){
-			return $ip_info['country'] . ',' . $ip_info['country_code'] . ',' . $ip_info['city'];
+			return sanitize_text_field( $ip_info['country'] . ',' . $ip_info['country_code'] . ',' . $ip_info['city'] );
 		}
 
 		return (string) time();
@@ -82,51 +74,52 @@ class IP {
 	 *
 	 * @param string $ip IP address to check. Current IP by default.
 	 *
-	 * @return array Location data.
+	 * @return array{city:string, country:string, country_code:string} Location data.
 	 */
 	public static function get_ip_info( string $ip = '' ): array {
+		static $limit_exceeded = false;
+
 		if( ! $ip ){
 			$ip = self::get_user_ip();
 		}
 
-		if( ! filter_var( $ip, FILTER_VALIDATE_IP ) ){
+		if( $limit_exceeded || ! filter_var( $ip, FILTER_VALIDATE_IP ) ){
 			return [];
 		}
 
-		//$ipdat = json_decode( wp_remote_retrieve_body( wp_remote_get("http://www.geoplugin.net/json.gp?ip=$ip") ) ); // wp_remote_get отдает forbiden 403 !!!
-		$json = @ file_get_contents( "http://www.geoplugin.net/json.gp?ip=$ip" );
-		$ipdat = json_decode( $json );
-		if( ! $ipdat ){
+		$url = str_replace( '{IP}', rawurlencode( $ip ), self::IP_INFO_SERVICE_URL );
+
+		$response = wp_safe_remote_get( $url, [
+			'timeout'     => 3,
+			'redirection' => 2,
+			'headers'     => [ 'Accept' => 'application/json' ],
+		] );
+
+		$code = wp_remote_retrieve_response_code( $response );
+		if( 200 !== $code ){
+			if( 429 === $code ){
+				$limit_exceeded = true;
+			}
 			return [];
 		}
 
-		$continent_code = trim( $ipdat->geoplugin_continentCode ?? '' );
-		$country_code   = trim( $ipdat->geoplugin_countryCode ?? '' );
-		$country_name   = trim( $ipdat->geoplugin_countryName ?? '' );
-		$region_name    = trim( $ipdat->geoplugin_regionName ?? '' );
-		$city           = trim( $ipdat->geoplugin_city ?? '' );
+		$ipdat = json_decode( wp_remote_retrieve_body( $response ), true );
+		if( ! is_array( $ipdat ) || empty( $ipdat['success'] ) ){
+			return [];
+		}
+
+		$country_code = trim( (string) ( $ipdat['country_code'] ?? '' ) );
+		$country_name = trim( (string) ( $ipdat['country'] ?? '' ) );
+		$city         = trim( (string) ( $ipdat['city'] ?? '' ) );
 
 		if( strlen( $country_code ) !== 2 ){
 			return [];
 		}
 
-		$continent = [
-			'AF' => 'Africa',
-			'AN' => 'Antarctica',
-			'AS' => 'Asia',
-			'EU' => 'Europe',
-			'OC' => 'Australia (Oceania)',
-			'NA' => 'North America',
-			'SA' => 'South Americ',
-		][ strtoupper( $continent_code ) ] ?? '';
-
 		return [
-			'city'           => $city,
-			'state'          => $region_name,
-			'country'        => $country_name,
-			'country_code'   => $country_code,
-			'continent'      => $continent,
-			'continent_code' => $continent_code,
+			'city'         => $city,
+			'country'      => $country_name,
+			'country_code' => $country_code,
 		];
 	}
 

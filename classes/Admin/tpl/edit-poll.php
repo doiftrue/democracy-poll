@@ -56,7 +56,7 @@ echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
 		<?php
 		$is_answers_order = (bool) ( $poll->answers[0]->aorder ?? false );
 
-		if( $poll->answers ){
+		if( $poll && $poll->answers ){
 			$answers = Helpers::objects_array_sort( $poll->answers, (
 			$is_answers_order
 				? [ 'aorder' => 'asc' ]
@@ -111,7 +111,7 @@ echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
 
 		// users_voted filed
 		if( $edit ){
-			// сбросить порядок, если установлен
+			// Reset the order if it is set.
 			?>
 			<li class="not__answer reset__aorder" style="list-style:none; <?= ( $is_answers_order ? '' : 'display:none;' ) ?>">
 				<span class="dashicons dashicons-menu"></span>
@@ -270,13 +270,7 @@ echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
 	if( $edit ){
 		echo ' ' . $this::open_button( $poll );
 		echo ' ' . $this::activate_button( $poll );
-
-		echo sprintf(
-			' <a href="%s" class="button" onclick="return confirm(\'%s\');" title="%s"><span class="dashicons dashicons-trash"></span></a>',
-			Admin_Page::add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], plugin()->admin_page_url ) ),
-			__( 'Are you sure?', 'democracy-poll' ),
-			__( 'Delete', 'democracy-poll' )
-		);
+		echo ' ' . $this::delete_button( $poll );
 
 		// in posts
 		$posts = Helpers::get_posts_with_poll( $poll );

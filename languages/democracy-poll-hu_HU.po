@@ -1,74 +1,77 @@
 msgid ""
 msgstr ""
-"Content-Transfer-Encoding: 8bit\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Language: hu_HU\n"
-"Last-Translator: Kama <tnkamaev@gmail.com>\n"
-"MIME-Version: 1.0\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"PO-Revision-Date: 2017-03-12 15:40+0500\n"
-"POT-Creation-Date: 2017-03-12 15:38+0500\n"
 "Project-Id-Version: Democracy\n"
 "Report-Msgid-Bugs-To: \n"
-"X-Generator: Poedit 1.8.12\n"
+"Last-Translator: Kama <tnkamaev@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2017-03-12 15:38+0500\n"
+"PO-Revision-Date: 2017-03-12 15:40+0500\n"
+"Language: hu_HU\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Basepath: ..\n"
+"X-Poedit-SearchPathExcluded-0: node_modules\n"
+"X-Poedit-SearchPathExcluded-1: vendor\n"
+"X-Poedit-SearchPathExcluded-2: assets/build\n"
 "X-Poedit-KeywordsList: __;_e;esc_html__;esc_html_e;esc_attr__;esc_attr_e;_ex:1,2c;_x:1,2c;_n:1,2;_nx:1,2,3c;_n_noop:1,2;_nx_noop:1,2,3c\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-#: classes/Admin/List_Table_Logs.php:53
+#: classes/Admin/List_Table_Logs.php:52
 msgid "Nothing was selected."
 msgstr "Semmi sincs kiválasztva"
 
-#: classes/Admin/List_Table_Logs.php:127
+#: classes/Admin/List_Table_Logs.php:125
 msgid "IP info"
 msgstr "IP info"
 
 #: classes/Poll_Widget.php:66
-#: classes/Admin/List_Table_Logs.php:128
+#: classes/Admin/List_Table_Logs.php:126
 msgid "Poll"
 msgstr "Szavazás"
 
-#: classes/Admin/List_Table_Logs.php:129
+#: classes/Admin/List_Table_Logs.php:127
 msgid "Answer"
 msgstr "Válasz"
 
-#: classes/Admin/List_Table_Logs.php:130
+#: classes/Admin/List_Table_Logs.php:128
 msgid "User"
 msgstr "Felhasználó"
 
-#: classes/Admin/List_Table_Logs.php:131
+#: classes/Admin/List_Table_Logs.php:129
 msgid "Date"
 msgstr "Dátum"
 
-#: classes/Admin/List_Table_Logs.php:158
+#: classes/Admin/List_Table_Logs.php:156
 msgid "Delete logs only"
 msgstr "Csak a naplózás törlése"
 
-#: classes/Admin/List_Table_Logs.php:159
+#: classes/Admin/List_Table_Logs.php:157
 msgid "Delete logs and votes"
 msgstr "Naplózás és szavazatok törlése"
 
-#: classes/Admin/List_Table_Logs.php:171
+#: classes/Admin/List_Table_Logs.php:169
 msgid "Poll's logs: "
 msgstr "Szavazatok naplója:"
 
 #: classes/Poll_Renderer.php:80
-#: classes/Admin/List_Table_Logs.php:174
-#: classes/Admin/List_Table_Logs.php:280
+#: classes/Admin/List_Table_Logs.php:172
+#: classes/Admin/List_Table_Logs.php:273
 msgid "Edit poll"
 msgstr "Szavazás szerkesztése"
 
-#: classes/Admin/List_Table_Logs.php:189
+#: classes/Admin/List_Table_Logs.php:188
 msgid "NEW answers logs"
 msgstr "Új válaszok a szavazáshoz"
 
-#: classes/Admin/List_Table_Logs.php:227
+#: classes/Admin/List_Table_Logs.php:252
 msgid "Search by IP"
 msgstr "Keresés IP cím alapján"
 
 #: classes/Admin/tpl/edit-poll.php:25
-#: classes/Admin/List_Table_Logs.php:282
+#: classes/Admin/List_Table_Logs.php:275
 msgid "Poll logs"
 msgstr "Szavazás naplók"
 
@@ -80,7 +83,7 @@ msgstr "ID"
 msgid "Question"
 msgstr "Kérdés"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:489
+#: classes/Admin/Admin_Page_Edit_Poll.php:490
 #: classes/Admin/List_Table_Polls.php:71
 msgid "Poll Opened"
 msgstr "Nyitott szavazás"
@@ -105,51 +108,51 @@ msgstr "Bejegyzésekben"
 msgid "Added"
 msgstr "Hozzáadott"
 
-#: classes/Admin/List_Table_Polls.php:116
+#: classes/Admin/List_Table_Polls.php:131
 msgid "Users can add answers (democracy)."
 msgstr "A felhasználók hozzáadhatnak válaszokat."
 
-#: classes/Admin/List_Table_Polls.php:117
+#: classes/Admin/List_Table_Polls.php:132
 msgid "Users can revote"
 msgstr "A felhasználók újra szavazhatnak"
 
-#: classes/Admin/List_Table_Polls.php:118
+#: classes/Admin/List_Table_Polls.php:133
 msgid "Only for registered user."
 msgstr "Csak regisztrált felhasználóknak."
 
-#: classes/Admin/List_Table_Polls.php:119
+#: classes/Admin/List_Table_Polls.php:134
 msgid "Users can choose many answers (multiple)."
 msgstr "A felhasználók több választ is megjelölhetnek (több válasz lehetséges)."
 
 #: classes/Admin/tpl/edit-poll.php:225
-#: classes/Admin/List_Table_Polls.php:120
+#: classes/Admin/List_Table_Polls.php:135
 msgid "Allow to watch the results of the poll."
 msgstr "Eredmények megjelenítésének engedélyezése."
 
-#: classes/Admin/List_Table_Polls.php:131
+#: classes/Admin/List_Table_Polls.php:146
 msgid "Edit"
 msgstr "Szerkesztés"
 
-#: classes/Admin/Admin_Page.php:199
-#: classes/Admin/List_Table_Polls.php:140
-#: classes/Plugin_Initor.php:115
+#: classes/Admin/Admin_Page.php:201
+#: classes/Admin/List_Table_Polls.php:155
+#: classes/Plugin_Initor.php:120
 msgid "Logs"
 msgstr "Bejelentkezések"
 
-#: classes/Admin/tpl/edit-poll.php:277
+#: classes/Admin/Admin_Page_Edit_Poll.php:424
 #: classes/Admin/Admin_Page_Other_Migrations.php:88
-#: classes/Admin/Admin_Page_Logs.php:77
-#: classes/Admin/Admin_Page_Logs.php:84
-#: classes/Admin/List_Table_Polls.php:145
+#: classes/Admin/Admin_Page_Logs.php:159
+#: classes/Admin/Admin_Page_Logs.php:166
+#: classes/Admin/List_Table_Polls.php:160
 msgid "Are you sure?"
 msgstr "Biztos vagy benne?"
 
-#: classes/Admin/tpl/edit-poll.php:278
-#: classes/Admin/List_Table_Polls.php:145
+#: classes/Admin/Admin_Page_Edit_Poll.php:425
+#: classes/Admin/List_Table_Polls.php:160
 msgid "Delete"
 msgstr "Cancella"
 
-#: classes/Admin/List_Table_Polls.php:157
+#: classes/Admin/List_Table_Polls.php:172
 msgid "voters / votes"
 msgstr "szavazók / szavazat"
 
@@ -161,7 +164,7 @@ msgstr "Szavazás beillesztése"
 msgid "Insert Poll ID"
 msgstr "Szavazás ID (azonosító) beillesztése"
 
-#: classes/Admin/Admin_Page_Polls.php:35
+#: classes/Admin/Admin_Page_Polls.php:29
 msgid "Search"
 msgstr "Keresés"
 
@@ -242,11 +245,11 @@ msgid "Save Changes"
 msgstr "Vátoztatások mentése"
 
 #: classes/Admin/tpl/edit-poll.php:266
-#: classes/Plugin_Initor.php:114
+#: classes/Plugin_Initor.php:119
 msgid "Add Poll"
 msgstr "Szavazás hozzáadása"
 
-#: classes/Admin/tpl/edit-poll.php:291
+#: classes/Admin/tpl/edit-poll.php:285
 msgid "Posts where the poll shortcode used:"
 msgstr "Bejegyzések, ahol a szavazások szerepelnek:"
 
@@ -262,20 +265,20 @@ msgstr "A nyertesek alul"
 msgid "Mix"
 msgstr "Keverés"
 
-#: classes/Admin/Admin_Page_Logs.php:52
+#: classes/Admin/Admin_Page_Logs.php:134
 msgid "Logs records turned off in the settings - logs are not recorded."
 msgstr "Napló feljegyzések kikapcsolhatók a beállításokban - szavaztok nem kerülnek rögzítésre."
 
-#: classes/Admin/Admin_Page_Logs.php:69
+#: classes/Admin/Admin_Page_Logs.php:151
 msgid "Delete all NEW marks"
 msgstr "Minden új jelölés törlése"
 
-#: classes/Admin/Admin_Page_Logs.php:79
+#: classes/Admin/Admin_Page_Logs.php:161
 #, php-format
 msgid "Delete logs of closed pols - %d"
 msgstr "Bezárt szavazás szavazatainak törlése - %d"
 
-#: classes/Admin/Admin_Page_Logs.php:86
+#: classes/Admin/Admin_Page_Logs.php:168
 msgid "Delete all logs"
 msgstr "Összes napló törlése"
 
@@ -295,19 +298,15 @@ msgstr "HTML tag-ek a szavazás címének formázásához."
 msgid "poll's question"
 msgstr "szavazás kérdése"
 
-#: classes/Admin/Admin_Page_Settings.php:88
-msgid "Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>."
-msgstr "Például: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Alapértelmezett: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>."
-
 #: classes/Admin/Admin_Page_Settings.php:94
 msgid "Polls archive page ID."
 msgstr "Szavazatok archív oldalának azonosítója (ID)."
 
-#: classes/Admin/Admin_Page_Settings.php:100
+#: classes/Admin/Admin_Page_Settings.php:99
 msgid "Go to archive page"
 msgstr "Ugrás az archív oldalra"
 
-#: classes/Admin/Admin_Page_Settings.php:106
+#: classes/Admin/Admin_Page_Settings.php:105
 msgid "Create/find archive page"
 msgstr "Archív oldal létrehozása/keresése"
 
@@ -390,10 +389,6 @@ msgstr "KI"
 msgid "Force enable gear to working with cache plugins. The condition: %s"
 msgstr "Plugin ceche-elésének erőltetése. Feltétel: %s"
 
-#: classes/Admin/Admin_Page_Settings.php:203
-msgid "Democracy has smart mechanism for working with page cache plugins like \"WP Total Cache\". It is ON automatically if such plugin is enabled on your site. But if you use unusual page caching plugin you can force enable this option."
-msgstr "Gyorsító tárazás engedélyezése alapértelmezetten be van kapcsolva, mint a legtöbb WP oldalon. Ha más oldalon kívánja használni, itt adhatja meg, hogy használja ezt más oldalak esetén is."
-
 #: classes/Admin/Admin_Page_Settings.php:209
 msgid "Add plugin menu on the toolbar?"
 msgstr "Hozzáadja a plugin menüjét az eszköztárhoz?"
@@ -430,8 +425,8 @@ msgstr "Minden szavazás, válasz és naplózás bekerül a Democracy Poll-ba"
 msgid "Save Options"
 msgstr "Beállítások mentése"
 
-#: classes/Admin/Admin_Page_l10n.php:109
-#: classes/Admin/Admin_Page_Design.php:444
+#: classes/Admin/tpl/design.php:391
+#: classes/Admin/Admin_Page_l10n.php:94
 #: classes/Admin/Admin_Page_Settings.php:281
 msgid "Reset Options"
 msgstr "Beállítások visszaállítása"
@@ -448,39 +443,39 @@ msgstr "Jelölje be a modul aktiválásához."
 msgid "Force plugin versions update (debug)"
 msgstr "Plugin frissítésének kényszerítése (debug)"
 
-#: classes/Admin/Admin_Page_Design.php:81
+#: classes/Admin/tpl/design.php:28
 msgid "Choose Theme"
 msgstr "Válassz témát"
 
-#: classes/Admin/Admin_Page_Design.php:105
+#: classes/Admin/tpl/design.php:52
 msgid "Other settings"
 msgstr "Egyéb beállítások"
 
-#: classes/Admin/Admin_Page_Design.php:119
+#: classes/Admin/tpl/design.php:66
 msgid "Progress line"
 msgstr "Haladás vonal."
 
-#: classes/Admin/Admin_Page_Design.php:125
+#: classes/Admin/tpl/design.php:72
 msgid "winner - 100%, others as % of the winner"
 msgstr "Győztes - 100%, egyebek százaléka a győzteshez képest"
 
-#: classes/Admin/Admin_Page_Design.php:301
+#: classes/Admin/tpl/design.php:248
 msgid "The colors correctly affects NOT for all buttons. You can change styles completely in \"additional styles\" field bellow."
 msgstr "A színek hangsúlyozzák az összes gombot. Ezt meg lehet változtatni az \"további stílusok\" mezőben."
 
-#: classes/Admin/Admin_Page_Design.php:413
+#: classes/Admin/tpl/design.php:360
 msgid "AJAX Loader. If choose \"NO\", loader replaces by dots \"...\" which appends to a link/button text. SVG images animation don't work in IE 11 or lower, other browsers are supported at  90% (according to caniuse.com statistics)."
 msgstr "AJAX betöltés. Ha NEM van kiválasztva, egy pontsor helyettesíti az animációt és egy link, melyet hozzáfűzi egy link/gomb szövegét. Az SVG kép animációk nem működnek IE11 vagy annál régebbi böngészők alatt, más böngészők támogatottsága 90%. (caniuse.com felmérés alapján)"
 
-#: classes/Admin/Admin_Page_Design.php:424
+#: classes/Admin/tpl/design.php:371
 msgid "Custom/Additional CSS styles"
 msgstr "Egyedi/kiegészítő CSS stílusok"
 
-#: classes/Admin/Admin_Page_Design.php:451
+#: classes/Admin/tpl/design.php:398
 msgid "All CSS styles that uses now"
 msgstr "Összes jelenleg használt CSS stílus"
 
-#: classes/Admin/Admin_Page_Design.php:460
+#: classes/Admin/tpl/design.php:407
 msgid "It's all collected css styles: theme, button, options. You can copy this styles to the \"Custom/Additional CSS styles:\" field, disable theme and change copied styles by itself."
 msgstr "Az összes CSS stílus, ami jelenleg használatban van. Másold az \"Egyedi/kiegészítő CSS stílusok\" mezőbe. Téma tiltása és módosítása."
 
@@ -492,7 +487,7 @@ msgstr "Eredeti"
 msgid "Your variant"
 msgstr "Te változatod"
 
-#: classes/Admin/Admin_Page_l10n.php:107
+#: classes/Admin/Admin_Page_l10n.php:92
 msgid "Save Text"
 msgstr "Szöveg mentése"
 
@@ -521,73 +516,73 @@ msgstr "Rövid kód áthelyezésének törlése, változások visszaállítása.
 msgid "Delete all data about WP Polls migration"
 msgstr "Össze adat törlése a WP szavazás eltávolításakor."
 
-#: classes/Admin/Admin_Page.php:186
+#: classes/Admin/Admin_Page.php:188
 msgid "Back"
 msgstr "Vissza"
 
-#: classes/Admin/Admin_Page.php:191
-#: classes/Plugin_Initor.php:113
+#: classes/Admin/Admin_Page.php:193
+#: classes/Plugin_Initor.php:118
 msgid "Polls List"
 msgstr "Szavazások listája"
 
-#: classes/Admin/Admin_Page.php:195
+#: classes/Admin/Admin_Page.php:197
 msgid "Add new poll"
 msgstr "Új szavazás hozzáadása"
 
 #: classes/Admin/Admin.php:38
-#: classes/Admin/Admin_Page.php:205
-#: classes/Plugin_Initor.php:116
+#: classes/Admin/Admin_Page.php:207
+#: classes/Plugin_Initor.php:121
 msgid "Settings"
 msgstr "Beállítások"
 
-#: classes/Admin/Admin_Page.php:210
-#: classes/Plugin_Initor.php:117
+#: classes/Admin/Admin_Page.php:212
+#: classes/Plugin_Initor.php:122
 msgid "Theme Settings"
 msgstr "Téma beállítások"
 
-#: classes/Admin/Admin_Page.php:215
-#: classes/Plugin_Initor.php:118
+#: classes/Admin/Admin_Page.php:217
+#: classes/Plugin_Initor.php:123
 msgid "Texts changes"
 msgstr "Szöveg módosítás"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:387
+#: classes/Admin/Admin_Page_Edit_Poll.php:384
 msgid "Deactivate"
 msgstr "Deaktivál"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:392
+#: classes/Admin/Admin_Page_Edit_Poll.php:389
 msgid "Activate"
 msgstr "Aktivál"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:412
+#: classes/Admin/Admin_Page_Edit_Poll.php:405
 msgid "Close voting"
 msgstr "Szavazás zárása"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:417
+#: classes/Admin/Admin_Page_Edit_Poll.php:410
 msgid "Open voting"
 msgstr "Szavazás nyitása"
 
-#: classes/Admin/Admin_Page_Design.php:531
+#: classes/Admin/Admin_Page_Design.php:133
 msgid "Results view:"
 msgstr "Eredmények nézet:"
 
-#: classes/Admin/Admin_Page_Design.php:532
+#: classes/Admin/Admin_Page_Design.php:134
 msgid "Vote view:"
 msgstr "Szavazás nézet:"
 
-#: classes/Admin/Admin_Page_Design.php:533
+#: classes/Admin/Admin_Page_Design.php:135
 msgid "AJAX loader view:"
 msgstr "AJAX betöltés nézet:"
 
-#: classes/Admin/Admin_Page_Design.php:440
+#: classes/Admin/tpl/design.php:387
 msgid "Save All Changes"
 msgstr "Minden változás mentése"
 
 #: classes/Poll_Widget.php:12
-#: classes/Admin/Admin_Page.php:52
+#: classes/Admin/Admin_Page.php:54
 msgid "Democracy Poll"
 msgstr "Democracy Poll"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:31
+#: classes/Admin/Admin_Page_Edit_Poll.php:32
 msgid "New Poll Added"
 msgstr "Új szavazás hozzáadása"
 
@@ -603,23 +598,23 @@ msgstr "Frissítve"
 msgid "Nothing was updated"
 msgstr "Semmi sem frissült"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:440
+#: classes/Admin/Admin_Page_Edit_Poll.php:441
 msgid "Poll Deleted"
 msgstr "Szavazás törölve"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:514
+#: classes/Admin/Admin_Page_Edit_Poll.php:515
 msgid "You can not activate closed poll..."
 msgstr "Nem lehet aktiválni zárt közvélemény-kutatás..."
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:523
+#: classes/Admin/Admin_Page_Edit_Poll.php:524
 msgid "Poll Activated"
 msgstr "Aktív szavazás"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:524
+#: classes/Admin/Admin_Page_Edit_Poll.php:525
 msgid "Poll Deactivated"
 msgstr "Kikapcsolt szavazás"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:255
+#: classes/Admin/Admin_Page_Edit_Poll.php:256
 msgid "Poll Updated"
 msgstr "Frissített szavazás"
 
@@ -627,8 +622,8 @@ msgstr "Frissített szavazás"
 msgid "Polls Archive"
 msgstr "Archív szavazások"
 
-#: classes/Admin/Admin_Page_Logs.php:118
-#: classes/Admin/Admin_Page_Logs.php:196
+#: classes/Admin/Admin_Page_Logs.php:200
+#: classes/Admin/Admin_Page_Logs.php:278
 msgid "Failed to delete"
 msgstr "Nem törölt"
 
@@ -796,7 +791,7 @@ msgstr "Berlin"
 msgid "London"
 msgstr "London"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:490
+#: classes/Admin/Admin_Page_Edit_Poll.php:491
 msgid "Poll Closed"
 msgstr "Szavazás lezárva"
 
@@ -818,96 +813,98 @@ msgstr "%s – shortcode"
 msgid "Polls copied: %d. Answers copied: %d. Logs copied: %d"
 msgstr "Átvett szavazások: %d. Átvett válaszok: %d. Átvett naplók: %d"
 
-#: classes/Admin/Admin_Page_Design.php:86
+#: classes/Admin/tpl/design.php:33
 msgid "No theme"
 msgstr "Nincs téma"
 
-#: classes/Admin/Admin_Page_Design.php:131
+#: classes/Admin/tpl/design.php:78
 msgid "as percent of all votes"
 msgstr "az összes szavazat százalékában"
 
-#: classes/Admin/Admin_Page_Design.php:138
+#: classes/Admin/tpl/design.php:85
 msgid "Line Color"
 msgstr "Vonal színe"
 
-#: classes/Admin/Admin_Page_Design.php:144
+#: classes/Admin/tpl/design.php:91
 msgid "Line color (for voted user)"
 msgstr "Vonal színe (szavazó esetén)"
 
-#: classes/Admin/Admin_Page_Design.php:150
+#: classes/Admin/tpl/design.php:97
 msgid "Background color"
 msgstr "Háttérszín"
 
-#: classes/Admin/Admin_Page_Design.php:167
+#: classes/Admin/tpl/design.php:114
 msgid "Progress line animation effect speed (default 1500). Set 0 to disable animation."
 msgstr "Animáció sebessége (alapértelmezett 1500). 0 letiltja az animációt."
 
-#: classes/Admin/Admin_Page_Design.php:183
-#: classes/Admin/Admin_Page_Design.php:247
+#: classes/Admin/tpl/design.php:130
+#: classes/Admin/tpl/design.php:194
 msgid "No (default)"
 msgstr "Nem (alapértelmezett)"
 
-#: classes/Admin/Admin_Page_Design.php:307
+#: classes/Admin/tpl/design.php:254
 msgid "Button colors"
 msgstr "Gomb színek"
 
-#: classes/Admin/Admin_Page_Design.php:310
-#: classes/Admin/Admin_Page_Design.php:332
+#: classes/Admin/tpl/design.php:257
+#: classes/Admin/tpl/design.php:279
+#: classes/Admin/Admin_Page_Design.php:108
 msgid "Bg color"
 msgstr "Háttérszín"
 
-#: classes/Admin/Admin_Page_Design.php:316
-#: classes/Admin/Admin_Page_Design.php:338
+#: classes/Admin/tpl/design.php:263
+#: classes/Admin/tpl/design.php:285
 msgid "Text Color"
 msgstr "Szöveg színe"
 
-#: classes/Admin/Admin_Page_Design.php:322
-#: classes/Admin/Admin_Page_Design.php:344
+#: classes/Admin/tpl/design.php:269
+#: classes/Admin/tpl/design.php:291
 msgid "Border Color"
 msgstr "Szegélyszín"
 
-#: classes/Admin/Admin_Page_Design.php:329
+#: classes/Admin/tpl/design.php:276
 msgid "Hover button colors"
 msgstr "Gomb színek (hover)"
 
-#: classes/Admin/Admin_Page_Design.php:372
+#: classes/Admin/tpl/design.php:319
 msgid "No (dots...)"
 msgstr "Nem (pontok...)"
 
-#: classes/Admin/Admin_Page_Design.php:429
+#: classes/Admin/tpl/design.php:376
 msgid "In this field you can add some additional css properties or completely replace current css theme. Write here css and it will be added at the bottom of current Democracy css. To complete replace styles, check \"No theme\" and describe all styles."
 msgstr "Ebben a mezőben további CSS-t adhatsz hozzá vagy teljesen lecserélheted az aktuális stílust. Az itt megadott CSS a Democracy plugin CSS-ének végére kerül. Teljes csere esetén válaszd a „Nincs téma” opciót és add meg az összes stílust."
 
-#: classes/Admin/Admin_Page_Design.php:430
+#: classes/Admin/tpl/design.php:377
 msgid "This field cleaned manually, if you reset options of this page or change/set another theme, the field will not be touched."
 msgstr "Ezt a mezőt csak manuálisan lehet törölni; ha visszaállítod az opciókat vagy témát váltasz, ez érintetlen marad."
 
-#: classes/Admin/Admin_Page_Design.php:445
+#: classes/Admin/tpl/design.php:392
 msgid "are you sure?"
 msgstr "Biztos vagy benne?"
 
-#: classes/Admin/Admin_Page_Design.php:469
+#: classes/Admin/tpl/design.php:416
 msgid "Minified version (uses to include it in HTML)"
 msgstr "Minimális verzió (HTML-hez)"
 
-#: classes/Admin/List_Table_Logs.php:132
+#: classes/Admin/List_Table_Logs.php:130
 msgid "Expire"
 msgstr "Lejár"
 
-#: classes/Admin/Admin_Page_Logs.php:117
+#: classes/Admin/Admin_Page_Logs.php:199
 #, php-format
 msgid "Lines deleted: %s"
 msgstr "Törölt sorok: %s"
 
-#: classes/Admin/Admin_Page_Logs.php:193
+#: classes/Admin/Admin_Page_Logs.php:275
 #, php-format
 msgid "Removed logs: %d. Removed answers:%d. Removed users %d."
 msgstr "Eltávolított naplók: %d. Válaszok: %d. Felhasználók: %d."
 
-#: classes/Admin/Admin_Page.php:276
+#: classes/Admin/Admin_Page.php:267
 msgid "If you like this plugin, please <a>leave your review</a>"
 msgstr "Ha tetszik a bővítmény, kérjük, <a>írj véleményt</a>"
 
+#: classes/Admin/List_Table_Logs.php:31
 #: classes/Admin/List_Table_Polls.php:28
 msgid "Show on page"
 msgstr "Megjelenítés az oldalon"
@@ -940,23 +937,23 @@ msgstr "HIBA: Több választ jelöltél meg, mint engedélyezett..."
 msgid "Alphabetically"
 msgstr "Betűrendben"
 
-#: classes/Admin/Admin_Page_Design.php:108
-msgid "Max height of the poll in pixels (if no unit is set). When a poll has many answers, collapsing it improves readability. `-1` - disables this option. Default: 500."
-msgstr "A szavazás maximális magassága pixelben (ha nincs megadva mértékegység). Ha egy szavazás sok választ tartalmaz, az összecsukása javítja az olvashatóságot. A `-1` kikapcsolja ezt a beállítást. Alapértelmezett érték: 500."
+#: classes/Admin/tpl/design.php:55
+msgid "Max height of the poll (in pixels if no unit is set). When a poll has many answers, collapsing it improves readability. `-1` - disables this option. Default: 500."
+msgstr "A szavazás maximális magassága (ha nincs megadva mértékegység, pixelben). Ha egy szavazás sok válaszlehetőséget tartalmaz, az összecsukása javítja az áttekinthetőséget. A `-1` kikapcsolja ezt a beállítást. Alapértelmezett érték: 500."
 
-#: classes/Admin/Admin_Page_Design.php:112
+#: classes/Admin/tpl/design.php:59
 msgid "Animation speed (in milliseconds)."
 msgstr "Az animáció sebessége (ezredmásodpercben)."
 
-#: classes/Admin/Admin_Page_Design.php:121
+#: classes/Admin/tpl/design.php:68
 msgid "How to fill (paint) the progress of each answer:"
 msgstr "Hogyan töltse ki (színezze) az egyes válaszok haladásjelzőjét:"
 
-#: classes/Admin/Admin_Page_Design.php:160
+#: classes/Admin/tpl/design.php:107
 msgid "Line height (in px if unit not set)"
 msgstr "Vonalvastagság (px-ben, ha nincs megadva mértékegység)"
 
-#: classes/Admin/Admin_Page_Design.php:354
+#: classes/Admin/tpl/design.php:301
 msgid "An additional css class for all buttons in the poll. When the template has a special class for buttons, for example:"
 msgstr "További CSS-osztály a szavazás összes gombjához. Ha a sablon speciális osztályt használ a gombokhoz, például:"
 
@@ -967,3 +964,11 @@ msgstr "Az adatbázisban tárolja a szavazási adatokat. Ez teszi lehetővé az 
 #: classes/Admin/Admin_Page_Settings.php:65
 msgid "INFO: If a user is logged in, their vote is checked by their WP account. If a user is not logged in, their IP address is checked. The downside of IP checks is that a site may be visited from an enterprise network with a shared IP address, so all users from that network are allowed to vote only once."
 msgstr "INFORMÁCIÓ: Ha egy felhasználó be van jelentkezve, a szavazatát a WP-fiókja alapján ellenőrzi a rendszer. Ha nincs bejelentkezve, az IP-címét ellenőrzi. Az IP-alapú ellenőrzés hátránya, hogy előfordulhat, hogy a webhelyet közös IP-címet használó vállalati hálózatról látogatják, ezért az adott hálózat összes felhasználója együttesen csak egyszer szavazhat."
+
+#: classes/Admin/Admin_Page_Settings.php:88
+msgid "Example: <code>&lt;h2&gt;</code> and <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>."
+msgstr "Például: <code>&lt;h2&gt;</code> és <code>&lt;/h2&gt;</code>. Alapértelmezett: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>."
+
+#: classes/Admin/Admin_Page_Settings.php:203
+msgid "Democracy Poll has a built-in mechanism for working with page cache plugins such as W3 Total Cache. It is enabled automatically when a supported plugin is active. If you use a different page cache plugin, you can force-enable this option."
+msgstr "A Democracy Poll beépített mechanizmussal működik együtt az olyan oldalgyorsítótár-bővítményekkel, mint a W3 Total Cache. Kompatibilis bővítmény esetén automatikusan bekapcsol. Más gyorsítótár-bővítmény használatakor ez a beállítás kényszerítve engedélyezhető."

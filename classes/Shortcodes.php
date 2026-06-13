@@ -36,7 +36,7 @@ class Shortcodes {
 			// 'after_title'   => '', // IMP! can't be added - security reason
 		], $atts, 'democracy' );
 
-		// для опредления к какой записи относиться опрос. проверка, если шорткод вызван не из контента...
+		// Determine which post the poll belongs to when the shortcode is used outside the content.
 		$post_id = ( is_singular() && is_main_query() ) ? $GLOBALS['post']->ID : 0;
 
 		if( $atts['id'] === 'current' ){

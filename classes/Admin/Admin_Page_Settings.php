@@ -36,7 +36,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 				: plugin()->msg->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
 		}
 
-		// запрос на создание страницы архива
+		// Handle the request to create an archive page.
 		if( isset( $_GET['dem_create_archive_page'] ) ){
 			$this->dem_create_archive_page();
 		}
@@ -85,28 +85,28 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 						<i><?= esc_html__( 'poll\'s question', 'democracy-poll' ) ?></i>
 						<input type="text" size="15" value="<?= esc_attr( options()->after_title ) ?>"
 						       name="dem[after_title]"/>
-						<em><?= wp_kses_post( __( 'Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>.', 'democracy-poll' ) ) ?></em>
+						<em><?= wp_kses_post( __( 'Example: <code>&lt;h2&gt;</code> and <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>.', 'democracy-poll' ) ) ?></em>
 					</li>
 
 					<li class="block">
 						<label>
 							<input type="text" size="10" name="dem[archive_page_id]" value="<?= (int) options()->archive_page_id ?>" />
 							<?= esc_html__( 'Polls archive page ID.', 'democracy-poll' ) ?>
+							<?php
+							if( options()->archive_page_id ){
+								echo sprintf( '<a href="%s">%s</a>',
+									get_permalink( options()->archive_page_id ),
+									__( 'Go to archive page', 'democracy-poll' )
+								);
+							}
+							else{
+								echo sprintf( '<a class="button" href="%s">%s</a>',
+									esc_url( Admin_Page::add_nonce( add_query_arg( [ 'dem_create_archive_page' => 1 ] ) ) ),
+									__( 'Create/find archive page', 'democracy-poll' )
+								);
+							}
+							?>
 						</label>
-						<?php
-						if( options()->archive_page_id ){
-							echo sprintf( '<a href="%s">%s</a>',
-								get_permalink( options()->archive_page_id ),
-								__( 'Go to archive page', 'democracy-poll' )
-							);
-						}
-						else{
-							echo sprintf( '<a class="button" href="%s">%s</a>',
-								esc_url( Admin_Page::add_nonce( add_query_arg( [ 'dem_create_archive_page' => 1 ] ) ) ),
-								__( 'Create/find archive page', 'democracy-poll' )
-							);
-						}
-						?>
 						<em><?= wp_kses_post( __( 'Specify the poll archive link to be in the poll legend. Example: <code>25</code>', 'democracy-poll' ) ) ?></em>
 					</li>
 
@@ -200,7 +200,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 							);
 							?>
 						</label>
-						<em><?= esc_html__( 'Democracy has smart mechanism for working with page cache plugins like "WP Total Cache". It is ON automatically if such plugin is enabled on your site. But if you use unusual page caching plugin you can force enable this option.', 'democracy-poll' ) ?></em>
+						<em><?= esc_html__( 'Democracy Poll has a built-in mechanism for working with page cache plugins such as W3 Total Cache. It is enabled automatically when a supported plugin is active. If you use a different page cache plugin, you can force-enable this option.', 'democracy-poll' ) ?></em>
 					</li>
 
 					<li class="block">

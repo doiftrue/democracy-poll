@@ -6,21 +6,16 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Content-Transfer-Encoding: 8bit\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Language: \n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"MIME-Version: 1.0\n"
-"Plural-Forms: \n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"POT-Creation-Date: 2026-06-12 03:47+0500\n"
-"Project-Id-Version: Democracy\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"X-Generator: Poedit 1.8.12\n"
-"X-Poedit-Basepath: ..\n"
-"X-Poedit-KeywordsList: __;_e;esc_html__;esc_html_e;esc_attr__;esc_attr_e;_ex:1,2c;_x:1,2c;_n:1,2;_nx:1,2,3c;_n_noop:1,2;_nx_noop:1,2,3c\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-SourceCharset: UTF-8\n"
+"POT-Creation-Date: 2026-06-13 22:04+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: includes/theme-functions.php:84
 msgid "Poll results hidden for now..."
@@ -30,7 +25,7 @@ msgstr ""
 msgid "From posts:"
 msgstr ""
 
-#: classes/Poll_Widget.php:12 classes/Admin/Admin_Page.php:52
+#: classes/Poll_Widget.php:12 classes/Admin/Admin_Page.php:54
 msgid "Democracy Poll"
 msgstr ""
 
@@ -38,7 +33,7 @@ msgstr ""
 msgid "Democracy Poll Widget"
 msgstr ""
 
-#: classes/Poll_Widget.php:66 classes/Admin/List_Table_Logs.php:128
+#: classes/Poll_Widget.php:66 classes/Admin/List_Table_Logs.php:126
 msgid "Poll"
 msgstr ""
 
@@ -62,8 +57,8 @@ msgstr ""
 msgid "Which poll to show?"
 msgstr ""
 
-#: classes/Poll_Renderer.php:80 classes/Admin/List_Table_Logs.php:174
-#: classes/Admin/List_Table_Logs.php:280
+#: classes/Poll_Renderer.php:80 classes/Admin/List_Table_Logs.php:172
+#: classes/Admin/List_Table_Logs.php:273
 msgid "Edit poll"
 msgstr ""
 
@@ -189,7 +184,162 @@ msgstr ""
 msgid "London"
 msgstr ""
 
-#: classes/Admin/tpl/edit-poll.php:25 classes/Admin/List_Table_Logs.php:282
+#: classes/Admin/tpl/design.php:28
+msgid "Choose Theme"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:33
+msgid "No theme"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:52
+msgid "Other settings"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:55
+msgid ""
+"Max height of the poll (in pixels if no unit is set). When a poll has many "
+"answers, collapsing it improves readability. `-1` - disables this option. "
+"Default: 500."
+msgstr ""
+
+#: classes/Admin/tpl/design.php:59
+msgid "Animation speed (in milliseconds)."
+msgstr ""
+
+#: classes/Admin/tpl/design.php:66
+msgid "Progress line"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:68
+msgid "How to fill (paint) the progress of each answer:"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:72
+msgid "winner - 100%, others as % of the winner"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:78
+msgid "as percent of all votes"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:85
+msgid "Line Color"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:91
+msgid "Line color (for voted user)"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:97
+msgid "Background color"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:107
+msgid "Line height (in px if unit not set)"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:114
+msgid ""
+"Progress line animation effect speed (default 1500). Set 0 to disable "
+"animation."
+msgstr ""
+
+#: classes/Admin/tpl/design.php:130 classes/Admin/tpl/design.php:194
+msgid "No (default)"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:248
+msgid ""
+"The colors correctly affects NOT for all buttons. You can change styles "
+"completely in \"additional styles\" field bellow."
+msgstr ""
+
+#: classes/Admin/tpl/design.php:254
+msgid "Button colors"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:257 classes/Admin/tpl/design.php:279
+#: classes/Admin/Admin_Page_Design.php:108
+msgid "Bg color"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:263 classes/Admin/tpl/design.php:285
+msgid "Text Color"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:269 classes/Admin/tpl/design.php:291
+msgid "Border Color"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:276
+msgid "Hover button colors"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:301
+msgid ""
+"An additional css class for all buttons in the poll. When the template has a "
+"special class for buttons, for example:"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:319
+msgid "No (dots...)"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:360
+msgid ""
+"AJAX Loader. If choose \"NO\", loader replaces by dots \"...\" which appends "
+"to a link/button text. SVG images animation don't work in IE 11 or lower, "
+"other browsers are supported at  90% (according to caniuse.com statistics)."
+msgstr ""
+
+#: classes/Admin/tpl/design.php:371
+msgid "Custom/Additional CSS styles"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:376
+msgid ""
+"In this field you can add some additional css properties or completely "
+"replace current css theme. Write here css and it will be added at the bottom "
+"of current Democracy css. To complete replace styles, check \"No theme\" and "
+"describe all styles."
+msgstr ""
+
+#: classes/Admin/tpl/design.php:377
+msgid ""
+"This field cleaned manually, if you reset options of this page or change/set "
+"another theme, the field will not be touched."
+msgstr ""
+
+#: classes/Admin/tpl/design.php:387
+msgid "Save All Changes"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:391 classes/Admin/Admin_Page_l10n.php:94
+#: classes/Admin/Admin_Page_Settings.php:281
+msgid "Reset Options"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:392
+msgid "are you sure?"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:398
+msgid "All CSS styles that uses now"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:407
+msgid ""
+"It's all collected css styles: theme, button, options. You can copy this "
+"styles to the \"Custom/Additional CSS styles:\" field, disable theme and "
+"change copied styles by itself."
+msgstr ""
+
+#: classes/Admin/tpl/design.php:416
+msgid "Minified version (uses to include it in HTML)"
+msgstr ""
+
+#: classes/Admin/tpl/edit-poll.php:25 classes/Admin/List_Table_Logs.php:275
 msgid "Poll logs"
 msgstr ""
 
@@ -249,7 +399,7 @@ msgstr ""
 msgid "Only registered users allowed to vote."
 msgstr ""
 
-#: classes/Admin/tpl/edit-poll.php:225 classes/Admin/List_Table_Polls.php:120
+#: classes/Admin/tpl/edit-poll.php:225 classes/Admin/List_Table_Polls.php:135
 msgid "Allow to watch the results of the poll."
 msgstr ""
 
@@ -273,75 +423,76 @@ msgstr ""
 msgid "Save Changes"
 msgstr ""
 
-#: classes/Admin/tpl/edit-poll.php:266 classes/Plugin_Initor.php:114
+#: classes/Admin/tpl/edit-poll.php:266 classes/Plugin_Initor.php:119
 msgid "Add Poll"
 msgstr ""
 
-#: classes/Admin/tpl/edit-poll.php:277
-#: classes/Admin/Admin_Page_Other_Migrations.php:88
-#: classes/Admin/Admin_Page_Logs.php:77 classes/Admin/Admin_Page_Logs.php:84
-#: classes/Admin/List_Table_Polls.php:145
-msgid "Are you sure?"
-msgstr ""
-
-#: classes/Admin/tpl/edit-poll.php:278 classes/Admin/List_Table_Polls.php:145
-msgid "Delete"
-msgstr ""
-
-#: classes/Admin/tpl/edit-poll.php:291
+#: classes/Admin/tpl/edit-poll.php:285
 msgid "Posts where the poll shortcode used:"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Polls.php:35
+#: classes/Admin/Admin_Page_Polls.php:29
 msgid "Search"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:31
+#: classes/Admin/Admin_Page_Edit_Poll.php:32
 msgid "New Poll Added"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:255
+#: classes/Admin/Admin_Page_Edit_Poll.php:256
 msgid "Poll Updated"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:387
+#: classes/Admin/Admin_Page_Edit_Poll.php:384
 msgid "Deactivate"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:392
+#: classes/Admin/Admin_Page_Edit_Poll.php:389
 msgid "Activate"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:412
+#: classes/Admin/Admin_Page_Edit_Poll.php:405
 msgid "Close voting"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:417
+#: classes/Admin/Admin_Page_Edit_Poll.php:410
 msgid "Open voting"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:440
+#: classes/Admin/Admin_Page_Edit_Poll.php:424
+#: classes/Admin/Admin_Page_Other_Migrations.php:88
+#: classes/Admin/Admin_Page_Logs.php:159 classes/Admin/Admin_Page_Logs.php:166
+#: classes/Admin/List_Table_Polls.php:160
+msgid "Are you sure?"
+msgstr ""
+
+#: classes/Admin/Admin_Page_Edit_Poll.php:425
+#: classes/Admin/List_Table_Polls.php:160
+msgid "Delete"
+msgstr ""
+
+#: classes/Admin/Admin_Page_Edit_Poll.php:441
 msgid "Poll Deleted"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:489
+#: classes/Admin/Admin_Page_Edit_Poll.php:490
 #: classes/Admin/List_Table_Polls.php:71
 msgid "Poll Opened"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:490
+#: classes/Admin/Admin_Page_Edit_Poll.php:491
 msgid "Poll Closed"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:514
+#: classes/Admin/Admin_Page_Edit_Poll.php:515
 msgid "You can not activate closed poll..."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:523
+#: classes/Admin/Admin_Page_Edit_Poll.php:524
 msgid "Poll Activated"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:524
+#: classes/Admin/Admin_Page_Edit_Poll.php:525
 msgid "Poll Deactivated"
 msgstr ""
 
@@ -414,292 +565,133 @@ msgstr ""
 msgid "Your variant"
 msgstr ""
 
-#: classes/Admin/Admin_Page_l10n.php:107
+#: classes/Admin/Admin_Page_l10n.php:92
 msgid "Save Text"
 msgstr ""
 
-#: classes/Admin/Admin_Page_l10n.php:109
-#: classes/Admin/Admin_Page_Design.php:444
-#: classes/Admin/Admin_Page_Settings.php:281
-msgid "Reset Options"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:81
-msgid "Choose Theme"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:86
-msgid "No theme"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:105
-msgid "Other settings"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:108
-msgid ""
-"Max height of the poll in pixels (if no unit is set). When a poll has many "
-"answers, collapsing it improves readability. `-1` - disables this option. "
-"Default: 500."
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:112
-msgid "Animation speed (in milliseconds)."
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:119
-msgid "Progress line"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:121
-msgid "How to fill (paint) the progress of each answer:"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:125
-msgid "winner - 100%, others as % of the winner"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:131
-msgid "as percent of all votes"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:138
-msgid "Line Color"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:144
-msgid "Line color (for voted user)"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:150
-msgid "Background color"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:160
-msgid "Line height (in px if unit not set)"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:167
-msgid ""
-"Progress line animation effect speed (default 1500). Set 0 to disable "
-"animation."
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:183
-#: classes/Admin/Admin_Page_Design.php:247
-msgid "No (default)"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:301
-msgid ""
-"The colors correctly affects NOT for all buttons. You can change styles "
-"completely in \"additional styles\" field bellow."
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:307
-msgid "Button colors"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:310
-#: classes/Admin/Admin_Page_Design.php:332
-msgid "Bg color"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:316
-#: classes/Admin/Admin_Page_Design.php:338
-msgid "Text Color"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:322
-#: classes/Admin/Admin_Page_Design.php:344
-msgid "Border Color"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:329
-msgid "Hover button colors"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:354
-msgid ""
-"An additional css class for all buttons in the poll. When the template has a "
-"special class for buttons, for example:"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:372
-msgid "No (dots...)"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:413
-msgid ""
-"AJAX Loader. If choose \"NO\", loader replaces by dots \"...\" which appends "
-"to a link/button text. SVG images animation don't work in IE 11 or lower, "
-"other browsers are supported at  90% (according to caniuse.com statistics)."
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:424
-msgid "Custom/Additional CSS styles"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:429
-msgid ""
-"In this field you can add some additional css properties or completely "
-"replace current css theme. Write here css and it will be added at the bottom "
-"of current Democracy css. To complete replace styles, check \"No theme\" and "
-"describe all styles."
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:430
-msgid ""
-"This field cleaned manually, if you reset options of this page or change/set "
-"another theme, the field will not be touched."
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:440
-msgid "Save All Changes"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:445
-msgid "are you sure?"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:451
-msgid "All CSS styles that uses now"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:460
-msgid ""
-"It's all collected css styles: theme, button, options. You can copy this "
-"styles to the \"Custom/Additional CSS styles:\" field, disable theme and "
-"change copied styles by itself."
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:469
-msgid "Minified version (uses to include it in HTML)"
-msgstr ""
-
-#: classes/Admin/Admin_Page_Design.php:531
+#: classes/Admin/Admin_Page_Design.php:133
 msgid "Results view:"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:532
+#: classes/Admin/Admin_Page_Design.php:134
 msgid "Vote view:"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Design.php:533
+#: classes/Admin/Admin_Page_Design.php:135
 msgid "AJAX loader view:"
 msgstr ""
 
-#: classes/Admin/List_Table_Logs.php:53
+#: classes/Admin/List_Table_Logs.php:31 classes/Admin/List_Table_Polls.php:28
+msgid "Show on page"
+msgstr ""
+
+#: classes/Admin/List_Table_Logs.php:52
 msgid "Nothing was selected."
 msgstr ""
 
-#: classes/Admin/List_Table_Logs.php:127
+#: classes/Admin/List_Table_Logs.php:125
 msgid "IP info"
 msgstr ""
 
-#: classes/Admin/List_Table_Logs.php:129
+#: classes/Admin/List_Table_Logs.php:127
 msgid "Answer"
 msgstr ""
 
-#: classes/Admin/List_Table_Logs.php:130
+#: classes/Admin/List_Table_Logs.php:128
 msgid "User"
 msgstr ""
 
-#: classes/Admin/List_Table_Logs.php:131
+#: classes/Admin/List_Table_Logs.php:129
 msgid "Date"
 msgstr ""
 
-#: classes/Admin/List_Table_Logs.php:132
+#: classes/Admin/List_Table_Logs.php:130
 msgid "Expire"
 msgstr ""
 
-#: classes/Admin/List_Table_Logs.php:158
+#: classes/Admin/List_Table_Logs.php:156
 msgid "Delete logs only"
 msgstr ""
 
-#: classes/Admin/List_Table_Logs.php:159
+#: classes/Admin/List_Table_Logs.php:157
 msgid "Delete logs and votes"
 msgstr ""
 
-#: classes/Admin/List_Table_Logs.php:171
+#: classes/Admin/List_Table_Logs.php:169
 msgid "Poll's logs: "
 msgstr ""
 
-#: classes/Admin/List_Table_Logs.php:189
+#: classes/Admin/List_Table_Logs.php:188
 msgid "NEW answers logs"
 msgstr ""
 
-#: classes/Admin/List_Table_Logs.php:227
+#: classes/Admin/List_Table_Logs.php:252
 msgid "Search by IP"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Logs.php:52
+#: classes/Admin/Admin_Page_Logs.php:134
 msgid "Logs records turned off in the settings - logs are not recorded."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Logs.php:69
+#: classes/Admin/Admin_Page_Logs.php:151
 msgid "Delete all NEW marks"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Logs.php:79
+#: classes/Admin/Admin_Page_Logs.php:161
 #, php-format
 msgid "Delete logs of closed pols - %d"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Logs.php:86
+#: classes/Admin/Admin_Page_Logs.php:168
 msgid "Delete all logs"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Logs.php:117
+#: classes/Admin/Admin_Page_Logs.php:199
 #, php-format
 msgid "Lines deleted: %s"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Logs.php:118 classes/Admin/Admin_Page_Logs.php:196
+#: classes/Admin/Admin_Page_Logs.php:200 classes/Admin/Admin_Page_Logs.php:278
 msgid "Failed to delete"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Logs.php:193
+#: classes/Admin/Admin_Page_Logs.php:275
 #, php-format
 msgid "Removed logs: %d. Removed answers:%d. Removed users %d."
 msgstr ""
 
-#: classes/Admin/Admin.php:38 classes/Admin/Admin_Page.php:205
-#: classes/Plugin_Initor.php:116
+#: classes/Admin/Admin.php:38 classes/Admin/Admin_Page.php:207
+#: classes/Plugin_Initor.php:121
 msgid "Settings"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:186
+#: classes/Admin/Admin_Page.php:188
 msgid "Back"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:191 classes/Plugin_Initor.php:113
+#: classes/Admin/Admin_Page.php:193 classes/Plugin_Initor.php:118
 msgid "Polls List"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:195
+#: classes/Admin/Admin_Page.php:197
 msgid "Add new poll"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:199 classes/Admin/List_Table_Polls.php:140
-#: classes/Plugin_Initor.php:115
+#: classes/Admin/Admin_Page.php:201 classes/Admin/List_Table_Polls.php:155
+#: classes/Plugin_Initor.php:120
 msgid "Logs"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:210 classes/Plugin_Initor.php:117
+#: classes/Admin/Admin_Page.php:212 classes/Plugin_Initor.php:122
 msgid "Theme Settings"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:215 classes/Plugin_Initor.php:118
+#: classes/Admin/Admin_Page.php:217 classes/Plugin_Initor.php:123
 msgid "Texts changes"
 msgstr ""
 
-#: classes/Admin/Admin_Page.php:276
+#: classes/Admin/Admin_Page.php:267
 msgid "If you like this plugin, please <a>leave your review</a>"
-msgstr ""
-
-#: classes/Admin/List_Table_Polls.php:28
-msgid "Show on page"
 msgstr ""
 
 #: classes/Admin/List_Table_Polls.php:69
@@ -730,27 +722,27 @@ msgstr ""
 msgid "Added"
 msgstr ""
 
-#: classes/Admin/List_Table_Polls.php:116
+#: classes/Admin/List_Table_Polls.php:131
 msgid "Users can add answers (democracy)."
 msgstr ""
 
-#: classes/Admin/List_Table_Polls.php:117
+#: classes/Admin/List_Table_Polls.php:132
 msgid "Users can revote"
 msgstr ""
 
-#: classes/Admin/List_Table_Polls.php:118
+#: classes/Admin/List_Table_Polls.php:133
 msgid "Only for registered user."
 msgstr ""
 
-#: classes/Admin/List_Table_Polls.php:119
+#: classes/Admin/List_Table_Polls.php:134
 msgid "Users can choose many answers (multiple)."
 msgstr ""
 
-#: classes/Admin/List_Table_Polls.php:131
+#: classes/Admin/List_Table_Polls.php:146
 msgid "Edit"
 msgstr ""
 
-#: classes/Admin/List_Table_Polls.php:157
+#: classes/Admin/List_Table_Polls.php:172
 msgid "voters / votes"
 msgstr ""
 
@@ -799,7 +791,7 @@ msgstr ""
 
 #: classes/Admin/Admin_Page_Settings.php:88
 msgid ""
-"Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: "
+"Example: <code>&lt;h2&gt;</code> and <code>&lt;/h2&gt;</code>. Default: "
 "<code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/"
 "strong&gt;</code>."
 msgstr ""
@@ -808,11 +800,11 @@ msgstr ""
 msgid "Polls archive page ID."
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:100
+#: classes/Admin/Admin_Page_Settings.php:99
 msgid "Go to archive page"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Settings.php:106
+#: classes/Admin/Admin_Page_Settings.php:105
 msgid "Create/find archive page"
 msgstr ""
 
@@ -918,10 +910,10 @@ msgstr ""
 
 #: classes/Admin/Admin_Page_Settings.php:203
 msgid ""
-"Democracy has smart mechanism for working with page cache plugins like \"WP "
-"Total Cache\". It is ON automatically if such plugin is enabled on your "
-"site. But if you use unusual page caching plugin you can force enable this "
-"option."
+"Democracy Poll has a built-in mechanism for working with page cache plugins "
+"such as W3 Total Cache. It is enabled automatically when a supported plugin "
+"is active. If you use a different page cache plugin, you can force-enable "
+"this option."
 msgstr ""
 
 #: classes/Admin/Admin_Page_Settings.php:209

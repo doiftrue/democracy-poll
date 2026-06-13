@@ -242,7 +242,7 @@ class Poll_Service {
 
 		$cuser_id = get_current_user_id();
 
-		// добавлен из фронта - демократический вариант ответа не важно какой юзер!
+		// Added from the front end as a democratic answer, regardless of the user.
 		$added_by = $cuser_id ?: IP::get_user_ip();
 		$added_by .= ( ! $cuser_id || (int) $poll->added_user !== (int) $cuser_id ) ? '-new' : '';
 
@@ -317,11 +317,11 @@ class Poll_Service {
 		];
 
 		$user_id = get_current_user_id();
-		// нужно проверять юзера и IP отдельно!
-		// Иначе, если юзер не авторизован его id=0 и он будет совпадать с другими пользователями
+		// Check the user and IP address separately.
+		// Otherwise, anonymous users all have ID 0 and would match one another.
 		if( $user_id ){
-			// только для юзеров, IP не учитывается.
-			// Если голосовали как не авторизованный, а потом залогинились, то можно голосовать еще раз.
+			// For registered users only; the IP address is ignored.
+			// A user who voted anonymously can vote again after logging in.
 			$WHERE[] = $wpdb->prepare( 'userid = %d', $user_id );
 		}
 		else {
@@ -365,15 +365,12 @@ class Poll_Service {
 	}
 
 	protected function insert_logs() {
-		$poll = $this->poll;
+		global $wpdb;
 
+		$poll = $this->poll;
 		if( ! $poll->id ){
 			return false;
 		}
-
-		global $wpdb;
-
-		$ip = IP::get_user_ip();
 
 		return $wpdb->insert( $wpdb->democracy_log, [
 			'qid'     => $poll->id,
@@ -381,8 +378,8 @@ class Poll_Service {
 			'userid'  => (int) get_current_user_id(),
 			'date'    => current_time( 'mysql' ),
 			'expire'  => $this->get_cookie_expire_time(),
-			'ip'      => $ip,
-			'ip_info' => IP::prepared_ip_info( $ip ),
+			'ip'      => IP::get_user_ip(),
+			'ip_info' => '',
 		] );
 	}
 

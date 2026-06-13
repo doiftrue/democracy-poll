@@ -82,6 +82,8 @@
 .tablenav-pages .dashicons{ cursor:pointer; margin:3px 10px 0 0; }
 .tablenav-pages .dashicons.active{ color:#0096DD; }
 .tablenav{ height: auto; }
+
+/* wp-list-table */
 .wp-list-table{
 	tr:hover{ background:rgba(0,0,0,.05) }
 	.column-id{ width:4em; }
@@ -121,3 +123,13 @@
 	.cm-s-default .cm-property{ font-weight:bolder; }
 }
 
+
+/** Info sidebar */
+
+.democr_options{ float: left; width: 80%; }
+.dem-info-wrap{ width: 17%; position: fixed; right: 0; padding: 2em 0; }
+.dem-info-section{ background: white; padding: 1em; }
+@media ( max-width: 1400px ){
+	.democr_options{ float: none; width: 100%; }
+	.dem-info-wrap{ display: none; }
+}

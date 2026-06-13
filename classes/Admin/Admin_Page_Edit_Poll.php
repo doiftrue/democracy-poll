@@ -4,13 +4,14 @@ namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Kses;
 use DemocracyPoll\Poll_Utils;
+use DemPoll;
 use function DemocracyPoll\plugin;
 
 class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 
 	private int $poll_id = 0;
 
-	private ?\DemPoll $poll = null;
+	private ?DemPoll $poll = null;
 
 	private Admin_Page $admpage;
 
@@ -68,7 +69,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 			wp_die( 'Sorry, you are not allowed to access this page.' );
 		}
 
-		$this->poll = $this->poll_id ? new \DemPoll( $this->poll_id ) : null;
+		$this->poll = $this->poll_id ? new DemPoll( $this->poll_id ) : null;
 
 		require __DIR__ . '/tpl/edit-poll.php';
 	}
@@ -164,11 +165,11 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 			if( 'upadate answers' ){ // @phpstan-ignore-line
 				$ids = [];
 
-				// Обновим старые ответы
+				// Update existing answers.
 				foreach( $old_answers as $aid => $anws ){
 					$answ_row = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_a WHERE aid = " . (int) $aid );
 
-					// удалим метку NEW
+					// Remove the NEW marker.
 					$added_by = Admin_Page_Logs::is_new_answer( $answ_row )
 						? str_replace( '-new', '', $answ_row->added_by )
 						: $answ_row->added_by;
@@ -186,12 +187,12 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 						[ 'qid' => $poll_id, 'aid' => $aid ]
 					);
 
-					// собираем ID, которые остались. Для исключения из удаления
+					// Collect the remaining IDs so they are not deleted.
 					$ids[] = $aid;
 					$max_order_num = isset( $max_order_num ) ? ( $max_order_num < $order ? $order : $max_order_num ) : $order;
 				}
 
-				if( 'Удаляем удаленные ответы, которые есть в БД но нет в запросе' ){ // @phpstan-ignore-line
+				if( 'Delete removed answers that exist in the database but are absent from the request' ){ // @phpstan-ignore-line
 					$ids = array_map( 'absint', $ids );
 					$AND_NOT_IN = $ids ? sprintf( "AND aid NOT IN (" . implode( ',', $ids ) . ")" ) : '';
 					$del_ids = $wpdb->get_col(
@@ -208,12 +209,12 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 								"DELETE FROM $wpdb->democracy_log WHERE qid = $poll_id AND aids IN (" . implode( ',', $del_ids ) . ")"
 							);
 
-							// обновим значение 'users_voted' в бд
+							// Update the users_voted value in the database.
 							if( $user_voted_minus ){
 								$wpdb->query( Admin_Page_Logs::users_voted_minus_sql( $user_voted_minus, $poll_id ) );
 							}
 
-							// Обновим мульти логи, где по несколько ответов: '321,654'
+							// Update multiple-answer logs containing values such as '321,654'.
 							$up_logs = $wpdb->get_results(
 								"SELECT logid, aids FROM $wpdb->democracy_log
 									WHERE qid = $poll_id AND aids RLIKE '(" . implode( '|', $del_ids ) . ")'"
@@ -238,7 +239,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 					}
 				}
 
-				// Добавим новые ответы
+				// Add new answers.
 				foreach( $new_answers as $anws ){
 					$anws = trim( $anws );
 
@@ -255,14 +256,14 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 			plugin()->msg->add_ok( __( 'Poll Updated', 'democracy-poll' ) );
 
 			// collect answers users votes count
-			// обновим 'users_voted' в questions после того как логи были обновлены, зависит от логов
+			// Update questions.users_voted after the logs because its value depends on them.
 			if( 1 ){ // @phpstan-ignore-line
 				$users_voted = 0;
-				// соберем из логов
+				// Calculate the value from the logs.
 				if( $data->multiple && ! $data->users_voted ){
 					$users_voted = $wpdb->get_var( "SELECT count(*) FROM $wpdb->democracy_log WHERE qid = " . (int) $poll_id );
 				}
-				// равно количеству голосов
+				// Equal to the number of votes.
 				if( ! $data->multiple ){
 					$users_voted = $wpdb->get_var( "SELECT SUM(votes) FROM $wpdb->democracy_a WHERE qid = " . (int) $poll_id );
 				}
@@ -366,7 +367,6 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	}
 
 	public static function shortcode_html( $poll_id ): string {
-
 		if( ! $poll_id ){
 			return '';
 		}
@@ -376,55 +376,56 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	}
 
 	/**
-	 * Выводит кнопки активации/деактивации опроса.
-	 *
-	 * @param \DemPoll $poll  Объект опроса.
-	 * @param bool     $icon_reverse  Использовать ли альтернативные иконки для кнопок?
+	 * Displays poll activation/deactivation button.
 	 */
-	public static function activate_button( $poll, $icon_reverse = false ): string {
+	public static function activate_button( DemPoll $poll, $reverse = false, $size = 'big' ): string {
 		if( $poll->active ){
 			$url = esc_url( Admin_Page::add_nonce( add_query_arg( [ 'dmc_deactivate_poll' => $poll->id, 'dmc_activate_poll' => null, ] ) ) );
 			$title = __( 'Deactivate', 'democracy-poll' );
-			$icon = $icon_reverse ? 'dashicons-controls-play' : 'dashicons-controls-pause';
+			$icon = $reverse ? 'dashicons-controls-play' : 'dashicons-controls-pause';
 		}
 		else{
 			$url = esc_url( Admin_Page::add_nonce( add_query_arg( [ 'dmc_deactivate_poll' => null, 'dmc_activate_poll' => $poll->id, ] ) ) );
 			$title = __( 'Activate', 'democracy-poll' );
-			$icon = $icon_reverse ? 'dashicons-controls-pause' : 'dashicons-controls-play';
+			$icon = $reverse ? 'dashicons-controls-pause' : 'dashicons-controls-play';
 		}
 
 		return sprintf(
-			'<a class="button" href="%s" title="%s"><span class="dashicons %s"></span></a>',
-			esc_url( $url ), esc_html( $title ), $icon
+			'<a class="button %s" href="%s" title="%s"><span class="dashicons %s"></span></a>',
+			( $size === 'small' ? 'button-small' : '' ), esc_url( $url ), esc_html( $title ), $icon
 		);
 	}
 
 	/**
-	 * Выводит кнопки открытия/закрытия опроса.
-	 *
-	 * @param \DemPoll $poll  Объект опроса.
-	 * @param bool     $icon_reverse  Использовать ли альтернативные иконки для кнопок?
- */
-	public static function open_button( $poll, $icon_reverse = false ): string {
-
+	 * Displays poll open/close button.
+	 */
+	public static function open_button( $poll, $reverse = false, $size = 'big' ): string {
 		if( $poll->open ){
 			$url = esc_url( Admin_Page::add_nonce( add_query_arg( [ 'dmc_close_poll' => $poll->id, 'dmc_open_poll' => null ] ) ) );
 			$title = __( 'Close voting', 'democracy-poll' );
-			$icon = $icon_reverse ? 'dashicons-yes' : 'dashicons-no';
+			$icon = $reverse ? 'dashicons-yes' : 'dashicons-no';
 		}
 		else{
 			$url = esc_url( Admin_Page::add_nonce( add_query_arg( [ 'dmc_close_poll' => null, 'dmc_open_poll' => $poll->id ] ) ) );
 			$title = __( 'Open voting', 'democracy-poll' );
-			$icon = $icon_reverse ? 'dashicons-no' : 'dashicons-yes';
+			$icon = $reverse ? 'dashicons-no' : 'dashicons-yes';
 		}
 
 		return sprintf(
-			'<a class="button" href="%s" title="%s"><span class="dashicons %s"></span></a>',
-			esc_url( $url ), esc_html( $title ), $icon
+			'<a class="button %s" href="%s" title="%s"><span class="dashicons %s"></span></a>',
+			( $size === 'small' ? 'button-small' : '' ), esc_url( $url ), esc_html( $title ), $icon
 		);
 	}
 
-	## deletes specified poll
+	public static function delete_button( $poll ): string {
+		return sprintf(
+			' <a href="%s" class="button" onclick="return confirm(\'%s\');" title="%s"><span class="dashicons dashicons-trash"></span></a>',
+			Admin_Page::add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], plugin()->admin_page_url ) ),
+			__( 'Are you sure?', 'democracy-poll' ),
+			__( 'Delete', 'democracy-poll' )
+		);
+	}
+
 	public static function delete_poll( $poll_id ): void {
 		global $wpdb;
 
@@ -465,18 +466,18 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	private static function _poll_opening( int $poll_id, string $action ): bool {
 		global $wpdb;
 
-		$poll = \DemPoll::get_db_data( $poll_id );
+		$poll = DemPoll::get_db_data( $poll_id );
 		if( ! $poll ){
 			return false;
 		}
 
 		$new_data = [ 'open' => ( $action === 'open' ) ? 1 : 0 ];
 
-		// удаляем дату окончания при открытии голосования
+		// Remove the end date when voting is opened.
 		if( $action === 'open' ){
 			$new_data['end'] = 0;
 		}
-		// ставим дату при закрытии опроса и деактивируем опрос
+		// Set the end date and deactivate the poll when voting is closed.
 		else{
 			$new_data['end'] = current_time( 'timestamp' ) - 10;
 			self::deactivate_poll( $poll_id );
@@ -503,7 +504,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	private static function _poll_activation( int $poll_id, string $action ): bool {
 		global $wpdb;
 
-		$poll = \DemPoll::get_db_data( $poll_id );
+		$poll = DemPoll::get_db_data( $poll_id );
 		if( ! $poll ){
 			return false;
 		}

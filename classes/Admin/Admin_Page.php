@@ -7,6 +7,8 @@ use function DemocracyPoll\plugin;
 
 class Admin_Page {
 
+	public const ASSETS_ID = 'democracy-admin';
+
 	use Admin_Page__Additional;
 
 	/** @var string */
@@ -38,7 +40,7 @@ class Admin_Page {
 
 		add_action( 'admin_menu', [ $this, 'register_option_page' ] );
 
-		// Сохранение настроек экрана
+		// Save screen options.
 		add_filter( 'set-screen-option', function( $status, $option, $value ) {
 			return in_array( $option, [ 'dem_polls_per_page', 'dem_logs_per_page' ] ) ? (int) $value : $status;
 		}, 10, 3 );
@@ -62,8 +64,8 @@ class Admin_Page {
 		wp_enqueue_style( 'jquery-style', plugin()->url . '/admin/css/jquery-ui.css', [], plugin()->ver );
 
 		// democracy
-		wp_enqueue_script( 'democracy-scripts', plugin()->url . '/admin/js/admin.js', [ 'jquery' ], plugin()->ver, true );
-		wp_enqueue_style( 'democracy-styles', plugin()->url . '/admin/css/admin.css', [], plugin()->ver );
+		wp_enqueue_script( self::ASSETS_ID, plugin()->url . '/admin/js/admin.js', [ 'jquery' ], plugin()->ver, true );
+		wp_enqueue_style( self::ASSETS_ID, plugin()->url . '/admin/css/admin.css', [], plugin()->ver );
 
 		$this->run_upgrade();
 
@@ -237,14 +239,14 @@ trait Admin_Page__Additional {
 		$main_page = wp_make_link_relative( plugin()->admin_page_url );
 		$referer = isset( $_SERVER['HTTP_REFERER'] ) ? wp_make_link_relative( $_SERVER['HTTP_REFERER'] ) : '';
 
-		// если обновляем
+		// Handle updates from the current page.
 		if( $referer === $request_uri ){
 			$referer = get_transient( $transient );
 		}
-		// если запрос пришел с любой страницы настроект democracy
+		// Handle requests from any Democracy settings page.
 		elseif( false !== strpos( $referer, $main_page ) ){
 			$referer = false;
-			set_transient( $transient, 'foo', 2 ); // удаляем. но не удалим, а обновим, так чтобы не работала
+			set_transient( $transient, 'foo', 2 ); // Invalidate by replacing the transient instead of deleting it.
 		}
 		else{
 			set_transient( $transient, $referer, HOUR_IN_SECONDS / 2 );
@@ -256,19 +258,8 @@ trait Admin_Page__Additional {
 	private static function info_sidebar() {
 		ob_start();
 		?>
-		<style>
-			.democr_options{ float: left; width: 80%; }
-
-			.dem_info_wrap{ width: 17%; position: fixed; right: 0; padding: 2em 0; }
-
-			@media screen and ( max-width: 1400px ){
-				.democr_options{ float: none; width: 100%; }
-
-				.dem_info_wrap{ display: none; }
-			}
-		</style>
-		<div class="dem_info_wrap">
-			<div class="infoblk">
+		<div class="dem-info-wrap">
+			<section class="dem-info-section">
 				<?php
 				echo str_replace(
 					'<a',
@@ -276,7 +267,7 @@ trait Admin_Page__Additional {
 					__( 'If you like this plugin, please <a>leave your review</a>', 'democracy-poll' )
 				);
 				?>
-			</div>
+			</section>
 		</div>
 		<?php
 

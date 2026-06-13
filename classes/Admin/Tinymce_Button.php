@@ -1,5 +1,5 @@
 <?php
-## tinymce кнопка
+## TinyMCE button.
 
 namespace DemocracyPoll\Admin;
 

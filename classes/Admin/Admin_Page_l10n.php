@@ -2,12 +2,12 @@
 
 namespace DemocracyPoll\Admin;
 
+use DemocracyPoll\Helpers\Kses;
 use function DemocracyPoll\plugin;
 
 class Admin_Page_l10n implements Admin_Subpage_Interface {
 
-	/** @var Admin_Page */
-	private $admpage;
+	private Admin_Page $admpage;
 
 	public function __construct( Admin_Page $admin_page ){
 		$this->admpage = $admin_page;
@@ -24,12 +24,12 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 		if( isset( $_POST['dem_save_l10n'] ) || isset( $_POST['dem_reset_l10n'] ) ){
 			$up = false;
 
-			// обновляем произвольную локализацию
+			// Update custom localization.
 			if( isset( $_POST['dem_save_l10n'] ) ){
 				$up = $this->update_l10n( stripslashes_deep( $_POST['l10n'] ) );
 			}
 
-			// сбрасываем произвольную локализацию
+			// Reset custom localization.
 			if( isset( $_POST['dem_reset_l10n'] ) ){
 				$up = $this->reset_l10n();
 			}
@@ -63,25 +63,10 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 					</thead>
 					<tbody id="the-list">
 					<?php
-					// get all translations from the files
-					$strs = [];
-					$files = [
-						plugin()->dir . '/classes/DemPoll.php',
-						plugin()->dir . '/classes/Poll_Widget.php',
-					];
-					foreach( $files as $file ){
-						preg_match_all( '~_x\(\s*[\'](.*?)(?<!\\\\)[\']~', file_get_contents( $file ), $match );
-						if( $match[1] ){
-							/** @noinspection SlowArrayOperationsInLoopInspection */
-							$strs = array_merge( $strs, $match[1] );
-						}
-					}
-					$strs = array_unique( $strs );
-
 					$i = 0;
 					$_l10n = get_option( 'democracy_l10n' );
 					self::remove_gettext_filter();
-					foreach( $strs as $str ){
+					foreach( self::get_front_texts() as $str ){
 						$i++;
 						$mo_str = _x( $str, 'front', 'democracy-poll' );
 
@@ -99,7 +84,7 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 					}
 					self::add_gettext_filter();
 					?>
-					<tbody>
+					</tbody>
 				</table>
 
 				<p>
@@ -122,21 +107,39 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 		return $up;
 	}
 
+	/**
+	 * Gets front-end strings that can be overridden on this settings page.
+	 *
+	 * @return string[]
+	 */
+	public static function get_front_texts(): array {
+		$source = file_get_contents( dirname( __DIR__ ) . '/Poll_Renderer.php' );
+		if( false === $source ){
+			return [];
+		}
+
+		preg_match_all( '~_x\(\s*[\'](.*?)(?<!\\\\)[\']~', $source, $matches );
+
+		return array_values( array_unique( $matches[1] ) );
+	}
+
 	public function update_l10n( array $new_l10n ): bool {
+		self::remove_gettext_filter();
 
 		foreach( $new_l10n as $key => & $val ){
 			$val = trim( $val );
 
-			// delete if no difference from original translations_api
-			if( __( $key, 'democracy-poll' ) === $val ){
+			// Delete values that do not differ from the original contextual translation.
+			if( _x( $key, 'front', 'democracy-poll' ) === $val ){
 				unset( $new_l10n[ $key ] );
 			}
-			// sanitize value: Thanks to //pluginvulnerabilities.com/?p=2967
+			// sanitize value: Thanks to http://pluginvulnerabilities.com/?p=2967
 			else{
-				$val = \DemocracyPoll\Helpers\Kses::kses_html( $val );
+				$val = Kses::kses_html( $val );
 			}
 		}
 		unset( $val );
+		self::add_gettext_filter();
 
 		$up = (bool) update_option( 'democracy_l10n', $new_l10n );
 

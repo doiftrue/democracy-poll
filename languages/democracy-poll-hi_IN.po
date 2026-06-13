@@ -1,22 +1,23 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version:  Democracy\n"
+"Project-Id-Version: Democracy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 03:47+0500\n"
-"PO-Revision-Date: 2026-06-12 04:15+0500\n"
 "Last-Translator: Democracy Poll contributors\n"
-"Language: hi_IN\n"
 "Language-Team: hi_IN <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.10.3\n"
+"POT-Creation-Date: 2026-06-12 03:47+0500\n"
+"PO-Revision-Date: 2026-06-12 04:15+0500\n"
+"Language: hi_IN\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SearchPathExcluded-0: node_modules\n"
+"X-Poedit-SearchPathExcluded-1: vendor\n"
+"X-Poedit-SearchPathExcluded-2: assets/build\n"
+"X-Poedit-KeywordsList: __;_e;esc_html__;esc_html_e;esc_attr__;esc_attr_e;_ex:1,2c;_x:1,2c;_n:1,2;_nx:1,2,3c;_n_noop:1,2;_nx_noop:1,2,3c\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
 #: includes/theme-functions.php:84
 msgid "Poll results hidden for now..."
@@ -26,7 +27,8 @@ msgstr "मतदान के नतीजे अभी छिपे हुए 
 msgid "From posts:"
 msgstr "पोस्ट से:"
 
-#: classes/Admin/Admin_Page.php:52 classes/Poll_Widget.php:12
+#: classes/Poll_Widget.php:12
+#: classes/Admin/Admin_Page.php:54
 msgid "Democracy Poll"
 msgstr "Democracy Poll"
 
@@ -34,7 +36,8 @@ msgstr "Democracy Poll"
 msgid "Democracy Poll Widget"
 msgstr "Democracy Poll विजेट"
 
-#: classes/Admin/List_Table_Logs.php:128 classes/Poll_Widget.php:66
+#: classes/Poll_Widget.php:66
+#: classes/Admin/List_Table_Logs.php:126
 msgid "Poll"
 msgstr "मतदान"
 
@@ -58,8 +61,9 @@ msgstr "- अंतिम खुला जनमत संग्रह"
 msgid "Which poll to show?"
 msgstr "कौन सा पोल दिखाना है?"
 
-#: classes/Admin/List_Table_Logs.php:174 classes/Admin/List_Table_Logs.php:280
 #: classes/Poll_Renderer.php:80
+#: classes/Admin/List_Table_Logs.php:172
+#: classes/Admin/List_Table_Logs.php:273
 msgid "Edit poll"
 msgstr "जनमत संपादित करें"
 
@@ -73,7 +77,8 @@ msgctxt "front"
 msgid "Already voted..."
 msgstr "पहले ही मतदान कर चुके हैं..."
 
-#: classes/Poll_Renderer.php:211 classes/Poll_Renderer.php:429
+#: classes/Poll_Renderer.php:211
+#: classes/Poll_Renderer.php:429
 msgctxt "front"
 msgid "Vote"
 msgstr "वोट करें"
@@ -94,18 +99,19 @@ msgid "The answer was added by a visitor"
 msgstr "उत्तर एक आगंतुक द्वारा जोड़ा गया था"
 
 #: classes/Poll_Renderer.php:323
-#, php-format, python-format
+#, php-format,python-format
 msgctxt "front"
 msgid "%s - %s%% of all votes"
 msgstr "%s - सभी मतों का %s%%"
 
-#: classes/Poll_Renderer.php:324 classes/Poll_Renderer.php:331
+#: classes/Poll_Renderer.php:324
+#: classes/Poll_Renderer.php:331
 msgctxt "front"
 msgid "vote,votes,votes"
 msgstr "वोट,वोट,वोट"
 
 #: classes/Poll_Renderer.php:364
-#, php-format, python-format
+#, php-format,python-format
 msgctxt "front"
 msgid "Total Votes: %s"
 msgstr "कुल वोट: %s"
@@ -121,7 +127,7 @@ msgid "End"
 msgstr "ख़त्म"
 
 #: classes/Poll_Renderer.php:372
-#, php-format, python-format
+#, php-format,python-format
 msgctxt "front"
 msgid "Voters: %s"
 msgstr "मतदाता: %s"
@@ -185,7 +191,8 @@ msgstr "बर्लिन"
 msgid "London"
 msgstr "लंदन"
 
-#: classes/Admin/List_Table_Logs.php:282 classes/Admin/tpl/edit-poll.php:25
+#: classes/Admin/tpl/edit-poll.php:25
+#: classes/Admin/List_Table_Logs.php:275
 msgid "Poll logs"
 msgstr "पोल लॉग"
 
@@ -245,7 +252,8 @@ msgstr "मन बदलने की अनुमति दें (पुनः
 msgid "Only registered users allowed to vote."
 msgstr "केवल पंजीकृत उपयोगकर्ताओं को ही मतदान करने की अनुमति है।"
 
-#: classes/Admin/List_Table_Polls.php:120 classes/Admin/tpl/edit-poll.php:225
+#: classes/Admin/tpl/edit-poll.php:225
+#: classes/Admin/List_Table_Polls.php:135
 msgid "Allow to watch the results of the poll."
 msgstr "मतदान के नतीजे देखने की अनुमति दें."
 
@@ -269,73 +277,78 @@ msgstr "तिथि बनाएं."
 msgid "Save Changes"
 msgstr "परिवर्तन सहेजें"
 
-#: classes/Admin/tpl/edit-poll.php:266 classes/Plugin_Initor.php:114
+#: classes/Admin/tpl/edit-poll.php:266
+#: classes/Plugin_Initor.php:119
 msgid "Add Poll"
 msgstr "पोल जोड़ें"
 
-#: classes/Admin/Admin_Page_Logs.php:77 classes/Admin/Admin_Page_Logs.php:84
-#: classes/Admin/Admin_Page_Other_Migrations.php:88 classes/Admin/List_Table_Polls.php:145
-#: classes/Admin/tpl/edit-poll.php:277
+#: classes/Admin/Admin_Page_Edit_Poll.php:424
+#: classes/Admin/Admin_Page_Other_Migrations.php:88
+#: classes/Admin/Admin_Page_Logs.php:159
+#: classes/Admin/Admin_Page_Logs.php:166
+#: classes/Admin/List_Table_Polls.php:160
 msgid "Are you sure?"
 msgstr "क्या आप निश्चित हैं?"
 
-#: classes/Admin/List_Table_Polls.php:145 classes/Admin/tpl/edit-poll.php:278
+#: classes/Admin/Admin_Page_Edit_Poll.php:425
+#: classes/Admin/List_Table_Polls.php:160
 msgid "Delete"
 msgstr "हटाएँ"
 
-#: classes/Admin/tpl/edit-poll.php:291
+#: classes/Admin/tpl/edit-poll.php:285
 msgid "Posts where the poll shortcode used:"
 msgstr "वे पोस्ट जहां पोल शॉर्टकोड का उपयोग किया गया:"
 
-#: classes/Admin/Admin_Page_Polls.php:35
+#: classes/Admin/Admin_Page_Polls.php:29
 msgid "Search"
 msgstr "खोजें"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:31
+#: classes/Admin/Admin_Page_Edit_Poll.php:32
 msgid "New Poll Added"
 msgstr "नया पोल जोड़ा गया"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:255
+#: classes/Admin/Admin_Page_Edit_Poll.php:256
 msgid "Poll Updated"
 msgstr "पोल अपडेट किया गया"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:387
+#: classes/Admin/Admin_Page_Edit_Poll.php:384
 msgid "Deactivate"
 msgstr "निष्क्रिय करें"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:392
+#: classes/Admin/Admin_Page_Edit_Poll.php:389
 msgid "Activate"
 msgstr "सक्रिय करें"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:412
+#: classes/Admin/Admin_Page_Edit_Poll.php:405
 msgid "Close voting"
 msgstr "मतदान बंद करें"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:417
+#: classes/Admin/Admin_Page_Edit_Poll.php:410
 msgid "Open voting"
 msgstr "खुला मतदान"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:440
+#: classes/Admin/Admin_Page_Edit_Poll.php:441
 msgid "Poll Deleted"
 msgstr "मतदान हटा दिया गया"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:489 classes/Admin/List_Table_Polls.php:71
+#: classes/Admin/Admin_Page_Edit_Poll.php:490
+#: classes/Admin/List_Table_Polls.php:71
 msgid "Poll Opened"
 msgstr "पोल खुल गई"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:490
+#: classes/Admin/Admin_Page_Edit_Poll.php:491
 msgid "Poll Closed"
 msgstr "मतदान बंद"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:514
+#: classes/Admin/Admin_Page_Edit_Poll.php:515
 msgid "You can not activate closed poll..."
 msgstr "आप बंद पोल को सक्रिय नहीं कर सकते..."
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:523
+#: classes/Admin/Admin_Page_Edit_Poll.php:524
 msgid "Poll Activated"
 msgstr "मतदान सक्रिय"
 
-#: classes/Admin/Admin_Page_Edit_Poll.php:524
+#: classes/Admin/Admin_Page_Edit_Poll.php:525
 msgid "Poll Deactivated"
 msgstr "मतदान निष्क्रिय कर दिया गया"
 
@@ -356,7 +369,7 @@ msgid "random active poll"
 msgstr "यादृच्छिक सक्रिय मतदान"
 
 #: classes/Admin/Post_Metabox.php:58
-#, php-format, python-format
+#, php-format,python-format
 msgid "%s - shortcode"
 msgstr "%s - शॉर्टकोड"
 
@@ -369,7 +382,7 @@ msgid "Migration from WP Polls done"
 msgstr "WP Polls से माइग्रेशन पूरा हुआ"
 
 #: classes/Admin/Admin_Page_Other_Migrations.php:72
-#, php-format, python-format
+#, php-format,python-format
 msgid "Polls copied: %d. Answers copied: %d. Logs copied: %d"
 msgstr "पोल कॉपी किए गए: %d। उत्तर कॉपी किए गए: %d। लॉग कॉपी किए गए: %d"
 
@@ -386,17 +399,19 @@ msgid "Delete all data about WP Polls migration"
 msgstr "WP Polls माइग्रेशन का सारा डेटा हटाएं"
 
 #: classes/Admin/Admin_Page_Other_Migrations.php:131
-#, php-format, python-format
+#, php-format,python-format
 msgid "Shortcodes replaced: %s"
 msgstr "शॉर्टकोड प्रतिस्थापित: %s"
 
-#: classes/Admin/Admin_Page_Design.php:48 classes/Admin/Admin_Page_Settings.php:35
 #: classes/Admin/Admin_Page_l10n.php:38
+#: classes/Admin/Admin_Page_Design.php:48
+#: classes/Admin/Admin_Page_Settings.php:35
 msgid "Updated"
 msgstr "अद्यतन किया गया"
 
-#: classes/Admin/Admin_Page_Design.php:49 classes/Admin/Admin_Page_Settings.php:36
 #: classes/Admin/Admin_Page_l10n.php:39
+#: classes/Admin/Admin_Page_Design.php:49
+#: classes/Admin/Admin_Page_Settings.php:36
 msgid "Nothing was updated"
 msgstr "कुछ भी अपडेट नहीं किया गया"
 
@@ -408,298 +423,278 @@ msgstr "मौलिक"
 msgid "Your variant"
 msgstr "आपका संस्करण"
 
-#: classes/Admin/Admin_Page_l10n.php:107
+#: classes/Admin/Admin_Page_l10n.php:92
 msgid "Save Text"
 msgstr "पाठ सहेजें"
 
-#: classes/Admin/Admin_Page_Design.php:444 classes/Admin/Admin_Page_Settings.php:281
-#: classes/Admin/Admin_Page_l10n.php:109
+#: classes/Admin/tpl/design.php:391
+#: classes/Admin/Admin_Page_l10n.php:94
+#: classes/Admin/Admin_Page_Settings.php:281
 msgid "Reset Options"
 msgstr "विकल्प रीसेट करें"
 
-#: classes/Admin/Admin_Page_Design.php:81
+#: classes/Admin/tpl/design.php:28
 msgid "Choose Theme"
 msgstr "थीम चुनें"
 
-#: classes/Admin/Admin_Page_Design.php:86
+#: classes/Admin/tpl/design.php:33
 msgid "No theme"
 msgstr "कोई थीम नहीं"
 
-#: classes/Admin/Admin_Page_Design.php:105
+#: classes/Admin/tpl/design.php:52
 msgid "Other settings"
 msgstr "अन्य सेटिंग्स"
 
-#: classes/Admin/Admin_Page_Design.php:108
-msgid ""
-"Max height of the poll in pixels (if no unit is set). When a poll has many answers, collapsing it"
-" improves readability. `-1` - disables this option. Default: 500."
-msgstr ""
-"पोल की अधिकतम ऊंचाई पिक्सेल में (यदि कोई इकाई सेट नहीं है)। जब किसी सर्वेक्षण में कई उत्तर होते "
-"हैं, तो उसे संक्षिप्त करने से पठनीयता में सुधार होता है। `-1` - इस विकल्प को अक्षम करता है। "
-"डिफ़ॉल्ट: 500."
+#: classes/Admin/tpl/design.php:55
+msgid "Max height of the poll (in pixels if no unit is set). When a poll has many answers, collapsing it improves readability. `-1` - disables this option. Default: 500."
+msgstr "पोल की अधिकतम ऊंचाई (यदि कोई इकाई निर्दिष्ट नहीं है, तो पिक्सेल में)। जब किसी पोल में कई उत्तर हों, तो उसे समेटने से पढ़ने में आसानी होती है। `-1` इस विकल्प को अक्षम करता है। डिफ़ॉल्ट: 500।"
 
-#: classes/Admin/Admin_Page_Design.php:112
+#: classes/Admin/tpl/design.php:59
 msgid "Animation speed (in milliseconds)."
 msgstr "एनिमेशन गति (मिलीसेकंड में)।"
 
-#: classes/Admin/Admin_Page_Design.php:119
+#: classes/Admin/tpl/design.php:66
 msgid "Progress line"
 msgstr "प्रगति रेखा"
 
-#: classes/Admin/Admin_Page_Design.php:121
+#: classes/Admin/tpl/design.php:68
 msgid "How to fill (paint) the progress of each answer:"
 msgstr "प्रत्येक उत्तर की प्रगति को कैसे भरें (पेंट करें):"
 
-#: classes/Admin/Admin_Page_Design.php:125
+#: classes/Admin/tpl/design.php:72
 #, python-format
 msgid "winner - 100%, others as % of the winner"
 msgstr "विजेता - 100%, अन्य विजेता के % के रूप में"
 
-#: classes/Admin/Admin_Page_Design.php:131
+#: classes/Admin/tpl/design.php:78
 msgid "as percent of all votes"
 msgstr "सभी वोटों के प्रतिशत के रूप में"
 
-#: classes/Admin/Admin_Page_Design.php:138
+#: classes/Admin/tpl/design.php:85
 msgid "Line Color"
 msgstr "रेखा का रंग"
 
-#: classes/Admin/Admin_Page_Design.php:144
+#: classes/Admin/tpl/design.php:91
 msgid "Line color (for voted user)"
 msgstr "लाइन का रंग (मतदान करने वाले उपयोगकर्ता के लिए)"
 
-#: classes/Admin/Admin_Page_Design.php:150
+#: classes/Admin/tpl/design.php:97
 msgid "Background color"
 msgstr "पृष्ठभूमि का रंग"
 
-#: classes/Admin/Admin_Page_Design.php:160
+#: classes/Admin/tpl/design.php:107
 msgid "Line height (in px if unit not set)"
 msgstr "लाइन की ऊंचाई (पीएक्स में यदि इकाई सेट नहीं है)"
 
-#: classes/Admin/Admin_Page_Design.php:167
+#: classes/Admin/tpl/design.php:114
 msgid "Progress line animation effect speed (default 1500). Set 0 to disable animation."
 msgstr "प्रगति रेखा एनीमेशन प्रभाव गति (डिफ़ॉल्ट 1500)। एनिमेशन अक्षम करने के लिए 0 सेट करें।"
 
-#: classes/Admin/Admin_Page_Design.php:183 classes/Admin/Admin_Page_Design.php:247
+#: classes/Admin/tpl/design.php:130
+#: classes/Admin/tpl/design.php:194
 msgid "No (default)"
 msgstr "नहीं (डिफ़ॉल्ट)"
 
-#: classes/Admin/Admin_Page_Design.php:301
-msgid ""
-"The colors correctly affects NOT for all buttons. You can change styles completely in "
-"\"additional styles\" field bellow."
-msgstr ""
-"रंग सभी बटनों पर सही ढंग से प्रभाव नहीं डालते। आप नीचे दिए गए \"अतिरिक्त शैलियाँ\" फ़ील्ड में "
-"शैलियों को पूरी तरह से बदल सकते हैं।"
+#: classes/Admin/tpl/design.php:248
+msgid "The colors correctly affects NOT for all buttons. You can change styles completely in \"additional styles\" field bellow."
+msgstr "रंग सभी बटनों पर सही ढंग से प्रभाव नहीं डालते। आप नीचे दिए गए \"अतिरिक्त शैलियाँ\" फ़ील्ड में शैलियों को पूरी तरह से बदल सकते हैं।"
 
-#: classes/Admin/Admin_Page_Design.php:307
+#: classes/Admin/tpl/design.php:254
 msgid "Button colors"
 msgstr "बटन के रंग"
 
-#: classes/Admin/Admin_Page_Design.php:310 classes/Admin/Admin_Page_Design.php:332
+#: classes/Admin/tpl/design.php:257
+#: classes/Admin/tpl/design.php:279
+#: classes/Admin/Admin_Page_Design.php:108
 msgid "Bg color"
 msgstr "बीजी रंग"
 
-#: classes/Admin/Admin_Page_Design.php:316 classes/Admin/Admin_Page_Design.php:338
+#: classes/Admin/tpl/design.php:263
+#: classes/Admin/tpl/design.php:285
 msgid "Text Color"
 msgstr "पाठ का रंग"
 
-#: classes/Admin/Admin_Page_Design.php:322 classes/Admin/Admin_Page_Design.php:344
+#: classes/Admin/tpl/design.php:269
+#: classes/Admin/tpl/design.php:291
 msgid "Border Color"
 msgstr "सीमा रंग"
 
-#: classes/Admin/Admin_Page_Design.php:329
+#: classes/Admin/tpl/design.php:276
 msgid "Hover button colors"
 msgstr "होवर बटन रंग"
 
-#: classes/Admin/Admin_Page_Design.php:354
-msgid ""
-"An additional css class for all buttons in the poll. When the template has a special class for "
-"buttons, for example:"
-msgstr ""
-"पोल में सभी बटनों के लिए एक अतिरिक्त सीएसएस क्लास। जब टेम्पलेट में बटनों के लिए एक विशेष वर्ग "
-"होता है, उदाहरण के लिए:"
+#: classes/Admin/tpl/design.php:301
+msgid "An additional css class for all buttons in the poll. When the template has a special class for buttons, for example:"
+msgstr "पोल में सभी बटनों के लिए एक अतिरिक्त सीएसएस क्लास। जब टेम्पलेट में बटनों के लिए एक विशेष वर्ग होता है, उदाहरण के लिए:"
 
-#: classes/Admin/Admin_Page_Design.php:372
+#: classes/Admin/tpl/design.php:319
 msgid "No (dots...)"
 msgstr "नहीं (बिंदु...)"
 
-#: classes/Admin/Admin_Page_Design.php:413
-msgid ""
-"AJAX Loader. If choose \"NO\", loader replaces by dots \"...\" which appends to a link/button "
-"text. SVG images animation don't work in IE 11 or lower, other browsers are supported at  90% "
-"(according to caniuse.com statistics)."
-msgstr ""
-"AJAX लोडर. यदि \"नहीं\" चुनें, तो लोडर बिंदु \"...\" से बदल देता है जो एक लिंक/बटन टेक्स्ट में "
-"जुड़ जाता है। एसवीजी छवि एनीमेशन IE 11 या उससे कम में काम नहीं करता है, अन्य ब्राउज़र 90% पर "
-"समर्थित हैं (caniuse.com आंकड़ों के अनुसार)।"
+#: classes/Admin/tpl/design.php:360
+msgid "AJAX Loader. If choose \"NO\", loader replaces by dots \"...\" which appends to a link/button text. SVG images animation don't work in IE 11 or lower, other browsers are supported at  90% (according to caniuse.com statistics)."
+msgstr "AJAX लोडर. यदि \"नहीं\" चुनें, तो लोडर बिंदु \"...\" से बदल देता है जो एक लिंक/बटन टेक्स्ट में जुड़ जाता है। एसवीजी छवि एनीमेशन IE 11 या उससे कम में काम नहीं करता है, अन्य ब्राउज़र 90% पर समर्थित हैं (caniuse.com आंकड़ों के अनुसार)।"
 
-#: classes/Admin/Admin_Page_Design.php:424
+#: classes/Admin/tpl/design.php:371
 msgid "Custom/Additional CSS styles"
 msgstr "कस्टम/अतिरिक्त सीएसएस शैलियाँ"
 
-#: classes/Admin/Admin_Page_Design.php:429
-msgid ""
-"In this field you can add some additional css properties or completely replace current css theme."
-" Write here css and it will be added at the bottom of current Democracy css. To complete replace "
-"styles, check \"No theme\" and describe all styles."
-msgstr ""
-"इस फ़ील्ड में आप कुछ अतिरिक्त सीएसएस गुण जोड़ सकते हैं या वर्तमान सीएसएस थीम को पूरी तरह से बदल "
-"सकते हैं। यहां सीएसएस लिखें और इसे वर्तमान डेमोक्रेसी सीएसएस के नीचे जोड़ा जाएगा। शैलियों को "
-"बदलने को पूरा करने के लिए, \"कोई थीम नहीं\" चेक करें और सभी शैलियों का वर्णन करें।"
+#: classes/Admin/tpl/design.php:376
+msgid "In this field you can add some additional css properties or completely replace current css theme. Write here css and it will be added at the bottom of current Democracy css. To complete replace styles, check \"No theme\" and describe all styles."
+msgstr "इस फ़ील्ड में आप कुछ अतिरिक्त सीएसएस गुण जोड़ सकते हैं या वर्तमान सीएसएस थीम को पूरी तरह से बदल सकते हैं। यहां सीएसएस लिखें और इसे वर्तमान डेमोक्रेसी सीएसएस के नीचे जोड़ा जाएगा। शैलियों को बदलने को पूरा करने के लिए, \"कोई थीम नहीं\" चेक करें और सभी शैलियों का वर्णन करें।"
 
-#: classes/Admin/Admin_Page_Design.php:430
-msgid ""
-"This field cleaned manually, if you reset options of this page or change/set another theme, the "
-"field will not be touched."
-msgstr ""
-"यह फ़ील्ड मैन्युअल रूप से साफ़ की गई है, यदि आप इस पृष्ठ के विकल्पों को रीसेट करते हैं या कोई "
-"अन्य थीम बदलते/सेट करते हैं, तो फ़ील्ड को छुआ नहीं जाएगा।"
+#: classes/Admin/tpl/design.php:377
+msgid "This field cleaned manually, if you reset options of this page or change/set another theme, the field will not be touched."
+msgstr "यह फ़ील्ड मैन्युअल रूप से साफ़ की गई है, यदि आप इस पृष्ठ के विकल्पों को रीसेट करते हैं या कोई अन्य थीम बदलते/सेट करते हैं, तो फ़ील्ड को छुआ नहीं जाएगा।"
 
-#: classes/Admin/Admin_Page_Design.php:440
+#: classes/Admin/tpl/design.php:387
 msgid "Save All Changes"
 msgstr "सभी परिवर्तन सहेजें"
 
-#: classes/Admin/Admin_Page_Design.php:445
+#: classes/Admin/tpl/design.php:392
 msgid "are you sure?"
 msgstr "क्या आप निश्चित हैं?"
 
-#: classes/Admin/Admin_Page_Design.php:451
+#: classes/Admin/tpl/design.php:398
 msgid "All CSS styles that uses now"
 msgstr "सभी CSS शैलियाँ जो अभी उपयोग की जाती हैं"
 
-#: classes/Admin/Admin_Page_Design.php:460
-msgid ""
-"It's all collected css styles: theme, button, options. You can copy this styles to the "
-"\"Custom/Additional CSS styles:\" field, disable theme and change copied styles by itself."
-msgstr ""
-"इसमें सभी सीएसएस शैलियाँ एकत्रित हैं: थीम, बटन, विकल्प। आप इस शैलियों को \"कस्टम/अतिरिक्त सीएसएस "
-"शैलियाँ:\" फ़ील्ड में कॉपी कर सकते हैं, थीम को अक्षम कर सकते हैं और कॉपी की गई शैलियों को स्वयं "
-"बदल सकते हैं।"
+#: classes/Admin/tpl/design.php:407
+msgid "It's all collected css styles: theme, button, options. You can copy this styles to the \"Custom/Additional CSS styles:\" field, disable theme and change copied styles by itself."
+msgstr "इसमें सभी सीएसएस शैलियाँ एकत्रित हैं: थीम, बटन, विकल्प। आप इस शैलियों को \"कस्टम/अतिरिक्त सीएसएस शैलियाँ:\" फ़ील्ड में कॉपी कर सकते हैं, थीम को अक्षम कर सकते हैं और कॉपी की गई शैलियों को स्वयं बदल सकते हैं।"
 
-#: classes/Admin/Admin_Page_Design.php:469
+#: classes/Admin/tpl/design.php:416
 msgid "Minified version (uses to include it in HTML)"
 msgstr "लघुकृत संस्करण (इसे HTML में शामिल करने के लिए उपयोग किया जाता है)"
 
-#: classes/Admin/Admin_Page_Design.php:531
+#: classes/Admin/Admin_Page_Design.php:133
 msgid "Results view:"
 msgstr "परिणाम देखें:"
 
-#: classes/Admin/Admin_Page_Design.php:532
+#: classes/Admin/Admin_Page_Design.php:134
 msgid "Vote view:"
 msgstr "वोट दृश्य:"
 
-#: classes/Admin/Admin_Page_Design.php:533
+#: classes/Admin/Admin_Page_Design.php:135
 msgid "AJAX loader view:"
 msgstr "AJAX लोडर दृश्य:"
 
-#: classes/Admin/List_Table_Logs.php:53
+#: classes/Admin/List_Table_Logs.php:52
 msgid "Nothing was selected."
 msgstr "कुछ भी नहीं चुना गया."
 
-#: classes/Admin/List_Table_Logs.php:127
+#: classes/Admin/List_Table_Logs.php:125
 msgid "IP info"
 msgstr "आईपी जानकारी"
 
-#: classes/Admin/List_Table_Logs.php:129
+#: classes/Admin/List_Table_Logs.php:127
 msgid "Answer"
 msgstr "उत्तर"
 
-#: classes/Admin/List_Table_Logs.php:130
+#: classes/Admin/List_Table_Logs.php:128
 msgid "User"
 msgstr "उपयोगकर्ता"
 
-#: classes/Admin/List_Table_Logs.php:131
+#: classes/Admin/List_Table_Logs.php:129
 msgid "Date"
 msgstr "दिनांक"
 
-#: classes/Admin/List_Table_Logs.php:132
+#: classes/Admin/List_Table_Logs.php:130
 msgid "Expire"
 msgstr "समाप्ति"
 
-#: classes/Admin/List_Table_Logs.php:158
+#: classes/Admin/List_Table_Logs.php:156
 msgid "Delete logs only"
 msgstr "केवल लॉग हटाएँ"
 
-#: classes/Admin/List_Table_Logs.php:159
+#: classes/Admin/List_Table_Logs.php:157
 msgid "Delete logs and votes"
 msgstr "लॉग और वोट हटाएँ"
 
-#: classes/Admin/List_Table_Logs.php:171
+#: classes/Admin/List_Table_Logs.php:169
 msgid "Poll's logs: "
 msgstr "पोल के लॉग: "
 
-#: classes/Admin/List_Table_Logs.php:189
+#: classes/Admin/List_Table_Logs.php:188
 msgid "NEW answers logs"
 msgstr "नए उत्तर लॉग"
 
-#: classes/Admin/List_Table_Logs.php:227
+#: classes/Admin/List_Table_Logs.php:252
 msgid "Search by IP"
 msgstr "आईपी द्वारा खोजें"
 
-#: classes/Admin/Admin_Page_Logs.php:52
+#: classes/Admin/Admin_Page_Logs.php:134
 msgid "Logs records turned off in the settings - logs are not recorded."
 msgstr "सेटिंग्स में लॉग रिकॉर्ड बंद कर दिए गए - लॉग रिकॉर्ड नहीं किए गए।"
 
-#: classes/Admin/Admin_Page_Logs.php:69
+#: classes/Admin/Admin_Page_Logs.php:151
 msgid "Delete all NEW marks"
 msgstr "सभी नए चिह्न हटाएँ"
 
-#: classes/Admin/Admin_Page_Logs.php:79
-#, php-format, python-format
+#: classes/Admin/Admin_Page_Logs.php:161
+#, php-format,python-format
 msgid "Delete logs of closed pols - %d"
 msgstr "बंद पोल के लॉग हटाएं - %d"
 
-#: classes/Admin/Admin_Page_Logs.php:86
+#: classes/Admin/Admin_Page_Logs.php:168
 msgid "Delete all logs"
 msgstr "सभी लॉग हटाएँ"
 
-#: classes/Admin/Admin_Page_Logs.php:117
-#, php-format, python-format
+#: classes/Admin/Admin_Page_Logs.php:199
+#, php-format,python-format
 msgid "Lines deleted: %s"
 msgstr "पंक्तियाँ हटाई गईं: %s"
 
-#: classes/Admin/Admin_Page_Logs.php:118 classes/Admin/Admin_Page_Logs.php:196
+#: classes/Admin/Admin_Page_Logs.php:200
+#: classes/Admin/Admin_Page_Logs.php:278
 msgid "Failed to delete"
 msgstr "हटाने में विफल"
 
-#: classes/Admin/Admin_Page_Logs.php:193
-#, php-format, python-format
+#: classes/Admin/Admin_Page_Logs.php:275
+#, php-format,python-format
 msgid "Removed logs: %d. Removed answers:%d. Removed users %d."
 msgstr "हटाए गए लॉग: %d। हटाए गए उत्तर:%d। उपयोगकर्ताओं को हटाया गया %d."
 
-#: classes/Admin/Admin.php:38 classes/Admin/Admin_Page.php:205 classes/Plugin_Initor.php:116
+#: classes/Admin/Admin.php:38
+#: classes/Admin/Admin_Page.php:207
+#: classes/Plugin_Initor.php:121
 msgid "Settings"
 msgstr "सेटिंग्स"
 
-#: classes/Admin/Admin_Page.php:186
+#: classes/Admin/Admin_Page.php:188
 msgid "Back"
 msgstr "वापस"
 
-#: classes/Admin/Admin_Page.php:191 classes/Plugin_Initor.php:113
+#: classes/Admin/Admin_Page.php:193
+#: classes/Plugin_Initor.php:118
 msgid "Polls List"
 msgstr "मतदान सूची"
 
-#: classes/Admin/Admin_Page.php:195
+#: classes/Admin/Admin_Page.php:197
 msgid "Add new poll"
 msgstr "नया पोल जोड़ें"
 
-#: classes/Admin/Admin_Page.php:199 classes/Admin/List_Table_Polls.php:140
-#: classes/Plugin_Initor.php:115
+#: classes/Admin/Admin_Page.php:201
+#: classes/Admin/List_Table_Polls.php:155
+#: classes/Plugin_Initor.php:120
 msgid "Logs"
 msgstr "लॉग"
 
-#: classes/Admin/Admin_Page.php:210 classes/Plugin_Initor.php:117
+#: classes/Admin/Admin_Page.php:212
+#: classes/Plugin_Initor.php:122
 msgid "Theme Settings"
 msgstr "थीम सेटिंग्स"
 
-#: classes/Admin/Admin_Page.php:215 classes/Plugin_Initor.php:118
+#: classes/Admin/Admin_Page.php:217
+#: classes/Plugin_Initor.php:123
 msgid "Texts changes"
 msgstr "पाठ बदल जाते हैं"
 
-#: classes/Admin/Admin_Page.php:276
+#: classes/Admin/Admin_Page.php:267
 msgid "If you like this plugin, please <a>leave your review</a>"
 msgstr "यदि आपको यह प्लगइन पसंद है, तो कृपया <a> अपनी समीक्षा छोड़ें</a>"
 
+#: classes/Admin/List_Table_Logs.php:31
 #: classes/Admin/List_Table_Polls.php:28
 msgid "Show on page"
 msgstr "पृष्ठ पर दिखाएँ"
@@ -732,27 +727,27 @@ msgstr "पोस्ट में"
 msgid "Added"
 msgstr "जोड़ा गया"
 
-#: classes/Admin/List_Table_Polls.php:116
+#: classes/Admin/List_Table_Polls.php:131
 msgid "Users can add answers (democracy)."
 msgstr "उपयोगकर्ता उत्तर (लोकतंत्र) जोड़ सकते हैं।"
 
-#: classes/Admin/List_Table_Polls.php:117
+#: classes/Admin/List_Table_Polls.php:132
 msgid "Users can revote"
 msgstr "उपयोगकर्ता दोबारा वोट कर सकते हैं"
 
-#: classes/Admin/List_Table_Polls.php:118
+#: classes/Admin/List_Table_Polls.php:133
 msgid "Only for registered user."
 msgstr "केवल पंजीकृत उपयोगकर्ता के लिए."
 
-#: classes/Admin/List_Table_Polls.php:119
+#: classes/Admin/List_Table_Polls.php:134
 msgid "Users can choose many answers (multiple)."
 msgstr "उपयोगकर्ता अनेक उत्तर (एकाधिक) चुन सकते हैं।"
 
-#: classes/Admin/List_Table_Polls.php:131
+#: classes/Admin/List_Table_Polls.php:146
 msgid "Edit"
 msgstr "संपादित करें"
 
-#: classes/Admin/List_Table_Polls.php:157
+#: classes/Admin/List_Table_Polls.php:172
 msgid "voters / votes"
 msgstr "मतदाता/वोट"
 
@@ -761,39 +756,20 @@ msgid "Log data & take visitor IP into consideration? (recommended)"
 msgstr "डेटा लॉग करें और विज़िटर आईपी को ध्यान में रखें? (अनुशंसित)"
 
 #: classes/Admin/Admin_Page_Settings.php:64
-msgid ""
-"Saves voting data in the database. This enables the re-voting mechanism and prevents logged-in "
-"users from voting multiple times, or non-logged-in users from voting multiple times from the same"
-" IP address. If this option is disabled, voting is checked by cookies only."
-msgstr ""
-"वोटिंग डेटा को डेटाबेस में सहेजता है। यह पुन: मतदान तंत्र को सक्षम बनाता है और लॉग-इन "
-"उपयोगकर्ताओं को कई बार वोट करने से रोकता है, या गैर-लॉग-इन उपयोगकर्ताओं को एक ही आईपी पते से कई "
-"बार वोट करने से रोकता है। यदि यह विकल्प अक्षम है, तो वोटिंग की जाँच केवल कुकीज़ द्वारा की जाती "
-"है।"
+msgid "Saves voting data in the database. This enables the re-voting mechanism and prevents logged-in users from voting multiple times, or non-logged-in users from voting multiple times from the same IP address. If this option is disabled, voting is checked by cookies only."
+msgstr "वोटिंग डेटा को डेटाबेस में सहेजता है। यह पुन: मतदान तंत्र को सक्षम बनाता है और लॉग-इन उपयोगकर्ताओं को कई बार वोट करने से रोकता है, या गैर-लॉग-इन उपयोगकर्ताओं को एक ही आईपी पते से कई बार वोट करने से रोकता है। यदि यह विकल्प अक्षम है, तो वोटिंग की जाँच केवल कुकीज़ द्वारा की जाती है।"
 
 #: classes/Admin/Admin_Page_Settings.php:65
-msgid ""
-"INFO: If a user is logged in, their vote is checked by their WP account. If a user is not logged "
-"in, their IP address is checked. The downside of IP checks is that a site may be visited from an "
-"enterprise network with a shared IP address, so all users from that network are allowed to vote "
-"only once."
-msgstr ""
-"जानकारी: यदि कोई उपयोगकर्ता लॉग इन है, तो उसका वोट उसके WP खाते द्वारा जांचा जाता है। यदि कोई "
-"उपयोगकर्ता लॉग इन नहीं है, तो उसका आईपी पता जांचा जाता है। आईपी ​​जांच का नकारात्मक पक्ष यह है कि"
-" किसी साइट को एक साझा आईपी पते के साथ एंटरप्राइज़ नेटवर्क से देखा जा सकता है, इसलिए उस नेटवर्क के"
-" सभी उपयोगकर्ताओं को केवल एक बार वोट करने की अनुमति होती है।"
+msgid "INFO: If a user is logged in, their vote is checked by their WP account. If a user is not logged in, their IP address is checked. The downside of IP checks is that a site may be visited from an enterprise network with a shared IP address, so all users from that network are allowed to vote only once."
+msgstr "जानकारी: यदि कोई उपयोगकर्ता लॉग इन है, तो उसका वोट उसके WP खाते द्वारा जांचा जाता है। यदि कोई उपयोगकर्ता लॉग इन नहीं है, तो उसका आईपी पता जांचा जाता है। आईपी ​​जांच का नकारात्मक पक्ष यह है कि किसी साइट को एक साझा आईपी पते के साथ एंटरप्राइज़ नेटवर्क से देखा जा सकता है, इसलिए उस नेटवर्क के सभी उपयोगकर्ताओं को केवल एक बार वोट करने की अनुमति होती है।"
 
 #: classes/Admin/Admin_Page_Settings.php:72
 msgid "How many days to keep Cookies alive?"
 msgstr "कुकीज़ को कितने दिनों तक जीवित रखना है?"
 
 #: classes/Admin/Admin_Page_Settings.php:75
-msgid ""
-"How many days the user's browser remembers the votes. Default: 365. Note: works together with IP "
-"log."
-msgstr ""
-"उपयोगकर्ता का ब्राउज़र वोटों को कितने दिनों तक याद रखता है। डिफ़ॉल्ट: 365. नोट: आईपी लॉग के साथ "
-"मिलकर काम करता है।"
+msgid "How many days the user's browser remembers the votes. Default: 365. Note: works together with IP log."
+msgstr "उपयोगकर्ता का ब्राउज़र वोटों को कितने दिनों तक याद रखता है। डिफ़ॉल्ट: 365. नोट: आईपी लॉग के साथ मिलकर काम करता है।"
 
 #: classes/Admin/Admin_Page_Settings.php:77
 msgid "To set hours use float number - 0.04 = 1 hour."
@@ -807,23 +783,15 @@ msgstr "मतदान शीर्षक को लपेटने के ल�
 msgid "poll's question"
 msgstr "जनमत सर्वेक्षण का प्रश्न"
 
-#: classes/Admin/Admin_Page_Settings.php:88
-msgid ""
-"Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong "
-"class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>."
-msgstr ""
-"उदाहरण: <code>&lt;h2&gt;</code> और <code>&lt;/h2&gt;</code>। डिफ़ॉल्ट: <code>&lt;strong "
-"class=&quot;dem-poll-title&quot;&gt;</code> और <code>&lt;/strong&gt;</code>।"
-
 #: classes/Admin/Admin_Page_Settings.php:94
 msgid "Polls archive page ID."
 msgstr "जनमत संग्रह पृष्ठ आईडी."
 
-#: classes/Admin/Admin_Page_Settings.php:100
+#: classes/Admin/Admin_Page_Settings.php:99
 msgid "Go to archive page"
 msgstr "संग्रह पृष्ठ पर जाएँ"
 
-#: classes/Admin/Admin_Page_Settings.php:106
+#: classes/Admin/Admin_Page_Settings.php:105
 msgid "Create/find archive page"
 msgstr "संग्रह पृष्ठ बनाएं/ढूंढें"
 
@@ -848,24 +816,17 @@ msgid "Only registered users allowed to vote (global option)"
 msgstr "केवल पंजीकृत उपयोगकर्ताओं को वोट देने की अनुमति है (वैश्विक विकल्प)"
 
 #: classes/Admin/Admin_Page_Settings.php:130
-msgid ""
-"This option  is available for each poll separately, but if you heed you can turn ON the option "
-"for all polls at once, just tick."
-msgstr ""
-"यह विकल्प प्रत्येक पोल के लिए अलग से उपलब्ध है, लेकिन यदि आप ध्यान दें तो आप सभी पोल के लिए "
-"विकल्प को एक साथ चालू कर सकते हैं, बस टिक करें।"
+msgid "This option  is available for each poll separately, but if you heed you can turn ON the option for all polls at once, just tick."
+msgstr "यह विकल्प प्रत्येक पोल के लिए अलग से उपलब्ध है, लेकिन यदि आप ध्यान दें तो आप सभी पोल के लिए विकल्प को एक साथ चालू कर सकते हैं, बस टिक करें।"
 
 #: classes/Admin/Admin_Page_Settings.php:137
 msgid "Prohibit users to add new answers (global Democracy option)."
 msgstr "उपयोगकर्ताओं को नए उत्तर जोड़ने से रोकें (वैश्विक लोकतंत्र विकल्प)।"
 
-#: classes/Admin/Admin_Page_Settings.php:139 classes/Admin/Admin_Page_Settings.php:148
-msgid ""
-"This option  is available for each poll separately, but if you heed you can turn OFF the option "
-"for all polls at once, just tick."
-msgstr ""
-"यह विकल्प प्रत्येक पोल के लिए अलग से उपलब्ध है, लेकिन यदि आप ध्यान नहीं देते हैं तो आप सभी पोल के"
-" लिए विकल्प को एक साथ बंद कर सकते हैं, बस टिक करें।"
+#: classes/Admin/Admin_Page_Settings.php:139
+#: classes/Admin/Admin_Page_Settings.php:148
+msgid "This option  is available for each poll separately, but if you heed you can turn OFF the option for all polls at once, just tick."
+msgstr "यह विकल्प प्रत्येक पोल के लिए अलग से उपलब्ध है, लेकिन यदि आप ध्यान नहीं देते हैं तो आप सभी पोल के लिए विकल्प को एक साथ बंद कर सकते हैं, बस टिक करें।"
 
 #: classes/Admin/Admin_Page_Settings.php:146
 msgid "Remove the Revote possibility (global option)."
@@ -892,26 +853,19 @@ msgid "Hide vote button."
 msgstr "वोट बटन छिपाएँ."
 
 #: classes/Admin/Admin_Page_Settings.php:175
-msgid ""
-"Hide vote button if it is NOT multiple poll with revote option. User will vote by clicking on "
-"answer itself."
-msgstr ""
-"यदि वोट बटन पुनर्मतदान विकल्प के साथ एकाधिक मतदान नहीं है तो उसे छिपा दें। यूजर उत्तर पर क्लिक "
-"करके ही वोट करेगा।"
+msgid "Hide vote button if it is NOT multiple poll with revote option. User will vote by clicking on answer itself."
+msgstr "यदि वोट बटन पुनर्मतदान विकल्प के साथ एकाधिक मतदान नहीं है तो उसे छिपा दें। यूजर उत्तर पर क्लिक करके ही वोट करेगा।"
 
 #: classes/Admin/Admin_Page_Settings.php:182
 msgid "Disable post metabox."
 msgstr "पोस्ट मेटाबॉक्स अक्षम करें."
 
 #: classes/Admin/Admin_Page_Settings.php:184
-msgid ""
-"Check this to disable polls metabox functionality for posts where you can attached poll to a "
-"post..."
-msgstr ""
-"पोस्ट के लिए पोल मेटाबॉक्स कार्यक्षमता को अक्षम करने के लिए इसे जांचें जहां आप किसी पोस्ट में पोल"
-" संलग्न कर सकते हैं..."
+msgid "Check this to disable polls metabox functionality for posts where you can attached poll to a post..."
+msgstr "पोस्ट के लिए पोल मेटाबॉक्स कार्यक्षमता को अक्षम करने के लिए इसे जांचें जहां आप किसी पोस्ट में पोल संलग्न कर सकते हैं..."
 
-#: classes/Admin/Admin_Page_Settings.php:187 classes/Admin/Admin_Page_Settings.php:286
+#: classes/Admin/Admin_Page_Settings.php:187
+#: classes/Admin/Admin_Page_Settings.php:286
 msgid "Others"
 msgstr "अन्य"
 
@@ -924,19 +878,9 @@ msgid "OFF"
 msgstr "बंद"
 
 #: classes/Admin/Admin_Page_Settings.php:198
-#, php-format, python-format
+#, php-format,python-format
 msgid "Force enable gear to working with cache plugins. The condition: %s"
 msgstr "कैश प्लगइन के साथ काम करने के लिए गियर को बलपूर्वक सक्षम करें। शर्त: %s"
-
-#: classes/Admin/Admin_Page_Settings.php:203
-msgid ""
-"Democracy has smart mechanism for working with page cache plugins like \"WP Total Cache\". It is "
-"ON automatically if such plugin is enabled on your site. But if you use unusual page caching "
-"plugin you can force enable this option."
-msgstr ""
-"Democracy में \"WP Total Cache\" जैसे पेज कैश प्लगइन के साथ काम करने की स्मार्ट व्यवस्था है। यदि "
-"आपकी साइट पर ऐसा प्लगइन सक्रिय है, तो यह अपने आप चालू हो जाती है। यदि आप किसी असामान्य पेज कैशिंग"
-" प्लगइन का उपयोग करते हैं, तो इस विकल्प को बलपूर्वक सक्रिय कर सकते हैं।"
 
 #: classes/Admin/Admin_Page_Settings.php:209
 msgid "Add plugin menu on the toolbar?"
@@ -964,21 +908,15 @@ msgstr "विजेट को सक्रिय करने के लिए 
 
 #: classes/Admin/Admin_Page_Settings.php:233
 msgid "Check if you see something like \"no_IP__123\" in IP column on logs page. (not recommended)"
-msgstr ""
-"जांचें कि क्या आपको लॉग पेज पर आईपी कॉलम में \"no_IP__123\" जैसा कुछ दिखाई देता है। (अनुशंसित "
-"नहीं)"
+msgstr "जांचें कि क्या आपको लॉग पेज पर आईपी कॉलम में \"no_IP__123\" जैसा कुछ दिखाई देता है। (अनुशंसित नहीं)"
 
 #: classes/Admin/Admin_Page_Settings.php:234
 msgid "Or if IP detection is wrong. (for cloudflare)"
 msgstr "या यदि IP की पहचान गलत हो रही है। (Cloudflare के लिए)"
 
 #: classes/Admin/Admin_Page_Settings.php:236
-msgid ""
-"Useful when your server does not work correctly with server variable REMOTE_ADDR. NOTE: this "
-"option give possibility to cheat voice."
-msgstr ""
-"जब आपका सर्वर REMOTE_ADDR सर्वर वेरिएबल के साथ सही ढंग से काम नहीं करता हो, तब उपयोगी है। नोट: इस"
-" विकल्प से मतदान में धोखाधड़ी संभव हो सकती है।"
+msgid "Useful when your server does not work correctly with server variable REMOTE_ADDR. NOTE: this option give possibility to cheat voice."
+msgstr "जब आपका सर्वर REMOTE_ADDR सर्वर वेरिएबल के साथ सही ढंग से काम नहीं करता हो, तब उपयोगी है। नोट: इस विकल्प से मतदान में धोखाधड़ी संभव हो सकती है।"
 
 #: classes/Admin/Admin_Page_Settings.php:258
 msgid "Role names, except 'administrator' which will have access to manage plugin."
@@ -1028,3 +966,10 @@ msgstr "वर्णानुक्रम में"
 msgid "Mix"
 msgstr "मिक्स"
 
+#: classes/Admin/Admin_Page_Settings.php:88
+msgid "Example: <code>&lt;h2&gt;</code> and <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>."
+msgstr "उदाहरण: <code>&lt;h2&gt;</code> और <code>&lt;/h2&gt;</code>। डिफ़ॉल्ट: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> और <code>&lt;/strong&gt;</code>।"
+
+#: classes/Admin/Admin_Page_Settings.php:203
+msgid "Democracy Poll has a built-in mechanism for working with page cache plugins such as W3 Total Cache. It is enabled automatically when a supported plugin is active. If you use a different page cache plugin, you can force-enable this option."
+msgstr "Democracy में W3 Total Cache जैसे पेज कैश प्लगइन के साथ काम करने की अंतर्निहित व्यवस्था है। संगत प्लगइन सक्रिय होने पर यह अपने आप चालू हो जाती है। किसी अन्य पेज कैश प्लगइन के लिए आप इस विकल्प को बलपूर्वक सक्रिय कर सकते हैं।"

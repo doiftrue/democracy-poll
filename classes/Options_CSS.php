@@ -44,7 +44,7 @@ class Options_CSS {
 		$opt = options();
 		$tpl = $opt->css_file_name;
 
-		// выходим если не указан шаблон
+		// Stop when no template is specified.
 		if( ! $tpl ){
 			return '';
 		}
