@@ -3,11 +3,45 @@
 namespace DemocracyPoll\unit;
 
 use DemocracyPoll\Admin\Admin_Page_Logs;
+use DemocracyPoll\Admin\Admin_Page_l10n;
 use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Helpers\IP;
 use WP_Mock;
 
 class Helpers_Test extends \DemocracyPoll\DemocTestCase {
+
+	/**
+	 * @covers Admin_Page_l10n::get_front_texts()
+	 */
+	public function test__get_front_texts(): void {
+		$texts = Admin_Page_l10n::get_front_texts();
+
+		$this->assertContains( 'Vote', $texts );
+		$this->assertContains( 'Results', $texts );
+		$this->assertContains( 'Only registered users can vote. <a>Login</a> to vote.', $texts );
+	}
+
+	/**
+	 * @covers Admin_Page_l10n::update_l10n()
+	 */
+	public function test__update_l10n_removes_original_contextual_translation(): void {
+		WP_Mock::userFunction( '_x' )->andReturnUsing(
+			static fn( $text ) => 'Vote' === $text ? 'Localized Vote' : $text
+		);
+		WP_Mock::userFunction( 'update_option' )
+			->once()
+			->with( 'democracy_l10n', [ 'Results' => 'Custom Results' ] )
+			->andReturn( true );
+		WP_Mock::userFunction( 'get_option' )->andReturn( [] );
+
+		$reflection = new \ReflectionClass( Admin_Page_l10n::class );
+		$page = $reflection->newInstanceWithoutConstructor();
+
+		$this->assertTrue( $page->update_l10n( [
+			'Vote'    => 'Localized Vote',
+			'Results' => 'Custom Results',
+		] ) );
+	}
 
 	/**
 	 * @covers Helpers::objects_array_sort()
