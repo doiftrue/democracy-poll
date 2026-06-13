@@ -84,7 +84,7 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 					}
 					self::add_gettext_filter();
 					?>
-					<tbody>
+					</tbody>
 				</table>
 
 				<p>

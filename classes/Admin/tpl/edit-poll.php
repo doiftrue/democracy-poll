@@ -56,7 +56,7 @@ echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
 		<?php
 		$is_answers_order = (bool) ( $poll->answers[0]->aorder ?? false );
 
-		if( $poll->answers ){
+		if( $poll && $poll->answers ){
 			$answers = Helpers::objects_array_sort( $poll->answers, (
 			$is_answers_order
 				? [ 'aorder' => 'asc' ]

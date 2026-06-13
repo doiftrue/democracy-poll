@@ -423,4 +423,3 @@ if( ! $demcss['base_css'] && $additional ){
 	</form>
 
 </div>
-

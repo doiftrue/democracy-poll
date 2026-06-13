@@ -166,4 +166,13 @@ class Helpers_Test extends \DemocracyPoll\DemocTestCase {
 		];
 	}
 
+	/**
+	 * @covers Admin_Page_Logs::ip_info_html()
+	 */
+	public function test__ip_info_html_contains_refresh_button(): void {
+		$html = Admin_Page_Logs::ip_info_html( '' );
+
+		$this->assertStringContainsString( 'class="ip_info_up_button_js"', $html );
+	}
+
 }

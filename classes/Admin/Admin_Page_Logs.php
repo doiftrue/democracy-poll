@@ -118,7 +118,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 			? $country_img . ' <span style="opacity:0.8">' . esc_html( $location ) . '</span>'
 			: '';
 
-		return $info . '<sapn style="cursor:pointer; margin-left:1em; opacity:0.4" class="ip_info_up_button_js">up</span>';
+		return $info . '<span style="cursor:pointer; margin-left:1em; opacity:0.4" class="ip_info_up_button_js">up</span>';
 	}
 
 	public function render(): void {

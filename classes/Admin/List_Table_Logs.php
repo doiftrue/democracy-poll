@@ -28,7 +28,7 @@ class List_Table_Logs extends \WP_List_Table {
 		$this->bulk_action_handler();
 
 		add_screen_option( 'per_page', [
-			'label'   => 'Показывать на странице',
+			'label'   => __( 'Show on page', 'democracy-poll' ),
 			'default' => 20,
 			'option'  => 'dem_logs_per_page',
 		] );

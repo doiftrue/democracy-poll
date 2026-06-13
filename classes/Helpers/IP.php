@@ -6,7 +6,7 @@ use function DemocracyPoll\options;
 
 class IP {
 
-	private const IP_INFO_SERVISE_URL = 'https://ipwho.is/{IP}?fields=success,country,country_code,city';
+	private const IP_INFO_SERVICE_URL = 'https://ipwho.is/{IP}?fields=success,country,country_code,city';
 
 	public static function get_user_ip(): string {
 
@@ -87,7 +87,7 @@ class IP {
 			return [];
 		}
 
-		$url = str_replace( '{IP}', rawurlencode( $ip ), self::IP_INFO_SERVISE_URL );
+		$url = str_replace( '{IP}', rawurlencode( $ip ), self::IP_INFO_SERVICE_URL );
 
 		$response = wp_safe_remote_get( $url, [
 			'timeout'     => 3,

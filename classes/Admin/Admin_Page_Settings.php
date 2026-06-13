@@ -85,7 +85,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 						<i><?= esc_html__( 'poll\'s question', 'democracy-poll' ) ?></i>
 						<input type="text" size="15" value="<?= esc_attr( options()->after_title ) ?>"
 						       name="dem[after_title]"/>
-						<em><?= wp_kses_post( __( 'Example: <code>&lt;h2&gt;</code> и <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>.', 'democracy-poll' ) ) ?></em>
+						<em><?= wp_kses_post( __( 'Example: <code>&lt;h2&gt;</code> and <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>.', 'democracy-poll' ) ) ?></em>
 					</li>
 
 					<li class="block">
@@ -200,7 +200,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 							);
 							?>
 						</label>
-						<em><?= esc_html__( 'Democracy has smart mechanism for working with page cache plugins like "WP Total Cache". It is ON automatically if such plugin is enabled on your site. But if you use unusual page caching plugin you can force enable this option.', 'democracy-poll' ) ?></em>
+						<em><?= esc_html__( 'Democracy Poll has a built-in mechanism for working with page cache plugins such as W3 Total Cache. It is enabled automatically when a supported plugin is active. If you use a different page cache plugin, you can force-enable this option.', 'democracy-poll' ) ?></em>
 					</li>
 
 					<li class="block">
