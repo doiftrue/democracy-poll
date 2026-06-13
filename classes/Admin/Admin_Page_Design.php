@@ -66,7 +66,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 		$demcss = get_option( 'democracy_css' );
 		$additional = $demcss['additional_css'];
 		if( ! $demcss['base_css'] && $additional ){
-			$demcss['base_css'] = $additional; // если не используется тема
+			$demcss['base_css'] = $additional; // Use additional CSS when no theme is selected.
 		}
 
 		echo $this->admpage->subpages_menu();

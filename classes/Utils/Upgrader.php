@@ -20,7 +20,7 @@ class Upgrader {
 			return;
 		}
 
-		// обновим css
+		// Regenerate CSS.
 		( new \DemocracyPoll\Options_CSS() )->regenerate_democracy_css( null );
 
 		update_option( 'democracy_version', plugin()->ver );
@@ -56,7 +56,7 @@ class Upgrader {
 
 		// 4.1
 		if( ! in_array( 'aids', $fields_log, true ) ){
-			// если нет поля aids, создаем 2 поля и индексы
+			// Add two fields and their indexes when the aids field is missing.
 			$wpdb->query( "ALTER TABLE $wpdb->democracy_log ADD `aids`   text NOT NULL;" );
 			$wpdb->query( "ALTER TABLE $wpdb->democracy_log ADD `userid` bigint(20) UNSIGNED NOT NULL DEFAULT 0;" );
 			$wpdb->query( "ALTER TABLE $wpdb->democracy_log ADD KEY userid (userid)" );

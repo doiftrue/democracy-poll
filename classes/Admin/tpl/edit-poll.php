@@ -111,7 +111,7 @@ echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
 
 		// users_voted filed
 		if( $edit ){
-			// сбросить порядок, если установлен
+			// Reset the order if it is set.
 			?>
 			<li class="not__answer reset__aorder" style="list-style:none; <?= ( $is_answers_order ? '' : 'display:none;' ) ?>">
 				<span class="dashicons dashicons-menu"></span>

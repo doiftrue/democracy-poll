@@ -165,11 +165,11 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 			if( 'upadate answers' ){ // @phpstan-ignore-line
 				$ids = [];
 
-				// Обновим старые ответы
+				// Update existing answers.
 				foreach( $old_answers as $aid => $anws ){
 					$answ_row = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_a WHERE aid = " . (int) $aid );
 
-					// удалим метку NEW
+					// Remove the NEW marker.
 					$added_by = Admin_Page_Logs::is_new_answer( $answ_row )
 						? str_replace( '-new', '', $answ_row->added_by )
 						: $answ_row->added_by;
@@ -187,12 +187,12 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 						[ 'qid' => $poll_id, 'aid' => $aid ]
 					);
 
-					// собираем ID, которые остались. Для исключения из удаления
+					// Collect the remaining IDs so they are not deleted.
 					$ids[] = $aid;
 					$max_order_num = isset( $max_order_num ) ? ( $max_order_num < $order ? $order : $max_order_num ) : $order;
 				}
 
-				if( 'Удаляем удаленные ответы, которые есть в БД но нет в запросе' ){ // @phpstan-ignore-line
+				if( 'Delete removed answers that exist in the database but are absent from the request' ){ // @phpstan-ignore-line
 					$ids = array_map( 'absint', $ids );
 					$AND_NOT_IN = $ids ? sprintf( "AND aid NOT IN (" . implode( ',', $ids ) . ")" ) : '';
 					$del_ids = $wpdb->get_col(
@@ -209,12 +209,12 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 								"DELETE FROM $wpdb->democracy_log WHERE qid = $poll_id AND aids IN (" . implode( ',', $del_ids ) . ")"
 							);
 
-							// обновим значение 'users_voted' в бд
+							// Update the users_voted value in the database.
 							if( $user_voted_minus ){
 								$wpdb->query( Admin_Page_Logs::users_voted_minus_sql( $user_voted_minus, $poll_id ) );
 							}
 
-							// Обновим мульти логи, где по несколько ответов: '321,654'
+							// Update multiple-answer logs containing values such as '321,654'.
 							$up_logs = $wpdb->get_results(
 								"SELECT logid, aids FROM $wpdb->democracy_log
 									WHERE qid = $poll_id AND aids RLIKE '(" . implode( '|', $del_ids ) . ")'"
@@ -239,7 +239,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 					}
 				}
 
-				// Добавим новые ответы
+				// Add new answers.
 				foreach( $new_answers as $anws ){
 					$anws = trim( $anws );
 
@@ -256,14 +256,14 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 			plugin()->msg->add_ok( __( 'Poll Updated', 'democracy-poll' ) );
 
 			// collect answers users votes count
-			// обновим 'users_voted' в questions после того как логи были обновлены, зависит от логов
+			// Update questions.users_voted after the logs because its value depends on them.
 			if( 1 ){ // @phpstan-ignore-line
 				$users_voted = 0;
-				// соберем из логов
+				// Calculate the value from the logs.
 				if( $data->multiple && ! $data->users_voted ){
 					$users_voted = $wpdb->get_var( "SELECT count(*) FROM $wpdb->democracy_log WHERE qid = " . (int) $poll_id );
 				}
-				// равно количеству голосов
+				// Equal to the number of votes.
 				if( ! $data->multiple ){
 					$users_voted = $wpdb->get_var( "SELECT SUM(votes) FROM $wpdb->democracy_a WHERE qid = " . (int) $poll_id );
 				}
@@ -473,11 +473,11 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 
 		$new_data = [ 'open' => ( $action === 'open' ) ? 1 : 0 ];
 
-		// удаляем дату окончания при открытии голосования
+		// Remove the end date when voting is opened.
 		if( $action === 'open' ){
 			$new_data['end'] = 0;
 		}
-		// ставим дату при закрытии опроса и деактивируем опрос
+		// Set the end date and deactivate the poll when voting is closed.
 		else{
 			$new_data['end'] = current_time( 'timestamp' ) - 10;
 			self::deactivate_poll( $poll_id );

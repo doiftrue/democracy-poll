@@ -76,7 +76,7 @@ class Migrator__WP_Polls {
 
 		$migrate_data = get_option( 'democracy_migrated' );
 
-		// выходим, если миграция уже была...
+		// Stop if the migration has already run.
 		if( isset( $migrate_data['wp-polls'] ) ){
 			return;
 		}
@@ -134,16 +134,16 @@ class Migrator__WP_Polls {
 			// create logs after all answers was created
 			foreach( $wpanswers as $wpansw ){
 				// logs
-				// Так как каждый ответ в мульти логах идет на отдельной строке, придется группировать, чтобы собрать множественные ID
-				// GROUP_CONCAT(pollip_aid) - соберет ID ответов через запятую - что надо!
+				// Each answer in multiple-answer logs has its own row, so group them to collect all answer IDs.
+				// GROUP_CONCAT(pollip_aid) collects the answer IDs as a comma-separated list.
 				$group_col_names = 'pollip_ip, pollip_timestamp, pollip_userid';
 				$sql = "SELECT pollip_qid, GROUP_CONCAT(pollip_aid) as pollip_aid, $group_col_names FROM $wpdb->pollsip WHERE pollip_qid = " . $wppoll->pollq_id . " AND pollip_aid = " . $wpansw->polla_aid . " GROUP BY $group_col_names";
 				$wpips = $wpdb->get_results( $sql );
 				//$wpips = $wpdb->get_results("SELECT * FROM $wpdb->pollsip WHERE pollip_qid = ". (int) $wppoll->pollq_id );
 
-				// только если логи найдены
+				// Continue only when logs were found.
 				if( $wpips ){
-					// заменим на текущие ID
+					// Replace the old IDs with the current IDs.
 					foreach( $wpips as $wpip ){
 						$_aids = [];
 						foreach( explode( ',', $wpip->pollip_aid ) as $pollip_aid ){
@@ -151,7 +151,7 @@ class Migrator__WP_Polls {
 						}
 
 						$wpdb->insert( $wpdb->democracy_log, [
-							'ip'      => $wpip->pollip_ip, // строка - format
+							'ip'      => $wpip->pollip_ip, // String format.
 							'qid'     => $qid,
 							'aids'    => implode( ',', $_aids ),
 							'userid'  => $wpip->pollip_userid,
@@ -178,7 +178,7 @@ class Migrator__WP_Polls {
 		update_option( 'democracy_migrated', $migrate_data, false );
 
 		// options
-		// опции не мигрируют - лишняя работа...
+		// Options are not migrated because it is unnecessary work.
 
 	}
 

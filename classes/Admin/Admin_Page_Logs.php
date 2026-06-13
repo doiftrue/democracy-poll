@@ -180,7 +180,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 	}
 
 	/**
-	 * Удаляет только указанный лог
+	 * Delete only the specified log.
 	 *
 	 * @param array|int $log_ids  Log IDs array or single log ID
 	 */
@@ -212,7 +212,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 	}
 
 	/**
-	 * Удаляет указанный лог и связанные голоса
+	 * Delete the specified log and its related votes.
 	 *
 	 * @param array|int $log_ids  Log IDs array or single log ID
 	 */
@@ -224,7 +224,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 
 		global $wpdb;
 
-		// Соберем все ID вопросов, которые нужно минусануть
+		// Collect all question IDs whose vote counts must be decremented.
 		$log_data = $wpdb->get_results(
 			"SELECT qid, aids FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $log_ids ) ) . ")"
 		);
@@ -320,9 +320,9 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 	}
 
 	/**
-	 * Проверяет является ли переданный ответ новым ответом - NEW
+	 * Check whether the given answer is marked as NEW.
 	 *
-	 * @param object $answer  Объект ответа
+	 * @param object $answer Answer object.
 	 */
 	public static function is_new_answer( $answer ): bool {
 		return $answer && preg_match( '~-new$~', $answer->added_by );

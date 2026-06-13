@@ -23,7 +23,7 @@ class List_Table_Polls extends WP_List_Table {
 			'ajax'     => false,
 		] );
 
-		// per_page опция для страницы
+		// Per-page screen option.
 		add_screen_option( 'per_page', [
 			'label'   => __( 'Show on page', 'democracy-poll' ),
 			'default' => 10,
@@ -49,7 +49,7 @@ class List_Table_Polls extends WP_List_Table {
 			'total_items' => $wpdb->get_var( "SELECT count(*) FROM $wpdb->democracy_q $where" ),
 			'per_page'    => $per_page,
 		] );
-		$cur_page = $this->get_pagenum(); // после set_pagination_args()
+		$cur_page = $this->get_pagenum(); // Must run after set_pagination_args().
 
 		// order by
 		$offset = ( $cur_page - 1 ) * $per_page;

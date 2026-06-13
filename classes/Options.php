@@ -54,7 +54,7 @@ class Options {
 
 	private array $default_options = [
 		'main'   => [
-			// вести лог в БД
+			// Store logs in the database.
 			'keep_logs'              => 1,
 			'before_title'           => '<strong class="dem-poll-title">',
 			'after_title'            => '</strong>',
@@ -62,33 +62,33 @@ class Options {
 			'archive_page_id'        => 0,
 			'order_answers'          => 'by_winner',
 			'use_widget'             => 1,
-			// прятать кнопку голосования где это можно, тогда голосование будет происходить по клику на ответ
+			// Hide the vote button where possible and vote by clicking an answer.
 			'hide_vote_button'       => 0,
 			'toolbar_menu'           => 1,
 			'tinymce_button'         => 1,
 			'only_for_users'         => 0,
-			// Не показывать результаты опроса. До закрытия голосования. Глобальная опция.
+			// Do not show poll results until voting is closed. Global option.
 			'dont_show_results'      => 0,
-			// Не показывать только ссылку на результаты. Результаты будут видны после голосования. Глобальная опция.
+			// Hide only the results link. Results remain visible after voting. Global option.
 			'dont_show_results_link' => 0,
 			'democracy_off'          => 0,
-			// глобальная опция democracy
+			// Global Democracy option.
 			'revote_off'             => 0,
-			// глобальная опция переголосование
+			// Global revoting option.
 			'cookie_days'            => 365,
 			'access_roles'           => [],
 			'soft_ip_detect'         => 0,
-			// определять IP не только через REMOTE_ADDR
+			// Detect IP addresses using sources other than REMOTE_ADDR.
 			'post_metabox_off'       => 0,
-			// выключить ли метабокс для записей?
+			// Disable the post metabox.
 		],
 		'design' => [
 			'loader_fname'         => 'css-roller.css3',
 			'css_file_name'        => 'alternate.css',
-			// название файла стилей который будет использоваться для опроса.
+			// Name of the stylesheet used for polls.
 			'css_button'           => 'flat.css',
 			'loader_fill'          => '',
-			// как заполнять шкалу прогресса
+			// How to fill the progress bar.
 			'graph_from_total'     => 1,
 			'answs_max_height'     => '35em',
 			// px
@@ -178,7 +178,7 @@ class Options {
 
 		// update css styles option
 		if( $type === 'design' ){
-			## Обновляет опцию "democracy_css"
+			## Update the "democracy_css" option.
 			$additional_css = $_POST['additional_css'] ?? '';
 			$additional = strip_tags( stripslashes( $additional_css ) );
 
@@ -216,7 +216,7 @@ class Options {
 	 */
 	private function sanitize_request_options( array $request_data, string $type ): void {
 		foreach( $this->default_options[ $type ] as $key => $v ){
-			$value = $request_data['dem'][ $key ] ?? 0; // именно 0/null, а не $v для checkbox
+			$value = $request_data['dem'][ $key ] ?? 0; // Use 0/null rather than $v for checkboxes.
 
 			if( in_array( $key, [ 'before_title', 'after_title' ] ) ){
 				$value = wp_kses( $value, 'post' );

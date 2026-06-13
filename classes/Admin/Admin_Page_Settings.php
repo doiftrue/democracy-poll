@@ -36,7 +36,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 				: plugin()->msg->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
 		}
 
-		// запрос на создание страницы архива
+		// Handle the request to create an archive page.
 		if( isset( $_GET['dem_create_archive_page'] ) ){
 			$this->dem_create_archive_page();
 		}

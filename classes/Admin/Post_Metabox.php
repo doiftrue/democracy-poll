@@ -62,10 +62,10 @@ class Post_Metabox {
 
 	public static function on_save_post( $post_id, $post ): void {
 		if(
-			! isset( $_POST['democ_metabox'] ) || // нет данных
-			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || // выходим, если это автосохр.
-			! wp_verify_nonce( $_POST['_wpnonce'], 'update-post_' . $post_id ) || // nonce проверка
-			! current_user_can( get_post_type_object( $post->post_type )->cap->edit_post, $post_id )      // нет права редакт. запись
+			! isset( $_POST['democ_metabox'] ) || // No data.
+			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || // Stop during autosave.
+			! wp_verify_nonce( $_POST['_wpnonce'], 'update-post_' . $post_id ) || // Verify the nonce.
+			! current_user_can( get_post_type_object( $post->post_type )->cap->edit_post, $post_id )      // The user cannot edit the post.
 		){
 			return;
 		}

@@ -82,7 +82,7 @@ class Poll_Renderer {
 
 		// loader
 		if( $opt->loader_fname ){
-			static $loader; // оптимизация, чтобы один раз выводился код на странице
+			static $loader; // Output the loader markup only once per page.
 			if( ! $loader ){
 				$loader = '<div class="dem-loader"><div>' . file_get_contents( plugin()->dir . '/assets/styles/loaders/' . $opt->loader_fname ) . '</div></div>';
 				$html .= $loader;

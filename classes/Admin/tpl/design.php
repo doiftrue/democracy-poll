@@ -14,7 +14,7 @@ $opt = options();
 $demcss = get_option( 'democracy_css' );
 $additional = $demcss['additional_css'];
 if( ! $demcss['base_css'] && $additional ){
-	$demcss['base_css'] = $additional; // если не используется тема
+	$demcss['base_css'] = $additional; // Use additional CSS when no theme is selected.
 }
 
 ?>
@@ -142,13 +142,13 @@ if( ! $demcss['base_css'] && $additional ){
 				foreach( $data as $fname => $file ){
 					$styles = file_get_contents( $file );
 
-					// поправим стили
+					// Adjust styles.
 					$unique = 'unique' . rand( 1, 9999 ) . '_';
 					$styles = str_replace( '.dem__radio_label', ".{$unique}dem__radio_label", $styles );
 					$styles = str_replace( '.dem__checkbox_label', ".{$unique}dem__checkbox_label", $styles );
 					$styles = str_replace( '.dem__radio', ".{$unique}dem__radio", $styles );
 					$styles = str_replace( '.dem__checkbox', ".{$unique}dem__checkbox", $styles );
-					$styles = str_replace( ':disabled', ':disabled__', $styles ); // отменим действие :disabled
+					$styles = str_replace( ':disabled', ':disabled__', $styles ); // Disable the :disabled selector.
 
 					?>
 					<div style="float:left;">
@@ -332,7 +332,7 @@ if( ! $demcss['base_css'] && $additional ){
 					foreach( $data as $ex => $val ){
 						echo '<div class="clearfix"></div>' . "<h2 style='text-align:center;'>$ex</h2>"; //'';
 
-						// поправим стили
+						// Adjust styles.
 						if( $opt->loader_fill ){
 							$loader_css = ".loader{ --dem-loader-color: " . $opt->loader_fill . "; }";
 							echo "<style>$loader_css</style>";

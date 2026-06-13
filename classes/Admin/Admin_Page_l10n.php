@@ -24,12 +24,12 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 		if( isset( $_POST['dem_save_l10n'] ) || isset( $_POST['dem_reset_l10n'] ) ){
 			$up = false;
 
-			// обновляем произвольную локализацию
+			// Update custom localization.
 			if( isset( $_POST['dem_save_l10n'] ) ){
 				$up = $this->update_l10n( stripslashes_deep( $_POST['l10n'] ) );
 			}
 
-			// сбрасываем произвольную локализацию
+			// Reset custom localization.
 			if( isset( $_POST['dem_reset_l10n'] ) ){
 				$up = $this->reset_l10n();
 			}

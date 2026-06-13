@@ -49,13 +49,13 @@ function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = ''
 		return 'Poll not found';
 	}
 
-	// обновим ID записи с которой вызван опрос, если такого ID нет в данных
+	// Add the ID of the post where the poll was displayed if it is not stored yet.
 	$from_post = is_object( $from_post ) ? $from_post->ID : (int) $from_post;
 	if( $from_post && ( ! $poll->in_posts || ! preg_match( '~(?:^|,)' . $from_post . '(?:,|$)~', $poll->in_posts ) ) ){
 		global $wpdb;
 
 		$new_in_posts = $poll->in_posts ? "$poll->in_posts,$from_post" : $from_post;
-		$new_in_posts = trim( $new_in_posts, ',' ); // на всякий...
+		$new_in_posts = trim( $new_in_posts, ',' ); // Just in case.
 
 		$wpdb->update( $wpdb->democracy_q, [ 'in_posts' => $new_in_posts ], [ 'id' => $poll_id ] );
 	}

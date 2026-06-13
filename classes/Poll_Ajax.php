@@ -11,7 +11,7 @@ class Poll_Ajax {
 	}
 
 	public function init(): void {
-		// ajax request во frontend_init нельзя, потому что срабатывает только как is_admin()
+		// AJAX requests cannot be registered in frontend_init because they run under is_admin().
 		add_action( 'wp_ajax_dem_ajax', [ $this, 'ajax_request_handler' ] );
 		add_action( 'wp_ajax_nopriv_dem_ajax', [ $this, 'ajax_request_handler' ] );
 	}
