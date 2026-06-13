@@ -39,7 +39,6 @@ class List_Table_Logs extends \WP_List_Table {
 	}
 
 	private function bulk_action_handler(): void {
-
 		$nonce = $_POST['_wpnonce'] ?? '';
 		if( ! $nonce || ! ( $action = $this->current_action() ) ){
 			return;
@@ -227,42 +226,16 @@ class List_Table_Logs extends \WP_List_Table {
 	}
 
 	protected function column_ip_info( $log ) {
-		global $wpdb;
+		$needs_update = Admin_Page_Logs::ip_info_needs_update( $log );
+		$classes = 'dem-ip-info ' . ( $needs_update ? 'dem_ip_info_pending_js' : '' );
+		$html = $needs_update ? '' : Admin_Page_Logs::ip_info_html( (string) $log->ip_info );
 
-		$country_img  = '';
-		$country_name = '';
-		$city         = '';
-
-		// Update IP data if it is missing and more than a day has passed since the last attempt.
-		if( $log->ip ){
-			if( ! $log->ip_info || ( is_numeric( $log->ip_info ) && ( time() - DAY_IN_SECONDS ) > $log->ip_info ) ){
-				$log->ip_info = \DemocracyPoll\Helpers\IP::prepared_ip_info( $log->ip );
-				$wpdb->update( $wpdb->democracy_log, [ 'ip_info' => $log->ip_info ], [ 'logid' => $log->logid ] );
-			}
-
-			if( $log->ip_info && ! is_numeric( $log->ip_info ) ){
-				[ $country_name, $county_code, $city ] = explode( ',', $log->ip_info ) + [ '', '', '' ];
-
-				// css background position
-				if( ! $flagcss = $this->cache( 'flagcss', 'flagcss' ) ){
-					$flagcss = $this->cache( 'flagcss', 'flagcss', file_get_contents( plugin()->dir . '/admin/country_flags/flags.css' ) );
-				}
-				preg_match( "~flag-" . strtolower( $county_code ) . " \{([^}]+)\}~", $flagcss, $mm );
-				$bg_pos = $mm[1] ?? '';
-
-				$country_img = $bg_pos ? '<span title="' . esc_attr( $country_name . ( $city ? ", $city" : '' ) ) . '" style="cursor:help; display:inline-block; width:16px; height:11px; background:url(' . plugin()->url . '/admin/country_flags/flags.png) no-repeat; ' . $bg_pos . '"></span> ' : '';
-			}
-		}
-
-		$up_button = '<button type="button" class="ip-info-up-button">UP</button>';
-
-		return
-			(
-				$country_img
-					? $country_img . ' <span style="opacity:0.8">' . esc_html( $country_name . ( $city ? ", $city" : '' ) ) . '</span>'
-					: ''
-			)
-			. $up_button;
+		return sprintf(
+			'<div class="%s" data-log-id="%d">%s</div>',
+			esc_attr( $classes ),
+			(int) $log->logid,
+			$html
+		);
 	}
 
 	/**
@@ -326,11 +299,16 @@ class List_Table_Logs extends \WP_List_Table {
 					$answ = $this->cache( 'answs', $aid, $wpdb->get_row( "SELECT * FROM $wpdb->democracy_a WHERE aid = " . (int) $aid ) );
 				}
 
-				$new = Admin_Page_Logs::is_new_answer( $answ )
-					? sprintf( ' <a href="%s"><span style="color:red;">NEW</span></a>', Poll_Utils::edit_poll_url( $log->qid ) )
-					: '';
+				if( $answ ){
+					$new = Admin_Page_Logs::is_new_answer( $answ )
+						? sprintf( ' <a href="%s"><span style="color:red;">NEW</span></a>', Poll_Utils::edit_poll_url( $log->qid ) )
+						: '';
+					$out[] = '• ' . esc_html( $answ->answer ) . $new;
+				}
+				else {
+					$out[] = "<span style=\"color:tomato\">Answer not found. ID: $aid</span>";
+				}
 
-				$out[] = '- ' . esc_html( $answ->answer ) . $new;
 			}
 
 			return implode( '<br>', $out );

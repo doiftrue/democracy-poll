@@ -5,6 +5,7 @@ namespace DemocracyPoll;
 use DemocracyPoll\Helpers\Kses;
 use DemocracyPoll\Utils\Activator;
 use DemocracyPoll\Admin\Admin;
+use DemocracyPoll\Admin\Admin_Page_Logs;
 use DemocracyPoll\Admin\Admin_Page_l10n;
 
 class Plugin_Initor {
@@ -57,6 +58,10 @@ class Plugin_Initor {
 	private function init_ajax(): void {
 		plugin()->poll_ajax = new Poll_Ajax();
 		plugin()->poll_ajax->init();
+
+		if( wp_doing_ajax() ){
+			Admin_Page_Logs::init_ajax();
+		}
 	}
 
 	public function load_textdomain(): void {

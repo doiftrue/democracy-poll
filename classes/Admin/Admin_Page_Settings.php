@@ -92,21 +92,21 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 						<label>
 							<input type="text" size="10" name="dem[archive_page_id]" value="<?= (int) options()->archive_page_id ?>" />
 							<?= esc_html__( 'Polls archive page ID.', 'democracy-poll' ) ?>
+							<?php
+							if( options()->archive_page_id ){
+								echo sprintf( '<a href="%s">%s</a>',
+									get_permalink( options()->archive_page_id ),
+									__( 'Go to archive page', 'democracy-poll' )
+								);
+							}
+							else{
+								echo sprintf( '<a class="button" href="%s">%s</a>',
+									esc_url( Admin_Page::add_nonce( add_query_arg( [ 'dem_create_archive_page' => 1 ] ) ) ),
+									__( 'Create/find archive page', 'democracy-poll' )
+								);
+							}
+							?>
 						</label>
-						<?php
-						if( options()->archive_page_id ){
-							echo sprintf( '<a href="%s">%s</a>',
-								get_permalink( options()->archive_page_id ),
-								__( 'Go to archive page', 'democracy-poll' )
-							);
-						}
-						else{
-							echo sprintf( '<a class="button" href="%s">%s</a>',
-								esc_url( Admin_Page::add_nonce( add_query_arg( [ 'dem_create_archive_page' => 1 ] ) ) ),
-								__( 'Create/find archive page', 'democracy-poll' )
-							);
-						}
-						?>
 						<em><?= wp_kses_post( __( 'Specify the poll archive link to be in the poll legend. Example: <code>25</code>', 'democracy-poll' ) ) ?></em>
 					</li>
 

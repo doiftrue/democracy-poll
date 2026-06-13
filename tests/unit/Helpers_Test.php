@@ -2,6 +2,7 @@
 
 namespace DemocracyPoll\unit;
 
+use DemocracyPoll\Admin\Admin_Page_Logs;
 use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Helpers\IP;
 use WP_Mock;
@@ -94,6 +95,41 @@ class Helpers_Test extends \DemocracyPoll\DemocTestCase {
 		WP_Mock::userFunction( 'wp_remote_retrieve_body' )->andReturn( $response['body'] );
 
 		$this->assertSame( [], IP::get_ip_info( '217.25.239.59' ) );
+	}
+
+	/**
+	 * @covers Admin_Page_Logs::ip_info_needs_update()
+	 * @dataProvider data__ip_info_needs_update
+	 */
+	public function test__ip_info_needs_update( object $log, bool $expected ): void {
+		$this->assertSame( $expected, Admin_Page_Logs::ip_info_needs_update( $log ) );
+	}
+
+	public function data__ip_info_needs_update(): \Generator {
+		yield 'no IP' => [
+			(object) [ 'ip' => '', 'ip_info' => '' ],
+			false,
+		];
+
+		yield 'missing info' => [
+			(object) [ 'ip' => '8.8.8.8', 'ip_info' => '' ],
+			true,
+		];
+
+		yield 'stored info' => [
+			(object) [ 'ip' => '8.8.8.8', 'ip_info' => 'United States,US,Mountain View' ],
+			false,
+		];
+
+		yield 'recent failed attempt' => [
+			(object) [ 'ip' => '8.8.8.8', 'ip_info' => (string) ( time() - HOUR_IN_SECONDS ) ],
+			false,
+		];
+
+		yield 'stale failed attempt' => [
+			(object) [ 'ip' => '8.8.8.8', 'ip_info' => (string) ( time() - DAY_IN_SECONDS - 1 ) ],
+			true,
+		];
 	}
 
 }
