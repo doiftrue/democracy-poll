@@ -120,6 +120,10 @@ Yes. Deleting the plugin removes all of its options and data.
 
 == Backward Compatibility Notes ==
 
+= 6.3.2 =
+* CHG: `Poll_Service` class renamed to `Poll_Controller`.
+* CHG: Poll log methods moved from `Poll_Controller` (Poll_Service) to the new `Poll_Logs` class. Replace `$poll->control->get_user_vote_logs()` with `$poll->control->poll_logs->get_user_vote_logs()`.
+
 = 6.1.0 =
 * CHG: Removed the `DEM_VER` constant; use `DemocracyPoll\plugin()->ver` instead.
 * CHG: Removed the `DEMOC_URL` constant; use `DemocracyPoll\plugin()->url` instead. Note that the trailing slash was removed.

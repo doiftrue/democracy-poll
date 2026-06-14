@@ -7,8 +7,6 @@ use DemocracyPoll\Helpers\Kses;
 use DemPoll;
 use WP_Error;
 
-// TODO: Extract log operations into a dedicated class.
-
 /**
  * Handles voting logic for a poll.
  * Provides methods to vote, delete votes, manage logs etc.
@@ -18,15 +16,15 @@ class Poll_Controller {
 	private DemPoll $poll;
 
 	public Poll_Cookies $poll_cookie;
+	public Poll_Logs $poll_logs;
 
 	public function __construct( DemPoll $poll ) {
 		$this->poll = $poll;
 		$this->poll_cookie = new Poll_Cookies( $poll );
+		$this->poll_logs = new Poll_Logs( $poll );
 	}
 
 	/**
-	 * Adds a vote.
-	 *
 	 * @param string|array $aids  Answer IDs separated by commas. May contain a string,
 	 *                            which will be added as a user answer.
 	 *
@@ -135,7 +133,7 @@ class Poll_Controller {
 		$this->poll_cookie->set();
 
 		if( options()->keep_logs ){
-			$this->insert_logs();
+			$this->poll_logs->insert_logs();
 		}
 
 		/**
@@ -161,7 +159,7 @@ class Poll_Controller {
 			return;
 		}
 
-		$logs = $this->get_user_vote_logs();
+		$logs = $this->poll_logs->get_user_vote_logs();
 		if( ! $logs ){
 			return;
 		}
@@ -169,7 +167,7 @@ class Poll_Controller {
 		// Use only server-side voting data. The public cookie is user-controlled.
 		$poll->voted_for = (string) reset( $logs )->aids;
 		$this->minus_vote();
-		$this->delete_vote_log( $logs );
+		$this->poll_logs->delete_vote_log( $logs );
 
 		$this->poll_cookie->delete();
 
@@ -192,16 +190,18 @@ class Poll_Controller {
 	 *
 	 * @return bool True on success, false on failure.
 	 */
-	protected function minus_vote(): bool {
+	private function minus_vote(): bool {
 		global $wpdb;
 		$poll = $this->poll;
 
-		$aids_IN = implode( ',', $this->get_answ_aids_from_str( $poll->voted_for ) ); // already escaped for DB!
-		if( ! $aids_IN ){
+		$aids = $this->get_answer_ids_from_str( $poll->voted_for );
+		if( ! $aids ){
 			return false;
 		}
 
-		// first, delete user-added answers if they exist and have 0 or 1 votes
+		$aids_IN = implode( ',', array_map( 'intval', $aids ) );
+
+		// first, delete user-added answers if exist and have 0 or 1 votes
 		$r1 = $wpdb->query(
 			"DELETE FROM $wpdb->democracy_a WHERE qid = $poll->id AND added_by != '' AND votes IN (0,1) AND aid IN ($aids_IN) ORDER BY aid DESC LIMIT 1"
 		);
@@ -219,7 +219,7 @@ class Poll_Controller {
 		return $r1 || $r2;
 	}
 
-	private function insert_democratic_answer( $answer ): int {
+	private function insert_democratic_answer( string $answer ): int {
 		global $wpdb;
 		$poll = $this->poll;
 
@@ -267,7 +267,7 @@ class Poll_Controller {
 		// NOTE: update cookies if they do not match. Because in different browsers they can be different. Does not work,
 		// because cookies need to be set before outputting data, and in general, this should not be done, because checking
 		// by cookies becomes unnecessary overall...
-		if( options()->keep_logs && ( $res = $this->get_user_vote_logs() ) ){
+		if( options()->keep_logs && ( $res = $this->poll_logs->get_user_vote_logs() ) ){
 			$voted_for = reset( $res )->aids;
 		}
 		// check cookies
@@ -279,78 +279,6 @@ class Poll_Controller {
 	}
 
 	/**
-	 * Deletes voting records from the logs.
-	 *
-	 * @param object[] $logs `democracy_log` table rows.
-	 */
-	protected function delete_vote_log( array $logs = [] ): bool {
-		global $wpdb;
-
-		$logs = $logs ?: $this->get_user_vote_logs();
-		if( ! $logs ){
-			return true;
-		}
-
-		$delete_log_ids = wp_list_pluck( $logs, 'logid' );
-		$logid_IN = implode( ',', array_map( 'intval', $delete_log_ids ) );
-
-		$sql = "DELETE FROM $wpdb->democracy_log WHERE logid IN ( $logid_IN )";
-
-		return (bool) $wpdb->query( $sql );
-	}
-
-	/**
-	 * Gets the log rows by user ID or IP address.
-	 *
-	 * @return object[] democracy_log table rows.
-	 */
-	public function get_user_vote_logs(): array {
-		global $wpdb;
-
-		$WHERE = [
-			$wpdb->prepare( 'qid = %d', $this->poll->id ),
-			$wpdb->prepare( 'expire > %d', time() )
-		];
-
-		$user_id = get_current_user_id();
-		// Check the user and IP address separately.
-		// Otherwise, anonymous users all have ID 0 and would match one another.
-		if( $user_id ){
-			// For registered users only; the IP address is ignored.
-			// A user who voted anonymously can vote again after logging in.
-			$WHERE[] = $wpdb->prepare( 'userid = %d', $user_id );
-		}
-		else {
-			$WHERE[] = $wpdb->prepare( 'userid = 0 AND ip = %s', IP::get_user_ip() );
-		}
-
-		$WHERE = implode( ' AND ', $WHERE );
-
-		$sql = "SELECT * FROM $wpdb->democracy_log WHERE $WHERE ORDER BY logid DESC";
-
-		return $wpdb->get_results( $sql );
-	}
-
-	protected function insert_logs() {
-		global $wpdb;
-
-		$poll = $this->poll;
-		if( ! $poll->id ){
-			return false;
-		}
-
-		return $wpdb->insert( $wpdb->democracy_log, [
-			'qid'     => $poll->id,
-			'aids'    => $poll->voted_for,
-			'userid'  => (int) get_current_user_id(),
-			'date'    => current_time( 'mysql' ),
-			'expire'  => current_time( 'timestamp', $utc = true ) + (int) ( (float) options()->cookie_days * DAY_IN_SECONDS ),
-			'ip'      => IP::get_user_ip(),
-			'ip_info' => '',
-		] );
-	}
-
-	/**
 	 * Gets an array of answer IDs from a passed string, where IDs are separated by commas.
 	 * Cleans for DB!
 	 *
@@ -358,13 +286,13 @@ class Poll_Controller {
 	 *
 	 * @return int[]  Answer IDs
 	 */
-	protected function get_answ_aids_from_str( string $aids_str ): array {
-		$arr = explode( ',', $aids_str );
-		$arr = array_map( 'trim', $arr );
-		$arr = array_map( 'intval', $arr );
-		$arr = array_filter( $arr );
+	protected function get_answer_ids_from_str( string $aids_str ): array {
+		$aids = explode( ',', $aids_str );
+		$aids = array_map( 'trim', $aids );
+		$aids = array_map( 'intval', $aids );
+		$aids = array_filter( $aids );
 
-		return $arr;
+		return $aids;
 	}
 
 }

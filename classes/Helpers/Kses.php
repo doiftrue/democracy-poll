@@ -26,12 +26,13 @@ class Kses {
 		'var'    => [],
 		'del'    => [ 'datetime' => true, ],
 		'img'    => [
-			'src'    => true,
-			'srcset' => true,
-			'sizes'  => true,
+			'class'  => true,
 			'alt'    => true,
+			'src'    => true,
 			'width'  => true,
 			'height' => true,
+			'srcset' => true,
+			'sizes'  => true,
 			'align'  => true,
 		],
 		'h2' => [],
@@ -42,12 +43,8 @@ class Kses {
 	];
 
 	public static function setup_allowed_tags(): void {
-		global $allowedtags;
-
-		self::$allowed_tags = array_merge(
-			$allowedtags,
-			array_map( '_wp_add_global_attributes', self::$allowed_tags )
-		);
+		self::$allowed_tags = array_merge( wp_kses_allowed_html( 'data' ), self::$allowed_tags );
+		self::$allowed_tags = array_map( '_wp_add_global_attributes', self::$allowed_tags );
 
 		/**
 		 * Allows modification of the collected allowed HTML tags for Democracy Poll.
@@ -65,19 +62,16 @@ class Kses {
 	}
 
 	/**
-	 * Sanitizes answer data.
-	 *
-	 * @param string|array $data  What to sanitize? If a string is passed, remove disallowed HTML tags from it.
+	 * @param string|array $data      What to sanitize? If a string is passed, remove disallowed HTML tags from it.
 	 * @param string $filter_context  The type of filter applied. Can be used to differentiate between different sanitization contexts.
 	 *                                Passed to the `dem_sanitize_answer_data` filter.
 	 *
 	 * @return string|array Clean data.
 	 */
 	public static function sanitize_answer_data( $data, $filter_context = '' ) {
-
 		if( is_string( $data ) ){
-			$value = trim( $data );
-			$data = plugin()->admin_access ? Kses::kses_html( $value ) : wp_kses( $value, 'strip' );
+			$val = trim( $data );
+			$data = plugin()->admin_access ? self::kses_html( $val ) : wp_kses( $val, 'strip' );
 		}
 		else {
 			foreach( $data as $key => & $val ){
@@ -87,7 +81,7 @@ class Kses {
 
 				// allowed tags
 				if( $key === 'answer' ){
-					$val = plugin()->admin_access ? Kses::kses_html( $val ) : wp_kses( $val, 'strip' );
+					$val = plugin()->admin_access ? self::kses_html( $val ) : wp_kses( $val, 'strip' );
 				}
 				// numbers
 				elseif( in_array( $key, [ 'qid', 'aid', 'votes' ] ) ){
