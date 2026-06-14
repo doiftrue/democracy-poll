@@ -18,7 +18,9 @@ if( ! $demcss['base_css'] && $additional ){
 }
 
 ?>
-<div class="democr_options dempage_design">
+<?= Admin_Page::info_sidebar() ?>
+
+<div class="democr_options dempage-design">
 	<?php $this::polls_preview( true ); ?>
 
 	<form action="" method="post">

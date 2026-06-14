@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function(){
 	}
 
 	function design(){
-		if( jQuery( '.dempage_design' ).length ){
+		if( jQuery( '.dempage-design' ).length ){
 			jQuery( '.dem-screen' ).height( function(){
 				return jQuery( this ).outerHeight();
 			} );

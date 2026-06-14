@@ -136,46 +136,51 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 
 		echo $this->admpage->subpages_menu();
 
-		$this->list_table->table_title();
-
-		if( plugin()->super_access ){
-			global $wpdb;
-			$count = $wpdb->get_var(
-				"SELECT count(*) FROM $wpdb->democracy_log WHERE qid IN (SELECT id FROM $wpdb->democracy_q WHERE open = 0)"
-			);
-
-			$del_new_marks_button = options()->democracy_off
-				? ''
-				: sprintf( '<a class="button button-small" href="%s">%s</a>',
-					esc_url( Admin_Page::add_nonce( $_SERVER['REQUEST_URI'] . '&dem_del_new_mark' ) ),
-					sprintf( __( 'Delete all NEW marks', 'democracy-poll' ), $count )
-				);
-			?>
-			<div style="text-align:right; margin-bottom:1em;">
-				<?= $del_new_marks_button ?>
-
-				<a class="button button-small"
-				   href="<?= esc_url( Admin_Page::add_nonce( $_SERVER['REQUEST_URI'] ) ) ?>&dem_del_closed_polls_logs"
-				   onclick="return confirm( '<?= __( 'Are you sure?', 'democracy-poll' ) ?>' )"
-				>
-					<?= sprintf( __( 'Delete logs of closed pols - %d', 'democracy-poll' ), $count ) ?>
-				</a>
-
-				<a class="button button-small"
-				   href="<?= esc_url( Admin_Page::add_nonce( $_SERVER['REQUEST_URI'] ) ) ?>&dem_clear_logs"
-				   onclick="return confirm( '<?= __( 'Are you sure?', 'democracy-poll' ) ?>' )"
-				>
-					<?= __( 'Delete all logs', 'democracy-poll' ) ?>
-				</a>
-			</div>
-			<?php
-		}
-
+		$this->list_table->table_title(); // title of single poll
+		$this->render_logs_buttons();
 		?>
-		<form action="" method="POST">
+		<form class="democr_options dempage-logs" action="" method="POST">
 			<?php wp_nonce_field( 'dem_adminform', '_demnonce' ) ?>
 			<?php $this->list_table->display() ?>
 		</form>
+		<?php
+	}
+
+	private function render_logs_buttons(): void {
+		global $wpdb;
+
+		if( ! plugin()->super_access ){
+			return;
+		}
+
+		$count = $wpdb->get_var(
+			"SELECT count(*) FROM $wpdb->democracy_log WHERE qid IN (SELECT id FROM $wpdb->democracy_q WHERE open = 0)"
+		);
+
+		$del_new_marks_button = options()->democracy_off
+			? ''
+			: sprintf( '<a class="button button-small" href="%s">%s</a>',
+				esc_url( Admin_Page::add_nonce( $_SERVER['REQUEST_URI'] . '&dem_del_new_mark' ) ),
+				sprintf( __( 'Delete all NEW marks', 'democracy-poll' ), $count )
+			);
+		?>
+		<div class="logs-button-wrapper" style="text-align:right; margin-bottom:1em;">
+			<?= $del_new_marks_button ?>
+
+			<a class="button button-small"
+			   href="<?= esc_url( Admin_Page::add_nonce( $_SERVER['REQUEST_URI'] ) ) ?>&dem_del_closed_polls_logs"
+			   onclick="return confirm( '<?= __( 'Are you sure?', 'democracy-poll' ) ?>' )"
+			>
+				<?= sprintf( __( 'Delete logs of closed pols - %d', 'democracy-poll' ), $count ) ?>
+			</a>
+
+			<a class="button button-small"
+			   href="<?= esc_url( Admin_Page::add_nonce( $_SERVER['REQUEST_URI'] ) ) ?>&dem_clear_logs"
+			   onclick="return confirm( '<?= __( 'Are you sure?', 'democracy-poll' ) ?>' )"
+			>
+				<?= __( 'Delete all logs', 'democracy-poll' ) ?>
+			</a>
+		</div>
 		<?php
 	}
 

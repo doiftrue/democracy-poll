@@ -159,19 +159,21 @@ class List_Table_Logs extends \WP_List_Table {
 	}
 
 	public function table_title(): void {
-		if( $this->poll_id ){
-			if( ! $poll = $this->cache( 'polls', $this->poll_id ) ){
-				$poll = new DemPoll( $this->poll_id );
-				$this->cache( 'polls', $this->poll_id, $poll );
-			}
-
-			echo strtr( '<h2><small>{title}</small>{question} <small><a href="{url}">{link_text}</a></small></h2>', [
-				'{title}'     => __( 'Poll\'s logs: ', 'democracy-poll' ),
-				'{question}'  => Kses::kses_html( $poll->question ),
-				'{url}'       => Poll_Utils::edit_poll_url( $this->poll_id ),
-				'{link_text}' => __( 'Edit poll', 'democracy-poll' ),
-			] );
+		if( ! $this->poll_id ){
+			return;
 		}
+
+		if( ! $poll = $this->cache( 'polls', $this->poll_id ) ){
+			$poll = new DemPoll( $this->poll_id );
+			$this->cache( 'polls', $this->poll_id, $poll );
+		}
+
+		echo strtr( '<h2><small>{title}</small>{question} <small><a href="{url}">{link_text}</a></small></h2>', [
+			'{title}'     => __( 'Poll\'s logs: ', 'democracy-poll' ),
+			'{question}'  => Kses::kses_html( $poll->question ),
+			'{url}'       => Poll_Utils::edit_poll_url( $this->poll_id ),
+			'{link_text}' => __( 'Edit poll', 'democracy-poll' ),
+		] );
 	}
 
 	/**

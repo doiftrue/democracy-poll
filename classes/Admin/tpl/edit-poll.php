@@ -38,7 +38,7 @@ echo $this->admpage->subpages_menu();
 
 echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
 ?>
-<form action="<?= esc_url( remove_query_arg( 'msg' ) ) ?>" method="POST" class="dem-new-poll">
+<form class="democr_options dempage-new-poll" action="<?= esc_url( remove_query_arg( 'msg' ) ) ?>" method="POST">
 
 	<input type="hidden" name="dmc_qid" value="<?= (int) $this->poll_id ?>">
 	<?= wp_nonce_field( 'dem_adminform', '_demnonce', false, false ) ?>

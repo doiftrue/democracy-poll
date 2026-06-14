@@ -14,10 +14,10 @@ class Admin_Page_Other_Migrations implements Admin_Subpage_Interface {
 		$this->admpage = $admin_page;
 	}
 
-	public function load() {
+	public function load(): void {
 	}
 
-	public function request_handler() {
+	public function request_handler(): void {
 
 		$migration = get_option( 'democracy_migrated' );
 
@@ -45,13 +45,12 @@ class Admin_Page_Other_Migrations implements Admin_Subpage_Interface {
 
 	}
 
-	public function render() {
-
+	public function render(): void {
 		echo $this->admpage->subpages_menu();
 
 		$migration = get_option( 'democracy_migrated' );
 		?>
-		<div class="democr_options">
+		<div class="democr_options dempage-migrations">
 			<?php
 			$wp_polls = $migration['wp-polls'] ?? '';
 			if( $wp_polls ){

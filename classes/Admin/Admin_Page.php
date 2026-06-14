@@ -7,20 +7,17 @@ use function DemocracyPoll\plugin;
 
 class Admin_Page {
 
-	public const ASSETS_ID = 'democracy-admin';
-
 	use Admin_Page__Additional;
 
-	/** @var string */
-	public $subpage;
+	public const ASSETS_ID = 'democracy-admin';
 
-	/** @var Admin_Subpage_Interface */
-	public $subpage_obj;
+	public string $subpage;
 
-	/** @var int */
-	public $edit_poll_id;
+	public Admin_Subpage_Interface $subpage_obj;
 
-	public function __construct(){
+	public int $edit_poll_id;
+
+	public function __construct() {
 		$this->edit_poll_id = (int) ( $_GET['edit_poll'] ?? 0 );
 
 		$this->subpage = sanitize_key( $_GET['subpage'] ?? '' );
@@ -33,7 +30,7 @@ class Admin_Page {
 		}
 	}
 
-	public function init(){
+	public function init(): void {
 		if( ! plugin()->admin_access ){
 			return;
 		}
@@ -41,12 +38,12 @@ class Admin_Page {
 		add_action( 'admin_menu', [ $this, 'register_option_page' ] );
 
 		// Save screen options.
-		add_filter( 'set-screen-option', function( $status, $option, $value ) {
+		add_filter( 'set-screen-option', static function( $status, $option, $value ) {
 			return in_array( $option, [ 'dem_polls_per_page', 'dem_logs_per_page' ] ) ? (int) $value : $status;
 		}, 10, 3 );
 	}
 
-	public function register_option_page() {
+	public function register_option_page(): void {
 		if( ! plugin()->admin_access ){
 			return;
 		}
@@ -59,11 +56,8 @@ class Admin_Page {
 	}
 
 	public function admin_page_load(): void {
-		// datepicker
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		wp_enqueue_style( 'jquery-style', plugin()->url . '/admin/css/jquery-ui.css', [], plugin()->ver );
 
-		// democracy
 		wp_enqueue_script( self::ASSETS_ID, plugin()->url . '/admin/js/admin.js', [ 'jquery' ], plugin()->ver, true );
 		wp_enqueue_style( self::ASSETS_ID, plugin()->url . '/admin/css/admin.css', [], plugin()->ver );
 
@@ -75,8 +69,7 @@ class Admin_Page {
 		$this->subpage_obj->request_handler();
 	}
 
-	private function set_subpage_obj(){
-
+	private function set_subpage_obj(): void {
 		if( $this->edit_poll_id ){
 			$this->subpage_obj = new Admin_Page_Edit_Poll( $this );
 			$this->subpage_obj->set_poll_id( $this->edit_poll_id );
@@ -97,8 +90,7 @@ class Admin_Page {
 		}
 	}
 
-	private function global_handle_request(){
-
+	private function global_handle_request(): void {
 		// simplify
 		$_poll_id = 0;
 		$set_poll_id__cb = static function( $name ) use ( & $_poll_id ) {
@@ -133,10 +125,9 @@ class Admin_Page {
 		if( $set_poll_id__cb( 'dmc_close_poll' ) ){
 			Admin_Page_Edit_Poll::close_poll( $_poll_id );
 		}
-
 	}
 
-	public function admin_page_output() {
+	public function admin_page_output(): void {
 		?>
 		<div class="wrap">
 			<?php $this->subpage_obj->render(); ?>
@@ -144,7 +135,7 @@ class Admin_Page {
 		<?php
 	}
 
-	private function run_upgrade(){
+	private function run_upgrade(): void {
 		// maybe force upgrade
 		if( isset( $_POST['dem_forse_upgrade'] ) && plugin()->super_access ){
 
@@ -166,6 +157,7 @@ class Admin_Page {
 	public static function add_nonce( $url ): string {
 		return add_query_arg( [ '_demnonce' => wp_create_nonce( 'dem_adminform' ) ], $url );
 	}
+
 }
 
 trait Admin_Page__Additional {
@@ -221,12 +213,6 @@ trait Admin_Page__Additional {
 
 		$out = '<h2 class="nav-tab-wrapper" style="margin-bottom:1em;">' . implode( "\n", $buttons ) . '</h2>';
 
-		if( plugin()->super_access
-		    && in_array( $this->subpage, [ 'general_settings', 'design', 'l10n' ], true )
-		){
-			$out .= self::info_sidebar();
-		}
-
 		$out .= plugin()->msg->messages_html();
 
 		return $out;
@@ -255,7 +241,7 @@ trait Admin_Page__Additional {
 		return $referer;
 	}
 
-	private static function info_sidebar() {
+	public static function info_sidebar() {
 		ob_start();
 		?>
 		<div class="dem-info-wrap">
