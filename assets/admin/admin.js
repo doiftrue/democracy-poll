@@ -260,9 +260,11 @@ document.addEventListener('DOMContentLoaded', function(){
 			} );
 		var $table = jQuery( '.tablenav-pages' );
 
-		$answs.css( { cursor: 'pointer' } ).on( 'click', () => {
-			var dataHeight = jQuery( this ).data( 'height' ) || 'auto';
-			jQuery( this ).data( 'height', jQuery( this ).height() ).height( dataHeight );
+		$answs.css( { cursor: 'pointer' } )
+		$answs.on( 'click', function() {
+			const $el = jQuery( this )
+			var dataHeight = $el.data( 'height' ) || 'auto';
+			$el.data( 'height', $el.height() ).height( dataHeight );
 		} );
 
 		// Ensure this is the expected table.
