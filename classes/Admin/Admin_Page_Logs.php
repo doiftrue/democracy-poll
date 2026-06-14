@@ -101,7 +101,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 			[ $country_name, $country_code, $city ] = explode( ',', $ip_info ) + [ '', '', '' ];
 
 			if( null === self::$flag_css ){
-				self::$flag_css = (string) file_get_contents( plugin()->dir . '/admin/country_flags/flags.css' );
+				self::$flag_css = (string) file_get_contents( plugin()->dir . '/assets/admin/country_flags/flags.css' );
 			}
 
 			preg_match( '~flag-' . strtolower( $country_code ) . ' \{([^}]+)\}~', self::$flag_css, $matches );
@@ -109,7 +109,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 
 			if( $bg_pos ){
 				$location = $country_name . ( $city ? ", $city" : '' );
-				$country_img = '<span title="' . esc_attr( $location ) . '" style="cursor:help; display:inline-block; width:16px; height:11px; background:url(' . plugin()->url . '/admin/country_flags/flags.png) no-repeat; ' . $bg_pos . '"></span> ';
+				$country_img = '<span title="' . esc_attr( $location ) . '" style="cursor:help; display:inline-block; width:16px; height:11px; background:url(' . plugin()->url . '/assets/admin/country_flags/flags.png) no-repeat; ' . $bg_pos . '"></span> ';
 			}
 		}
 

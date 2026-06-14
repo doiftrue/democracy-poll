@@ -110,7 +110,7 @@ class Options_CSS {
 	 * Compresses css using YUICompressor
 	 */
 	public function cssmin( string $input_css ): string {
-		require_once plugin()->dir . '/admin/CssMin/cssmin.php';
+		require_once plugin()->dir . '/assets/admin/CssMin/cssmin.php';
 
 		$compressor = new \tubalmartin\CssMin\Minifier();
 		// $compressor->set_memory_limit('256M');

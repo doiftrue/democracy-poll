@@ -58,8 +58,8 @@ class Admin_Page {
 	public function admin_page_load(): void {
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 
-		wp_enqueue_script( self::ASSETS_ID, plugin()->url . '/admin/js/admin.js', [ 'jquery' ], plugin()->ver, true );
-		wp_enqueue_style( self::ASSETS_ID, plugin()->url . '/admin/css/admin.css', [], plugin()->ver );
+		wp_enqueue_script( self::ASSETS_ID, plugin()->url . '/assets/admin/admin.js', [ 'jquery' ], plugin()->ver, true );
+		wp_enqueue_style( self::ASSETS_ID, plugin()->url . '/assets/admin/admin.css', [], plugin()->ver );
 
 		$this->run_upgrade();
 

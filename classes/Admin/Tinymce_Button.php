@@ -20,7 +20,7 @@ class Tinymce_Button {
 	}
 
 	public static function tinymce_plugin( $plugin_array ) {
-		$plugin_array['demTiny'] = plugin()->url . '/admin/js/tinymce.js';
+		$plugin_array['demTiny'] = plugin()->url . '/assets/admin/tinymce.js';
 
 		return $plugin_array;
 	}
