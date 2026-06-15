@@ -3,6 +3,7 @@
 namespace DemocracyPoll;
 
 use DemocracyPoll\Helpers\Kses;
+use DemPoll;
 
 class Poll_Widget extends \WP_Widget {
 
@@ -32,10 +33,10 @@ class Poll_Widget extends \WP_Widget {
 		    && ! options()->post_metabox_off
 		    && ( $post_pid = \DemocracyPoll\Admin\Post_Metabox::get_post_poll_id( $post->ID ) )
 		){
-			$poll_id = $post_pid;
+			$poll_id = $post_pid; // $poll_id may be: int, 'last', 'rand'
 		}
 
-		$poll_object = \DemPoll::get_db_data( $poll_id ?: 'rand' ); // $poll_id may be: int, 'last', 'rand'
+		$poll_object = DemPoll::get_db_data( $poll_id ?: 'rand' ); // $poll_id may be: int, 'last', 'rand'
 
 		if( isset( $instance['questionIsTitle'] ) ){
 			echo $before_widget;

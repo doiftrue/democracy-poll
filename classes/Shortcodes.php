@@ -2,6 +2,9 @@
 
 namespace DemocracyPoll;
 
+use DemocracyPoll\Admin\Post_Metabox;
+use DemPoll;
+
 class Shortcodes {
 
 	public function __construct(){
@@ -29,7 +32,6 @@ class Shortcodes {
 	}
 
 	public function democracy_shortcode( $atts ): string {
-
 		$atts = shortcode_atts( [
 			'id' => '', // number or 'current', 'last'
 			// 'before_title'  => '', // IMP! can't be added - security reason
@@ -38,12 +40,16 @@ class Shortcodes {
 
 		// Determine which post the poll belongs to when the shortcode is used outside the content.
 		$post_id = ( is_singular() && is_main_query() ) ? $GLOBALS['post']->ID : 0;
+		$poll = $atts['id'];
 
-		if( $atts['id'] === 'current' ){
-			$atts['id'] = \DemocracyPoll\Admin\Post_Metabox::get_post_poll_id( $post_id );
+		if( $poll === 'current' ){
+			$poll = Post_Metabox::get_post_poll_id( $post_id ) ?: 'rand';
+			if( $poll === 'last' || $poll === 'rand' ){
+				$poll = DemPoll::get_db_data( $poll );
+			}
 		}
 
-		return '<div class="dem-poll-shortcode">' . get_democracy_poll( $atts['id'], '', '', $post_id ) . '</div>';
+		return '<div class="dem-poll-shortcode">' . get_democracy_poll( $poll, '', '', $post_id ) . '</div>';
 	}
 
 }

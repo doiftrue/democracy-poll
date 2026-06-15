@@ -11,21 +11,23 @@ class Post_Metabox {
 		add_action( 'save_post', [ __CLASS__, 'on_save_post' ], 10, 2 );
 	}
 
-	public static function get_post_poll_id( int $post_id ): int {
+	/**
+	 * @return int|string Poll ID or last|rand.
+	 */
+	public static function get_post_poll_id( int $post_id ) {
 		if( ! $post_id ){
 			return 0;
 		}
 
-		return (int) get_post_meta( $post_id, self::POLL_ID_MKEY, true );
+		return get_post_meta( $post_id, self::POLL_ID_MKEY, true );
 	}
 
 	public static function add_meta_box(): void {
-
 		$post_types = get_post_types( [ 'publicly_queryable' => true ] ) + [ 'page' => 'page' ];
 		unset( $post_types['attachment'] );
 
 		add_meta_box( 'democracy-metabox',
-			__( 'Attach a poll to the post', 'democracy-poll' ),
+			__( 'Democracy Poll', 'democracy-poll' ),
 			[ __CLASS__, 'meta_box' ],
 			$post_types, 'side'
 		);
@@ -40,7 +42,11 @@ class Post_Metabox {
 			"SELECT * FROM $wpdb->democracy_q WHERE ( open = 1 OR id = %d ) ORDER BY id DESC", $poll_id
 		) );
 
-		$options = [ '<option value="0">- ' . __( 'random active poll', 'democracy-poll' ) . ' -</option>' ];
+		$options = [
+			sprintf( '<option value="0">— %s —</option>', __( 'default', 'democracy-poll' ) ),
+			sprintf( '<option value="rand" %s>%s</option>', selected( 'rand', $poll_id, false ), __( 'Random (default)', 'democracy-poll' ) ),
+			sprintf( '<option value="last" %s>%s</option>', selected( 'last', $poll_id, false ), __( 'Last', 'democracy-poll' ) ),
+		];
 		foreach( $polls as $poll ){
 			$options[] = sprintf( '<option value="%d" %s>%s %s</option>',
 				(int) $poll->id,
@@ -51,12 +57,10 @@ class Post_Metabox {
 		}
 
 		?>
-		<select name="democ_metabox[<?= esc_attr( self::POLL_ID_MKEY ) ?>]">
+		<p><?= __( 'Use shortcode:', 'democracy-poll' ) ?> <code>[democracy id="current"]</code></p>
+		<select name="democ_metabox[<?= esc_attr( self::POLL_ID_MKEY ) ?>]" style="max-width:80%">
 			<?= implode( '', $options ) ?>
 		</select>
-		<p>
-			<?= sprintf( __( '%s - shortcode', 'democracy-poll' ), '<code>[democracy id="current"]</code>' ) ?>
-		</p>
 		<?php
 	}
 
@@ -70,14 +74,11 @@ class Post_Metabox {
 			return;
 		}
 
-		$pollid = (int) $_POST['democ_metabox'][ self::POLL_ID_MKEY ];
+		$pollid = sanitize_text_field( $_POST['democ_metabox'][ self::POLL_ID_MKEY ] );
 
-		if( $pollid ){
-			update_post_meta( $post_id, self::POLL_ID_MKEY, $pollid );
-		}
-		else{
-			delete_post_meta( $post_id, self::POLL_ID_MKEY );
-		}
+		$pollid
+			? update_post_meta( $post_id, self::POLL_ID_MKEY, $pollid )
+			: delete_post_meta( $post_id, self::POLL_ID_MKEY );
 	}
 
 }

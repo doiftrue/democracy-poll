@@ -144,6 +144,7 @@ Yes. Deleting the plugin removes all of its options and data.
 
 = 6.3.2 =
 * IMP: Store votes for all polls in one cookie instead of creating a separate cookie per poll.
+* CHG: Max poll height options disabled by default.
 
 = 6.3.1 =
 * FIX: Restored the Text Customization settings page after a previous refactor.

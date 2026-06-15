@@ -53,8 +53,8 @@ if( ! $demcss['base_css'] && $additional ){
 		<ul class="group">
 			<li class="title"><?= esc_html__( 'Other settings', 'democracy-poll' ); ?></li>
 			<li class="block">
-				<input type="text" min="-1" style="width:7em;" name="dem[answs_max_height]" value="<?= esc_attr( $opt->answs_max_height ) ?>">
-				<?= esc_html__( 'Max height of the poll (in pixels if no unit is set). When a poll has many answers, collapsing it improves readability. `-1` - disables this option. Default: 500.', 'democracy-poll' ) ?>
+				<input type="text" style="width:7em;" name="dem[answs_max_height]" value="<?= esc_attr( $opt->answs_max_height ) ?>">
+				<?= esc_html__( 'Max poll height (in em, rem, px, ...). Leave empty to disable.', 'democracy-poll' ) ?>
 			</li>
 			<li class="block">
 				<input type="number" min="0" style="width:7em;" name="dem[anim_speed]" value="<?= esc_attr( $opt->anim_speed ) ?>">

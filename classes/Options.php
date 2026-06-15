@@ -90,7 +90,8 @@ class Options {
 			'loader_fill'          => '',
 			// How to fill the progress bar.
 			'graph_from_total'     => 1,
-			'answs_max_height'     => '35em',
+			// eg: 500px, 50em. Leave empty to disable
+			'answs_max_height'     => '',
 			// px
 			'anim_speed'           => 400,
 			// msec
@@ -146,10 +147,12 @@ class Options {
 
 		// append default values
 		foreach( $this->default_options as $part => $options ){
-			foreach( $options as $key => $val ){
-				if( ! isset( $this->opt[ $key ] ) ){
-					$this->opt[ $key ] = $val;
+			foreach( $options as $name => $val ){
+				if( ! isset( $this->opt[ $name ] ) ){
+					$this->opt[ $name ] = $val;
 				}
+
+				$this->prepare_option( $name, $this->opt[ $name ] );
 			}
 		}
 	}
@@ -242,7 +245,6 @@ class Options {
 	}
 
 	private function is_option_exists( string $option_name ): bool {
-
 		foreach( $this->default_options as $part => $options ){
 			if( array_key_exists( $option_name, $options ) ){
 				return true;
@@ -250,6 +252,18 @@ class Options {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Prepare some options values before set.
+	 * For backward compatability.
+	 */
+	private function prepare_option( $name, & $val ): void {
+		if( $name === 'answs_max_height' ){
+			if( $val === '-1' || $val === '0' ){
+				$val = '';
+			}
+		}
 	}
 
 }

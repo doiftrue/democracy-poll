@@ -49,7 +49,7 @@ export default class Utils {
 	 * @param {HTMLElement} screen
 	 */
 	static setAnswsMaxHeight( screen ){
-		if( State.answMaxHeight === '-1' || State.answMaxHeight === '0' || ! State.answMaxHeight ){
+		if( ! State.answMaxHeight ){
 			return
 		}
 
@@ -134,7 +134,6 @@ export default class Utils {
 				}
 			} )
 		}
-
 	}
 
 	static heightToPixels(cssValue, forEl) {
