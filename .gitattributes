@@ -4,6 +4,7 @@
 /tests/                export-ignore
 /vendor/               export-ignore
 /node_modules/         export-ignore
+/_TODO/                export-ignore
 
 /.distignore           export-ignore
 /.editorconfig         export-ignore
@@ -20,7 +21,6 @@
 /phpunit.xml           export-ignore
 
 */make-pot.sh          export-ignore
-/TODO.md               export-ignore
 
 *       text eol=lf
 *.png   binary

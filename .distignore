@@ -3,6 +3,7 @@
 /tests/
 /vendor/
 /node_modules/
+/_TODO/
 /Makefile
 /languages/make-pot.sh
 /composer.json
@@ -15,7 +16,6 @@
 /gulpfile.js
 /package.json
 /package-lock.json
-/TODO.md
 /AGENTS.md
 /_tmp
 
