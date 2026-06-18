@@ -77,18 +77,19 @@ class Poll_Ajax {
 		elseif( 'vote_screen' === $vars->act ){
 			echo $render->get_vote_screen();
 		}
-		/** Get {@see \DemPoll::$voted_for} value */
+		// request is only made if cookies are not set - 'checkAnswDone' not done
 		elseif( 'getVotedIds' === $vars->act ){
-			if( $poll->voted_for ){
-				$poll->user_state->sync_vote_cookie(); // request is only made if cookies are not set
-				echo $poll->voted_for;
+			$ustate = $poll->user_state;
+			if( $ustate->voted_for ){
+				$ustate->sync_vote_cookie();
+				echo $ustate->voted_for;
 			}
-			elseif( $poll->blocked_by_not_logged ){
+			elseif( $ustate->blocked_by_not_logged ){
 				echo 'blocked_because_not_logged_note'; // to display a note
 			}
 			else{
 				// Cache a missing vote for half a day to avoid repeating this check.
-				$poll->user_state->set_not_voted_cookie();
+				$ustate->set_not_voted_cookie();
 			}
 		}
 

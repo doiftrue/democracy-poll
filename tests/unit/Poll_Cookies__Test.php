@@ -112,7 +112,7 @@ class Poll_Cookies__Test extends \DemocracyPoll\DemocTestCase {
 	private function get_poll( int $id, string $voted_for = '' ): DemPoll {
 		$poll = new DemPoll( 0 );
 		$poll->id = $id;
-		$poll->voted_for = $voted_for;
+		$poll->user_state->voted_for = $voted_for;
 
 		return $poll;
 	}

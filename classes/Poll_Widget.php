@@ -4,21 +4,20 @@ namespace DemocracyPoll;
 
 use DemocracyPoll\Admin\Post_Metabox;
 use DemocracyPoll\Helpers\Kses;
-use DemPoll;
+use WP_Widget;
 
-class Poll_Widget extends \WP_Widget {
+class Poll_Widget extends WP_Widget {
 
 	public function __construct() {
 		// Instantiate the parent object. Creates option 'Poll_Widget'
-		parent::__construct( 'democracy',
-			__( 'Democracy Poll', 'democracy-poll' ),
+		parent::__construct( 'democracy', 'Democracy Poll',
 			[
 				'description' => __( 'Democracy Poll Widget', 'democracy-poll' )
 			]
 		);
 	}
 
-	// front end
+	// front
 	public function widget( $args, $instance ) {
 		global $post;
 

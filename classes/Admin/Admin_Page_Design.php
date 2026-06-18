@@ -2,6 +2,8 @@
 
 namespace DemocracyPoll\Admin;
 
+use DemPoll;
+use DemocracyPoll\Poll_Renderer;
 use DemocracyPoll\Poll_Storage;
 use function DemocracyPoll\plugin;
 use function DemocracyPoll\options;
@@ -113,12 +115,12 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 			?>
 			<div class="block polls-preview">
 				<?php
-				$poll = new \DemPoll( Poll_Storage::get_db_data( 'rand' ) );
-				$render = new \DemocracyPoll\Poll_Renderer( $poll );
+				$poll = new DemPoll( Poll_Storage::get_db_data( 'rand' ) );
+				$render = new Poll_Renderer( $poll );
 
 				if( $poll->id ){
 					$answers = wp_list_pluck( $poll->answers, 'aid' );
-					$poll->voted_for = (string) ( $answers ? $answers[ array_rand( $answers ) ] : '' );
+					$poll->user_state->voted_for = (string) ( $answers ? $answers[ array_rand( $answers ) ] : '' );
 
 					$rm_disabled = static function( $val ) {
 						return str_replace( 'disabled="disabled"', '', $val );

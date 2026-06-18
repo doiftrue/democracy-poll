@@ -7,18 +7,7 @@ use DemocracyPoll\Poll_User_State;
 use function DemocracyPoll\options;
 
 /**
- * Display and vote a separate poll.
- *
- * @property string $voted_for      Voted for answers IDs, separated by commas.
- * @property bool   $has_voted      Is the user has voted?
- * @property bool   $voting_blocked Is the voting blocked? If true, the user cannot vote.
- * @property bool   $blocked_by_not_logged Is blocked because only logged users can vote.
- *
- * @property-read Poll_Answer[] $answers  Answers of the poll, sorted by order.
- *
- * @property string    $votedFor         Legacy. Alias of $voted_for.
- * @property bool      $blockVoting      Legacy. Alias of $voting_blocked.
- * @property-read bool $blockForVisitor  Legacy.
+ * @property-read Poll_Answer[] $answers Poll Answers.
  */
 class DemPoll {
 
@@ -89,25 +78,12 @@ class DemPoll {
 	public string $note = '';
 
 	public function __isset( $name ) {
-		// Required props (canNOT be not set)
-		$lazy_props = [
-			'answers',
-			'voting_blocked',
-			'voted_for',
-			'has_voted',
-			'blocked_by_not_logged',
-			// legacy
-			'blockVoting',
-			'votedFor',
-			'blockForVisitor',
-		];
-
-		if( in_array( $name, $lazy_props, true ) ){
+		if( 'answers' === $name ){
 			$this->__get( $name );
 			return true;
 		}
 
-		return $this->$name !== null;
+		return property_exists( $this, $name ) && $this->$name !== null;
 	}
 
 	/**
@@ -119,54 +95,11 @@ class DemPoll {
 			return $this->answers;
 		}
 
-		/**
-		 * @see self::$blockVoting
-		 * @see self::$voting_blocked
-		 */
-		if( 'voting_blocked' === $name || 'blockVoting' === $name ){
-			return $this->user_state->voting_blocked();
-		}
-
-		/**
-		 * @see self::$votedFor
-		 * @see self::$voted_for
-		 */
-		if( in_array( $name, [ 'voted_for', 'votedFor' ], true ) ){
-			return $this->user_state->voted_for();
-		}
-
-		/** @see self::$has_voted */
-		if( 'has_voted' === $name ){
-			return $this->user_state->has_voted();
-		}
-
-		/**
-		 * @see self::$blocked_by_not_logged
-		 * @see self::$blockForVisitor
-		 */
-		if( in_array( $name, [ 'blocked_by_not_logged', 'blockForVisitor' ], true ) ){
-			return $this->user_state->blocked_by_not_logged();
-		}
-
 		return null;
 	}
 
 	public function __set( $name, $value ) {
-		if( in_array( $name, [ 'voting_blocked', 'blockVoting' ], true ) ){
-			$this->user_state->set_voting_blocked( (bool) $value );
-		}
-		elseif( in_array( $name, [ 'voted_for', 'votedFor' ], true ) ){
-			$this->user_state->set_voted_for( (string) $value );
-		}
-		elseif( 'has_voted' === $name ){
-			$this->user_state->set_has_voted( (bool) $value );
-		}
-		elseif( in_array( $name, [ 'blocked_by_not_logged', 'blockForVisitor' ], true ) ){
-			$this->user_state->set_blocked_by_not_logged( (bool) $value );
-		}
-		else {
-			throw new RuntimeException( __CLASS__ . " class prohibits setting dynamic properties. You are trying to set `$name`." );
-		}
+		throw new RuntimeException( __CLASS__ . " class prohibits setting dynamic properties. You are trying to set `$name`." );
 	}
 
 	/**
@@ -180,8 +113,7 @@ class DemPoll {
 			return;
 		}
 
-		is_object( $poll_id )  && $this->dbdata = $poll_id;
-		is_numeric( $poll_id ) && $this->dbdata = Poll_Storage::get_db_data( $poll_id );
+		$this->dbdata = is_object( $poll_id ) ? $poll_id : Poll_Storage::get_db_data( $poll_id );
 		if( empty( $this->dbdata->id ) ){
 			return;
 		}

@@ -12,38 +12,30 @@ class Poll_Voting_Service {
 
 	private DemPoll $poll;
 
-	private Poll_Storage $storage;
-
-	private Poll_Cookies $poll_cookie;
-
-	private Poll_Logs $poll_logs;
-
 	public function __construct( DemPoll $poll ) {
-		$this->poll        = $poll;
-		$this->storage     = $poll->storage;
-		$this->poll_cookie = $poll->user_state->poll_cookie;
-		$this->poll_logs   = $poll->user_state->poll_logs;
+		$this->poll = $poll;
 	}
 
 	/**
-	 * @param string|array $aids Answer IDs separated by "~". May contain a string,
+	 * @param string|array $a.ids Answer IDs separated by "~". May contain a string,
 	 *                           which will be added as a user answer.
 	 *
 	 * @return WP_Error|string IDs separated by commas.
 	 */
 	public function vote( $aids ) {
 		$poll = $this->poll;
+		$ustate = $poll->user_state;
 		if( ! $poll->id ){
 			return new WP_Error( 'vote_err', 'ERROR: no id' );
 		}
 
 		// Set the cookie again, there was a bug...
-		if( $poll->has_voted && $this->poll_cookie->is_not_voted() ){
-			$this->poll_cookie->set();
+		if( $ustate->has_voted && $ustate->poll_cookie->is_not_voted() ){
+			$ustate->poll_cookie->set();
 		}
 
-		// Must run after "$poll->has_voted" check, because if $poll->has_voted then $poll->voting_blocked always true
-		if( $poll->voting_blocked ){
+		// Run after the has_voted check; a voted user always has voting_blocked set.
+		if( $ustate->voting_blocked ){
 			return new WP_Error( 'vote_err', 'ERROR: voting is blocked...' );
 		}
 
@@ -64,23 +56,23 @@ class Poll_Voting_Service {
 			return $voted_for;
 		}
 
-		if( ! $this->storage->increment_votes( $voted_for ) ){
+		if( ! $poll->storage->increment_votes( $voted_for ) ){
 			return new WP_Error( 'vote_err', 'Internal ERROR: Vote was not saved. Contact developer.' );
 		}
 
 		$poll->users_voted++;
 		is_object( $poll->dbdata ) && $poll->dbdata->users_voted++; // just in case
 
-		$poll->voting_blocked = true;
-		$poll->has_voted = true;
-		$poll->voted_for = $voted_for;
+		$ustate->voted_for = $voted_for;
+		$ustate->has_voted = true;
+		$ustate->voting_blocked = true;
 
 		$poll->set_answers();
 
-		$this->poll_cookie->set();
+		$ustate->poll_cookie->set();
 
 		if( options()->keep_logs ){
-			$this->poll_logs->insert_logs();
+			$ustate->poll_logs->insert_logs();
 		}
 
 		/**
@@ -89,9 +81,9 @@ class Poll_Voting_Service {
 		 * @param string  $voted_for Comma-separated IDs of the answers the user voted for. Or custom answer as string.
 		 * @param DemPoll $poll      The current poll object.
 		 */
-		do_action( 'dem_voted', $poll->voted_for, $poll );
+		do_action( 'dem_voted', $ustate->voted_for, $poll );
 
-		return $poll->voted_for;
+		return $ustate->voted_for;
 	}
 
 	/**
@@ -99,26 +91,28 @@ class Poll_Voting_Service {
 	 */
 	public function delete_vote(): void {
 		$poll = $this->poll;
+		$ustate = $poll->user_state;
 
 		if( ! $poll->id || ! $poll->revote || ! options()->keep_logs ){
 			return;
 		}
 
-		$logs = $this->poll_logs->get_user_vote_logs();
+		$logs = $ustate->poll_logs->get_user_vote_logs();
 		if( ! $logs ){
 			return;
 		}
 
 		// Use only server-side voting data. The public cookie is user-controlled.
-		$poll->voted_for = (string) reset( $logs )->aids;
-		$this->storage->decrement_votes();
-		$this->poll_logs->delete_vote_log( $logs );
+		$ustate->voted_for = (string) reset( $logs )->aids;
+		$ustate->has_voted = (bool) $ustate->voted_for;
+		$poll->storage->decrement_votes();
+		$ustate->poll_logs->delete_vote_log( $logs );
 
-		$this->poll_cookie->delete();
+		$ustate->poll_cookie->delete();
 
-		$poll->has_voted = false;
-		$poll->voted_for = '';
-		$poll->voting_blocked = ! $poll->open;
+		$ustate->has_voted = false;
+		$ustate->voted_for = '';
+		$ustate->voting_blocked = ! $poll->open;
 
 		$poll->set_answers(); // if an added answer was deleted
 
@@ -160,7 +154,7 @@ class Poll_Voting_Service {
 			//break; // IMP!!!: NO break here
 		}
 
-		if( $new_free_answer && ( $aid = $this->storage->insert_democratic_answer( $new_free_answer ) ) ){
+		if( $new_free_answer && ( $aid = $poll->storage->insert_democratic_answer( $new_free_answer ) ) ){
 			$aids[] = $aid;
 		}
 

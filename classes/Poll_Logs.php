@@ -55,7 +55,7 @@ class Poll_Logs {
 
 		return $wpdb->insert( $wpdb->democracy_log, [
 			'qid'     => $poll->id,
-			'aids'    => $poll->voted_for,
+			'aids'    => $poll->user_state->voted_for,
 			'userid'  => (int) get_current_user_id(),
 			'date'    => current_time( 'mysql' ),
 			'expire'  => current_time( 'timestamp', $utc = true ) + (int) ( (float) options()->cookie_days * DAY_IN_SECONDS ),

@@ -49,7 +49,7 @@ class Poll_Renderer {
 
 		$this->in_archive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) $opt->archive_page_id ) && is_singular();
 
-		if( $poll->voting_blocked && $show_screen !== 'force_vote' ){
+		if( $poll->user_state->voting_blocked && $show_screen !== 'force_vote' ){
 			$show_screen = 'voted';
 		}
 
@@ -104,9 +104,10 @@ class Poll_Renderer {
 
 	protected function get_cache_screens(): string {
 		$poll = $this->poll; // simplify
-
-		$saved_voted_for = $poll->voted_for;
-		$poll->voted_for = '';
+		$saved_voted_for = $poll->user_state->voted_for;
+		$saved_has_voted = $poll->user_state->has_voted;
+		$poll->user_state->voted_for = '';
+		$poll->user_state->has_voted = false;
 		$this->for_cache = true;
 
 		$html = '';
@@ -121,7 +122,8 @@ class Poll_Renderer {
 		}
 
 		$this->for_cache = false;
-		$poll->voted_for = $saved_voted_for;
+		$poll->user_state->voted_for = $saved_voted_for;
+		$poll->user_state->has_voted = $saved_has_voted;
 
 		$is_keep_logs = options()->keep_logs ? 1 : 0;
 		return <<<HTML
@@ -178,7 +180,7 @@ class Poll_Renderer {
 			$answer = apply_filters( 'dem_vote_screen_answer', $answer );
 
 			$checked = '';
-			if( in_array( $answer->aid, explode( ',', $poll->voted_for ), true ) ){
+			if( in_array( $answer->aid, explode( ',', $poll->user_state->voted_for ), true ) ){
 				$checked = ' checked="checked"';
 			}
 
@@ -194,13 +196,13 @@ class Poll_Renderer {
 					'{TYPE}'      => $poll->multiple ? 'checkbox' : 'radio',
 					'{AUTO_VOTE}' => $auto_vote_on_select ? 'data-dem-act="vote"' : '',
 					'{CHECKED}'   => $checked,
-					'{DISABLED}'  => $poll->voted_for ? 'disabled="disabled"' : '',
+					'{DISABLED}'  => $poll->user_state->voted_for ? 'disabled="disabled"' : '',
 					'{ANSWER}'    => $answer->answer,
 				]
 			);
 		}
 
-		if( $poll->democratic && ! $poll->voting_blocked ){
+		if( $poll->democratic && ! $poll->user_state->voting_blocked ){
 			$lis_html .= strtr( <<<'HTML'
 				<li class="dem-add-answer dem_add_answer_item_js">
 					<a class="dem-link dem-add-answer-link dem_add_answer_link_js" data-dem-act="newAnswer" href="#" rel="nofollow">{ANCHOR}</a>
@@ -219,7 +221,7 @@ class Poll_Renderer {
 			$vote_btn = '';
 		}
 
-		$for_users_alert = $poll->blocked_by_not_logged
+		$for_users_alert = $poll->user_state->blocked_by_not_logged
 			? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>'
 			: '';
 
@@ -245,7 +247,7 @@ class Poll_Renderer {
 				$bottom_html .= $for_users_alert;
 			}
 			else{
-				$bottom_html .= $poll->has_voted
+				$bottom_html .= $poll->user_state->has_voted
 					? ( $poll->revote ? $this->revote_btn_html() : $voted_btn )
 					: $vote_btn;
 			}
@@ -311,7 +313,7 @@ class Poll_Renderer {
 			 */
 			$answer = apply_filters( 'dem_result_screen_answer', $answer );
 
-			$is_voted_this = ( $poll->has_voted && in_array( (string) $answer->aid, explode( ',', $poll->voted_for ), true ) );
+			$is_voted_this = ( $poll->user_state->has_voted && in_array( (string) $answer->aid, explode( ',', $poll->user_state->voted_for ), true ) );
 			$is_winner     = ( $max === $answer->votes );
 			$novoted_class = $answer->votes ? '' : ' dem-novoted';
 			$li_class      = trim( ( $is_winner ? 'dem-winner' : '' ) . ( $is_voted_this ? " $voted_class" : '' ) . $novoted_class );
@@ -453,7 +455,7 @@ class Poll_Renderer {
 
 		if( $poll->open ){
 			// note for unregistered users
-			$for_users_alert = $poll->blocked_by_not_logged
+			$for_users_alert = $poll->user_state->blocked_by_not_logged
 				? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>'
 				: '';
 
@@ -483,7 +485,7 @@ class Poll_Renderer {
 				if( $for_users_alert ){
 					$html .= $for_users_alert;
 				}
-				elseif( $poll->has_voted ){
+				elseif( $poll->user_state->has_voted ){
 					if( $poll->revote ){
 						$html .= $this->revote_btn_html();
 					}

@@ -58,7 +58,7 @@ class Poll_Cookies {
 	 * Sets the cookie value for the current poll.
 	 */
 	public function set(): void {
-		$this->set_value( $this->poll->voted_for );
+		$this->set_value( $this->poll->user_state->voted_for );
 	}
 
 	public function set_not_voted(): void {

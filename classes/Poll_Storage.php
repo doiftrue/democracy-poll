@@ -134,7 +134,7 @@ class Poll_Storage {
 		global $wpdb;
 
 		$poll = $this->poll;
-		$aids = $this->get_answer_ids_from_str( $poll->voted_for );
+		$aids = $this->get_answer_ids_from_str( $poll->user_state->voted_for );
 		if( ! $aids ){
 			return false;
 		}

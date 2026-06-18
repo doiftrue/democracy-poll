@@ -3,30 +3,25 @@
 namespace DemocracyPoll;
 
 use DemPoll;
+use RuntimeException;
 
 /**
  * Represents the current visitor state for a specific poll.
+ *
+ * @property bool   $blocked_by_not_logged Is blocked because only logged users can vote.
+ * @property bool   $voting_blocked        Is the voting blocked? If true, the user cannot vote.
+ * @property bool   $has_voted             Has the current user voted?
+ * @property string $voted_for             Voted answer IDs, separated by commas.
  */
 class Poll_User_State {
 
-	private DemPoll $poll;
-
+	private DemPoll $poll; /* readonly */
 	public Poll_Cookies $poll_cookie; /* readonly */
-
 	public Poll_Logs $poll_logs; /* readonly */
 
-	/**
-	 * Flag that means the poll is closed because the user
-	 * is not logged and the voting is allowed only for logged users.
-	 *
-	 * We need this separate property to display a note.
-	 */
 	private ?bool $blocked_by_not_logged = null;
-
 	private ?bool $voting_blocked = null;
-
 	private ?bool $has_voted = null;
-
 	private ?string $voted_for = null;
 
 	public function __construct( DemPoll $poll ) {
@@ -35,57 +30,59 @@ class Poll_User_State {
 		$this->poll_logs = new Poll_Logs( $poll );
 	}
 
-	public function blocked_by_not_logged(): bool {
-		if( null === $this->blocked_by_not_logged ){
-			$this->blocked_by_not_logged = ( options()->only_for_users || $this->poll->forusers ) && ! is_user_logged_in();
+	public function __get( $name ) {
+		if( 'voted_for' === $name ){ /** @see self::$voted_for - get */
+			return $this->voted_for ??= $this->resolve_voted_for();
 		}
 
-		return $this->blocked_by_not_logged;
+		if( 'has_voted' === $name ){ /** @see self::$has_voted - get */
+			return $this->has_voted ??= (bool) $this->__get( 'voted_for' );
+		}
+
+		if( 'blocked_by_not_logged' === $name ){ /** @see self::$blocked_by_not_logged - get */
+			return $this->blocked_by_not_logged ??= $this->poll->id
+				&& ( options()->only_for_users || $this->poll->forusers )
+				&& ! is_user_logged_in();
+		}
+
+		if( 'voting_blocked' === $name ){ /** @see self::$voting_blocked - get */
+			return $this->voting_blocked ??= ! $this->poll->id || ! $this->poll->open
+				|| $this->__get( 'blocked_by_not_logged' )
+				|| $this->__get( 'has_voted' );
+		}
+
+		throw new RuntimeException( __CLASS__ . " class has no `$name` property." );
 	}
 
-	public function voting_blocked(): bool {
-		if( null === $this->voting_blocked ){
-			$blocked = ( $this->blocked_by_not_logged() || ! $this->poll->open );
-			if( ! $blocked ){
-				$blocked = $this->has_voted();
+	public function __set( $name, $value ) {
+		if( 'voted_for' === $name ){  /** @see self::$voted_for - set */
+			$this->voted_for = (string) $value;
+			$this->has_voted = (bool) $this->voted_for;
+		}
+		elseif( 'has_voted' === $name ){  /** @see self::$has_voted - set */
+			$this->has_voted = (bool) $value;
+		}
+		elseif( 'blocked_by_not_logged' === $name ){  /** @see self::$blocked_by_not_logged - set */
+			$this->blocked_by_not_logged = (bool) $value;
+			if( $this->blocked_by_not_logged ){
+				$this->voting_blocked = true;
 			}
-
-			$this->voting_blocked = $blocked;
 		}
-
-		return $this->voting_blocked;
-	}
-
-	public function has_voted(): bool {
-		$this->has_voted ??= (bool) $this->voted_for();
-
-		return $this->has_voted;
-	}
-
-	public function voted_for(): string {
-		$this->voted_for ??= $this->resolve_voted_for();
-
-		return $this->voted_for;
-	}
-
-	public function set_blocked_by_not_logged( bool $blocked ): void {
-		$this->blocked_by_not_logged = $blocked;
-		if( $blocked ){
-			$this->voting_blocked = true;
+		elseif( 'voting_blocked' === $name ){  /** @see self::$voting_blocked - set */
+			$this->voting_blocked = (bool) $value;
+		}
+		else {
+			throw new RuntimeException( __CLASS__ . " class has no `$name` property." );
 		}
 	}
 
-	public function set_voting_blocked( bool $blocked ): void {
-		$this->voting_blocked = $blocked;
-	}
+	public function __isset( $name ) {
+		if( in_array( $name, [ 'blocked_by_not_logged', 'voting_blocked', 'has_voted', 'voted_for' ], true ) ){
+			$this->__get( $name );
+			return true;
+		}
 
-	public function set_has_voted( bool $has_voted ): void {
-		$this->has_voted = $has_voted;
-	}
-
-	public function set_voted_for( string $voted_for ): void {
-		$this->voted_for = $voted_for;
-		$this->has_voted = (bool) $voted_for;
+		return false;
 	}
 
 	public function sync_vote_cookie(): void {
