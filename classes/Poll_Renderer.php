@@ -2,7 +2,6 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Helpers\Kses;
 use DemPoll;
 
@@ -284,7 +283,7 @@ class Poll_Renderer {
 		}
 
 		// sort by votes
-		$answers = Helpers::objects_array_sort( $poll->answers, [ 'votes' => 'desc' ] );
+		$answers = wp_list_sort( $poll->answers, [ 'votes' => 'desc' ] );
 
 		$max = $total = 0;
 

@@ -25,32 +25,6 @@ final class Helpers {
 	}
 
 	/**
-	 * Sorts an array of objects.
-	 *
-	 * Pass an array of objects in $array, specify sorting parameters in $args,
-	 * and get a sorted array of objects/arrays as a result.
-	 *
-	 * TODO: Replace with wp_list_sort()
-	 */
-	public static function objects_array_sort( array $array, array $args = [ 'votes' => 'DESC' ] ): array {
-		$args = array_map( 'strtoupper', $args );
-
-		usort( $array, static function( $a, $b ) use ( $args ) {
-			foreach( $args as $k => $asc_desc ){
-				$res = is_array( $a ) ? $a[$k] <=> $b[$k] : $a->$k <=> $b->$k;
-
-				if( $res !== 0 ){
-					return ( $asc_desc === 'DESC' ) ? -$res : $res;
-				}
-			}
-
-			return 0;
-		} );
-
-		return $array;
-	}
-
-	/**
 	 * Retrieves the post objects to which the poll is attached (where the shortcode is used).
 	 *
 	 * @param \DemPoll $poll  The current poll object from the database.

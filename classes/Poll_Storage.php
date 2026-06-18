@@ -2,7 +2,6 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Helpers\IP;
 use DemocracyPoll\Helpers\Kses;
 use DemPoll;
@@ -69,16 +68,16 @@ class Poll_Storage {
 
 		$is_custom_order = (bool) ( reset( $answers )->aorder ?? 0 );
 		if( $is_custom_order ){
-			$answers = Helpers::objects_array_sort( $answers, [ 'aorder' => 'asc' ] );
+			$answers = wp_list_sort( $answers, [ 'aorder' => 'asc' ] );
 		}
 		else{
 			$order = $poll->answers_order ?: options()->order_answers;
 
 			if( $order === 'by_winner' || $order == 1 ){
-				$answers = Helpers::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
+				$answers = wp_list_sort( $answers, [ 'votes' => 'desc' ] );
 			}
 			elseif( $order === 'alphabet' ){
-				$answers = Helpers::objects_array_sort( $answers, [ 'answer' => 'asc' ] );
+				$answers = wp_list_sort( $answers, [ 'answer' => 'asc' ] );
 			}
 			elseif( $order === 'mix' ){
 				shuffle( $answers );

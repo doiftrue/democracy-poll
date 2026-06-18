@@ -57,7 +57,7 @@ echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
 		$is_answers_order = (bool) ( $poll->answers[0]->aorder ?? false );
 
 		if( $poll && $poll->answers ){
-			$answers = Helpers::objects_array_sort( $poll->answers, (
+			$answers = wp_list_sort( $poll->answers, (
 			$is_answers_order
 				? [ 'aorder' => 'asc' ]
 				: [ 'votes' => 'desc', 'aid' => 'asc', ]
