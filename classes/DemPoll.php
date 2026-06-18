@@ -14,7 +14,7 @@ use function DemocracyPoll\options;
  * @property bool   $voting_blocked Is the voting blocked? If true, the user cannot vote.
  * @property bool   $blocked_by_not_logged Is blocked because only logged users can vote.
  *
- * @property-read array $answers  Answers of the poll, sorted by order.
+ * @property-read Poll_Answer[] $answers  Answers of the poll, sorted by order.
  *
  * @property string    $votedFor         Legacy. Alias of $voted_for.
  * @property bool      $blockVoting      Legacy. Alias of $voting_blocked.

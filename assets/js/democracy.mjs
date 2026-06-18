@@ -11,7 +11,7 @@ function democracyInit(){
 		return
 	}
 
-	State.$loader = document.querySelector( '.dem-loader' )
+	State.$loader = document.querySelector( '.dem_loader_js' )
 
 	const opts = Cache.getOpts( polls[0] )
 	State.ajaxurl = opts.ajax_url
@@ -51,19 +51,16 @@ function democracyInit(){
 	// Initialize all events for each poll: clicks, height, button visibility
 	// applies to '.dem-screen'
 	function initActions( screen ){
-		// Attach click handlers for all marked elements inside the given element:
-		// includes AJAX on click and other Democracy interactions ----------
-		const attr = 'data-dem-act'
 
 		// Add Click events
-		screen.querySelectorAll( '[' + attr + ']' ).forEach( act => {
-			if( act.tagName === 'A' ){
-				act.setAttribute( 'href', '' ) // clear URL so the request URL isn't visible
-			}
-			act.addEventListener( 'click', ( ev ) => {
+		screen.querySelectorAll( '[data-dem-act]' ).forEach( actionEl => {
+			// clear URL so the request URL isn't visible
+			( actionEl.tagName === 'A' ) && actionEl.setAttribute( 'href', '' )
+
+			actionEl.addEventListener( 'click', ( ev ) => {
 				ev.preventDefault()
-				act.blur()
-				doAction( act, act.getAttribute( attr ) )
+				actionEl.blur()
+				doAction( actionEl, actionEl.getAttribute( 'data-dem-act' ) )
 			} )
 		} )
 
@@ -76,6 +73,8 @@ function democracyInit(){
 
 		// collapse content if there are too many answers
 		Utils.setAnswsMaxHeight( screen )
+
+		Utils.updateMaxAnswLimit( screen )
 
 		// animate filled bars - line_animation
 		if( State.lineAnimSpeed ){
@@ -113,6 +112,11 @@ function democracyInit(){
 	function addAnswer( the ){
 		const screen = the.closest( State.screenSel )
 		const isMultiple = screen.querySelector( '[type=checkbox]' )
+		if( isMultiple && Utils.maxAnswLimitData( screen ).isMaxReached ){
+			Utils.demShake( the )
+			return false
+		}
+
 		const input = Utils.newEl( '<input type="text" class="dem-add-answer-txt" value="">' )
 
 		// show vote button
@@ -134,6 +138,7 @@ function democracyInit(){
 		Utils.hideElement( input )
 		Utils.fadeIn( input )
 		input.focus()
+		Utils.updateMaxAnswLimit( screen )
 
 		// add a button to remove the user-entered text
 		if( isMultiple ){
@@ -144,9 +149,10 @@ function democracyInit(){
 			close.addEventListener( 'click', ev => {
 				const parent = close.parentElement
 				const link = parent.querySelector( 'a' )
-				parent.querySelector( 'input' ).remove()
+				input.remove()
 				close.remove()
 				Utils.fadeIn( link )
+				Utils.updateMaxAnswLimit( screen )
 			} )
 		}
 
@@ -186,8 +192,8 @@ function democracyInit(){
 	}
 
 	// handle requests on click
-	function doAction( the, action ){
-		const poll = the.closest( State.mainSel )
+	function doAction( clickedEl, action ){
+		const poll = clickedEl.closest( State.mainSel )
 		const ajaxData = {
 			dem_pid: Cache.getOpts( poll ).pid,
 			dem_act: action,
@@ -201,31 +207,31 @@ function democracyInit(){
 
 		// Collect answers
 		if( 'vote' === action ){
-			ajaxData.answer_ids = collectAnsw( the )
+			ajaxData.answer_ids = collectAnsw( clickedEl )
 			if( ! ajaxData.answer_ids ){
-				Utils.demShake( the )
+				Utils.demShake( clickedEl )
 				return false
 			}
 		}
 
 		// revote button confirmation
-		if( 'delVoted' === action && ! confirm( the.dataset['confirm_text'] ) ){
+		if( 'delVoted' === action && ! confirm( clickedEl.dataset['confirm_text'] ) ){
 			return false
 		}
 
 		// add visitor answer button
 		if( 'newAnswer' === action ){
-			addAnswer( the )
+			addAnswer( clickedEl )
 			return false
 		}
 
 		// AJAX
-		const screen = the.closest( State.screenSel )
+		const screen = clickedEl.closest( State.screenSel )
 		if( ! screen ){
 			return false
 		}
 
-		Loader.setLoader( the )
+		Loader.setLoader( clickedEl )
 		Cache.post( State.ajaxurl, ajaxData )
 			.finally( () => Loader.unsetLoader( screen ) )
 			.then( html => {

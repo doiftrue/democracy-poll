@@ -69,21 +69,18 @@
 
 .dem-poll-note{ font-size:90%; padding:0.5em; opacity:0.8; line-height:1.3; }
 
-.dem-add-answer{
-	position:relative;
-
+.dem-add-answer{ position:relative;
 	> *{ display:block; }
 	a{ display:inline-block; }
 }
-input.dem-add-answer-txt{ width:100%; box-sizing:border-box; }
-.dem-add-answer-close{
-	position:absolute; right:0; padding:0 .7em; cursor:pointer; color:#333;
+input:where(.dem-add-answer-txt){ width:100%; box-sizing:border-box; padding:.2em .3em; font-size:100%; }
 
+.dem-add-answer-close{ position:absolute; right:0; padding:0 .7em; cursor:pointer; color:#333;
 	&:hover{ color:#ff2700; }
 }
 
-.dem-edit-link{
-	display:block; position:absolute; top:0; right:0; line-height:1; text-decoration:none !important; border:none !important;
+.dem-edit-link{ display:block; position:absolute; top:0; right:0; line-height:1;
+	text-decoration:none !important; border:none !important;
 
 	svg{ width:1.2em!important; fill:#6c6c6c; }
 	&:hover svg{ fill:#35A91D;  }

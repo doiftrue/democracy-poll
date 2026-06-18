@@ -84,7 +84,7 @@ class Poll_Renderer {
 		if( $opt->loader_fname ){
 			static $loader; // Output the loader markup only once per page.
 			if( ! $loader ){
-				$loader = '<div class="dem-loader"><div>' . file_get_contents( plugin()->dir . '/assets/styles/loaders/' . $opt->loader_fname ) . '</div></div>';
+				$loader = '<div class="dem-loader dem_loader_js"><div>' . file_get_contents( plugin()->dir . '/assets/styles/loaders/' . $opt->loader_fname ) . '</div></div>';
 				$html .= $loader;
 			}
 		}
@@ -147,7 +147,7 @@ class Poll_Renderer {
 
 		$screen = ( $show_screen === 'vote' || $show_screen === 'force_vote' ) ? 'vote' : 'voted';
 
-		$html = '<div class="dem-screen' . $class_suffix . ' ' . $screen . '">';
+		$html = "<div class=\"dem-screen{$class_suffix} $screen\">";
 		$html .= ( $screen === 'vote' )
 			? $this->get_vote_screen()
 			: $this->get_result_screen();
@@ -161,7 +161,6 @@ class Poll_Renderer {
 	 */
 	public function get_vote_screen(): string {
 		$poll = $this->poll; // simplify
-
 		if( ! $poll->id ){
 			return '';
 		}
@@ -184,7 +183,7 @@ class Poll_Renderer {
 			}
 
 			$lis_html .= strtr( <<<'HTML'
-				<li data-aid="{AID}">
+				<li class="dem-answer-item dem_answer_item_js" data-aid="{AID}">
 					<label class="dem__{TYPE}_label">
 						<input class="dem__{TYPE}" {AUTO_VOTE} type="{TYPE}" value="{AID}" {CHECKED} {DISABLED}><span class="dem__spot"></span> {ANSWER}
 					</label>
@@ -202,7 +201,13 @@ class Poll_Renderer {
 		}
 
 		if( $poll->democratic && ! $poll->voting_blocked ){
-			$lis_html .= '<li class="dem-add-answer"><a href="javascript:void(0);" rel="nofollow" data-dem-act="newAnswer" class="dem-link">' . _x( 'Add your answer', 'front', 'democracy-poll' ) . '</a></li>';
+			$lis_html .= strtr( <<<'HTML'
+				<li class="dem-add-answer dem_add_answer_item_js">
+					<a class="dem-link dem-add-answer-link dem_add_answer_link_js" data-dem-act="newAnswer" href="#" rel="nofollow">{ANCHOR}</a>
+				</li>
+				HTML,
+				[ '{ANCHOR}' => _x( 'Add your answer', 'front', 'democracy-poll' ) ]
+			);
 		}
 
 		$bottom_html = '<div class="dem-bottom">';
@@ -214,7 +219,9 @@ class Poll_Renderer {
 			$vote_btn = '';
 		}
 
-		$for_users_alert = $poll->blocked_by_not_logged ? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>' : '';
+		$for_users_alert = $poll->blocked_by_not_logged
+			? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>'
+			: '';
 
 		// add for cache
 		if( $this->for_cache ){
@@ -226,12 +233,10 @@ class Poll_Renderer {
 				);
 			}
 
-			if( $poll->revote ){
-				$bottom_html .= preg_replace( '/(<[^>]+)/', '$1 style="display:none;"', $this->revote_btn_html(), 1 );
-			}
-			else{
-				$bottom_html .= substr_replace( $voted_btn, '<div style="display:none;"', 0, 4 );
-			}
+			$bottom_html .= $poll->revote
+				? preg_replace( '/(<[^>]+)/', '$1 style="display:none;"', $this->revote_btn_html(), 1 )
+				: substr_replace( $voted_btn, '<div style="display:none;"', 0, 4 );
+
 			$bottom_html .= $vote_btn;
 		}
 		// not for cache

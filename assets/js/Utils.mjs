@@ -151,54 +151,102 @@ export default class Utils {
 		}
 	}
 
+	static #maxAnswLimitBound = false
+
 	// max answers limit - limit for multi-answer selection
 	static maxAnswLimitInit(){
-		if( Utils.maxAnswLimitBound ){
+		if( Utils.#maxAnswLimitBound ){
 			return
 		}
-		Utils.maxAnswLimitBound = true
+		Utils.#maxAnswLimitBound = true
 
-		document.addEventListener( 'change', function( event ){
+		const eventHanlder = ( event ) => {
 			const target = event.target
-			if( ! (target instanceof HTMLInputElement) || target.type !== 'checkbox' ){
-				return
-			}
-
-			const poll = target.closest( State.mainSel )
-			if( ! poll ){
-				return
-			}
-
-			poll._maxAnsws ??= parseInt( JSON.parse( poll.dataset['opts'] ).max_answs ) || 0
-			if( ! poll._maxAnsws ){
+			if( ! (target instanceof HTMLInputElement)
+				|| ( event.type === 'change' && target.type !== 'checkbox' )
+				|| ( event.type === 'input' && ! target.matches( State.userAnswerSel ) )
+			){
 				return
 			}
 
 			const screen = target.closest( State.screenSel )
-			if( ! screen ){
-				return
-			}
+			screen && Utils.updateMaxAnswLimit( screen )
+		}
 
-			const checkboxes = screen.querySelectorAll( 'input[type="checkbox"]' )
-			const checkedCount = screen.querySelectorAll( 'input[type="checkbox"]:checked' ).length
+		document.addEventListener( 'change', eventHanlder )
+		document.addEventListener( 'input', eventHanlder )
+	}
 
-			// if reached max, disable unchecked
-			if( checkedCount >= poll._maxAnsws ){
-				checkboxes.forEach( checkbox => {
-					if( ! checkbox.checked ){
-						checkbox.disabled = true
-						checkbox.closest( 'li' ).classList.add( 'dem-disabled' )
-					}
-				} )
-			}
-			// else re-enable all
-			else{
-				checkboxes.forEach( checkbox => {
-					checkbox.disabled = false
-					checkbox.closest( 'li' ).classList.remove( 'dem-disabled' )
-				} )
-			}
+	static updateMaxAnswLimit( screen ){
+		const {
+			maxAnsws,
+			checkedCount,
+			userAnswerInput,
+			hasUserAnswer,
+			isMaxReached
+		} = Utils.maxAnswLimitData( screen )
+		if( ! maxAnsws ){
+			return
+		}
+
+		const checkboxes = screen.querySelectorAll( 'input[type="checkbox"]' )
+		if( ! checkboxes.length ){
+			return
+		}
+
+		checkboxes.forEach( checkbox => {
+			const shouldDisable = isMaxReached && ! checkbox.checked
+			checkbox.disabled = shouldDisable
+			checkbox.closest( '.dem_answer_item_js' )?.classList.toggle( 'dem-disabled', shouldDisable )
 		} )
+
+		const userAnswerItem = screen.querySelector( '.dem_add_answer_item_js' )
+		if( userAnswerInput ){
+			const shouldDisableInput = ! hasUserAnswer && checkedCount >= maxAnsws
+			userAnswerInput.disabled = shouldDisableInput
+			userAnswerItem?.classList.toggle( 'dem-disabled', shouldDisableInput )
+
+			return
+		}
+
+		if( userAnswerItem ){
+			const shouldDisableLink = checkedCount >= maxAnsws
+			userAnswerItem.classList.toggle( 'dem-disabled', shouldDisableLink )
+
+			const link = userAnswerItem.querySelector( '.dem_add_answer_link_js' )
+			if( link ){
+				if( shouldDisableLink ){
+					link.setAttribute( 'aria-disabled', 'true' )
+					link.setAttribute( 'tabindex', '-1' )
+				}
+				else{
+					link.removeAttribute( 'aria-disabled' )
+					link.removeAttribute( 'tabindex' )
+				}
+			}
+		}
+	}
+
+	static maxAnswLimitData( screen ){
+		const poll = screen.closest( State.mainSel )
+		poll._maxAnsws ??= parseInt( JSON.parse( poll.dataset['opts'] ).max_answs ) || 0
+		const maxAnsws = poll._maxAnsws
+		if( ! maxAnsws ){
+			return {}
+		}
+
+		const checkedCount = screen.querySelectorAll( 'input[type="checkbox"]:checked' ).length
+		const userAnswerInput = screen.querySelector( State.userAnswerSel )
+		const hasUserAnswer = !! userAnswerInput?.value.trim()
+		const isMaxReached = (checkedCount + (hasUserAnswer ? 1 : 0)) >= maxAnsws
+
+		return {
+			maxAnsws,
+			checkedCount,
+			userAnswerInput,
+			hasUserAnswer,
+			isMaxReached,
+		}
 	}
 
 	static demShake( el ){

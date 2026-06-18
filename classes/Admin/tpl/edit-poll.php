@@ -178,7 +178,7 @@ echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
 				<input type="checkbox" name="dmc_multiple"
 				       value="<?= $ml ?>" <?= $ml ? 'checked="checked"' : '' ?> >
 				<input type="number" min="0" value="<?= $ml ?>"
-				       style="width:50px; <?= $ml ? '' : 'display:none;' ?>">
+				       style="width:6em; <?= $ml ? '' : 'display:none;' ?>">
 				<?= esc_html__( 'Allow to choose multiple answers.', 'democracy-poll' ) ?>
 			</label>
 		</li>

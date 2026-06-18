@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function(){
 			jQuery( '[data-dem-act], .democracy a' ).on( 'click', e => e.preventDefault() ); // Disable clicks.
 
 			// Preview.
-			var $demLoader = jQuery( document ).find( '.dem-loader' ).first(); // loader
+			var $demLoader = jQuery( document ).find( '.dem_loader_js' ).first(); // loader
 			jQuery( '.poll.show-loader .dem-screen' ).append( $demLoader.css( 'display', 'table' ) );
 
 			// wpColorPicker
