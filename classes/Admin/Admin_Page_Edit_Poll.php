@@ -3,6 +3,7 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Poll_Storage;
 use DemocracyPoll\Poll_Utils;
 use DemPoll;
 use function DemocracyPoll\plugin;
@@ -466,7 +467,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	private static function _poll_opening( int $poll_id, string $action ): bool {
 		global $wpdb;
 
-		$poll = DemPoll::get_db_data( $poll_id );
+		$poll = Poll_Storage::get_db_data( $poll_id );
 		if( ! $poll ){
 			return false;
 		}
@@ -504,7 +505,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	private static function _poll_activation( int $poll_id, string $action ): bool {
 		global $wpdb;
 
-		$poll = DemPoll::get_db_data( $poll_id );
+		$poll = Poll_Storage::get_db_data( $poll_id );
 		if( ! $poll ){
 			return false;
 		}

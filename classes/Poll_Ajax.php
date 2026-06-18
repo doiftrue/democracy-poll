@@ -41,12 +41,12 @@ class Poll_Ajax {
 		}
 
 		$poll = new DemPoll( $vars->pid );
-		$render = $poll->renderer;
-		$control = $poll->control;
+		$render = new Poll_Renderer( $poll );
+		$voting = new Poll_Voting_Service( $poll );
 
 		// vote and display results
 		if( 'vote' === $vars->act && $vars->aids ){
-			$voted = $control->vote( $vars->aids );
+			$voted = $voting->vote( $vars->aids );
 
 			if( is_wp_error( $voted ) ){
 				echo $render::voted_notice_html( $voted->get_error_message() );
@@ -61,7 +61,7 @@ class Poll_Ajax {
 		}
 		// delete results
 		elseif( 'delVoted' === $vars->act ){
-			$control->delete_vote();
+			$voting->delete_vote();
 			echo $render->get_vote_screen();
 		}
 		// view results
@@ -80,7 +80,7 @@ class Poll_Ajax {
 		/** Get {@see \DemPoll::$voted_for} value */
 		elseif( 'getVotedIds' === $vars->act ){
 			if( $poll->voted_for ){
-				$control->poll_cookie->set(); // request is only made if cookies are not set
+				$poll->user_state->sync_vote_cookie(); // request is only made if cookies are not set
 				echo $poll->voted_for;
 			}
 			elseif( $poll->blocked_by_not_logged ){
@@ -88,7 +88,7 @@ class Poll_Ajax {
 			}
 			else{
 				// Cache a missing vote for half a day to avoid repeating this check.
-				$control->poll_cookie->set_not_voted();
+				$poll->user_state->set_not_voted_cookie();
 			}
 		}
 

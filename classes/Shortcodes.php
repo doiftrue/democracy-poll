@@ -45,7 +45,7 @@ class Shortcodes {
 		if( $poll === 'current' ){
 			$poll = Post_Metabox::get_post_poll_id( $post_id ) ?: 'rand';
 			if( $poll === 'last' || $poll === 'rand' ){
-				$poll = DemPoll::get_db_data( $poll );
+				$poll = Poll_Storage::get_db_data( $poll );
 			}
 		}
 

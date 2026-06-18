@@ -2,6 +2,7 @@
 
 namespace DemocracyPoll\Admin;
 
+use DemocracyPoll\Poll_Storage;
 use function DemocracyPoll\plugin;
 use function DemocracyPoll\options;
 
@@ -112,8 +113,8 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 			?>
 			<div class="block polls-preview">
 				<?php
-				$poll = new \DemPoll( \DemPoll::get_db_data( 'rand' ) );
-				$render = $poll->renderer;
+				$poll = new \DemPoll( Poll_Storage::get_db_data( 'rand' ) );
+				$render = new \DemocracyPoll\Poll_Renderer( $poll );
 
 				if( $poll->id ){
 					$answers = wp_list_pluck( $poll->answers, 'aid' );

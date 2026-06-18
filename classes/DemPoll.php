@@ -2,57 +2,34 @@
 
 use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Poll_Answer;
-use DemocracyPoll\Poll_Renderer;
-use DemocracyPoll\Poll_Controller;
+use DemocracyPoll\Poll_Storage;
+use DemocracyPoll\Poll_User_State;
 use function DemocracyPoll\options;
 
 /**
  * Display and vote a separate poll.
  *
  * @property string $voted_for      Voted for answers IDs, separated by commas.
- * @property string $votedFor       Alias of $voted_for. Legacy.
  * @property bool   $has_voted      Is the user has voted?
  * @property bool   $voting_blocked Is the voting blocked? If true, the user cannot vote.
- * @property bool   $blockVoting    Alias of $voting_blocked. Legacy.
+ * @property bool   $blocked_by_not_logged Is blocked because only logged users can vote.
  *
- * @property-read array $answers  Answers to the poll, sorted by order.
+ * @property-read array $answers  Answers of the poll, sorted by order.
  *
+ * @property string    $votedFor         Legacy. Alias of $voted_for.
+ * @property bool      $blockVoting      Legacy. Alias of $voting_blocked.
  * @property-read bool $blockForVisitor  Legacy.
  */
 class DemPoll {
 
-	public Poll_Renderer $renderer;
+	use DemPoll__Legacy;
 
-	public Poll_Controller $control;
+	public Poll_User_State $user_state; /* readonly */
 
-	/**
-	 * Flag that means the poll is closed because the user
-	 * is not logged and the voting is allowed only for logged users.
-	 *
-	 * We need this separate property to display a note.
-	 */
-	public bool $blocked_by_not_logged = false;
+	public Poll_Storage $storage; /* readonly */
 
 	/** Poll data from DB */
 	public ?object $dbdata = null;
-
-	/**
-	 * Lazy loaded property.
-	 * @see self::set_voted_data()
-	 */
-	private bool $voting_blocked;
-
-	/**
-	 * Lazy loaded property.
-	 * @see self::set_voted_data()
-	 */
-	private bool $has_voted;
-
-	/**
-	 * Lazy loaded property.
-	 * @see self::set_voted_data()
-	 */
-	private string $voted_for;
 
 	/**
 	 * Lazy loaded property.
@@ -63,64 +40,68 @@ class DemPoll {
 
 	/// DB Fields
 
-	/** Poll ID */
+	/** Poll ID (DB Field) */
 	public int $id = 0;
 
-	/** Poll title */
+	/** Poll title (DB Field) */
 	public string $question = '';
 
-	/** Added UNIX timestamp */
+	/** Added UNIX timestamp (DB Field) */
 	public int $added = 0;
 
-	/** End UNIX timestamp */
+	/** End UNIX timestamp (DB Field) */
 	public int $end = 0;
 
-	/** User ID */
+	/** User ID (DB Field) */
 	public int $added_user = 0;
 
-	/** How many users voted for this poll */
+	/** How many users voted for this poll (DB Field) */
 	public int $users_voted = 0;
 
-	/** Is this poll democratic? */
+	/** Is this poll democratic? (DB Field) */
 	public bool $democratic = false;
 
-	/** Is this poll active? */
+	/** Is this poll active? (DB Field) */
 	public bool $active = false;
 
-	/** Is this poll open for voting? */
+	/** Is this poll open for voting? (DB Field) */
 	public bool $open = false;
 
-	/** How many answers may be selected. */
+	/** How many answers may be selected. (DB Field) */
 	public int $multiple = 0;
 
-	/** For logged users only */
+	/** For logged users only (DB Field) */
 	public bool $forusers = false;
 
-	/** Allow to revote */
+	/** Allow to revote (DB Field) */
 	public bool $revote = false;
 
-	/** Show results after voting */
+	/** Show results after voting (DB Field) */
 	public bool $show_results = false;
 
-	/** Answers order: 'by_winner', 'by_id', 'alphabet', 'mix'. {@see Helpers::allowed_answers_orders()} */
+	/** Answers order: 'by_winner', 'by_id', 'alphabet', 'mix'. {@see Helpers::allowed_answers_orders()} (DB Field) */
 	public string $answers_order = '';
 
-	/** Comma separated posts_ids. Eg: '16865,16892' */
+	/** Comma separated posts_ids. Eg: '16865,16892' (DB Field) */
 	public string $in_posts = '';
 
-	/** Additional poll notes */
+	/** Additional poll notes (DB Field) */
 	public string $note = '';
 
 	public function __isset( $name ) {
-		// this props canNOT be not set
+		// Required props (canNOT be not set)
 		$lazy_props = [
 			'answers',
 			'voting_blocked',
-			'blockVoting',
 			'voted_for',
+			'has_voted',
+			'blocked_by_not_logged',
+			// legacy
+			'blockVoting',
 			'votedFor',
-			'has_voted'
+			'blockForVisitor',
 		];
+
 		if( in_array( $name, $lazy_props, true ) ){
 			$this->__get( $name );
 			return true;
@@ -138,40 +119,53 @@ class DemPoll {
 			return $this->answers;
 		}
 
+		/**
+		 * @see self::$blockVoting
+		 * @see self::$voting_blocked
+		 */
 		if( 'voting_blocked' === $name || 'blockVoting' === $name ){
-			isset( $this->voting_blocked ) || $this->set_voting_blocked();
-			return $this->voting_blocked;
+			return $this->user_state->voting_blocked();
 		}
 
-		if( 'voted_for' === $name || 'votedFor' === $name ){
-			isset( $this->voted_for ) || $this->set_voted_data();
-			return $this->voted_for;
+		/**
+		 * @see self::$votedFor
+		 * @see self::$voted_for
+		 */
+		if( in_array( $name, [ 'voted_for', 'votedFor' ], true ) ){
+			return $this->user_state->voted_for();
 		}
 
+		/** @see self::$has_voted */
 		if( 'has_voted' === $name ){
-			isset( $this->has_voted ) || $this->set_voted_data();
-			return $this->has_voted;
+			return $this->user_state->has_voted();
 		}
 
-		if( 'blockForVisitor' === $name ){
-			return $this->blocked_by_not_logged;
+		/**
+		 * @see self::$blocked_by_not_logged
+		 * @see self::$blockForVisitor
+		 */
+		if( in_array( $name, [ 'blocked_by_not_logged', 'blockForVisitor' ], true ) ){
+			return $this->user_state->blocked_by_not_logged();
 		}
 
 		return null;
 	}
 
 	public function __set( $name, $value ) {
-		if( 'voting_blocked' === $name || 'blockVoting' === $name ){
-			$this->voting_blocked = (bool) $value;
+		if( in_array( $name, [ 'voting_blocked', 'blockVoting' ], true ) ){
+			$this->user_state->set_voting_blocked( (bool) $value );
 		}
-		elseif( 'voted_for' === $name || 'votedFor' === $name ){
-			$this->voted_for = (string) $value;
+		elseif( in_array( $name, [ 'voted_for', 'votedFor' ], true ) ){
+			$this->user_state->set_voted_for( (string) $value );
 		}
 		elseif( 'has_voted' === $name ){
-			$this->has_voted = (bool) $value;
+			$this->user_state->set_has_voted( (bool) $value );
+		}
+		elseif( in_array( $name, [ 'blocked_by_not_logged', 'blockForVisitor' ], true ) ){
+			$this->user_state->set_blocked_by_not_logged( (bool) $value );
 		}
 		else {
-			throw new \RuntimeException( __CLASS__ . " class prohibits setting dynamic properties. You are trying to set `$name`." );
+			throw new RuntimeException( __CLASS__ . " class prohibits setting dynamic properties. You are trying to set `$name`." );
 		}
 	}
 
@@ -179,12 +173,15 @@ class DemPoll {
 	 * @param object|int $poll_id  Poll ID to get. OR poll object from DB.
 	 */
 	public function __construct( $poll_id ) {
+		$this->storage    = new Poll_Storage( $this );
+		$this->user_state = new Poll_User_State( $this );
+
 		if( ! $poll_id ){
 			return;
 		}
 
-		is_object( $poll_id ) && $this->dbdata = $poll_id;
-		is_numeric( $poll_id ) && $this->dbdata = self::get_db_data( $poll_id );
+		is_object( $poll_id )  && $this->dbdata = $poll_id;
+		is_numeric( $poll_id ) && $this->dbdata = Poll_Storage::get_db_data( $poll_id );
 		if( empty( $this->dbdata->id ) ){
 			return;
 		}
@@ -206,123 +203,25 @@ class DemPoll {
 		$this->in_posts      = (string) $this->dbdata->in_posts;
 		$this->note          = $this->dbdata->note;
 
-		$this->renderer = new Poll_Renderer( $this ); // after DB data is set
-		$this->control  = new Poll_Controller( $this );  // after DB data is set
-
-		$this->check_poll_close();
-
-		// block for mot logged if needed
-		if( ( options()->only_for_users || $this->forusers ) && ! is_user_logged_in() ){
-			$this->blocked_by_not_logged = true;
-			$this->voting_blocked = true;
-		}
+		$this->storage->close_if_expired(); // TODO: move out from constructor
 	}
 
 	/**
-	 * Checks if the poll should be closed and updates the DB if needed.
-	 * This method should be called after the poll object is created.
+	 * Gets {@see self::$answers} from DB data.
 	 */
-	private function check_poll_close(): void {
-		global $wpdb;
-		if( $this->open && $this->end && ( current_time( 'timestamp' ) > $this->end ) ){
-			$wpdb->update( $wpdb->democracy_q, [ 'open' => 0 ], [ 'id' => $this->id ] );
-			$this->open = false;
-		}
+	public function set_answers(): void {
+		$this->answers = $this->storage->get_answers();
 	}
 
+}
+
+trait DemPoll__Legacy {
+
 	/**
-	 * @param int|string $poll_id Poll id to get. Specify 'rand', 'last' when you need a random or last poll.
-	 *
-	 * @return object|null
+	 * @param int|string $poll_id Poll id to get. Specify "rand" or "last" for a random or last poll.
 	 */
 	public static function get_db_data( $poll_id ): ?object {
-		global $wpdb;
-
-		if( 'rand' === $poll_id ){
-			$poll_data = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q WHERE active = 1 ORDER BY RAND() LIMIT 1" );
-		}
-		elseif( 'last' === $poll_id ){
-			$poll_data = $wpdb->get_row( "SELECT * FROM $wpdb->democracy_q WHERE open = 1 ORDER BY id DESC LIMIT 1" );
-		}
-		else {
-			$poll_data = $wpdb->get_row( $wpdb->prepare(
-				"SELECT * FROM $wpdb->democracy_q WHERE id = %d LIMIT 1", $poll_id
-			) );
-		}
-
-		/**
-		 * Allows to modify the poll object before it is returned.
-		 *
-		 * @param object|null $poll_data Raw poll data from DB.
-		 */
-		return apply_filters( 'dem_get_poll', $poll_data );
-	}
-
-	protected function set_voting_blocked(): void {
-		$blocked = ( $this->blocked_by_not_logged || ! $this->open );
-
-		if( ! $blocked ){
-			$this->set_voted_data();
-			$blocked = $this->has_voted;
-		}
-
-		$this->voting_blocked = $blocked;
-	}
-
-	/**
-	 * Sets the props {@see self::$has_voted} and {@see self::$voted_for}.
-	 */
-	protected function set_voted_data(): void {
-		if( ! $this->id ){
-			return;
-		}
-
-		$this->voted_for = $this->control->get_voted_for();
-		$this->has_voted = (bool) $this->voted_for;
-	}
-
-	public function re_set_answers(): void {
-	    $this->set_answers();
-	}
-
-	/**
-	 * Gets answers from DB, sorts them in the required order, and sets it to {@see self::$answers}.
-	 */
-	protected function set_answers(): void {
-		global $wpdb;
-
-		$answers = $wpdb->get_results( $wpdb->prepare(
-			"SELECT * FROM $wpdb->democracy_a WHERE qid = %d", $this->id
-		) );
-
-		$is_custom_order = (bool) ( reset( $answers )->aorder ?? 0 );
-		if( $is_custom_order ){
-			$answers = Helpers::objects_array_sort( $answers, [ 'aorder' => 'asc' ] );
-		}
-		else{
-			$order = $this->answers_order ?: options()->order_answers;
-
-			if( $order === 'by_winner' || $order == 1 ){
-				$answers = Helpers::objects_array_sort( $answers, [ 'votes' => 'desc' ] );
-			}
-			elseif( $order === 'alphabet' ){
-				$answers = Helpers::objects_array_sort( $answers, [ 'answer' => 'asc' ] );
-			}
-			elseif( $order === 'mix' ){
-				shuffle( $answers );
-			}
-			elseif( $order === 'by_id' ){}
-		}
-
-		$answers = array_map( static fn( $data ) => new Poll_Answer( $data ), $answers );
-
-		/**
-		 * Allows to modify the answers before they are set in the poll object.
-		 *
-		 * @param Poll_Answer[] $answers The answers to be set for the poll.
-		 * @param DemPoll       $poll    The poll object itself.
-		 */
-		$this->answers = apply_filters( 'dem_set_answers', $answers, $this );
+		return Poll_Storage::get_db_data( $poll_id );
 	}
 
 }

@@ -60,7 +60,7 @@ function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = ''
 		$wpdb->update( $wpdb->democracy_q, [ 'in_posts' => $new_in_posts ], [ 'id' => $poll->id ] );
 	}
 
-	return $poll->renderer->get_screen( 'vote', $before_title, $after_title );
+	return ( new \DemocracyPoll\Poll_Renderer( $poll ) )->get_screen( 'vote', $before_title, $after_title );
 }
 
 /**
@@ -82,7 +82,7 @@ function get_democracy_poll_results( $poll_id = 0, $before_title = '', $after_ti
 		return __( 'Poll results hidden for now...', 'democracy-poll' );
 	}
 
-	return $poll->renderer->get_screen( 'voted', $before_title, $after_title );
+	return ( new \DemocracyPoll\Poll_Renderer( $poll ) )->get_screen( 'voted', $before_title, $after_title );
 }
 
 /**
@@ -290,7 +290,7 @@ function get_dem_polls( $args = [] ) {
 	foreach( $poll_ids as $poll_id ){
 		$poll = new DemPoll( $poll_id );
 
-		$elm_html = $poll->renderer->get_screen( $rg->screen, $rg->before_title, $rg->after_title );
+		$elm_html = ( new \DemocracyPoll\Poll_Renderer( $poll ) )->get_screen( $rg->screen, $rg->before_title, $rg->after_title );
 
 		// in posts
 		if(

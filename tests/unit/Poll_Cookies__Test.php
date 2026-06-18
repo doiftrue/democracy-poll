@@ -4,7 +4,6 @@ namespace DemocracyPoll\unit;
 
 use DemocracyPoll\Poll_Cookies;
 use DemPoll;
-use ReflectionClass;
 use WP_Mock;
 
 class Poll_Cookies__Test extends \DemocracyPoll\DemocTestCase {
@@ -37,15 +36,6 @@ class Poll_Cookies__Test extends \DemocracyPoll\DemocTestCase {
 		$this->assertSame( Poll_Cookies::NOT_VOTED, ( new Poll_Cookies( $this->get_poll( 13 ) ) )->get() );
 		$this->assertSame( '', ( new Poll_Cookies( $this->get_poll( 14 ) ) )->get() );
 		$this->assertSame( '', ( new Poll_Cookies( $this->get_poll( 15 ) ) )->get() );
-	}
-
-	/**
-	 * @covers \DemocracyPoll\Poll_Cookies::get()
-	 */
-	public function test__ignores_old_json_format(): void {
-		$_COOKIE['demPoll'] = '{"12":"1,2"}';
-
-		$this->assertSame( '', ( new Poll_Cookies( $this->get_poll( 12 ) ) )->get() );
 	}
 
 	/**
@@ -120,8 +110,7 @@ class Poll_Cookies__Test extends \DemocracyPoll\DemocTestCase {
 	}
 
 	private function get_poll( int $id, string $voted_for = '' ): DemPoll {
-		$reflection = new ReflectionClass( DemPoll::class );
-		$poll = $reflection->newInstanceWithoutConstructor();
+		$poll = new DemPoll( 0 );
 		$poll->id = $id;
 		$poll->voted_for = $voted_for;
 

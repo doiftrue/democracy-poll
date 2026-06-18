@@ -29,6 +29,8 @@ final class Helpers {
 	 *
 	 * Pass an array of objects in $array, specify sorting parameters in $args,
 	 * and get a sorted array of objects/arrays as a result.
+	 *
+	 * TODO: Replace with wp_list_sort()
 	 */
 	public static function objects_array_sort( array $array, array $args = [ 'votes' => 'DESC' ] ): array {
 		$args = array_map( 'strtoupper', $args );

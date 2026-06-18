@@ -3,6 +3,7 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Poll_Storage;
 use DemocracyPoll\Poll_Utils;
 use DemPoll;
 use function DemocracyPoll\plugin;
@@ -259,7 +260,7 @@ class List_Table_Logs extends \WP_List_Table {
 
 		if( 'qid' === $column ){
 			if( ! $poll = $this->cache( 'polls', $log->qid ) ){
-				$poll = $this->cache( 'polls', $log->qid, DemPoll::get_db_data( $log->qid ) );
+				$poll = $this->cache( 'polls', $log->qid, Poll_Storage::get_db_data( $log->qid ) );
 			}
 
 			$actions = '';
