@@ -82,9 +82,16 @@ $opt = options();
 				<select name="dem[order_answers]">
 					<?= Helpers::answers_order_select_options( $opt->order_answers ) ?>
 				</select>
-				<?= esc_html__( 'How to sort the answers during voting, if they don\'t have order? (default option)', 'democracy-poll' ) ?>
+				<?= esc_html__( 'Answer order on vote screen (global option)', 'democracy-poll' ) ?>
 				<br>
-				<em><?= esc_html__( 'This is the default value. Option can be changed for each poll separately.', 'democracy-poll' ) ?></em>
+				<em><?= esc_html__( 'Option can be changed for each poll separately.', 'democracy-poll' ) ?></em>
+			</li>
+
+			<li class="block">
+				<select name="dem[order_answers_voted]">
+					<?= Helpers::answers_order_select_options( $opt->order_answers_voted ) ?>
+				</select>
+				<?= esc_html__( 'Answer order on results screen (global option)', 'democracy-poll' ) ?>
 			</li>
 
 			<li class="block">

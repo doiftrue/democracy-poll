@@ -143,6 +143,8 @@ Yes. Deleting the plugin removes all of its options and data.
 == Changelog ==
 
 = 6.3.2 =
+* NEW: Added a global setting to sort answers on the results screen.
+* FIX: Small bug when allowing users to add their own answers.
 * IMP: Store votes for all polls in one cookie instead of creating a separate cookie per poll.
 * CHG: Max poll height options disabled by default.
 

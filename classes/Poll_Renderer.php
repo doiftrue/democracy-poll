@@ -287,8 +287,7 @@ class Poll_Renderer {
 			return '';
 		}
 
-		// sort by votes
-		$answers = wp_list_sort( $poll->answers, [ 'votes' => 'desc' ] );
+		$answers = $this->get_result_screen_answers();
 
 		$max = $total = 0;
 
@@ -417,6 +416,36 @@ class Poll_Renderer {
 		return apply_filters( 'dem_result_screen', $html, $this->poll );
 	}
 
+	/**
+	 * @return Poll_Answer[]
+	 */
+	private function get_result_screen_answers(): array {
+		$answers = $this->poll->answers;
+
+		$order = options()->order_answers_voted ?: 'by_winner';
+
+		if( $order === 'by_winner' || $order == 1 ){
+			$answers = wp_list_sort( $answers, [ 'votes' => 'desc' ] );
+		}
+		elseif( $order === 'alphabet' ){
+			$answers = wp_list_sort( $answers, [ 'answer' => 'asc' ] );
+		}
+		elseif( $order === 'mix' ){
+			shuffle( $answers );
+		}
+		elseif( $order === 'by_id' ){
+			$answers = wp_list_sort( $answers, [ 'aid' => 'asc' ] );
+		}
+
+		/**
+		 * Allows to modify the answers before the result screen is rendered.
+		 *
+		 * @param Poll_Answer[] $answers The answers to render.
+		 * @param DemPoll       $poll    The current poll object.
+		 */
+		return apply_filters( 'dem_result_screen_answers', $answers, $this->poll );
+	}
+
 	private function result_screen_controls_html(): string {
 		$poll = $this->poll; // simplify
 
@@ -445,27 +474,22 @@ class Poll_Renderer {
 					], $for_users_alert );
 				}
 
-				if( $poll->revote ){
-					$html .= $this->revote_btn_html();
-				}
-				else{
-					$html .= $vote_btn;
-				}
+				$html .= $poll->revote
+					? $this->revote_btn_html()
+					: $vote_btn;
 			}
 			// not for cache
 			else{
 				if( $for_users_alert ){
 					$html .= $for_users_alert;
 				}
+				elseif( $poll->has_voted ){
+					if( $poll->revote ){
+						$html .= $this->revote_btn_html();
+					}
+				}
 				else{
-					if( $poll->has_voted ){
-						if( $poll->revote ){
-							$html .= $this->revote_btn_html();
-						}
-					}
-					else{
-						$html .= $vote_btn;
-					}
+					$html .= $vote_btn;
 				}
 			}
 		}

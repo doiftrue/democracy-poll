@@ -10,6 +10,7 @@ namespace DemocracyPoll;
  * @property-read int    $force_cachegear        Eg: 0
  * @property-read int    $archive_page_id        Eg: 0
  * @property-read string $order_answers          Eg: 'by_winner'
+ * @property-read string $order_answers_voted    Eg: 'by_winner'
  * @property-read int    $use_widget             Eg: 1
  * @property-read int    $hide_vote_button       Eg: 0
  * @property-read int    $toolbar_menu           Eg: 1
@@ -61,6 +62,7 @@ class Options {
 			'force_cachegear'        => 0,
 			'archive_page_id'        => 0,
 			'order_answers'          => 'by_winner',
+			'order_answers_voted'    => 'by_winner',
 			'use_widget'             => 1,
 			// Hide the vote button where possible and vote by clicking an answer.
 			'hide_vote_button'       => 0,
