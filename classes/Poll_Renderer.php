@@ -166,7 +166,8 @@ class Poll_Renderer {
 			return '';
 		}
 
-		$auto_vote_on_select = ( ! $poll->multiple && $poll->revote && options()->hide_vote_button );
+		$auto_vote_on_click = ( ! $poll->multiple && $poll->revote && options()->hide_vote_button );
+		$auto_vote_attr = $auto_vote_on_click ? 'data-is_auto_vote="1"' : '';
 
 		$lis_html = '';
 		foreach( $poll->answers as $answer ){
@@ -193,7 +194,7 @@ class Poll_Renderer {
 				[
 					'{AID}'       => $answer->aid,
 					'{TYPE}'      => $poll->multiple ? 'checkbox' : 'radio',
-					'{AUTO_VOTE}' => $auto_vote_on_select ? 'data-dem-act="vote"' : '',
+					'{AUTO_VOTE}' => $auto_vote_on_click ? 'data-dem-act="vote"' : '',
 					'{CHECKED}'   => $checked,
 					'{DISABLED}'  => $poll->user_state->voted_for ? 'disabled="disabled"' : '',
 					'{ANSWER}'    => $answer->answer,
@@ -216,8 +217,8 @@ class Poll_Renderer {
 		$voted_btn = '<div class="dem-voted-button"><input class="dem-button ' . options()->btn_class . '" type="button" value="' . _x( 'Already voted...', 'front', 'democracy-poll' ) . '" disabled="disabled"></div>';
 		$vote_btn = '<div class="dem-vote-button"><input class="dem-button ' . options()->btn_class . '" type="button" value="' . _x( 'Vote', 'front', 'democracy-poll' ) . '" data-dem-act="vote"></div>';
 
-		if( $auto_vote_on_select ){
-			$vote_btn = '';
+		if( $auto_vote_on_click ){
+			$vote_btn = preg_replace( '/(<[^>]+)/', '$1 style="display:none;"', $vote_btn, 1 );
 		}
 
 		$for_users_alert = $poll->user_state->blocked_by_not_logged
@@ -259,7 +260,7 @@ class Poll_Renderer {
 		$bottom_html .= '</div>'; // dem-bottom
 
 		$html = <<<HTML
-		<div class="dem-vote-wrap">
+		<div class="dem-vote-wrap" $auto_vote_attr>
 			<ul class="dem-vote">
 				$lis_html
 			</ul>

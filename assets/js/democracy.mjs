@@ -64,10 +64,7 @@ function democracyInit(){
 			} )
 		} )
 
-		// Hide vote button
-		if( screen.querySelector( 'input[type=radio][data-dem-act=vote]' ) ){
-			screen.querySelectorAll( '.dem-vote-button' ).forEach( button => button.style.display = 'none' )
-		}
+		hideAutoVoteButton( screen )
 
 		Utils.resetHeight( screen )
 
@@ -86,6 +83,16 @@ function democracyInit(){
 		// Set height explicitly ------------
 		// Bind to window resize (mobile rotation, etc.)
 		Utils.setHeight( screen, false )
+	}
+
+	function hasAutoVoteAnswers( screen ){
+		return !! screen.querySelector( '.dem-vote-wrap[data-is_auto_vote="1"]' )
+	}
+
+	function hideAutoVoteButton( screen ){
+		if( hasAutoVoteAnswers( screen ) && ! screen.querySelector( State.userAnswerSel ) ){
+			screen.querySelectorAll( '.dem-vote-button' ).forEach( button => button.style.display = 'none' )
+		}
 	}
 
 	function animateFill( fill ){
@@ -117,11 +124,21 @@ function democracyInit(){
 			return false
 		}
 
-		const input = Utils.newEl( '<input type="text" class="dem-add-answer-txt" value="">' )
+		const customAnswInput = Utils.newEl( '<input type="text" class="dem-add-answer-txt" value="">' )
 
 		// show vote button
 		const btn = screen.querySelector( '.dem-vote-button' )
 		btn && Utils.showElement( btn )
+		const voteActionEl = btn?.querySelector( '[data-dem-act="vote"]' ) || customAnswInput
+
+		customAnswInput.addEventListener( 'keydown', ev => {
+			if( ev.key !== 'Enter' || ev.isComposing ){
+				return
+			}
+
+			ev.preventDefault()
+			doAction( voteActionEl, 'vote' )
+		} )
 
 		// handle radio inputs: uncheck and attach click handler
 		screen.querySelectorAll( '[type=radio]' ).forEach( radio => {
@@ -129,30 +146,35 @@ function democracyInit(){
 			radio.addEventListener( 'click', () => {
 				Utils.fadeIn( the )
 				document.querySelectorAll( State.userAnswerSel ).forEach( node => node.remove() )
+				hideAutoVoteButton( screen )
+				requestAnimationFrame( () => Utils.setHeight( screen, true ) )
 			} )
 		} )
 
 		//
 		Utils.hideElement( the )
-		the.parentElement.append( input )
-		Utils.hideElement( input )
-		Utils.fadeIn( input )
-		input.focus()
+		the.parentElement.append( customAnswInput )
+		Utils.hideElement( customAnswInput )
+		Utils.fadeIn( customAnswInput )
+		customAnswInput.focus()
 		Utils.updateMaxAnswLimit( screen )
+		requestAnimationFrame( () => Utils.setHeight( screen, true ) )
 
 		// add a button to remove the user-entered text
-		if( isMultiple ){
+		{
 			const close = Utils.newEl( '<span class="dem-add-answer-close">×</span>' )
-			close.style.lineHeight = input.offsetHeight + 'px'
-			input.before( close )
+			close.style.lineHeight = customAnswInput.offsetHeight + 'px'
+			customAnswInput.before( close )
 
 			close.addEventListener( 'click', ev => {
 				const parent = close.parentElement
 				const link = parent.querySelector( 'a' )
-				input.remove()
+				customAnswInput.remove()
 				close.remove()
 				Utils.fadeIn( link )
 				Utils.updateMaxAnswLimit( screen )
+				hideAutoVoteButton( screen )
+				requestAnimationFrame( () => Utils.setHeight( screen, true ) )
 			} )
 		}
 
