@@ -17,7 +17,7 @@ class Helpers_Test extends DemocTestCase {
 
 		$this->assertContains( 'Vote', $texts );
 		$this->assertContains( 'Results', $texts );
-		$this->assertContains( 'Only registered users can vote. <a>Login</a> to vote.', $texts );
+		$this->assertContains( 'Only registered users can vote. <a>Log in</a> to vote.', $texts );
 	}
 
 	/**

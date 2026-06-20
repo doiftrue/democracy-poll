@@ -120,7 +120,7 @@ class Plugin_Initor {
 			'logs'             => __( 'Logs', 'democracy-poll' ),
 			'general_settings' => __( 'Settings', 'democracy-poll' ),
 			'design'           => __( 'Theme Settings', 'democracy-poll' ),
-			'l10n'             => __( 'Texts changes', 'democracy-poll' ),
+			'l10n'             => __( 'Text changes', 'democracy-poll' ),
 		];
 
 		if( ! plugin()->super_access ){

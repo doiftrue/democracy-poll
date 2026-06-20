@@ -9,9 +9,9 @@ final class Helpers {
 
 	public static function allowed_answers_orders(): array {
 		return [
-			'by_winner' => __( 'By Winner', 'democracy-poll' ),
+			'by_winner' => __( 'By winner', 'democracy-poll' ),
 			'alphabet'  => __( 'Alphabetically (a-z)', 'democracy-poll' ),
-			'by_id'     => __( 'By ID (by added order)', 'democracy-poll' ),
+			'by_id'     => __( 'By ID (added order)', 'democracy-poll' ),
 			'mix'       => __( 'Mixed (shuffled)', 'democracy-poll' ),
 		];
 	}

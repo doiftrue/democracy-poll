@@ -139,7 +139,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 		$this->list_table->table_title(); // title of single poll
 		$this->render_logs_buttons();
 		?>
-		<form class="democr_options dempage-logs" action="" method="POST">
+		<form class="demoptions dempage-logs" action="" method="POST">
 			<?php wp_nonce_field( 'dem_adminform', '_demnonce' ) ?>
 			<?php $this->list_table->display() ?>
 		</form>
@@ -171,7 +171,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 			   href="<?= esc_url( Admin_Page::add_nonce( $_SERVER['REQUEST_URI'] ) ) ?>&dem_del_closed_polls_logs"
 			   onclick="return confirm( '<?= __( 'Are you sure?', 'democracy-poll' ) ?>' )"
 			>
-				<?= sprintf( __( 'Delete logs of closed pols - %d', 'democracy-poll' ), $count ) ?>
+				<?= sprintf( __( 'Delete logs of closed polls - %d', 'democracy-poll' ), $count ) ?>
 			</a>
 
 			<a class="button button-small"

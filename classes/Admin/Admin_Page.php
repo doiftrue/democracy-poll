@@ -206,7 +206,7 @@ trait Admin_Page__Additional {
 				sprintf( '<a class="nav-tab %s" href="%s">%s</a>',
 					$current_class( 'l10n' ),
 					add_query_arg( [ 'subpage' => 'l10n' ], $main_page ),
-					__( 'Texts changes', 'democracy-poll' )
+					__( 'Text changes', 'democracy-poll' )
 				)
 			) : '',
 		] );

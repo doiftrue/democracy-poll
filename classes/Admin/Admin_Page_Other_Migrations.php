@@ -50,7 +50,7 @@ class Admin_Page_Other_Migrations implements Admin_Subpage_Interface {
 
 		$migration = get_option( 'democracy_migrated' );
 		?>
-		<div class="democr_options dempage-migrations">
+		<div class="demoptions dempage-migrations">
 			<?php
 			$wp_polls = $migration['wp-polls'] ?? '';
 			if( $wp_polls ){

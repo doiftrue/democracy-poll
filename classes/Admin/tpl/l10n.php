@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 
 <?= Admin_Page::info_sidebar() ?>
 
-<div class="democr_options dempage_l10n">
+<div class="demoptions dempage_l10n">
 
 	<?php Admin_Page_Design::polls_preview(); ?>
 

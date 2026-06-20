@@ -23,7 +23,13 @@ use RuntimeException;
  */
 abstract class DemPoll_Legacy {
 
+	private ?Poll_Renderer $legacy_renderer = null;
+
 	public function __isset( $name ) {
+		if( 'renderer' === $name ){
+			return (bool) $this->id;
+		}
+
 		$map = [
 			'votedFor'        => 'voted_for',
 			'blockVoting'     => 'voting_blocked',
@@ -48,6 +54,10 @@ abstract class DemPoll_Legacy {
 	}
 
 	public function __get( $name ) {
+		if( 'renderer' === $name ){
+			return $this->legacy_renderer ??= new Poll_Renderer( $this );
+		}
+
 		if( 'voted_for' === $name || 'votedFor' === $name ){
 			return $this->user_state->voted_for;
 		}

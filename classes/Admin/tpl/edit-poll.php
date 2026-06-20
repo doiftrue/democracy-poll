@@ -38,7 +38,7 @@ echo $this->admpage->subpages_menu();
 
 echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
 ?>
-<form class="democr_options dempage-new-poll" action="<?= esc_url( remove_query_arg( 'msg' ) ) ?>" method="POST">
+<form class="demoptions dempage-new-poll" action="<?= esc_url( remove_query_arg( 'msg' ) ) ?>" method="POST">
 
 	<input type="hidden" name="dmc_qid" value="<?= (int) $this->poll_id ?>">
 	<?= wp_nonce_field( 'dem_adminform', '_demnonce', false, false ) ?>
@@ -133,7 +133,7 @@ echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
 						: '',
 					'{TITLE}'       => $poll->multiple
 						? __( 'leave blank to update from logs', 'democracy-poll' )
-						: __( 'Voices', 'democracy-poll' ),
+						: __( 'Votes', 'democracy-poll' ),
 					'{USERS_VOTE}'  => __( 'Users vote:', 'democracy-poll' ),
 					'{USERS_VOTED}' => $poll->users_voted ?: '',
 					'{READONLY}'    => $poll->multiple ? '' : 'readonly',

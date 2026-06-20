@@ -301,7 +301,7 @@ class Poll_Renderer {
 		}
 
 		$voted_class = 'dem-voted-this';
-		$voted_txt = _x( 'This is Your vote.', 'front', 'democracy-poll' );
+		$voted_txt = _x( 'This is your vote.', 'front', 'democracy-poll' );
 
 		$lis_html = '';
 		foreach( $answers as $answer ){
@@ -507,7 +507,7 @@ class Poll_Renderer {
 			[
 				'{REVOTE}'    => _x( 'Revote', 'front', 'democracy-poll' ),
 				'{BTN_CLASS}' => options()->btn_class,
-				'{CONFIRM}'   => _x( 'Are you sure you want cancel the votes?', 'front', 'democracy-poll' ),
+				'{CONFIRM}'   => _x( 'Are you sure you want to cancel the votes?', 'front', 'democracy-poll' ),
 			]
 		);
 	}
@@ -527,7 +527,7 @@ class Poll_Renderer {
 					{MESSAGE}
 				</div>
 				HTML,
-				[ '{JS}' => esc_attr( $js ), '{MESSAGE}' => _x( 'You or your IP had already vote.', 'front', 'democracy-poll' ) ]
+				[ '{JS}' => esc_attr( $js ), '{MESSAGE}' => _x( 'You or your IP have already voted.', 'front', 'democracy-poll' ) ]
 			);
 		}
 
@@ -542,7 +542,7 @@ class Poll_Renderer {
 	}
 
 	protected static function registered_only_alert_text(): string {
-		$text = _x( 'Only registered users can vote. <a>Login</a> to vote.', 'front', 'democracy-poll' );
+		$text = _x( 'Only registered users can vote. <a>Log in</a> to vote.', 'front', 'democracy-poll' );
 		$login_url = wp_login_url( $_SERVER['REQUEST_URI'] );
 
 		return str_replace( '<a', sprintf( '<a href="%s" rel="nofollow"', esc_url( $login_url ) ), $text );

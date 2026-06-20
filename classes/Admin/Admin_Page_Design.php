@@ -85,7 +85,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 		?>
 		<div style="display: flex; align-items: center; gap: .5rem;">
 			<input type="text" class="iris_color <?= esc_attr( $class ) ?>" name="<?= esc_attr( $name ) ?>" value="<?= esc_attr( $value ) ?>">
-			<span><?= esc_html__( $title ) ?></span>
+			<span><?= esc_html( $title ) ?></span>
 		</div>
 		<?php
 	}
@@ -104,7 +104,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 
 	public static function polls_preview( bool $show_colorpicker = false ): void {
 		?>
-		<section class="group">
+		<section class="demoptions__group">
 			<?php
 			if( $show_colorpicker ){
 				self::color_picker_html( [
@@ -113,7 +113,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 				] );
 			}
 			?>
-			<div class="block polls-preview">
+			<div class="demoptions__block polls-preview">
 				<?php
 				$poll = new Poll_Object( Poll_Storage::get_db_data( 'rand' ) );
 				$render = new Poll_Renderer( $poll );

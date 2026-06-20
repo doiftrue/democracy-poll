@@ -27,7 +27,7 @@ class Admin_Page_Polls implements Admin_Subpage_Interface {
 	public function render(): void {
 		echo $this->admpage->subpages_menu();
 		?>
-		<div class="democr_options dempage-polls">
+		<div class="demoptions dempage-polls">
 			<?php
 			$this->list_table->search_box( __( 'Search', 'democracy-poll' ), 'style="margin:1em 0 -1em;"' );
 			$this->list_table->display();

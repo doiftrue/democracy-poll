@@ -42,7 +42,7 @@ class Poll_Voting_Service {
 
 		// Check the quantity
 		if( $poll->multiple > 1 && count( $aids ) > $poll->multiple ){
-			return new WP_Error( 'vote_err', __( 'ERROR: You select more number of answers than it is allowed...', 'democracy-poll' ) );
+			return new WP_Error( 'vote_err', __( 'ERROR: You selected more answers than allowed.', 'democracy-poll' ) );
 		}
 
 		// Add user free-answer
