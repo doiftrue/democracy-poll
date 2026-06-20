@@ -9,9 +9,9 @@ use WP_Error;
  */
 class Poll_Voting_Service {
 
-	private Poll_Object $poll;
+	private Poll $poll;
 
-	public function __construct( Poll_Object $poll ) {
+	public function __construct( Poll $poll ) {
 		$this->poll = $poll;
 	}
 
@@ -76,8 +76,8 @@ class Poll_Voting_Service {
 		/**
 		 * Allows to perform actions after the user has voted.
 		 *
-		 * @param string      $voted_for  Comma-separated IDs of the answers the user voted for. Or custom answer as string.
-		 * @param Poll_Object $poll       The current poll object.
+		 * @param string $voted_for  Comma-separated IDs of the answers the user voted for. Or custom answer as string.
+		 * @param Poll   $poll       The current poll object.
 		 */
 		do_action( 'dem_voted', $ustate->voted_for, $poll );
 
@@ -117,7 +117,7 @@ class Poll_Voting_Service {
 		/**
 		 * Allows to perform actions after the user's vote has been deleted.
 		 *
-		 * @param Poll_Object $poll  The current poll object.
+		 * @param Poll $poll  The current poll object.
 		 */
 		do_action( 'dem_vote_deleted', $poll );
 	}

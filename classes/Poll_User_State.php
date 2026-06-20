@@ -14,7 +14,7 @@ use RuntimeException;
  */
 class Poll_User_State {
 
-	private Poll_Object $poll; /* readonly */
+	private Poll $poll; /* readonly */
 	public Poll_Cookies $poll_cookie; /* readonly */
 	public Poll_Logs $poll_logs; /* readonly */
 
@@ -23,7 +23,7 @@ class Poll_User_State {
 	private ?bool $has_voted = null;
 	private ?string $voted_for = null;
 
-	public function __construct( Poll_Object $poll ) {
+	public function __construct( Poll $poll ) {
 		$this->poll = $poll;
 		$this->poll_cookie = new Poll_Cookies( $poll );
 		$this->poll_logs = new Poll_Logs( $poll );
@@ -84,7 +84,7 @@ class Poll_User_State {
 		return false;
 	}
 
-	public function sync_vote_cookie(): void {
+	public function set_vote_cookie(): void {
 		$this->poll_cookie->set();
 	}
 

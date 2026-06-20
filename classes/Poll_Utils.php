@@ -20,7 +20,7 @@ class Poll_Utils {
 	/**
 	 * Check whether current user can edit a specified poll.
 	 *
-	 * @param Poll_Object|object|int $poll  Poll object or poll id.
+	 * @param Poll|object|int $poll  Poll object or poll id.
 	 */
 	public static function cuser_can_edit_poll( $poll ): bool {
 		if( plugin()->super_access ){

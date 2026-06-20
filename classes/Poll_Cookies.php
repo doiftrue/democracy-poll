@@ -20,7 +20,7 @@ class Poll_Cookies {
 
 	private const NOT_VOTED_TTL = DAY_IN_SECONDS / 2;
 
-	private Poll_Object $poll;
+	private Poll $poll;
 
 	public static function to_base36( int $number ): string {
 		return base_convert( (string) $number, 10, 36 );
@@ -30,7 +30,7 @@ class Poll_Cookies {
 		return (int) base_convert( $number, 36, 10 );
 	}
 
-	public function __construct( Poll_Object $poll ) {
+	public function __construct( Poll $poll ) {
 		$this->poll = $poll;
 	}
 

@@ -18,4 +18,4 @@ spl_autoload_register( static function( $class ) {
 
 
 // For backward compatibility. !After spl_autoload_register()
-class_alias( Poll_Object::class, \DemPoll::class );
+class_alias( Poll::class, \DemPoll::class );

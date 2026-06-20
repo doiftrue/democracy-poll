@@ -7,7 +7,7 @@ use DemocracyPoll\Helpers\Helpers;
 /**
  * @property-read Poll_Answer[] $answers Poll Answers.
  */
-class Poll_Object extends DemPoll_Legacy {
+class Poll extends DemPoll_Legacy {
 
 	public Poll_User_State $user_state; /* readonly */
 
@@ -21,9 +21,6 @@ class Poll_Object extends DemPoll_Legacy {
 	private array $answers;
 
 	/// DB Fields
-
-	/** Poll data from DB */
-	private ?object $dbdata = null;
 
 	/** Poll ID (DB Field) */
 	public int $id = 0;
@@ -109,27 +106,27 @@ class Poll_Object extends DemPoll_Legacy {
 			return;
 		}
 
-		$this->dbdata = is_object( $poll_id ) ? $poll_id : Poll_Storage::get_db_data( $poll_id );
-		if( empty( $this->dbdata->id ) ){
+		$dbdata = is_object( $poll_id ) ? $poll_id : Poll_Storage::get_db_data( $poll_id );
+		if( empty( $dbdata->id ) ){
 			return;
 		}
 
-		$this->id            = (int) $this->dbdata->id;
-		$this->question      = (string) $this->dbdata->question;
-		$this->added         = (int) $this->dbdata->added;
-		$this->added_user    = (int) $this->dbdata->added_user;
-		$this->end           = (int) $this->dbdata->end;
-		$this->users_voted   = (int) $this->dbdata->users_voted;
-		$this->democratic    = (bool) ( options()->democracy_off ? false : $this->dbdata->democratic );
-		$this->active        = (bool) $this->dbdata->active;
-		$this->open          = (bool) $this->dbdata->open;
-		$this->multiple      = (int) $this->dbdata->multiple;
-		$this->forusers      = (bool) $this->dbdata->forusers;
-		$this->revote        = (bool) ( options()->keep_logs && ! options()->revote_off && $this->dbdata->revote );
-		$this->show_results  = (bool) $this->dbdata->show_results;
-		$this->answers_order = (string) $this->dbdata->answers_order;
-		$this->in_posts      = (string) $this->dbdata->in_posts;
-		$this->note          = $this->dbdata->note;
+		$this->id            = (int) $dbdata->id;
+		$this->question      = (string) $dbdata->question;
+		$this->added         = (int) $dbdata->added;
+		$this->added_user    = (int) $dbdata->added_user;
+		$this->end           = (int) $dbdata->end;
+		$this->users_voted   = (int) $dbdata->users_voted;
+		$this->democratic    = (bool) ( options()->democracy_off ? false : $dbdata->democratic );
+		$this->active        = (bool) $dbdata->active;
+		$this->open          = (bool) $dbdata->open;
+		$this->multiple      = (int) $dbdata->multiple;
+		$this->forusers      = (bool) $dbdata->forusers;
+		$this->revote        = (bool) ( options()->keep_logs && ! options()->revote_off && $dbdata->revote );
+		$this->show_results  = (bool) $dbdata->show_results;
+		$this->answers_order = (string) $dbdata->answers_order;
+		$this->in_posts      = (string) $dbdata->in_posts;
+		$this->note          = $dbdata->note;
 
 		$this->storage->close_if_expired(); // TODO: move out from constructor
 	}

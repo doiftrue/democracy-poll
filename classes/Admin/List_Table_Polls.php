@@ -5,7 +5,7 @@ namespace DemocracyPoll\Admin;
 use DemocracyPoll\Helpers\Kses;
 use DemocracyPoll\Poll_Answer;
 use DemocracyPoll\Poll_Utils;
-use DemocracyPoll\Poll_Object;
+use DemocracyPoll\Poll;
 use WP_List_Table;
 use function DemocracyPoll\plugin;
 use function DemocracyPoll\options;
@@ -95,8 +95,8 @@ class List_Table_Polls extends WP_List_Table {
 	}
 
 	/**
-	 * @param Poll_Object $poll
-	 * @param string      $column
+	 * @param Poll   $poll
+	 * @param string $column
 	 */
 	public function column_default( $poll, $column ) {
 		global $wpdb;
@@ -122,7 +122,7 @@ class List_Table_Polls extends WP_List_Table {
 		return $poll->$column ?? print_r( $poll, true );
 	}
 
-	private function col__question( Poll_Object $poll ): string {
+	private function col__question( Poll $poll ): string {
 		global $wpdb;
 		$admurl = plugin()->admin_page_url;
 
@@ -166,13 +166,13 @@ class List_Table_Polls extends WP_List_Table {
 		return $statuses . Kses::kses_html( $poll->question ) . '<div class="row-actions">' . implode( " ", $actions ) . '</div>';
 	}
 
-	private function col__usersvotes( Poll_Object $poll ): string {
+	private function col__usersvotes( Poll $poll ): string {
 		$votes_sum = array_sum( wp_list_pluck( $poll->answers, 'votes' ) );
 
 		return $poll->multiple ? '<span title="' . __( 'voters / votes', 'democracy-poll' ) . '">' . $poll->users_voted . ' <small>/ ' . $votes_sum . '</small></span>' : $votes_sum;
 	}
 
-	private function col__in_posts( Poll_Object $poll ): string {
+	private function col__in_posts( Poll $poll ): string {
 		if( ! $posts = \DemocracyPoll\Helpers\Helpers::get_posts_with_poll( $poll ) ){
 			return '';
 		}
@@ -191,7 +191,7 @@ class List_Table_Polls extends WP_List_Table {
 			: $out[0];
 	}
 
-	private function col__answers( Poll_Object $poll ): string {
+	private function col__answers( Poll $poll ): string {
 		if( ! $poll->answers ){
 			return 'No';
 		}
@@ -214,15 +214,15 @@ class List_Table_Polls extends WP_List_Table {
 		return '<div class="compact-answ">' . implode( '<br>', $_answ ) . '</div>';
 	}
 
-	private function col__active( Poll_Object $poll ): string {
+	private function col__active( Poll $poll ): string {
 		return Poll_Utils::cuser_can_edit_poll( $poll ) ? Admin_Page_Edit_Poll::activate_button( $poll, true, 'small' ) : '';
 	}
 
-	private function col__open( Poll_Object $poll ): string {
+	private function col__open( Poll $poll ): string {
 		return Poll_Utils::cuser_can_edit_poll( $poll ) ? Admin_Page_Edit_Poll::open_button( $poll, true, 'small' ) : '';
 	}
 
-	private function col__added( Poll_Object $poll ): string {
+	private function col__added( Poll $poll ): string {
 		$date_format = get_option( 'date_format' );
 
 		$date = date( $date_format, $poll->added );
@@ -231,7 +231,7 @@ class List_Table_Polls extends WP_List_Table {
 		return "$date<br>$end";
 	}
 
-	/** @param Poll_Object $poll */
+	/** @param Poll $poll */
 	public function column_cb( $poll ) {
 		echo '<label><input id="cb-select-' . $poll->id . '" type="checkbox" name="delete[]" value="' . $poll->id . '" /></label>';
 	}

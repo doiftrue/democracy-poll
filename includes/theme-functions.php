@@ -1,12 +1,16 @@
 <?php
 
+use DemocracyPoll\Admin\Post_Metabox;
+use DemocracyPoll\Poll;
+use DemocracyPoll\Poll_Renderer;
+
 /**
  * Gets poll object.
  *
- * @param \DemocracyPoll\Poll_Object|int $poll_id  Poll ID to get. OR poll object from DB.
+ * @param Poll|int $poll_id  Poll ID to get. OR poll object from DB.
  */
-function democracy_get_poll( $poll_id ): \DemocracyPoll\Poll_Object {
-	return new \DemocracyPoll\Poll_Object( $poll_id );
+function democracy_get_poll( $poll_id ): Poll {
+	return new Poll( $poll_id );
 }
 
 /**
@@ -21,7 +25,7 @@ function get_post_poll_id( $post_id = 0 ) {
 		$post_id = get_post()->ID;
 	}
 
-	return \DemocracyPoll\Admin\Post_Metabox::get_post_poll_id( (int) $post_id );
+	return Post_Metabox::get_post_poll_id( (int) $post_id );
 }
 
 /**
@@ -44,7 +48,7 @@ function democracy_poll( $id = 0, $before_title = '', $after_title = '', $from_p
  * @return string   Poll HTML code.
  */
 function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = '', $from_post = 0 ) {
-	$poll = new \DemocracyPoll\Poll_Object( $poll_id );
+	$poll = new Poll( $poll_id );
 	if( ! $poll->id ){
 		return 'Poll not found';
 	}
@@ -60,7 +64,7 @@ function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = ''
 		$wpdb->update( $wpdb->democracy_q, [ 'in_posts' => $new_in_posts ], [ 'id' => $poll->id ] );
 	}
 
-	return ( new \DemocracyPoll\Poll_Renderer( $poll ) )->get_screen( 'vote', $before_title, $after_title );
+	return ( new Poll_Renderer( $poll ) )->get_screen( 'vote', $before_title, $after_title );
 }
 
 /**
@@ -73,7 +77,7 @@ function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = ''
  * @return string   Poll HTML code.
  */
 function get_democracy_poll_results( $poll_id = 0, $before_title = '', $after_title = '' ) {
-	$poll = new \DemocracyPoll\Poll_Object( $poll_id );
+	$poll = new Poll( $poll_id );
 	if( ! $poll->id ){
 		return '';
 	}
@@ -82,7 +86,7 @@ function get_democracy_poll_results( $poll_id = 0, $before_title = '', $after_ti
 		return __( 'Poll results hidden for now...', 'democracy-poll' );
 	}
 
-	return ( new \DemocracyPoll\Poll_Renderer( $poll ) )->get_screen( 'voted', $before_title, $after_title );
+	return ( new Poll_Renderer( $poll ) )->get_screen( 'voted', $before_title, $after_title );
 }
 
 /**
@@ -279,7 +283,7 @@ function get_dem_polls( $args = [] ) {
 	$polls = [];
 	if( $rg->return === 'objects' ){
 		foreach( $poll_ids as $poll_id ){
-			$polls[] = new \DemocracyPoll\Poll_Object( $poll_id );
+			$polls[] = new Poll( $poll_id );
 		}
 
 		return $polls;
@@ -288,9 +292,9 @@ function get_dem_polls( $args = [] ) {
 	// HTML
 	$out = [];
 	foreach( $poll_ids as $poll_id ){
-		$poll = new \DemocracyPoll\Poll_Object( $poll_id );
+		$poll = new Poll( $poll_id );
 
-		$elm_html = ( new \DemocracyPoll\Poll_Renderer( $poll ) )
+		$elm_html = ( new Poll_Renderer( $poll ) )
 			->get_screen( $rg->screen, $rg->before_title, $rg->after_title );
 
 		// in posts

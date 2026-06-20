@@ -107,8 +107,8 @@ class Poll_Cookies__Test extends DemocTestCase {
 		$this->assertSame( $timestamp + ( DAY_IN_SECONDS * 2 ), $cookie->sent[0]['expire'] );
 	}
 
-	private function get_poll( int $id, string $voted_for = '' ): Poll_Object {
-		$poll = new Poll_Object( 0 );
+	private function get_poll( int $id, string $voted_for = '' ): Poll {
+		$poll = new Poll( 0 );
 		$poll->id = $id;
 		$poll->user_state->voted_for = $voted_for;
 

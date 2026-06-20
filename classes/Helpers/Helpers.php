@@ -2,7 +2,7 @@
 
 namespace DemocracyPoll\Helpers;
 
-use DemocracyPoll\Poll_Object;
+use DemocracyPoll\Poll;
 use WP_Post;
 
 final class Helpers {
@@ -30,7 +30,7 @@ final class Helpers {
 	/**
 	 * Retrieves the post objects to which the poll is attached (where the shortcode is used).
 	 *
-	 * @param Poll_Object $poll  The current poll object from the database.
+	 * @param Poll $poll  The current poll object from the database.
 	 *
 	 * @return WP_Post[] An array of post objects or an empty array.
 	 */

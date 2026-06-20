@@ -6,9 +6,9 @@ use DemocracyPoll\Helpers\IP;
 
 class Poll_Logs {
 
-	private Poll_Object $poll;
+	private Poll $poll;
 
-	public function __construct( Poll_Object $poll ) {
+	public function __construct( Poll $poll ) {
 		$this->poll = $poll;
 	}
 

@@ -38,7 +38,7 @@ class Poll_Ajax {
 			wp_die( 'error: unknown poll id' );
 		}
 
-		$poll = new Poll_Object( $vars->pid );
+		$poll = new Poll( $vars->pid );
 		$render = new Poll_Renderer( $poll );
 		$voting = new Poll_Voting_Service( $poll );
 
@@ -79,7 +79,7 @@ class Poll_Ajax {
 		elseif( 'getVotedIds' === $vars->act ){
 			$ustate = $poll->user_state;
 			if( $ustate->voted_for ){
-				$ustate->sync_vote_cookie();
+				$ustate->set_vote_cookie();
 				echo $ustate->voted_for;
 			}
 			elseif( $ustate->blocked_by_not_logged ){

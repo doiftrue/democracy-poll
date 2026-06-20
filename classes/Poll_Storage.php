@@ -10,9 +10,9 @@ use DemocracyPoll\Helpers\Kses;
  */
 class Poll_Storage {
 
-	private Poll_Object $poll;
+	private Poll $poll;
 
-	public function __construct( Poll_Object $poll ) {
+	public function __construct( Poll $poll ) {
 		$this->poll = $poll;
 	}
 
@@ -90,7 +90,7 @@ class Poll_Storage {
 		 * Allows to modify the answers before they are set in the poll object.
 		 *
 		 * @param Poll_Answer[] $answers  The answers to be set for the poll.
-		 * @param Poll_Object   $poll     The poll object itself.
+		 * @param Poll          $poll     The poll object itself.
 		 */
 		return apply_filters( 'dem_set_answers', $answers, $poll );
 	}
