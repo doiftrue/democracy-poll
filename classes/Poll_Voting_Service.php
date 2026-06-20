@@ -2,7 +2,6 @@
 
 namespace DemocracyPoll;
 
-use DemPoll;
 use WP_Error;
 
 /**
@@ -10,9 +9,9 @@ use WP_Error;
  */
 class Poll_Voting_Service {
 
-	private DemPoll $poll;
+	private Poll_Object $poll;
 
-	public function __construct( DemPoll $poll ) {
+	public function __construct( Poll_Object $poll ) {
 		$this->poll = $poll;
 	}
 
@@ -61,7 +60,6 @@ class Poll_Voting_Service {
 		}
 
 		$poll->users_voted++;
-		is_object( $poll->dbdata ) && $poll->dbdata->users_voted++; // just in case
 
 		$ustate->voted_for = $voted_for;
 		$ustate->has_voted = true;
@@ -78,8 +76,8 @@ class Poll_Voting_Service {
 		/**
 		 * Allows to perform actions after the user has voted.
 		 *
-		 * @param string  $voted_for Comma-separated IDs of the answers the user voted for. Or custom answer as string.
-		 * @param DemPoll $poll      The current poll object.
+		 * @param string      $voted_for  Comma-separated IDs of the answers the user voted for. Or custom answer as string.
+		 * @param Poll_Object $poll       The current poll object.
 		 */
 		do_action( 'dem_voted', $ustate->voted_for, $poll );
 
@@ -119,7 +117,7 @@ class Poll_Voting_Service {
 		/**
 		 * Allows to perform actions after the user's vote has been deleted.
 		 *
-		 * @param DemPoll $poll The current poll object.
+		 * @param Poll_Object $poll  The current poll object.
 		 */
 		do_action( 'dem_vote_deleted', $poll );
 	}

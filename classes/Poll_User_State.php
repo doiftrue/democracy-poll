@@ -2,20 +2,19 @@
 
 namespace DemocracyPoll;
 
-use DemPoll;
 use RuntimeException;
 
 /**
  * Represents the current visitor state for a specific poll.
  *
- * @property bool   $blocked_by_not_logged Is blocked because only logged users can vote.
- * @property bool   $voting_blocked        Is the voting blocked? If true, the user cannot vote.
- * @property bool   $has_voted             Has the current user voted?
  * @property string $voted_for             Voted answer IDs, separated by commas.
+ * @property bool   $has_voted             Has the current user voted?
+ * @property bool   $voting_blocked        Is the voting blocked? If true, the user cannot vote.
+ * @property bool   $blocked_by_not_logged Is blocked because only logged users can vote.
  */
 class Poll_User_State {
 
-	private DemPoll $poll; /* readonly */
+	private Poll_Object $poll; /* readonly */
 	public Poll_Cookies $poll_cookie; /* readonly */
 	public Poll_Logs $poll_logs; /* readonly */
 
@@ -24,7 +23,7 @@ class Poll_User_State {
 	private ?bool $has_voted = null;
 	private ?string $voted_for = null;
 
-	public function __construct( DemPoll $poll ) {
+	public function __construct( Poll_Object $poll ) {
 		$this->poll = $poll;
 		$this->poll_cookie = new Poll_Cookies( $poll );
 		$this->poll_logs = new Poll_Logs( $poll );
@@ -39,16 +38,16 @@ class Poll_User_State {
 			return $this->has_voted ??= (bool) $this->__get( 'voted_for' );
 		}
 
-		if( 'blocked_by_not_logged' === $name ){ /** @see self::$blocked_by_not_logged - get */
-			return $this->blocked_by_not_logged ??= $this->poll->id
-				&& ( options()->only_for_users || $this->poll->forusers )
-				&& ! is_user_logged_in();
-		}
-
 		if( 'voting_blocked' === $name ){ /** @see self::$voting_blocked - get */
 			return $this->voting_blocked ??= ! $this->poll->id || ! $this->poll->open
 				|| $this->__get( 'blocked_by_not_logged' )
 				|| $this->__get( 'has_voted' );
+		}
+
+		if( 'blocked_by_not_logged' === $name ){ /** @see self::$blocked_by_not_logged - get */
+			return $this->blocked_by_not_logged ??= $this->poll->id
+				&& ( options()->only_for_users || $this->poll->forusers )
+				&& ! is_user_logged_in();
 		}
 
 		throw new RuntimeException( __CLASS__ . " class has no `$name` property." );

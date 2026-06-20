@@ -2,8 +2,6 @@
 
 namespace DemocracyPoll;
 
-use DemPoll;
-
 class Poll_Ajax {
 
 	public string $ajax_url;
@@ -40,7 +38,7 @@ class Poll_Ajax {
 			wp_die( 'error: unknown poll id' );
 		}
 
-		$poll = new DemPoll( $vars->pid );
+		$poll = new Poll_Object( $vars->pid );
 		$render = new Poll_Renderer( $poll );
 		$voting = new Poll_Voting_Service( $poll );
 

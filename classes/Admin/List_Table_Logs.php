@@ -5,7 +5,7 @@ namespace DemocracyPoll\Admin;
 use DemocracyPoll\Helpers\Kses;
 use DemocracyPoll\Poll_Storage;
 use DemocracyPoll\Poll_Utils;
-use DemPoll;
+use DemocracyPoll\Poll_Object;
 use function DemocracyPoll\plugin;
 use function DemocracyPoll\options;
 
@@ -165,7 +165,7 @@ class List_Table_Logs extends \WP_List_Table {
 		}
 
 		if( ! $poll = $this->cache( 'polls', $this->poll_id ) ){
-			$poll = new DemPoll( $this->poll_id );
+			$poll = new Poll_Object( $this->poll_id );
 			$this->cache( 'polls', $this->poll_id, $poll );
 		}
 

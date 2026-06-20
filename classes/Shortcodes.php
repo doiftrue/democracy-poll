@@ -3,7 +3,6 @@
 namespace DemocracyPoll;
 
 use DemocracyPoll\Admin\Post_Metabox;
-use DemPoll;
 
 class Shortcodes {
 

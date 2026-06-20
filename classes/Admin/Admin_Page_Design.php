@@ -2,7 +2,7 @@
 
 namespace DemocracyPoll\Admin;
 
-use DemPoll;
+use DemocracyPoll\Poll_Object;
 use DemocracyPoll\Poll_Renderer;
 use DemocracyPoll\Poll_Storage;
 use function DemocracyPoll\plugin;
@@ -115,7 +115,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 			?>
 			<div class="block polls-preview">
 				<?php
-				$poll = new DemPoll( Poll_Storage::get_db_data( 'rand' ) );
+				$poll = new Poll_Object( Poll_Storage::get_db_data( 'rand' ) );
 				$render = new Poll_Renderer( $poll );
 
 				if( $poll->id ){

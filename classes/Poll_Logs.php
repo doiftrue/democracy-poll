@@ -3,13 +3,12 @@
 namespace DemocracyPoll;
 
 use DemocracyPoll\Helpers\IP;
-use DemPoll;
 
 class Poll_Logs {
 
-	private DemPoll $poll;
+	private Poll_Object $poll;
 
-	public function __construct( DemPoll $poll ) {
+	public function __construct( Poll_Object $poll ) {
 		$this->poll = $poll;
 	}
 

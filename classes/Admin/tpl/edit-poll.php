@@ -140,24 +140,8 @@ echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
 				]
 			);
 		}
-
-		if( ! options()->democracy_off ){
-			?>
-			<li class="not__answer" style="list-style:none;">
-				<label>
-					<span class="dashicons dashicons-megaphone"></span>
-					<input type="hidden" name="dmc_democratic" value=""/>
-					<input type="checkbox" name="dmc_democratic"
-					       value="1" <?php checked( ( ! isset( $poll->democratic ) || $poll->democratic ), 1 ) ?> />
-					<?= esc_html__( 'Allow users to add answers (democracy).', 'democracy-poll' ) ?>
-				</label>
-			</li>
-			<?php
-		}
 		?>
 	</ol>
-
-	<hr>
 
 	<ol class="poll-options">
 		<li>
@@ -170,25 +154,26 @@ echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
 			</label>
 		</li>
 
+		<?php if( ! options()->democracy_off ){ ?>
+			<li class="not__answer" style="list-style:none;">
+				<label>
+					<span class="dashicons dashicons-megaphone"></span>
+					<input type="hidden" name="dmc_democratic" value=""/>
+					<input type="checkbox" name="dmc_democratic"
+					       value="1" <?php checked( ( ! isset( $poll->democratic ) || $poll->democratic ), 1 ) ?> />
+					<?= esc_html__( 'Allow users to add answers (democracy).', 'democracy-poll' ) ?>
+				</label>
+			</li>
+		<?php } ?>
 		<li>
 			<label>
 				<span class="dashicons dashicons-image-filter"></span>
-				<?php $ml = (int) @ $poll->multiple; ?>
 				<input type="hidden" name='dmc_multiple' value=''>
 				<input type="checkbox" name="dmc_multiple"
-				       value="<?= $ml ?>" <?= $ml ? 'checked="checked"' : '' ?> >
-				<input type="number" min="0" value="<?= $ml ?>"
-				       style="width:6em; <?= $ml ? '' : 'display:none;' ?>">
+				       value="<?= (int) $poll->multiple ?>" <?= $poll->multiple ? 'checked="checked"' : '' ?> >
+				<input type="number" min="0" value="<?= (int) $poll->multiple ?>"
+				       style="width:6em; <?= $poll->multiple ? '' : 'display:none;' ?>">
 				<?= esc_html__( 'Allow to choose multiple answers.', 'democracy-poll' ) ?>
-			</label>
-		</li>
-
-		<li>
-			<label>
-				<span class="dashicons dashicons-no"></span>
-				<input type="text" name="dmc_end" value="<?= @ $poll->end ? date( 'd-m-Y', $poll->end ) : '' ?>"
-				       style="width:120px; min-width:120px;">
-				<?= esc_html__( 'Date, when poll was/will be closed. Format: dd-mm-yyyy.', 'democracy-poll' ) ?>
 			</label>
 		</li>
 
@@ -244,6 +229,15 @@ echo ( $title ? "<h2>$title</h2>$shortcode" : '' );
 				<br><span
 					class="description"><?= esc_html__( 'Note: This text will be added under poll.', 'democracy-poll' ); ?></span>
 
+			</label>
+		</li>
+
+		<li>
+			<label>
+				<span class="dashicons dashicons-no"></span>
+				<input type="text" name="dmc_end" value="<?= @ $poll->end ? date( 'd-m-Y', $poll->end ) : '' ?>"
+				       style="width:120px; min-width:120px;">
+				<?= esc_html__( 'Date, when poll was/will be closed. Format: dd-mm-yyyy.', 'democracy-poll' ) ?>
 			</label>
 		</li>
 

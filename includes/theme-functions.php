@@ -3,10 +3,10 @@
 /**
  * Gets poll object.
  *
- * @param object|int $poll_id Poll ID to get. OR poll object from DB.
+ * @param \DemocracyPoll\Poll_Object|int $poll_id  Poll ID to get. OR poll object from DB.
  */
-function democracy_get_poll( $poll_id ): DemPoll {
-	return new DemPoll( $poll_id );
+function democracy_get_poll( $poll_id ): \DemocracyPoll\Poll_Object {
+	return new \DemocracyPoll\Poll_Object( $poll_id );
 }
 
 /**
@@ -44,7 +44,7 @@ function democracy_poll( $id = 0, $before_title = '', $after_title = '', $from_p
  * @return string   Poll HTML code.
  */
 function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = '', $from_post = 0 ) {
-	$poll = new DemPoll( $poll_id );
+	$poll = new \DemocracyPoll\Poll_Object( $poll_id );
 	if( ! $poll->id ){
 		return 'Poll not found';
 	}
@@ -73,7 +73,7 @@ function get_democracy_poll( $poll_id = 0, $before_title = '', $after_title = ''
  * @return string   Poll HTML code.
  */
 function get_democracy_poll_results( $poll_id = 0, $before_title = '', $after_title = '' ) {
-	$poll = new DemPoll( $poll_id );
+	$poll = new \DemocracyPoll\Poll_Object( $poll_id );
 	if( ! $poll->id ){
 		return '';
 	}
@@ -279,7 +279,7 @@ function get_dem_polls( $args = [] ) {
 	$polls = [];
 	if( $rg->return === 'objects' ){
 		foreach( $poll_ids as $poll_id ){
-			$polls[] = new DemPoll( $poll_id );
+			$polls[] = new \DemocracyPoll\Poll_Object( $poll_id );
 		}
 
 		return $polls;
@@ -288,9 +288,10 @@ function get_dem_polls( $args = [] ) {
 	// HTML
 	$out = [];
 	foreach( $poll_ids as $poll_id ){
-		$poll = new DemPoll( $poll_id );
+		$poll = new \DemocracyPoll\Poll_Object( $poll_id );
 
-		$elm_html = ( new \DemocracyPoll\Poll_Renderer( $poll ) )->get_screen( $rg->screen, $rg->before_title, $rg->after_title );
+		$elm_html = ( new \DemocracyPoll\Poll_Renderer( $poll ) )
+			->get_screen( $rg->screen, $rg->before_title, $rg->after_title );
 
 		// in posts
 		if(

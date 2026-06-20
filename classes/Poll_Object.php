@@ -1,24 +1,17 @@
 <?php
 
+namespace DemocracyPoll;
+
 use DemocracyPoll\Helpers\Helpers;
-use DemocracyPoll\Poll_Answer;
-use DemocracyPoll\Poll_Storage;
-use DemocracyPoll\Poll_User_State;
-use function DemocracyPoll\options;
 
 /**
  * @property-read Poll_Answer[] $answers Poll Answers.
  */
-class DemPoll {
-
-	use DemPoll__Legacy;
+class Poll_Object extends DemPoll_Legacy {
 
 	public Poll_User_State $user_state; /* readonly */
 
 	public Poll_Storage $storage; /* readonly */
-
-	/** Poll data from DB */
-	public ?object $dbdata = null;
 
 	/**
 	 * Lazy loaded property.
@@ -28,6 +21,9 @@ class DemPoll {
 	private array $answers;
 
 	/// DB Fields
+
+	/** Poll data from DB */
+	private ?object $dbdata = null;
 
 	/** Poll ID (DB Field) */
 	public int $id = 0;
@@ -83,6 +79,10 @@ class DemPoll {
 			return true;
 		}
 
+		if( parent::__isset( $name ) ){
+			return true;
+		}
+
 		return property_exists( $this, $name ) && $this->$name !== null;
 	}
 
@@ -90,16 +90,12 @@ class DemPoll {
 	 * Handles properties lazy-load.
 	 */
 	public function __get( $name ) {
-		if( 'answers' === $name ){
+		if( 'answers' === $name ){ /** @see self::$answers */
 			isset( $this->answers ) || $this->set_answers();
 			return $this->answers;
 		}
 
-		return null;
-	}
-
-	public function __set( $name, $value ) {
-		throw new RuntimeException( __CLASS__ . " class prohibits setting dynamic properties. You are trying to set `$name`." );
+		return parent::__get( $name );
 	}
 
 	/**
@@ -143,17 +139,6 @@ class DemPoll {
 	 */
 	public function set_answers(): void {
 		$this->answers = $this->storage->get_answers();
-	}
-
-}
-
-trait DemPoll__Legacy {
-
-	/**
-	 * @param int|string $poll_id Poll id to get. Specify "rand" or "last" for a random or last poll.
-	 */
-	public static function get_db_data( $poll_id ): ?object {
-		return Poll_Storage::get_db_data( $poll_id );
 	}
 
 }

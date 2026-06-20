@@ -3,7 +3,6 @@
 namespace DemocracyPoll;
 
 use DemocracyPoll\Helpers\Kses;
-use DemPoll;
 
 /**
  * Handles rendering the poll HTML for display on the front-end.
@@ -19,9 +18,9 @@ class Poll_Renderer {
 	/** Flag to not show results in the poll */
 	public bool $not_show_results = false;
 
-	private \DemPoll $poll;
+	private Poll_Object $poll;
 
-	public function __construct( \DemPoll $poll ) {
+	public function __construct( Poll_Object $poll ) {
 		$this->poll = $poll;
 
 		if(
@@ -271,8 +270,8 @@ class Poll_Renderer {
 		/**
 		 * Allows to modify the vote screen HTML before it is returned.
 		 *
-		 * @param string $html  The HTML of the vote screen.
-		 * @param DemPoll $poll The current poll object.
+		 * @param string      $html  The HTML of the vote screen.
+		 * @param Poll_Object $poll  The current poll object.
 		 */
 		return apply_filters( 'dem_vote_screen', $html, $poll );
 	}
@@ -412,8 +411,8 @@ class Poll_Renderer {
 		/**
 		 * Allows to modify result screen HTML before it is returned.
 		 *
-		 * @param string  $html The HTML of the result screen.
-		 * @param DemPoll $poll The current poll object.
+		 * @param string      $html  The HTML of the result screen.
+		 * @param Poll_Object $poll  The current poll object.
 		 */
 		return apply_filters( 'dem_result_screen', $html, $this->poll );
 	}
@@ -442,8 +441,8 @@ class Poll_Renderer {
 		/**
 		 * Allows to modify the answers before the result screen is rendered.
 		 *
-		 * @param Poll_Answer[] $answers The answers to render.
-		 * @param DemPoll       $poll    The current poll object.
+		 * @param Poll_Answer[] $answers  The answers to render.
+		 * @param Poll_Object   $poll     The current poll object.
 		 */
 		return apply_filters( 'dem_result_screen_answers', $answers, $this->poll );
 	}

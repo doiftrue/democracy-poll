@@ -120,6 +120,11 @@ Yes. Deleting the plugin removes all of its options and data.
 
 == Backward Compatibility Notes ==
 
+= 6.4.0 =
+* CHG: `DemPoll::$dbdata` become private. Use `DemPoll` props.
+* CHG: `DemPoll` object renamed to `\DemocracyPoll\Poll_Object`. All references to `DemPoll` in your code should be updated to `\DemocracyPoll\Poll_Object`. Public contract changed, so you may need to update your code if you used `DemPoll` or it's properties directly.
+	* `democracy_get_poll()` function now returns `\DemocracyPoll\Poll_Object` but not DemPoll object.
+
 = 6.3.2 =
 * CHG: `Poll_Service` class renamed to `Poll_Controller`.
 * CHG: Poll log methods moved from `Poll_Controller` (Poll_Service) to the new `Poll_Logs` class. Replace `$poll->control->get_user_vote_logs()` with `$poll->control->poll_logs->get_user_vote_logs()`.
@@ -142,11 +147,13 @@ Yes. Deleting the plugin removes all of its options and data.
 
 == Changelog ==
 
-= 6.3.2 =
+= 6.4.0 =
+* CHG: `DemPoll::$dbdata` become private. Use `DemPoll` props.
+* CHG: `DemPoll` object renamed to `\DemocracyPoll\Poll_Object`. Old `DemPoll` type will work as before (via PHP class alias). Public contract changed slightly, so you may need to update your code if you use `DemPoll` or it's properties directly.
 * NEW: Added a global setting to sort answers on the results screen.
+* CHG: Max poll height options disabled by default.
 * FIX: Small bug when allowing users to add their own answers.
 * IMP: Store votes for all polls in one cookie instead of creating a separate cookie per poll.
-* CHG: Max poll height options disabled by default.
 
 = 6.3.1 =
 * FIX: Restored the Text Customization settings page after a previous refactor.

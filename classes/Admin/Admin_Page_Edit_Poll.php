@@ -3,16 +3,16 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Poll_Object;
 use DemocracyPoll\Poll_Storage;
 use DemocracyPoll\Poll_Utils;
-use DemPoll;
 use function DemocracyPoll\plugin;
 
 class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 
 	private int $poll_id = 0;
 
-	private ?DemPoll $poll = null;
+	private ?Poll_Object $poll = null;
 
 	private Admin_Page $admpage;
 
@@ -70,7 +70,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 			wp_die( 'Sorry, you are not allowed to access this page.' );
 		}
 
-		$this->poll = $this->poll_id ? new DemPoll( $this->poll_id ) : null;
+		$this->poll = $this->poll_id ? new Poll_Object( $this->poll_id ) : null;
 
 		require __DIR__ . '/tpl/edit-poll.php';
 	}
@@ -379,7 +379,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	/**
 	 * Displays poll activation/deactivation button.
 	 */
-	public static function activate_button( DemPoll $poll, $reverse = false, $size = 'big' ): string {
+	public static function activate_button( Poll_Object $poll, $reverse = false, $size = 'big' ): string {
 		if( $poll->active ){
 			$url = esc_url( Admin_Page::add_nonce( add_query_arg( [ 'dmc_deactivate_poll' => $poll->id, 'dmc_activate_poll' => null, ] ) ) );
 			$title = __( 'Deactivate', 'democracy-poll' );

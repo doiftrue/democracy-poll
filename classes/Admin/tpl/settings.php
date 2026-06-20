@@ -20,7 +20,7 @@ $opt = options();
 	<form action="" method="POST">
 		<?php wp_nonce_field( 'dem_adminform', '_demnonce' ); ?>
 
-		<ul style="margin:1em;">
+		<ul class="democr_options__optlist" style="margin:1em;">
 			<li class="block">
 				<label>
 					<input type="checkbox" value="1"
