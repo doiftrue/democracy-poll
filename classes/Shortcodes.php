@@ -15,7 +15,6 @@ class Shortcodes {
 	}
 
 	public function democracy_archives_shortcode( $args ): string {
-
 		$args = shortcode_atts( [
 			'before_title'   => '',
 			'after_title'    => '',
@@ -39,16 +38,21 @@ class Shortcodes {
 
 		// Determine which post the poll belongs to when the shortcode is used outside the content.
 		$post_id = ( is_singular() && is_main_query() ) ? $GLOBALS['post']->ID : 0;
-		$poll = $atts['id'];
+		$poll = self::normalize_poll_id_attr( $atts['id'] );
 
 		if( $poll === 'current' ){
 			$poll = Post_Metabox::get_post_poll_id( $post_id ) ?: 'rand';
-			if( $poll === 'last' || $poll === 'rand' ){
-				$poll = Poll_Storage::get_db_data( $poll );
-			}
+		}
+
+		if( $poll === 'last' || $poll === 'rand' ){
+			$poll = Poll_Storage::get_db_data( $poll );
 		}
 
 		return '<div class="dem-poll-shortcode">' . get_democracy_poll( $poll, '', '', $post_id ) . '</div>';
+	}
+
+	private static function normalize_poll_id_attr( $poll_id ): string {
+		return sanitize_key( html_entity_decode( (string) $poll_id, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
 	}
 
 }

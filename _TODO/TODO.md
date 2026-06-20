@@ -17,3 +17,5 @@
 * ADD: Group polls
 * ADD: Речь идёт о премодерации, чтобы пользователь предложил свой вариант, а публичным данный вариант станет после одобрения администратором.
 * ADD: Добавить возможность "прикреплять" опрос к конкретному посту/странице вставкой шорткода не в тексте, а сделать метабокс (причем с нормальным выбором опроса из списка). Это позволит добавлять опрос в любое место на странице (согласно дизайну) и только для тех постов/страниц, где подключен опрос.
+
+* Is there any possibility in a future update to include an option to display only the percentage(% of votes instead of the number of votes? (and allow the total number of votes to be hidden)  https://wordpress.org/support/topic/of-votes-instead-of-number-of-votes/
