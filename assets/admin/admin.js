@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function(){
 	}
 
 	function edit_poll(){
-		var $answers_wrap = jQuery( '.new-poll-answers' );
+		var $answers_wrap = jQuery( '.dem-edit-poll__answers' );
 		if( $answers_wrap.length ){
 			var focusFunction = function(){
 				// Check whether a new field should be added.
@@ -180,7 +180,8 @@ document.addEventListener('DOMContentLoaded', function(){
 				};
 
 				// add order handle
-				$orderEls.css( { position: 'relative' } ).prepend( '<span class="sorthand dashicons dashicons-menu" style="position:absolute; left:-2.5em; margin-left:0; margin-top:.19em; cursor:move;"></span>' );
+				$orderEls.css( { position: 'relative' } )
+				$orderEls.prepend( '<span class="sorthand dashicons dashicons-menu" style="cursor:move;"></span>' );
 
 				$answers_wrap.sortable( {
 					axis  : 'y',

@@ -41,13 +41,13 @@ class Poll extends DemPoll_Legacy {
 	public int $users_voted = 0;
 
 	/** Is this poll democratic? (DB Field) */
-	public bool $democratic = false;
+	public bool $democratic = true;
 
 	/** Is this poll active? (DB Field) */
-	public bool $active = false;
+	public bool $active = true;
 
 	/** Is this poll open for voting? (DB Field) */
-	public bool $open = false;
+	public bool $open = true;
 
 	/** How many answers may be selected. (DB Field) */
 	public int $multiple = 0;
@@ -56,10 +56,10 @@ class Poll extends DemPoll_Legacy {
 	public bool $forusers = false;
 
 	/** Allow to revote (DB Field) */
-	public bool $revote = false;
+	public bool $revote = true;
 
 	/** Show results after voting (DB Field) */
-	public bool $show_results = false;
+	public bool $show_results = true;
 
 	/** Answers order: 'by_winner', 'by_id', 'alphabet', 'mix'. {@see Helpers::allowed_answers_orders()} (DB Field) */
 	public string $answers_order = '';

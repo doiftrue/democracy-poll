@@ -1,18 +1,36 @@
-/* add edit poll */
-#the-question{ display:block; margin:12px; }
-.new-poll-answers{ margin-bottom:1.5em; }
-.poll-options{ margin-top:1.5em; margin-bottom:1.5em; }
-.poll-options li { list-style: none; }
+/*****************
+ * ADD/EDIT Poll
+ *****************/
+.dem-edit-poll{
+	padding:2rem;
 
-.dempage-new-poll{ padding:20px;
 	input[type="text"],
 	textarea { width:80%; min-width:400px; max-width:800px; }
-	ol .dashicons{ position:absolute; margin-left:-1.5em; }
-	ol .dashicons:before{ font-size:80%; color:#ccc; }
+
+	.dem-edit-poll__question {
+		margin-bottom:1rem;
+		input { display:block; font-size:120%; }
+	}
+
+	.dem-edit-poll__answers{ margin-bottom:1.5em; margin-left:0;
+		.dashicons.sorthand { position:absolute; left:-2em; margin-left:0; margin-top:.5em; opacity:.3;
+			&:hover{ opacity:.9; }
+		}
+	}
 }
 
-.dem-del-button{ display:inline-block; cursor: pointer; line-height: 1; padding:0 5px; font-size:23px; color:#acacac;
+.dem-del-button{ display:inline-block; cursor:pointer; line-height: 1; padding:0 5px; font-size:23px; color:#acacac;
 	&:hover{ color:#e34f23; }
+}
+
+.poll-options{ margin-top:1.5em; margin-bottom:1.5em; }
+.poll-options .poll-options__row {
+	line-height: 1;
+	display: flex; align-items: center; gap:.3em;
+	label { display: flex; align-items: center; gap:.3em; }
+	margin: 1.2em 0;
+	.dashicons{ font-size:120%; width:1em; height:1em; margin-top:-.3em; margin-right:.4rem; }
+	.dashicons:before{ font-size:inherit; opacity:.5; }
 }
 
 /* all pages options */

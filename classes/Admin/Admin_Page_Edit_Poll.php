@@ -67,10 +67,11 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	public function render(): void {
 		// no access
 		if( $this->poll_id && ! Poll_Utils::cuser_can_edit_poll( $this->poll_id ) ){
-			wp_die( 'Sorry, you are not allowed to access this page.' );
+			echo '<div class="notice notice-error"><p>Sorry, you are not allowed to access this page</p></div>';
+			return;
 		}
 
-		$this->poll = $this->poll_id ? new Poll( $this->poll_id ) : null;
+		$this->poll = new Poll( $this->poll_id );
 
 		require __DIR__ . '/tpl/edit-poll.php';
 	}

@@ -128,9 +128,11 @@ See `COMPAT: ***` messages in the changelog below for any backward compatibility
 
 = 6.4.0 =
 * NEW: Added a global setting to sort answers on the results screen.
-* CHG: Max poll height options disabled by default.
+* FIX: Users with plugin access roles could not create new polls. https://wordpress.org/support/topic/dempollget_db_data-poll-fails-when-editor-tries-to-add-new-poll-6-1-1/
 * FIX: There was no way to add custom answer if "Hide vote button" option is on, and it is non-multiple poll with the revote option enabled.
 * FIX: Small bug when allowing users to add their own answers.
+* CHG: Max poll height options disabled by default.
+* IMP: Refresh poll edit form UI.
 * IMP: Store votes for all polls in one cookie instead of creating a separate cookie per poll.
 * COMPAT: `DemPoll::$dbdata` property removed. Use `DemPoll` props instead.
 * COMPAT: `DemPoll` object renamed to `\DemocracyPoll\Poll`. Old DemPoll class name remains available via PHP class alias, but some public properties were removed/changed. So you may need to update your code if you use `DemPoll` or it's properties directly.
