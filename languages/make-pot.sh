@@ -26,6 +26,7 @@ KEYWORDS_PHP=(
 	--keyword='esc_attr_e'
 	--keyword='_ex:1,2c'
 	--keyword='_x:1,2c'
+	--keyword='esc_attr_x:1,2c'
 	--keyword='_n:1,2'
 	--keyword='_nx:1,2,3c'
 	--keyword='_n_noop:1,2'
