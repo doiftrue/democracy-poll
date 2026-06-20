@@ -1,13 +1,13 @@
 <?php /** @noinspection JsonEncodingApiUsageInspection */
 
-namespace DemocracyPoll\unit;
+namespace DemocracyPoll;
 
 use DemocracyPoll\Admin\Admin_Page_Logs;
 use DemocracyPoll\Admin\Admin_Page_l10n;
 use DemocracyPoll\Helpers\IP;
 use WP_Mock;
 
-class Helpers_Test extends \DemocracyPoll\DemocTestCase {
+class Helpers_Test extends DemocTestCase {
 
 	/**
 	 * @covers Admin_Page_l10n::get_front_texts()

@@ -2,16 +2,17 @@
 
 namespace DemocracyPoll;
 
-use \WP_Mock\Tools\TestCase;
+use WP_Mock;
+use WP_Mock\Tools\TestCase;
 
 class DemocTestCase extends TestCase {
 
 	public function setUp(): void {
-		\WP_Mock::setUp();
+		WP_Mock::setUp();
 	}
 
 	public function tearDown(): void {
-		\WP_Mock::tearDown();
+		WP_Mock::tearDown();
 	}
 
 	public static function setUpBeforeClass(): void {

@@ -1,12 +1,10 @@
 <?php
 
-namespace DemocracyPoll\unit;
+namespace DemocracyPoll;
 
-use DemocracyPoll\Poll_Cookies;
-use DemPoll;
 use WP_Mock;
 
-class Poll_Cookies__Test extends \DemocracyPoll\DemocTestCase {
+class Poll_Cookies__Test extends DemocTestCase {
 
 	public function setUp(): void {
 		parent::setUp();
@@ -109,8 +107,8 @@ class Poll_Cookies__Test extends \DemocracyPoll\DemocTestCase {
 		$this->assertSame( $timestamp + ( DAY_IN_SECONDS * 2 ), $cookie->sent[0]['expire'] );
 	}
 
-	private function get_poll( int $id, string $voted_for = '' ): DemPoll {
-		$poll = new DemPoll( 0 );
+	private function get_poll( int $id, string $voted_for = '' ): Poll_Object {
+		$poll = new Poll_Object( 0 );
 		$poll->id = $id;
 		$poll->user_state->voted_for = $voted_for;
 
