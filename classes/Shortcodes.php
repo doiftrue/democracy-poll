@@ -32,8 +32,8 @@ class Shortcodes {
 	public function democracy_shortcode( $atts ): string {
 		$atts = shortcode_atts( [
 			'id' => '', // number or 'current', 'last'
-			// 'before_title'  => '', // IMP! can't be added - security reason
-			// 'after_title'   => '', // IMP! can't be added - security reason
+			// 'before_title' => '', // IMP! can't be added - security reason
+			// 'after_title'  => '', // IMP! can't be added - security reason
 		], $atts, 'democracy' );
 
 		// Determine which post the poll belongs to when the shortcode is used outside the content.

@@ -10,12 +10,6 @@ use DemocracyPoll\Helpers\Kses;
  */
 class Poll_Storage {
 
-	private Poll $poll;
-
-	public function __construct( Poll $poll ) {
-		$this->poll = $poll;
-	}
-
 	/**
 	 * @param int|string $poll_id Poll id to get. Specify 'rand' or 'last' for a random or last poll.
 	 */
@@ -42,10 +36,9 @@ class Poll_Storage {
 		return apply_filters( 'dem_get_poll', $poll_data );
 	}
 
-	public function close_if_expired(): void {
+	public static function close_if_expired( Poll $poll ): void {
 		global $wpdb;
 
-		$poll = $this->poll;
 		if( $poll->open && $poll->end && ( current_time( 'timestamp' ) > $poll->end ) ){
 			$wpdb->update( $wpdb->democracy_q, [ 'open' => 0 ], [ 'id' => $poll->id ] );
 			$poll->open = false;
@@ -57,10 +50,9 @@ class Poll_Storage {
 	 *
 	 * @return Poll_Answer[]
 	 */
-	public function get_answers(): array {
+	public static function get_answers( Poll $poll ): array {
 		global $wpdb;
 
-		$poll = $this->poll;
 		$answers = $wpdb->get_results( $wpdb->prepare(
 			"SELECT * FROM $wpdb->democracy_a WHERE qid = %d", $poll->id
 		) );
@@ -87,7 +79,7 @@ class Poll_Storage {
 		$answers = array_map( static fn( $data ) => new Poll_Answer( $data ), $answers );
 
 		/**
-		 * Allows to modify the answers before they are set in the poll object.
+		 * Allows modifying the answers before they are set in the poll object.
 		 *
 		 * @param Poll_Answer[] $answers  The answers to be set for the poll.
 		 * @param Poll          $poll     The poll object itself.
@@ -95,11 +87,10 @@ class Poll_Storage {
 		return apply_filters( 'dem_set_answers', $answers, $poll );
 	}
 
-	public function increment_votes( string $voted_for ): bool {
+	public static function increment_votes( Poll $poll, string $voted_for ): bool {
 		global $wpdb;
 
-		$poll = $this->poll;
-		$aids = $this->get_answer_ids_from_str( $voted_for );
+		$aids = self::get_aids_from_str( $voted_for );
 		if( ! $aids ){
 			return false;
 		}
@@ -129,11 +120,10 @@ class Poll_Storage {
 	 *
 	 * @return bool True on success, false on failure.
 	 */
-	public function decrement_votes(): bool {
+	public static function decrement_votes( Poll $poll, string $voted_for ): bool {
 		global $wpdb;
 
-		$poll = $this->poll;
-		$aids = $this->get_answer_ids_from_str( $poll->user_state->voted_for );
+		$aids = self::get_aids_from_str( $voted_for );
 		if( ! $aids ){
 			return false;
 		}
@@ -158,10 +148,9 @@ class Poll_Storage {
 		return (bool) ( $r1 || $r2 );
 	}
 
-	public function insert_democratic_answer( string $answer ): int {
+	public static function insert_democratic_answer( Poll $poll, string $answer ): int {
 		global $wpdb;
 
-		$poll = $this->poll;
 		$new_answer = Kses::sanitize_answer_data( $answer, 'democratic_answer' );
 		$new_answer = wp_unslash( $new_answer );
 
@@ -201,7 +190,7 @@ class Poll_Storage {
 	/**
 	 * @return int[]
 	 */
-	private function get_answer_ids_from_str( string $aids_str ): array {
+	private static function get_aids_from_str( string $aids_str ): array {
 		$aids = explode( ',', $aids_str );
 		$aids = array_map( 'trim', $aids );
 		$aids = array_map( 'intval', $aids );

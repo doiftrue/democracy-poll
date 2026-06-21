@@ -236,41 +236,8 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 		$aids = wp_list_pluck( $log_data, 'aids' );
 		$qids = wp_list_pluck( $log_data, 'qid' );
 
-		if( 'update answers table `votes` field' ){ // @phpstan-ignore-line
-			// collect counts how much to minus from every answer
-			$minus_data = [];
-			foreach( $aids as $_aids ){
-				foreach( explode( ',', $_aids ) as $aid ){
-					$minus_data[ $aid ] = empty( $minus_data[ $aid ] ) ? 1 : ( $minus_data[ $aid ] + 1 );
-				}
-			}
-
-			// minus SQL for answer 'votes' field
-			$minus_answ_sum = 0;
-			foreach( $minus_data as $aid => $minus_num ){
-				// IF( (votes<=%d), 0, (votes-%d) ) - for case when minus number bigger than votes. Votes can't be negative
-				$sql = $wpdb->prepare( "UPDATE $wpdb->democracy_a SET votes = IF( (votes<=%d), 0, (votes-%d) ) WHERE aid = %d", $minus_num, $minus_num, $aid );
-				if( $wpdb->query( $sql ) ){
-					$minus_answ_sum += $minus_num;
-				}
-			}
-		}
-
-		if( 'update question table `users_voted` field' ){ // @phpstan-ignore-line
-			// collect counts how much to minus from every question 'users_voted' field
-			$minus_data = [];
-			foreach( $qids as $qid ){
-				$minus_data[ $qid ] = empty( $minus_data[ $qid ] ) ? 1 : ( $minus_data[ $qid ] + 1 );
-			}
-
-			// minus SQL for question 'users_voted' field
-			$minus_users_sum = 0;
-			foreach( $minus_data as $qid => $minus_num ){
-				if( $wpdb->query( self::users_voted_minus_sql( $minus_num, $qid ) ) ){
-					$minus_users_sum += $minus_num;
-				}
-			}
-		}
+		$minus_answ_sum = $this->update_answers_votes( $aids );
+		$minus_users_sum = $this->update_question_users_voted( $qids );
 
 		// now, delete logs itself
 		$result = $wpdb->query( "DELETE FROM $wpdb->democracy_log WHERE logid IN (" . implode( ',', array_map( 'intval', $log_ids ) ) . ")" );
@@ -292,6 +259,60 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 		 * @param int       $minus_users_sum  Number of users votes minus.
 		 */
 		do_action( 'dem_delete_logs_and_votes', $log_ids, $result, $minus_answ_sum, $minus_users_sum );
+	}
+
+	private function update_answers_votes( $aids ) {
+		global $wpdb;
+
+		// collect counts how much to minus from every answer
+		$minus_data = [];
+		foreach( $aids as $_aids ){
+			foreach( explode( ',', $_aids ) as $aid ){
+				$minus_data[ $aid ] = empty( $minus_data[ $aid ] ) ? 1 : ( $minus_data[ $aid ] + 1 );
+			}
+		}
+
+		// minus SQL for answer 'votes' field
+		$minus_answ_sum = 0;
+		foreach( $minus_data as $aid => $minus_num ){
+			// IF( (votes<=%d), 0, (votes-%d) ) - for case when minus number bigger than votes. Votes can't be negative
+			$sql = $wpdb->prepare(
+				"UPDATE $wpdb->democracy_a SET votes = IF( (votes<=%d), 0, (votes-%d) ) WHERE aid = %d",
+				$minus_num, $minus_num, $aid
+			);
+
+			if( $wpdb->query( $sql ) ){
+				$minus_answ_sum += $minus_num;
+			}
+
+			// delete "user-added" answer if it has 0 votes
+			$wpdb->query( $wpdb->prepare(
+				"DELETE FROM $wpdb->democracy_a WHERE added_by != '' AND votes = 0 AND aid = %d",
+				$aid
+			) );
+		}
+
+		return $minus_answ_sum;
+	}
+
+	private function update_question_users_voted( $qids ){
+		global $wpdb;
+
+		// collect counts how much to minus from every question 'users_voted' field
+		$minus_data = [];
+		foreach( $qids as $poll_id ){
+			$minus_data[ $poll_id ] = ( $minus_data[ $poll_id ] ?? 0 ) + 1;
+		}
+
+		// minus SQL for question 'users_voted' field
+		$minus_users_sum = 0;
+		foreach( $minus_data as $poll_id => $minus_num ){
+			if( $wpdb->query( self::users_voted_minus_sql( $minus_num, $poll_id ) ) ){
+				$minus_users_sum += $minus_num;
+			}
+		}
+
+		return $minus_users_sum;
 	}
 
 	/**
@@ -318,10 +339,12 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 		exit;
 	}
 
-	public static function users_voted_minus_sql( $minus_num, $qid ) {
+	public static function users_voted_minus_sql( int $minus_num, int $poll_id ): string {
 		global $wpdb;
-
-		return $wpdb->prepare( "UPDATE $wpdb->democracy_q SET users_voted = IF( (users_voted<=%d), 0, (users_voted-%d) ) WHERE id = %d", $minus_num, $minus_num, $qid );
+		return $wpdb->prepare(
+			"UPDATE $wpdb->democracy_q SET users_voted = IF( (users_voted<=%d), 0, (users_voted-%d) ) WHERE id = %d",
+			$minus_num, $minus_num, $poll_id
+		);
 	}
 
 	/**

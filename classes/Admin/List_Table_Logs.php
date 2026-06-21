@@ -60,7 +60,7 @@ class List_Table_Logs extends \WP_List_Table {
 			$this->logs_page->del_only_logs( $log_ids );
 		}
 
-		// delete with votes
+		// delete (with votes)
 		if( 'delete_logs_votes' === $action ){
 			$this->logs_page->del_logs_and_votes( $log_ids );
 		}

@@ -5,8 +5,6 @@ use DemocracyPoll\Poll;
 use DemocracyPoll\Poll_Renderer;
 
 /**
- * Gets poll object.
- *
  * @param Poll|int $poll_id  Poll ID to get. OR poll object from DB.
  */
 function democracy_get_poll( $poll_id ): Poll {
@@ -224,7 +222,6 @@ function get_dem_polls( $args = [] ) {
 
 	$ORDER_BY = [];
 	if( ! $rg->orderby ){
-
 		if( null === $rg->active ){
 			$ORDER_BY['active'] = 'active DESC';
 		}
@@ -234,19 +231,16 @@ function get_dem_polls( $args = [] ) {
 
 		$ORDER_BY['id'] = 'id DESC';
 	}
-	else{
+	elseif( is_array( $rg->orderby ) ){
+		$ORDER_BY['array'] = $esc_orderby__fn( implode( ' ', $rg->orderby ) );
+	}
+	elseif( is_string( $rg->orderby ) ){
 
-		if( is_array( $rg->orderby ) ){
-			$ORDER_BY['array'] = $esc_orderby__fn( implode( ' ', $rg->orderby ) );
+		if( 'rand' === $rg->orderby ){
+			$ORDER_BY['rand'] = 'rand()';
 		}
-		elseif( is_string( $rg->orderby ) ){
-
-			if( 'rand' === $rg->orderby ){
-				$ORDER_BY['rand'] = 'rand()';
-			}
-			else{
-				$ORDER_BY['string'] = $esc_orderby__fn( $rg->orderby ) . ' ASC';
-			}
+		else{
+			$ORDER_BY['string'] = $esc_orderby__fn( $rg->orderby ) . ' ASC';
 		}
 	}
 
@@ -260,7 +254,7 @@ function get_dem_polls( $args = [] ) {
 	}
 
 	/**
-	 * Allows to modify the SQL clauses for getting polls.
+	 * Allows modifying the SQL clauses for getting polls.
 	 * This filter can be used to add custom WHERE conditions, ORDER BY clauses, or LIMIT.
 	 *
 	 * @param array $clauses  Array of SQL clauses.

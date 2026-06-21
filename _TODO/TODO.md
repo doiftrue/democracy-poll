@@ -10,7 +10,6 @@
 * ADD: option to set sort order for answers on results screen
 * ADD: The ability to have a list of all active polls on one front end page would be nice.
 * ADD: quick edit - https://wordpress.org/support/topic/suggestion-quick-edit/
-* ADD: paging on archive page
 * ADD: sorting on archive page
 * ADD: cron: shadule polls opening & activation
 * ADD: show link to post at the bottom of poll, if it attached to one post (has one in_posts ID)

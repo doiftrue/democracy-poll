@@ -181,16 +181,16 @@
         },
         {
             "name": "doiftrue/unitest-wp-copy",
-            "version": "6.9.2.0",
+            "version": "6.9.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doiftrue/unitest-wp-copy.git",
-                "reference": "ded588e5b452c6aa5fea3af75451beb164f81cc3"
+                "reference": "8b81049f1f0ae2c00c1c94858979b9dbeaee5835"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doiftrue/unitest-wp-copy/zipball/ded588e5b452c6aa5fea3af75451beb164f81cc3",
-                "reference": "ded588e5b452c6aa5fea3af75451beb164f81cc3",
+                "url": "https://api.github.com/repos/doiftrue/unitest-wp-copy/zipball/8b81049f1f0ae2c00c1c94858979b9dbeaee5835",
+                "reference": "8b81049f1f0ae2c00c1c94858979b9dbeaee5835",
                 "shasum": ""
             },
             "require-dev": {
@@ -213,9 +213,9 @@
             "notification-url": "https://packagist.org/downloads/",
             "support": {
                 "issues": "https://github.com/doiftrue/unitest-wp-copy/issues",
-                "source": "https://github.com/doiftrue/unitest-wp-copy/tree/6.9.2.0"
+                "source": "https://github.com/doiftrue/unitest-wp-copy/tree/6.9.2.1"
             },
-            "time": "2026-04-21T22:55:58+00:00"
+            "time": "2026-06-20T21:54:24+00:00"
         },
         {
             "name": "hamcrest/hamcrest-php",

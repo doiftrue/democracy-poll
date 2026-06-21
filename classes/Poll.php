@@ -11,8 +11,6 @@ class Poll extends DemPoll_Legacy {
 
 	public Poll_User_State $user_state; /* readonly */
 
-	public Poll_Storage $storage; /* readonly */
-
 	/**
 	 * Lazy loaded property.
 	 * @see self::set_answers()
@@ -99,7 +97,6 @@ class Poll extends DemPoll_Legacy {
 	 * @param object|int $poll_id  Poll ID to get. OR poll object from DB.
 	 */
 	public function __construct( $poll_id ) {
-		$this->storage    = new Poll_Storage( $this );
 		$this->user_state = new Poll_User_State( $this );
 
 		if( ! $poll_id ){
@@ -128,14 +125,14 @@ class Poll extends DemPoll_Legacy {
 		$this->in_posts      = (string) $dbdata->in_posts;
 		$this->note          = $dbdata->note;
 
-		$this->storage->close_if_expired(); // TODO: move out from constructor
+		Poll_Storage::close_if_expired( $this ); // TODO: move out from constructor
 	}
 
 	/**
 	 * Gets {@see self::$answers} from DB data.
 	 */
 	public function set_answers(): void {
-		$this->answers = $this->storage->get_answers();
+		$this->answers = Poll_Storage::get_answers( $this );
 	}
 
 }

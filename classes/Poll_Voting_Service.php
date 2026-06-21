@@ -55,7 +55,7 @@ class Poll_Voting_Service {
 			return $voted_for;
 		}
 
-		if( ! $poll->storage->increment_votes( $voted_for ) ){
+		if( ! Poll_Storage::increment_votes( $poll, $voted_for ) ){
 			return new WP_Error( 'vote_err', 'Internal ERROR: Vote was not saved. Contact developer.' );
 		}
 
@@ -103,7 +103,8 @@ class Poll_Voting_Service {
 		// Use only server-side voting data. The public cookie is user-controlled.
 		$ustate->voted_for = (string) reset( $logs )->aids;
 		$ustate->has_voted = (bool) $ustate->voted_for;
-		$poll->storage->decrement_votes();
+
+		Poll_Storage::decrement_votes( $poll, $ustate->voted_for );
 		$ustate->poll_logs->delete_vote_log( $logs );
 
 		$ustate->poll_cookie->delete();
@@ -152,7 +153,7 @@ class Poll_Voting_Service {
 			//break; // IMP!!!: NO break here
 		}
 
-		if( $new_free_answer && ( $aid = $poll->storage->insert_democratic_answer( $new_free_answer ) ) ){
+		if( $new_free_answer && ( $aid = Poll_Storage::insert_democratic_answer( $poll, $new_free_answer ) ) ){
 			$aids[] = $aid;
 		}
 
