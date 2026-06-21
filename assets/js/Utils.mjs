@@ -9,6 +9,7 @@ export default class Utils {
 		}
 
 		const clone = el.cloneNode( true )
+		clone.querySelectorAll( 'input, select, textarea, button' ).forEach( el => el.removeAttribute( 'name' ) ) // make not clickable
 		Object.assign( clone.style, {
 			height    : 'auto', maxHeight: 'none',
 			position  : 'absolute', left: '-9999px', top: '0', width: window.getComputedStyle( el ).width,
