@@ -187,17 +187,18 @@ class Poll_Renderer {
 			$lis_html .= strtr( <<<'HTML'
 				<li class="dem-answer-item dem_answer_item_js" data-aid="{AID}">
 					<label class="dem__{TYPE}_label">
-						<input class="dem__{TYPE}" {AUTO_VOTE} type="{TYPE}" value="{AID}" {CHECKED} {DISABLED}><span class="dem__spot"></span> {ANSWER}
+						<input class="dem__{TYPE}" {INPUT_NAME} {AUTO_VOTE} type="{TYPE}" value="{AID}" {CHECKED} {DISABLED}><span class="dem__spot"></span> {ANSWER}
 					</label>
 				</li>
 				HTML,
 				[
-					'{AID}'       => $answer->aid,
-					'{TYPE}'      => $poll->multiple ? 'checkbox' : 'radio',
-					'{AUTO_VOTE}' => $auto_vote_on_click ? 'data-dem-act="vote"' : '',
-					'{CHECKED}'   => $checked,
-					'{DISABLED}'  => $poll->user_state->voted_for ? 'disabled="disabled"' : '',
-					'{ANSWER}'    => $answer->answer,
+					'{AID}'        => $answer->aid,
+					'{INPUT_NAME}' => $poll->multiple ? '' : "name=\"dem_group_p$poll->id\"", // radio should have grouping name
+					'{TYPE}'       => $poll->multiple ? 'checkbox' : 'radio',
+					'{AUTO_VOTE}'  => $auto_vote_on_click ? 'data-dem-act="vote"' : '',
+					'{CHECKED}'    => $checked,
+					'{DISABLED}'   => $poll->user_state->voted_for ? 'disabled="disabled"' : '',
+					'{ANSWER}'     => $answer->answer,
 				]
 			);
 		}
