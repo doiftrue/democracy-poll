@@ -73,7 +73,6 @@ $opt = options();
 					}
 					?>
 				</label>
-				<em><?= wp_kses_post( __( 'Specify the poll archive link to be in the poll legend. Example: <code>25</code>', 'democracy-poll' ) ) ?></em>
 			</div>
 
 			<h3><?= esc_html__( 'Global Polls options', 'democracy-poll' ) ?></h3>

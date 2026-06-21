@@ -291,39 +291,54 @@ class Poll_Renderer {
 
 		$answers = $this->get_result_screen_answers();
 
-		$max = $total = 0;
-
+		$total_votes = 0;
+		$max_votes = 0;
+		$has_added_by = false;
 		foreach( $answers as $answer ){
-			/** @var Poll_Answer $answer */
-			$total += $answer->votes;
-			if( $max < $answer->votes ){
-				$max = $answer->votes;
-			}
+			$total_votes += $answer->votes;
+			$has_added_by = $has_added_by || $answer->added_by;
+			$max_votes = max( $max_votes, $answer->votes );
 		}
+
+		$answers_html = $this->render_results_answers_list( $answers, $max_votes, $total_votes );
+		$bottom_html  = $this->render_results_bottom_html( $total_votes, $has_added_by );
+
+		$html = "$answers_html\n$bottom_html";
+
+		/**
+		 * Allows modifying result screen HTML before it is returned.
+		 *
+		 * @param string $html  The HTML of the result screen.
+		 * @param Poll   $poll  The current poll object.
+		 */
+		return apply_filters( 'dem_result_screen', $html, $this->poll );
+	}
+
+	/**
+	 * @param Poll_Answer[] $answers
+	 */
+	private function render_results_answers_list( array $answers, int $max_votes, int $total_votes ): string {
+		$poll = $this->poll;
 
 		$voted_class = 'dem-voted-this';
 		$voted_txt = _x( 'This is your vote.', 'front', 'democracy-poll' );
 
-		$lis_html = '';
+		$list_html = '';
 		foreach( $answers as $answer ){
 			/**
-			 * Allows to modify the answer object before it is processed for output.
+			 * Allows modifying the answer object before it is processed for output.
 			 *
 			 * @param Poll_Answer $answer The answer object.
 			 */
 			$answer = apply_filters( 'dem_result_screen_answer', $answer );
 
 			$is_voted_this = ( $poll->user_state->has_voted && in_array( (string) $answer->aid, explode( ',', $poll->user_state->voted_for ), true ) );
-			$is_winner     = ( $max === $answer->votes );
+			$is_winner     = ( $max_votes === $answer->votes );
 			$novoted_class = $answer->votes ? '' : ' dem-novoted';
 			$li_class      = trim( ( $is_winner ? 'dem-winner' : '' ) . ( $is_voted_this ? " $voted_class" : '' ) . $novoted_class );
 			$li_class_attr = $li_class ? " class=\"$li_class\"" : '';
 
-			$mark = $answer->added_by
-				? '<sup class="dem-star" title="' . _x( 'The answer was added by a visitor', 'front', 'democracy-poll' ) . '">*</sup>'
-				: '';
-
-			$percent = ( $answer->votes > 0 ) ? round( $answer->votes / $total * 100 ) : 0;
+			$percent = ( $answer->votes > 0 ) ? round( $answer->votes / $total_votes * 100 ) : 0;
 
 			$percent_txt = sprintf(
 				_x( '%s - %s%% of all votes', 'front', 'democracy-poll' ),
@@ -334,21 +349,28 @@ class Poll_Renderer {
 			$title = trim( ( $is_voted_this ? $voted_txt : '' ) . ' ' . $percent_txt );
 			$title_attr = 'title="' . esc_attr( $title ) . '"';
 
-			$votes_txt = $answer->votes . ' ' . '<span class="votxt">' . self::pluralize( $answer->votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ), false ) . '</span>';
-			$label_perc_txt = ' <span class="dem-label-percent-txt">' . $percent . '%, ' . $votes_txt . '</span>';
+			$votes_txt = "$answer->votes " . '<span class="votxt">' . self::pluralize( $answer->votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ), false ) . '</span>';
+			$label_perc_txt = "$percent%, $votes_txt";
 
-			$graph_percent = ( ! options()->graph_from_total && $percent ) ? round( $answer->votes / $max * 100 ) : $percent;
+			$graph_percent = ( ! options()->graph_from_total && $percent ) ? round( $answer->votes / $max_votes * 100 ) : $percent;
 			$graph_percent = $graph_percent ? "$graph_percent%" : '1px';
 			$width_attr    = options()->line_anim_speed
 				? 'data-width="' . $graph_percent . '"'
 				: 'style="width:' . $graph_percent . '"';
-			$percent_html  = $percent ? "<span class=\"dem-votes-txt-percent\">{$percent}%</span>" : '';
 
-			$answer_text = $answer->answer . $mark;
+			$percent_html  = $percent ? "<span class=\"dem-votes-txt-percent\">$percent%</span>" : '';
 
-			$lis_html .= <<<HTML
+
+			$mark = $answer->added_by
+				? '<sup class="dem-star" title="' . esc_attr_x( 'The answer was added by a visitor', 'front', 'democracy-poll' ) . '">*</sup>'
+				: '';
+
+			$list_html .= <<<HTML
 			<li $li_class_attr $title_attr data-aid="$answer->aid">
-				<div class="dem-label">$answer_text $label_perc_txt</div>
+				<div class="dem-label">
+					$answer->answer $mark
+					<span class="dem-label-percent-txt">$label_perc_txt</span>
+				</div>
 				<div class="dem-graph">
 					<div class="dem-fill" $width_attr></div>
 					<div class="dem-votes-txt">
@@ -361,37 +383,44 @@ class Poll_Renderer {
 			HTML;
 		}
 
-		$ul_html = <<<HTML
+		return <<<HTML
 		<ul class="dem-answers" data-voted-class="$voted_class" data-voted-txt="$voted_txt">
-			$lis_html
+			$list_html
 		</ul>
 		HTML;
+	}
 
-		$total_votes_txt = sprintf( _x( 'Total Votes: %s', 'front', 'democracy-poll' ), $total );
+	/**
+	 * @param Poll_Answer[] $answers
+	 */
+	private function render_results_bottom_html( $total_votes, $has_added_by ): string {
+		$poll = $this->poll; // simplify
+
+		$total_votes_txt = sprintf( _x( 'Total Votes: %s', 'front', 'democracy-poll' ), $total_votes );
 		$begin_title     = esc_attr( _x( 'Begin', 'front', 'democracy-poll' ) );
-		$end_title       = esc_attr( _x( 'End', 'front', 'democracy-poll' ) );
+		$end_title       = _x( 'End', 'front', 'democracy-poll' );
 		$begin_date_txt  = date_i18n( get_option( 'date_format' ), $poll->added );
 		$end_date_txt    = date_i18n( get_option( 'date_format' ), $poll->end );
 		$end_date = $poll->end
-			? ' - <span class="dem-end-date" title="' . $end_title . '">' . $end_date_txt . '</span>'
+			? ' - <span class="dem-end-date" title="' . esc_attr( $end_title ) . '">' . $end_date_txt . '</span>'
 			: '';
 		$voters_txt = sprintf( _x( 'Voters: %s', 'front', 'democracy-poll' ), $poll->users_voted );
 		$voters_div = $poll->multiple
-			? '<div class="dem-users-voted">' . $voters_txt . '</div>'
+			? '<div class="dem-users-voted">' . esc_html( $voters_txt ) . '</div>'
 			: '';
-		$added_by_div = ( $answer->added_by ?? 0 )
-			? '<div class="dem-added-by-user"><span class="dem-star">*</span>' . _x( ' - added by visitor', 'front', 'democracy-poll' ) . '</div>'
+		$added_by_div = $has_added_by
+			? '<div class="dem-added-by-user"><span class="dem-star">*</span>' . esc_html_x( ' - added by visitor', 'front', 'democracy-poll' ) . '</div>'
 			: '';
 		$closed_div   = ! $poll->open
 			? '<div>' . _x( 'Voting is closed', 'front', 'democracy-poll' ) . '</div>'
 			: '';
 		$archive_link = ( ! $this->in_archive && options()->archive_page_id )
-			? '<a class="dem-archive-link dem-link" href="' . get_permalink( options()->archive_page_id ) . '" rel="nofollow">' . _x( 'Polls Archive', 'front', 'democracy-poll' ) . '</a>'
+			? '<a class="dem-archive-link dem-link" href="' . get_permalink( options()->archive_page_id ) . '" rel="nofollow">' . esc_html_x( 'Polls Archive', 'front', 'democracy-poll' ) . '</a>'
 			: '';
 
 		$controls_html = $this->result_screen_controls_html();
 
-		$bottom_html = <<<HTML
+		return <<<HTML
 		<div class="dem-bottom">
 			<div class="dem-poll-info">
 				<div class="dem-total-votes">$total_votes_txt</div>
@@ -406,16 +435,6 @@ class Poll_Renderer {
 			$controls_html
 		</div>
 		HTML;
-
-		$html = "$ul_html\n$bottom_html";
-
-		/**
-		 * Allows to modify result screen HTML before it is returned.
-		 *
-		 * @param string $html  The HTML of the result screen.
-		 * @param Poll   $poll  The current poll object.
-		 */
-		return apply_filters( 'dem_result_screen', $html, $this->poll );
 	}
 
 	/**
@@ -440,7 +459,7 @@ class Poll_Renderer {
 		}
 
 		/**
-		 * Allows to modify the answers before the result screen is rendered.
+		 * Allows the result screen answers to be changed before rendering.
 		 *
 		 * @param Poll_Answer[] $answers  The answers to render.
 		 * @param Poll          $poll     The current poll object.
