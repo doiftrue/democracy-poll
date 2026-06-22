@@ -1,4 +1,5 @@
-/** PRESETS ------------------------------------ */
+/********* PRESETS ************/
+
 .democracy{
 	--dem-graph-bg: transparent;
 	--dem-graph-color: rgba(0,0,0,.6);
@@ -34,11 +35,10 @@
 .dem-percent-txt{ position:relative; display:table-cell; padding-left:.3em; vertical-align:middle; font-size:90%; }
 
 /* result bottom */
-.dem-poll-info{
-	padding-bottom:1em;
+.dem-poll-info{ display:flex; flex-direction:column; gap:.2em;
+	font-size:85%;
 
-	&::after{ content:''; display:table; clear:both; }
-	> *{ font-size:85%; display:block; float:right; clear:both; text-align:right; opacity:0.7; line-height:1.3; }
+	> *{ display:block; text-align:right; opacity:0.7; }
 }
 
 /** VOTE SCREEN */
@@ -46,19 +46,28 @@
 	label{ float:none; display:block; }
 	.dem-disabled{ opacity:.5; }
 }
-.dem-results-link{ display:inline-block; line-height:1; margin:.8em 1em; }
+.dem-results-link{ display:inline-block; margin:.8em 1em; }
 
-.dem-bottom{
+.dem-bottom{ display:flex; flex-direction:column; flex-wrap:wrap; gap:1em;
 	text-align:center;
-
-	&[class]{ padding-bottom:1em; } /* increase specific */
-	&::after{ content:''; display:table; clear:both; }
+	margin-bottom:1em;
 }
 
 /** TYPICALLY DON'T CHANGE -- */
 .dem-poll-title{ display:block; margin-bottom:1.5em; margin-top:1.2em; font-size:120%; }
 
-.dem-notice{ z-index:10; position:absolute; top:0%; border-radius:2px; width:100%; padding:1.5em 2em; text-align:center; background:rgba(247, 241, 212, 0.8); color:#6D6214; }
+.dem-notice-inline {
+	width:100%; padding:1.5em 2em; box-sizing:border-box;
+	border-radius:2px; text-align:center;
+	background:rgba(247 241 212 / .15);
+}
+.dem-notice{ z-index:10; position:absolute; top:0;
+	width:100%; padding:1.5em 2em; box-sizing:border-box;
+	border-radius:2px; text-align:center;
+	background:rgba(247, 241, 212, 0.8); color:#6D6214;
+
+	a { color: #423b08; text-decoration: underline; }
+}
 .dem-notice-close{
 	position:absolute; top:0; right:0; padding:5px; cursor:pointer; line-height:.6; font-size:150%;
 
@@ -127,4 +136,4 @@ input:where(.dem-add-answer-txt){ width:100%; box-sizing:border-box; padding:.2e
 	.dots{ background:none; }
 }
 
-/**  / PRESETS --------------------------------- */
+/********* PRESETS END ************/

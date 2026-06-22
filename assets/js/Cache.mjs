@@ -129,7 +129,7 @@ export default class Cache {
 				revoteBtn.remove()
 			}
 
-			notice = screen.querySelector( '.dem-only-users' )
+			notice = screen.querySelector( '.dem_only_users_js' )
 		}
 
 		if( ! notice ){

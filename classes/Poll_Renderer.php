@@ -168,8 +168,8 @@ class Poll_Renderer {
 
 		$auto_vote_on_click = ( ! $poll->multiple && $poll->revote && options()->hide_vote_button );
 		$auto_vote_attr = $auto_vote_on_click ? 'data-is_auto_vote="1"' : '';
-		$body_html = $this->render_vote_body( $auto_vote_on_click );
-		$bottom_html = $this->render_vote_bottom( $auto_vote_on_click );
+		$body_html = $this->vote_body( $auto_vote_on_click );
+		$bottom_html = $this->vote_bottom( $auto_vote_on_click );
 
 		$html = <<<HTML
 		<div class="dem-vote-wrap" $auto_vote_attr>
@@ -187,18 +187,18 @@ class Poll_Renderer {
 		return apply_filters( 'dem_vote_screen', $html, $poll );
 	}
 
-	private function render_vote_body( bool $auto_vote_on_click ): string {
+	private function vote_body( bool $auto_vote_on_click ): string {
 		$poll = $this->poll;
 
 		$lis_html = '';
 		foreach( $poll->answers as $answer ){
-			/** @var Poll_Answer $answer */
 			/**
-			 * Allows to modify the answer object before it will be processed for output.
+			 * Allows modifying the answer object before it will be processed for output.
 			 *
 			 * @param Poll_Answer $answer The answer object.
 			 */
 			$answer = apply_filters( 'dem_vote_screen_answer', $answer );
+			/** @var Poll_Answer $answer */
 
 			$checked = '';
 			if( in_array( $answer->aid, explode( ',', $poll->user_state->voted_for ), true ) ){
@@ -241,55 +241,65 @@ class Poll_Renderer {
 		HTML;
 	}
 
-	private function render_vote_bottom( bool $auto_vote_on_click ): string {
+	private function vote_bottom( bool $auto_vote_on_click ): string {
 		$poll = $this->poll;
 
-		$bottom_html = '<div class="dem-bottom">';
+		$voted_btn = strtr( <<<HTML
+			<div class="dem-voted-button">
+				<input class="dem-button {CLASS}" type="button" value="{ANCHOR}" disabled="disabled">
+			</div>
+			HTML,
+			[
+				'{CLASS}' => options()->btn_class,
+				'{ANCHOR}' => esc_attr_x( 'Already voted...', 'front', 'democracy-poll' ),
+			]
+		);
 
-		$voted_btn = '<div class="dem-voted-button"><input class="dem-button ' . options()->btn_class . '" type="button" value="' . _x( 'Already voted...', 'front', 'democracy-poll' ) . '" disabled="disabled"></div>';
-		$vote_btn = '<div class="dem-vote-button"><input class="dem-button ' . options()->btn_class . '" type="button" value="' . _x( 'Vote', 'front', 'democracy-poll' ) . '" data-dem-act="vote"></div>';
+		$vote_btn = strtr( <<<HTML
+			<div class="dem-vote-button" {ATTRS}>
+				<input class="dem-button {CLASS}" type="button" value="{ANCHOR}" data-dem-act="vote">
+			</div>
+			HTML,
+			[
+				'{CLASS}' => options()->btn_class,
+				'{ANCHOR}' => esc_attr_x( 'Vote', 'front', 'democracy-poll' ),
+				'{ATTRS}' => $auto_vote_on_click ? 'style="display:none;"' : '',
+			]
+		);
 
-		if( $auto_vote_on_click ){
-			$vote_btn = preg_replace( '/^<div /', '<div style="display:none;" ', $vote_btn, 1 );
-		}
+		$for_users_alert = $this->registered_only_alert_html();
 
-		$for_users_alert = $poll->user_state->blocked_by_not_logged
-			? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>'
-			: '';
+		$html = '';
 
 		// add for cache
 		if( $this->for_cache ){
-			$bottom_html .= self::voted_notice_html();
-
-			if( $for_users_alert ){
-				$bottom_html .= str_replace(
-					[ '<div', 'class="' ], [ '<div style="display:none;"', 'class="dem-notice ' ], $for_users_alert
-				);
-			}
-
-			$bottom_html .= $poll->revote
+			$html .= self::voted_notice_html();
+			$html .= $this->registered_only_alert_html( true );
+			$html .= $poll->revote
 				? preg_replace( '/(<[^>]+)/', '$1 style="display:none;"', $this->revote_btn_html(), 1 )
 				: substr_replace( $voted_btn, '<div style="display:none;"', 0, 4 );
 
-			$bottom_html .= $vote_btn;
+			$html .= $vote_btn;
 		}
 		// not for cache
 		elseif( $for_users_alert ){
-			$bottom_html .= $for_users_alert;
+			$html .= $for_users_alert;
 		}
 		else{
-			$bottom_html .= $poll->user_state->has_voted
+			$html .= $poll->user_state->has_voted
 				? ( $poll->revote ? $this->revote_btn_html() : $voted_btn )
 				: $vote_btn;
 		}
 
 		if( ! $this->not_show_results && ! options()->dont_show_results_link ){
-			$bottom_html .= '<a href="#" class="dem-link dem-results-link" data-dem-act="view" rel="nofollow">' . _x( 'Results', 'front', 'democracy-poll' ) . '</a>';
+			$html .= '<a href="#" class="dem-link dem-results-link" data-dem-act="view" rel="nofollow">' . _x( 'Results', 'front', 'democracy-poll' ) . '</a>';
 		}
 
-		$bottom_html .= '</div>'; // dem-bottom
-
-		return $bottom_html;
+		return <<<HTML
+		<div class="dem-bottom dem-vote-bottom">
+			$html
+		</div><!--/dem-bottom-->
+		HTML;
 	}
 
 	/**
@@ -315,8 +325,8 @@ class Poll_Renderer {
 			$max_votes = max( $max_votes, $answer->votes );
 		}
 
-		$answers_html = $this->render_results_answers_list( $answers, $max_votes, $total_votes );
-		$bottom_html  = $this->render_results_bottom_html( $total_votes, $has_added_by );
+		$answers_html = $this->results_body( $answers, $max_votes, $total_votes );
+		$bottom_html  = $this->results_bottom( $total_votes, $has_added_by );
 
 		$html = "$answers_html\n$bottom_html";
 
@@ -332,7 +342,7 @@ class Poll_Renderer {
 	/**
 	 * @param Poll_Answer[] $answers
 	 */
-	private function render_results_answers_list( array $answers, int $max_votes, int $total_votes ): string {
+	private function results_body( array $answers, int $max_votes, int $total_votes ): string {
 		$poll = $this->poll;
 
 		$voted_class = 'dem-voted-this';
@@ -405,10 +415,7 @@ class Poll_Renderer {
 		HTML;
 	}
 
-	/**
-	 * @param Poll_Answer[] $answers
-	 */
-	private function render_results_bottom_html( $total_votes, $has_added_by ): string {
+	private function results_bottom( int $total_votes, bool $has_added_by ): string {
 		$poll = $this->poll; // simplify
 
 		$total_votes_txt = sprintf( _x( 'Total Votes: %s', 'front', 'democracy-poll' ), $total_votes );
@@ -436,7 +443,7 @@ class Poll_Renderer {
 		$controls_html = $this->result_screen_controls_html();
 
 		return <<<HTML
-		<div class="dem-bottom">
+		<div class="dem-bottom dem-results-bottom">
 			<div class="dem-poll-info">
 				<div class="dem-total-votes">$total_votes_txt</div>
 				$voters_div
@@ -448,7 +455,7 @@ class Poll_Renderer {
 				$archive_link
 			</div>
 			$controls_html
-		</div>
+		</div><!--/dem-bottom-->
 		HTML;
 	}
 
@@ -488,10 +495,6 @@ class Poll_Renderer {
 		$html = '';
 
 		if( $poll->open ){
-			// note for unregistered users
-			$for_users_alert = $poll->user_state->blocked_by_not_logged
-				? '<div class="dem-only-users">' . self::registered_only_alert_text() . '</div>'
-				: '';
 
 			// back to voting
 			$vote_btn = sprintf( '<button type="button" class="dem-button dem-vote-link %s" data-dem-act="vote_screen">%s</button>',
@@ -502,20 +505,14 @@ class Poll_Renderer {
 			// for cache
 			if( $this->for_cache ){
 				$html .= self::voted_notice_html();
-
-				if( $for_users_alert ){
-					$html .= str_replace( [ '<div', 'class="' ], [
-						'<div style="display:none;"',
-						'class="dem-notice ',
-					], $for_users_alert );
-				}
-
+				$html .= $this->registered_only_alert_html( true );
 				$html .= $poll->revote
 					? $this->revote_btn_html()
 					: $vote_btn;
 			}
 			// not for cache
 			else{
+				$for_users_alert = $this->registered_only_alert_html();
 				if( $for_users_alert ){
 					$html .= $for_users_alert;
 				}
@@ -540,11 +537,34 @@ class Poll_Renderer {
 			</span>
 			HTML,
 			[
-				'{REVOTE}'    => _x( 'Revote', 'front', 'democracy-poll' ),
+				'{REVOTE}'    => esc_attr_x( 'Revote', 'front', 'democracy-poll' ),
 				'{BTN_CLASS}' => options()->btn_class,
-				'{CONFIRM}'   => _x( 'Are you sure you want to cancel the votes?', 'front', 'democracy-poll' ),
+				'{CONFIRM}'   => esc_attr_x( 'Are you sure you want to cancel the votes?', 'front', 'democracy-poll' ),
 			]
 		);
+	}
+
+	/**
+	 * Note for unregistered users.
+	 */
+	protected function registered_only_alert_html( bool $for_cache = false ): string {
+		if( ! $this->poll->user_state->blocked_by_not_logged ){
+			return '';
+		}
+
+		$text = _x( 'Only registered users can vote. <a>Log in</a> to vote.', 'front', 'democracy-poll' );
+		$login_url = wp_login_url( $_SERVER['REQUEST_URI'] );
+		$text = str_replace( '<a', sprintf( '<a href="%s" rel="nofollow"', esc_url( $login_url ) ), $text );
+
+		$classes = $for_cache
+			? 'dem-notice dem_only_users_js'
+			: 'dem-notice-inline dem_only_users_js';
+
+		$attrs = $for_cache ? 'style="display:none;"' : '';
+
+		return <<<HTML
+		<div $attrs class="$classes">$text</div>
+		HTML;
 	}
 
 	/**
@@ -562,7 +582,10 @@ class Poll_Renderer {
 					{MESSAGE}
 				</div>
 				HTML,
-				[ '{JS}' => esc_attr( $js ), '{MESSAGE}' => _x( 'You or your IP have already voted.', 'front', 'democracy-poll' ) ]
+				[
+					'{JS}' => esc_attr( $js ),
+					'{MESSAGE}' => _x( 'You or your IP have already voted.', 'front', 'democracy-poll' )
+				]
 			);
 		}
 
@@ -574,13 +597,6 @@ class Poll_Renderer {
 				HTML,
 			[ '{JS}' => esc_attr( $js ), '{MESSAGE}' => $msg ]
 		);
-	}
-
-	protected static function registered_only_alert_text(): string {
-		$text = _x( 'Only registered users can vote. <a>Log in</a> to vote.', 'front', 'democracy-poll' );
-		$login_url = wp_login_url( $_SERVER['REQUEST_URI'] );
-
-		return str_replace( '<a', sprintf( '<a href="%s" rel="nofollow"', esc_url( $login_url ) ), $text );
 	}
 
 	/**

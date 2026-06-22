@@ -51,3 +51,6 @@ This is WordPress plugin that distributed to oficial WordPress plugin repository
 
 ## External Services
 - IP geolocation uses the free `https://ipwho.is/` endpoint. It is limited to 60 requests per minute per client IP and is licensed for non-commercial use only. See https://ipwhois.io/documentation.
+
+## Additional notes
+- Do not exmine file `democracy.min.js` in most cases - it will be regenerated manually on tests and on deployment (release).

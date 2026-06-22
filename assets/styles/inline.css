@@ -1,7 +1,8 @@
 @import '_reset.css';
 @import '_presets.css';
 
-/* flat theme -------------------------------------------------------------- */
+/*************** FLAT THEME ***************/
+
 .democracy{ --dem-graph-bg:rgba(0,0,0,.1); --dem-graph-height:.4em; }
 .dem-poll-title{ text-align:center; }
 
@@ -28,6 +29,6 @@
 .dem-votes-txt,
 .dem-percent-txt{ display:none; }
 
-/* / flat theme -------------------------------------------------------------- */
+/*************** FLAT THEME ***************/
 
 
