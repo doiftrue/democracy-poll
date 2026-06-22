@@ -34,6 +34,7 @@ This is WordPress plugin that distributed to oficial WordPress plugin repository
 - PHPUnit + WP_Mock are used; tests live in `tests/unit/` and must end with `Test.php`.
 - Tests use `https://github.com/doiftrue/unitest-wp-copy`, a lightweight copy of the WordPress runtime that provides core WordPress functions, classes, and constants without bootstrapping a full WordPress installation. Before mocking or defining a WordPress symbol in a test, check whether it is already provided; the complete list of available symbols is documented in `vendor/doiftrue/unitest-wp-copy/wp-runtime/SYMBOLS-INFO.md`.
 - `phpunit.xml` enables `forceCoversAnnotation`; add `@covers` or `@coversNothing` to new tests.
+- In PHPUnit tests, place each data provider method immediately after the test method that uses it.
 - There is no explicit coverage threshold configured.
 
 ## Commit & Pull Request Guidelines

@@ -7,20 +7,20 @@ use DemocracyPoll\Helpers\Messages;
 class Messages__Test extends DemocTestCase {
 
 	/**
-	 * @covers \DemocracyPoll\Helpers\Messages::__construct()
-	 * @covers \DemocracyPoll\Helpers\Messages::messages_html()
+	 * @covers Messages::__construct()
+	 * @covers Messages::messages_html()
 	 */
 	public function test__messages_html_returns_empty_string_without_messages(): void {
 		$this->assertSame( "", ( new Messages() )->messages_html() );
 	}
 
 	/**
-	 * @covers \DemocracyPoll\Helpers\Messages::add_error()
-	 * @covers \DemocracyPoll\Helpers\Messages::add_notice()
-	 * @covers \DemocracyPoll\Helpers\Messages::add_ok()
-	 * @covers \DemocracyPoll\Helpers\Messages::add_warn()
-	 * @covers \DemocracyPoll\Helpers\Messages::messages_html()
-	 * @covers \DemocracyPoll\Helpers\Messages::msg_html()
+	 * @covers Messages::add_error()
+	 * @covers Messages::add_notice()
+	 * @covers Messages::add_ok()
+	 * @covers Messages::add_warn()
+	 * @covers Messages::messages_html()
+	 * @covers Messages::msg_html()
 	 */
 	public function test__messages_html_renders_messages_in_expected_order(): void {
 		$messages = new Messages();
@@ -40,7 +40,7 @@ class Messages__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers \DemocracyPoll\Helpers\Messages::msg_html()
+	 * @covers Messages::msg_html()
 	 */
 	public function test__msg_html_maps_updated_alias_to_success(): void {
 		$messages = new Messages();

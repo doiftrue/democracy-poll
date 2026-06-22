@@ -7,7 +7,7 @@ use Closure;
 class Shortcodes__Test extends DemocTestCase {
 
 	/**
-	 * @covers \DemocracyPoll\Shortcodes::normalize_poll_id_attr()
+	 * @covers Shortcodes::normalize_poll_id_attr()
 	 */
 	public function test__normalize_poll_id_attr(): void {
 		$call = Closure::bind( static fn( $pid ) => Shortcodes::normalize_poll_id_attr( $pid ), null, Shortcodes::class );

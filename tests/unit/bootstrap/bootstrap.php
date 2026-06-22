@@ -31,7 +31,4 @@ WP_Mock::bootstrap();
 // run plugin
 
 require_once THIS_PLUG_ROOT_DIR . '/autoload.php';
-
-
-
-
+require_once __DIR__ . '/load_mocks.php';

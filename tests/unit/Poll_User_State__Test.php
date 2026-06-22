@@ -153,7 +153,7 @@ class Poll_User_State__Test extends DemocTestCase {
 	 */
 	public function test__cookie_mutators_delegate_to_poll_cookie(): void {
 		$state = $this->state_with_dependencies( $this->poll( 10 ) );
-		/** @var Fake_Poll_Cookies $cookie */
+		/** @var Testable_Poll_Cookies $cookie */
 		$cookie = $state->poll_cookie;
 
 		$state->set_vote_cookie();
@@ -181,60 +181,10 @@ class Poll_User_State__Test extends DemocTestCase {
 		array $logs = []
 	): Poll_User_State {
 		$state = new Poll_User_State( $poll );
-		$state->poll_cookie = new Fake_Poll_Cookies( $poll, $cookie_value, $is_not_voted );
+		$state->poll_cookie = new Testable_Poll_Cookies( $poll, $cookie_value, $is_not_voted );
 		$state->poll_logs = new Fake_Poll_Logs( $poll, $logs );
 
 		return $state;
-	}
-
-}
-
-class Fake_Poll_Cookies extends Poll_Cookies {
-
-	public int $set_calls = 0;
-	public int $set_not_voted_calls = 0;
-	private string $value;
-	private bool $is_not_voted;
-
-	public function __construct( Poll $poll, string $value = '', bool $is_not_voted = false ) {
-		parent::__construct( $poll );
-		$this->value = $value;
-		$this->is_not_voted = $is_not_voted;
-	}
-
-	public function get(): string {
-		return $this->value;
-	}
-
-	public function is_not_voted(): bool {
-		return $this->is_not_voted;
-	}
-
-	public function set(): void {
-		$this->set_calls++;
-	}
-
-	public function set_not_voted(): void {
-		$this->set_not_voted_calls++;
-	}
-
-}
-
-class Fake_Poll_Logs extends Poll_Logs {
-
-	/** @var object[] */
-	private array $logs;
-
-	/**
-	 * @param object[] $logs
-	 */
-	public function __construct( Poll $poll, array $logs = [] ) {
-		parent::__construct( $poll );
-		$this->logs = $logs;
-	}
-
-	public function get_user_vote_logs(): array {
-		return $this->logs;
 	}
 
 }

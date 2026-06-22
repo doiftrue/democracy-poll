@@ -19,7 +19,7 @@ class Poll_Cookies__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers \DemocracyPoll\Poll_Cookies::get()
+	 * @covers Poll_Cookies::get()
 	 */
 	public function test__gets_aggregate_values(): void {
 		$_COOKIE['demPoll'] = implode( '|', [
@@ -37,7 +37,7 @@ class Poll_Cookies__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers \DemocracyPoll\Poll_Cookies::set()
+	 * @covers Poll_Cookies::set()
 	 */
 	public function test__sets_shared_cookie(): void {
 		$old_timestamp = time() - 100;
@@ -59,7 +59,7 @@ class Poll_Cookies__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers \DemocracyPoll\Poll_Cookies::set_not_voted()
+	 * @covers Poll_Cookies::set_not_voted()
 	 */
 	public function test__not_voted_uses_internal_expiration_without_shortening_votes(): void {
 		$vote_timestamp = time() - 100;
@@ -81,7 +81,7 @@ class Poll_Cookies__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers \DemocracyPoll\Poll_Cookies::set_not_voted()
+	 * @covers Poll_Cookies::set_not_voted()
 	 */
 	public function test__not_voted_only_cookie_expires_after_12_hours(): void {
 		$cookie = new Testable_Poll_Cookies( $this->get_poll( 12 ) );
@@ -93,7 +93,7 @@ class Poll_Cookies__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers \DemocracyPoll\Poll_Cookies::delete()
+	 * @covers Poll_Cookies::delete()
 	 */
 	public function test__deletes_only_current_poll_value(): void {
 		$timestamp = time();
@@ -113,20 +113,6 @@ class Poll_Cookies__Test extends DemocTestCase {
 		$poll->user_state->voted_for = $voted_for;
 
 		return $poll;
-	}
-
-}
-
-class Testable_Poll_Cookies extends Poll_Cookies {
-
-	public array $sent = [];
-
-	protected function send_cookie( string $name, string $value, int $expire ): void {
-		$this->sent[] = [
-			'name'   => $name,
-			'value'  => $value,
-			'expire' => $expire,
-		];
 	}
 
 }
