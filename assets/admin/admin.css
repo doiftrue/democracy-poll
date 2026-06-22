@@ -145,7 +145,7 @@
 
 /** Info sidebar */
 
-.dem-info-wrap{ width: 17%; position: fixed; right: 0; padding: 2em 0; }
+.dem-info-wrap{ width: 17%; position: fixed; right: 0; }
 .dempage_settings, .dempage-design, .dempage_l10n{ float: left; width: 80%; }
 .dem-info-section{ background: white; padding: 1em; }
 @media ( max-width: 1400px ){

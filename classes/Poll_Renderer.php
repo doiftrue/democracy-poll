@@ -168,6 +168,27 @@ class Poll_Renderer {
 
 		$auto_vote_on_click = ( ! $poll->multiple && $poll->revote && options()->hide_vote_button );
 		$auto_vote_attr = $auto_vote_on_click ? 'data-is_auto_vote="1"' : '';
+		$body_html = $this->render_vote_body( $auto_vote_on_click );
+		$bottom_html = $this->render_vote_bottom( $auto_vote_on_click );
+
+		$html = <<<HTML
+		<div class="dem-vote-wrap" $auto_vote_attr>
+			$body_html
+			$bottom_html
+		</div>
+		HTML;
+
+		/**
+		 * Allows to modify the vote screen HTML before it is returned.
+		 *
+		 * @param string $html  The HTML of the vote screen.
+		 * @param Poll   $poll  The current poll object.
+		 */
+		return apply_filters( 'dem_vote_screen', $html, $poll );
+	}
+
+	private function render_vote_body( bool $auto_vote_on_click ): string {
+		$poll = $this->poll;
 
 		$lis_html = '';
 		foreach( $poll->answers as $answer ){
@@ -213,13 +234,23 @@ class Poll_Renderer {
 			);
 		}
 
+		return <<<HTML
+		<ul class="dem-vote">
+			$lis_html
+		</ul>
+		HTML;
+	}
+
+	private function render_vote_bottom( bool $auto_vote_on_click ): string {
+		$poll = $this->poll;
+
 		$bottom_html = '<div class="dem-bottom">';
 
 		$voted_btn = '<div class="dem-voted-button"><input class="dem-button ' . options()->btn_class . '" type="button" value="' . _x( 'Already voted...', 'front', 'democracy-poll' ) . '" disabled="disabled"></div>';
 		$vote_btn = '<div class="dem-vote-button"><input class="dem-button ' . options()->btn_class . '" type="button" value="' . _x( 'Vote', 'front', 'democracy-poll' ) . '" data-dem-act="vote"></div>';
 
 		if( $auto_vote_on_click ){
-			$vote_btn = preg_replace( '/(<[^>]+)/', '$1 style="display:none;"', $vote_btn, 1 );
+			$vote_btn = preg_replace( '/^<div /', '<div style="display:none;" ', $vote_btn, 1 );
 		}
 
 		$for_users_alert = $poll->user_state->blocked_by_not_logged
@@ -243,39 +274,22 @@ class Poll_Renderer {
 			$bottom_html .= $vote_btn;
 		}
 		// not for cache
+		elseif( $for_users_alert ){
+			$bottom_html .= $for_users_alert;
+		}
 		else{
-			if( $for_users_alert ){
-				$bottom_html .= $for_users_alert;
-			}
-			else{
-				$bottom_html .= $poll->user_state->has_voted
-					? ( $poll->revote ? $this->revote_btn_html() : $voted_btn )
-					: $vote_btn;
-			}
+			$bottom_html .= $poll->user_state->has_voted
+				? ( $poll->revote ? $this->revote_btn_html() : $voted_btn )
+				: $vote_btn;
 		}
 
 		if( ! $this->not_show_results && ! options()->dont_show_results_link ){
-			$bottom_html .= '<a href="javascript:void(0);" class="dem-link dem-results-link" data-dem-act="view" rel="nofollow">' . _x( 'Results', 'front', 'democracy-poll' ) . '</a>';
+			$bottom_html .= '<a href="#" class="dem-link dem-results-link" data-dem-act="view" rel="nofollow">' . _x( 'Results', 'front', 'democracy-poll' ) . '</a>';
 		}
 
 		$bottom_html .= '</div>'; // dem-bottom
 
-		$html = <<<HTML
-		<div class="dem-vote-wrap" $auto_vote_attr>
-			<ul class="dem-vote">
-				$lis_html
-			</ul>
-			$bottom_html
-		</div>
-		HTML;
-
-		/**
-		 * Allows to modify the vote screen HTML before it is returned.
-		 *
-		 * @param string $html  The HTML of the vote screen.
-		 * @param Poll   $poll  The current poll object.
-		 */
-		return apply_filters( 'dem_vote_screen', $html, $poll );
+		return $bottom_html;
 	}
 
 	/**
