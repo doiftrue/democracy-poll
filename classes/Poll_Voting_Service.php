@@ -16,7 +16,7 @@ class Poll_Voting_Service {
 	}
 
 	/**
-	 * @param string|array $a.ids Answer IDs separated by "~". May contain a string,
+	 * @param string|array $aids Answer IDs separated by "~". May contain a string,
 	 *                           which will be added as a user answer.
 	 *
 	 * @return WP_Error|string IDs separated by commas.

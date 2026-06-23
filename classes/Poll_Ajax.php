@@ -31,67 +31,96 @@ class Poll_Ajax {
 		$vars = (object) $this->sanitize_request_vars();
 
 		if( ! $vars->act ){
-			wp_die( 'error: no parameters have been sent or it is unavailable' );
+			wp_die( 'error: invalid `act` parameter' );
 		}
 
 		if( ! $vars->pid ){
-			wp_die( 'error: unknown poll id' );
+			wp_die( 'error: invalid `pid` parameter' );
 		}
 
 		$poll = new Poll( $vars->pid );
 		$render = new Poll_Renderer( $poll );
 		$voting = new Poll_Voting_Service( $poll );
 
-		// vote and display results
-		if( 'vote' === $vars->act && $vars->aids ){
-			$voted = $voting->vote( $vars->aids );
-
-			if( is_wp_error( $voted ) ){
-				echo $render::voted_notice_html( $voted->get_error_message() );
-				echo $render->get_vote_screen();
-			}
-			elseif( $render->not_show_results ){
-				echo $render->get_vote_screen();
-			}
-			else{
-				echo $render->get_result_screen();
-			}
+		if( 'vote' === $vars->act ){
+			$this->act__vote( $render, $voting, $vars->aids );
 		}
-		// delete results
+		elseif( 'viewResults' === $vars->act || 'view' === $vars->act /* legacy */ ){
+			$this->act__view_results( $render );
+		}
+		elseif( 'voteScreen' === $vars->act || 'vote_screen' === $vars->act /* legacy */ ){
+			$this->act__vote_screen( $render );
+		}
 		elseif( 'delVoted' === $vars->act ){
-			$voting->delete_vote();
-			echo $render->get_vote_screen();
+			$this->act__delete_vote( $render, $voting );
 		}
-		// view results
-		elseif( 'view' === $vars->act ){
-			if( $render->not_show_results ){
-				echo $render->get_vote_screen();
-			}
-			else{
-				echo $render->get_result_screen();
-			}
-		}
-		// back to voting
-		elseif( 'vote_screen' === $vars->act ){
-			echo $render->get_vote_screen();
-		}
-		// request is only made if cookies are not set - 'checkAnswDone' not done
 		elseif( 'getVotedIds' === $vars->act ){
-			$ustate = $poll->user_state;
-			if( $ustate->voted_for ){
-				$ustate->set_vote_cookie();
-				echo $ustate->voted_for;
-			}
-			elseif( $ustate->blocked_by_not_logged ){
-				echo 'blocked_because_not_logged_note'; // to display a note
-			}
-			else{
-				// Cache a missing vote for half a day to avoid repeating this check.
-				$ustate->set_not_voted_cookie();
-			}
+			$this->act__get_voted_ids( $poll );
+		}
+		else{
+			wp_die( 'error: unknown action' );
 		}
 
-		wp_die();
+		wp_die(); // required exit for AJAX requests
+	}
+
+	/**
+	 * Vote and display results.
+	 *
+	 * @param Poll_Renderer       $render
+	 * @param Poll_Voting_Service $voting
+	 * @param array|string        $aids
+	 */
+	private function act__vote( Poll_Renderer $render, Poll_Voting_Service $voting, $aids ): void {
+		$voted = $voting->vote( $aids );
+
+		if( is_wp_error( $voted ) ){
+			echo $render::voted_notice_html( $voted->get_error_message() );
+			echo $render->get_vote_screen();
+		}
+		elseif( $render->not_show_results ){
+			echo $render->get_vote_screen();
+		}
+		else{
+			echo $render->get_result_screen();
+		}
+	}
+
+	// delete results
+	private function act__delete_vote( Poll_Renderer $render, Poll_Voting_Service $voting ): void {
+		$voting->delete_vote();
+		echo $render->get_vote_screen();
+	}
+
+	// view results
+	private function act__view_results( Poll_Renderer $render ): void {
+		if( $render->not_show_results ){
+			echo $render->get_vote_screen();
+		}
+		else{
+			echo $render->get_result_screen();
+		}
+	}
+
+	// back to voting
+	private function act__vote_screen( Poll_Renderer $render ): void {
+		echo $render->get_vote_screen();
+	}
+
+	// request is only made if cookies are not set - 'checkAnswDone' not done
+	private function act__get_voted_ids( Poll $poll ): void {
+		$ustate = $poll->user_state;
+		if( $ustate->voted_for ){
+			$ustate->set_vote_cookie();
+			echo $ustate->voted_for;
+		}
+		elseif( $ustate->blocked_by_not_logged ){
+			echo 'blocked_because_not_logged_note'; // to display a note
+		}
+		else{
+			// Cache a missing vote for half a day to avoid repeating this check.
+			$ustate->set_not_voted_cookie();
+		}
 	}
 
 }

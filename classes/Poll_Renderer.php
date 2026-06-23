@@ -292,7 +292,7 @@ class Poll_Renderer {
 		}
 
 		if( ! $this->not_show_results && ! options()->dont_show_results_link ){
-			$html .= '<a href="#" class="dem-link dem-results-link" data-dem-act="view" rel="nofollow">' . _x( 'Results', 'front', 'democracy-poll' ) . '</a>';
+			$html .= '<a href="#" class="dem-link dem-results-link" data-dem-act="viewResults" rel="nofollow">' . _x( 'Results', 'front', 'democracy-poll' ) . '</a>';
 		}
 
 		return <<<HTML
@@ -497,7 +497,7 @@ class Poll_Renderer {
 		if( $poll->open ){
 
 			// back to voting
-			$vote_btn = sprintf( '<button type="button" class="dem-button dem-vote-link %s" data-dem-act="vote_screen">%s</button>',
+			$vote_btn = sprintf( '<button type="button" class="dem-button dem-vote-link %s" data-dem-act="voteScreen">%s</button>',
 				options()->btn_class,
 				_x( 'Vote', 'front', 'democracy-poll' )
 			);
