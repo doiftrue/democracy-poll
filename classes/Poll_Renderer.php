@@ -201,7 +201,7 @@ class Poll_Renderer {
 			/** @var Poll_Answer $answer */
 
 			$checked = '';
-			if( in_array( $answer->aid, explode( ',', $poll->user_state->voted_for ), true ) ){
+			if( in_array( (string) $answer->aid, explode( ',', $poll->user_state->voted_for ), true ) ){
 				$checked = ' checked="checked"';
 			}
 

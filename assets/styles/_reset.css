@@ -6,7 +6,7 @@
 	:where(ul, ul li){ background:none; padding:0; margin:0; } /* reset */
 	:where(ul){ list-style:none; border:none; } /* reset */
 	:where(ul li){ list-style:none; } /* reset */
-	:where(ul li::before){ display:none; } /* reset */
+	:where(ul li)::before{ display:none; } /* reset */
 
 	:where(input[type="radio"]),
 	:where(input[type="checkbox"]){
