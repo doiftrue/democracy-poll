@@ -42,7 +42,7 @@
 
 		.title{ margin:-1em -1em 1em -1em; padding:.7em 1em; border-bottom:1px solid #eee; font-weight:600; font-size:110%; }
 	}
-	.demoptions__block{ position: relative; margin:1.2em 0; }
+	.demoptions__block{ position: relative; margin:1rem 0; }
 	.demoptions__block em{ display:block; opacity:0.5; margin-top:.5em; line-height:1.2; }
 	.demoptions__block:hover em{ opacity:0.9; }
 

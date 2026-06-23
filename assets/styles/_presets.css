@@ -43,7 +43,9 @@
 
 /** VOTE SCREEN */
 .dem-vote{
-	label{ float:none; display:block; }
+	label{ display:flex; align-items:center; gap:.5em;
+		.dem__spot{ flex-shrink:0; }
+	}
 	.dem-disabled{ opacity:.5; }
 }
 .dem-results-link{ display:inline-block; margin:.8em 1em; }
