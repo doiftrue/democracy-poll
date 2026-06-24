@@ -49,8 +49,9 @@ function democracyInit(){
 	}
 
 	// Initialize all events for each poll: clicks, height, button visibility
-	// apply to '.dem-screen'
+	// apply to '.dem_screen_js'
 	function initScreen( screen ){
+		// init all actions elements
 		screen.querySelectorAll( '[data-dem-act]' )
 			.forEach( actionEl => {
 				// clear URL so the request URL isn't visible
@@ -74,7 +75,7 @@ function democracyInit(){
 
 		// animate filled bars - line_animation
 		if( State.lineAnimSpeed ){
-			screen.querySelectorAll( '.dem-fill' ).forEach( fill => {
+			screen.querySelectorAll( '.dem_fill_js' ).forEach( fill => {
 				setTimeout( () => animateFill( fill ), State.animSpeed )
 			} )
 		}
@@ -85,12 +86,12 @@ function democracyInit(){
 	}
 
 	function hasAutoVoteAnswers( screen ){
-		return !! screen.querySelector( '.dem-vote-wrap[data-is_auto_vote="1"]' )
+		return !! screen.querySelector( '.dem_vote_wrap_js[data-is_auto_vote="1"]' )
 	}
 
 	function hideAutoVoteButton( screen ){
 		if( hasAutoVoteAnswers( screen ) && ! screen.querySelector( State.userAnswerSel ) ){
-			screen.querySelectorAll( '.dem-vote-button' ).forEach( button => button.style.display = 'none' )
+			screen.querySelectorAll( '.dem_vote_button_js' ).forEach( button => button.style.display = 'none' )
 		}
 	}
 
@@ -104,12 +105,12 @@ function democracyInit(){
 			return false
 		}
 
-		const newAInput = Utils.newEl( '<input type="text" class="dem-add-answer-txt" value="">' )
+		const newAInput = Utils.newEl( '<input type="text" class="dem-add-answer-txt dem_add_answer_txt_js" value="">' )
 		newAInput.addEventListener( 'keydown', ev => {
 			if( ev.key === 'Enter' && ! ev.isComposing ){
 				ev.preventDefault()
 				// we need to try to select button because on "dots loader" - if pass input dots will be added to answer text
-				const actEl = screen.querySelector( '.dem-vote-button [data-dem-act="vote"]' ) || newAInput
+				const actEl = screen.querySelector( '.dem_vote_button_js [data-dem-act="vote"]' ) || newAInput
 				doAction( actEl, 'vote' )
 			}
 		} )
@@ -124,7 +125,7 @@ function democracyInit(){
 		} )
 
 		// show vote button
-		const btn = screen.querySelector( '.dem-vote-button' )
+		const btn = screen.querySelector( '.dem_vote_button_js' )
 		btn && Utils.showElement( btn )
 
 		// insert in DOM
@@ -137,7 +138,7 @@ function democracyInit(){
 		requestAnimationFrame( () => Utils.setHeight( screen, true ) )
 
 		// add a button to remove the user-entered text
-		const close = Utils.newEl( '<span class="dem-add-answer-close">×</span>' )
+		const close = Utils.newEl( '<span class="dem-add-answer-close dem_add_answer_close_js">×</span>' )
 		close.style.lineHeight = newAInput.offsetHeight + 'px' // !!! after `linkBtn.after( newAInput )`
 		close.addEventListener( 'click', newAInput.closeNewAnswer )
 		newAInput.before( close )
@@ -151,7 +152,7 @@ function democracyInit(){
 
 		newAInput.closeListeners.forEach( radio => radio.removeEventListener( 'click', newAInput.closeNewAnswer ) )
 
-		newAInput.parentElement.querySelector('.dem-add-answer-close')?.remove()
+		newAInput.parentElement.querySelector( '.dem_add_answer_close_js' )?.remove()
 		newAInput.remove()
 		Utils.fadeIn( linkBtn )
 		Utils.updateMaxAnswLimit( screen )

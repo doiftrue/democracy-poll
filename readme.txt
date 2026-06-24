@@ -138,6 +138,7 @@ See `COMPAT: ***` messages in the changelog below for any backward compatibility
 * COMPAT: `DemPoll::$dbdata` property removed. Use `DemPoll` props instead.
 * COMPAT: `DemPoll` object renamed to `\DemocracyPoll\Poll`. Old DemPoll class name remains available via PHP class alias, but some public properties were removed/changed. So you may need to update your code if you use `DemPoll` or it's properties directly.
 * COMPAT: `Poll_Service` class removed as well as `DemPoll::$service` property. Use methods of new `Poll_Cookies`, `Poll_Voting_Service`, `Poll_Logs` instead.
+* COMPAT: Custom HTML returned by the `dem_vote_screen` or `dem_result_screen` filters must include the new `dem_*_js` classes used as JavaScript hooks.
 
 = 6.3.1 =
 * FIX: Restored the Text Customization settings page after a previous refactor.

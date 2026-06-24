@@ -64,7 +64,7 @@ class Poll_Renderer {
 			'line_anim_speed'  => (int) $opt->line_anim_speed,
 		];
 
-		$html .= sprintf( '<div id="democracy-%d" class="democracy" data-opts=\'%s\' >', $poll->id, json_encode( $js_opts ) );
+		$html .= sprintf( '<div id="democracy-%d" class="democracy democracy_js" data-opts=\'%s\' >', $poll->id, json_encode( $js_opts ) );
 		$html .= $before_title ?: $opt->before_title;
 		$html .= Kses::kses_html( $poll->question );
 		$html .= $after_title ?: $opt->after_title;
@@ -127,7 +127,7 @@ class Poll_Renderer {
 		$is_keep_logs = options()->keep_logs ? 1 : 0;
 		return <<<HTML
 			<!--noindex-->
-			<div class="dem-cache-screens" style="display:none;" data-opt_logs="$is_keep_logs">$html</div>
+			<div class="dem-cache-screens dem_cache_screens_js" style="display:none;" data-opt_logs="$is_keep_logs">$html</div>
 			<!--/noindex-->
 			HTML;
 	}
@@ -140,15 +140,19 @@ class Poll_Renderer {
 	 * @return string HTML
 	 */
 	protected function get_screen_basis( string $show_screen = 'vote' ): string {
-		$class_suffix = $this->for_cache ? '-cache' : '';
-
 		if( $this->not_show_results ){
 			$show_screen = 'force_vote';
 		}
 
-		$screen = ( $show_screen === 'vote' || $show_screen === 'force_vote' ) ? 'vote' : 'voted';
+		$screen = ( $show_screen === 'vote' || $show_screen === 'force_vote' )
+			? 'vote'
+			: 'voted';
 
-		$html = "<div class=\"dem-screen{$class_suffix} $screen\">";
+		$class = $this->for_cache
+			? "dem-screen-cache $screen dem_screen_cache_js"
+			: "dem-screen $screen dem_screen_js";
+
+		$html = "<div class=\"$class\">";
 		$html .= ( $screen === 'vote' )
 			? $this->get_vote_screen()
 			: $this->get_result_screen();
@@ -172,14 +176,14 @@ class Poll_Renderer {
 		$bottom_html = $this->vote_bottom( $auto_vote_on_click );
 
 		$html = <<<HTML
-		<div class="dem-vote-wrap" $auto_vote_attr>
+		<div class="dem-vote-wrap dem_vote_wrap_js" $auto_vote_attr>
 			$body_html
 			$bottom_html
 		</div>
 		HTML;
 
 		/**
-		 * Allows to modify the vote screen HTML before it is returned.
+		 * Allows modifying the vote screen HTML before it is returned.
 		 *
 		 * @param string $html  The HTML of the vote screen.
 		 * @param Poll   $poll  The current poll object.
@@ -227,7 +231,7 @@ class Poll_Renderer {
 		if( $poll->democratic && ! $poll->user_state->voting_blocked ){
 			$lis_html .= strtr( <<<'HTML'
 				<li class="dem-add-answer dem_add_answer_item_js">
-					<a class="dem-link dem-add-answer-link dem_add_answer_link_js" data-dem-act="newAnswer" href="#" rel="nofollow">{ANCHOR}</a>
+					<a class="dem-link dem_link_js dem-add-answer-link dem_add_answer_link_js" data-dem-act="newAnswer" href="#" rel="nofollow">{ANCHOR}</a>
 				</li>
 				HTML,
 				[ '{ANCHOR}' => _x( 'Add your answer', 'front', 'democracy-poll' ) ]
@@ -235,7 +239,7 @@ class Poll_Renderer {
 		}
 
 		return <<<HTML
-		<ul class="dem-vote">
+		<ul class="dem-vote dem_answers_list_js">
 			$lis_html
 		</ul>
 		HTML;
@@ -245,7 +249,7 @@ class Poll_Renderer {
 		$poll = $this->poll;
 
 		$voted_btn = strtr( <<<HTML
-			<div class="dem-voted-button">
+			<div class="dem-voted-button dem_voted_button_js">
 				<input class="dem-button {CLASS}" type="button" value="{ANCHOR}" disabled="disabled">
 			</div>
 			HTML,
@@ -256,7 +260,7 @@ class Poll_Renderer {
 		);
 
 		$vote_btn = strtr( <<<HTML
-			<div class="dem-vote-button" {ATTRS}>
+			<div class="dem-vote-button dem_vote_button_js" {ATTRS}>
 				<input class="dem-button {CLASS}" type="button" value="{ANCHOR}" data-dem-act="vote">
 			</div>
 			HTML,
@@ -292,7 +296,7 @@ class Poll_Renderer {
 		}
 
 		if( ! $this->not_show_results && ! options()->dont_show_results_link ){
-			$html .= '<a href="#" class="dem-link dem-results-link" data-dem-act="viewResults" rel="nofollow">' . _x( 'Results', 'front', 'democracy-poll' ) . '</a>';
+			$html .= '<a href="#" class="dem-link dem_link_js dem-results-link" data-dem-act="viewResults" rel="nofollow">' . _x( 'Results', 'front', 'democracy-poll' ) . '</a>';
 		}
 
 		return <<<HTML
@@ -347,6 +351,7 @@ class Poll_Renderer {
 
 		$voted_class = 'dem-voted-this';
 		$voted_txt = _x( 'This is your vote.', 'front', 'democracy-poll' );
+		$voted_aids = Poll_Storage::get_aids_from_str( $poll->user_state->voted_for );
 
 		$list_html = '';
 		foreach( $answers as $answer ){
@@ -357,7 +362,7 @@ class Poll_Renderer {
 			 */
 			$answer = apply_filters( 'dem_result_screen_answer', $answer );
 
-			$is_voted_this = ( $poll->user_state->has_voted && in_array( (string) $answer->aid, explode( ',', $poll->user_state->voted_for ), true ) );
+			$is_voted_this = ( $poll->user_state->has_voted && in_array( $answer->aid, $voted_aids, true ) );
 			$is_winner     = ( $max_votes === $answer->votes );
 			$novoted_class = $answer->votes ? '' : ' dem-novoted';
 			$li_class      = trim( ( $is_winner ? 'dem-winner' : '' ) . ( $is_voted_this ? " $voted_class" : '' ) . $novoted_class );
@@ -397,7 +402,7 @@ class Poll_Renderer {
 					<span class="dem-label-percent-txt">$label_perc_txt</span>
 				</div>
 				<div class="dem-graph">
-					<div class="dem-fill" $width_attr></div>
+					<div class="dem-fill dem_fill_js" $width_attr></div>
 					<div class="dem-votes-txt">
 						<span class="dem-votes-txt-votes">$votes_txt</span>
 						$percent_html
@@ -408,8 +413,10 @@ class Poll_Renderer {
 			HTML;
 		}
 
+		$esc_voted_txt = esc_attr( $voted_txt );
+
 		return <<<HTML
-		<ul class="dem-answers" data-voted-class="$voted_class" data-voted-txt="$voted_txt">
+		<ul class="dem-answers dem_answers_list_js" data-voted_txt="$esc_voted_txt">
 			$list_html
 		</ul>
 		HTML;
@@ -497,7 +504,7 @@ class Poll_Renderer {
 		if( $poll->open ){
 
 			// back to voting
-			$vote_btn = sprintf( '<button type="button" class="dem-button dem-vote-link %s" data-dem-act="voteScreen">%s</button>',
+			$vote_btn = sprintf( '<button type="button" class="dem-button dem-vote-link dem_vote_link_js %s" data-dem-act="voteScreen">%s</button>',
 				options()->btn_class,
 				_x( 'Vote', 'front', 'democracy-poll' )
 			);
@@ -532,8 +539,8 @@ class Poll_Renderer {
 
 	protected function revote_btn_html(): string {
 		return strtr( <<<'HTML'
-			<span class="dem-revote-button-wrap">
-				<input type="button" value="{REVOTE}" class="dem-revote-link dem-revote-button dem-button {BTN_CLASS}" data-dem-act="delVoted" data-confirm_text="{CONFIRM}">
+			<span class="dem-revote-button-wrap dem_revote_button_wrap_js">
+				<input class="dem-button dem-revote-button dem-revote-link {BTN_CLASS} dem_revote_button_js" type="button" value="{REVOTE}" data-dem-act="delVoted" data-confirm_text="{CONFIRM}">
 			</span>
 			HTML,
 			[
@@ -577,7 +584,7 @@ class Poll_Renderer {
 
 		if( ! $msg ){
 			return strtr( <<<'HTML'
-				<div class="dem-notice dem-youarevote" style="display:none;">
+				<div class="dem-notice dem-youarevote dem_you_are_voted_js" style="display:none;">
 					<div class="dem-notice-close" onclick="{JS}">&times;</div>
 					{MESSAGE}
 				</div>

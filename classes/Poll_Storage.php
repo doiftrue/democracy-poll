@@ -190,7 +190,7 @@ class Poll_Storage {
 	/**
 	 * @return int[]
 	 */
-	private static function get_aids_from_str( string $aids_str ): array {
+	public static function get_aids_from_str( string $aids_str ): array {
 		$aids = explode( ',', $aids_str );
 		$aids = array_map( 'trim', $aids );
 		$aids = array_map( 'intval', $aids );

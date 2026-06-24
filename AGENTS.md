@@ -28,6 +28,7 @@ This is WordPress plugin that distributed to oficial WordPress plugin repository
 ## Coding Style & Naming Conventions
 - PHP follows WordPress conventions: tabs for indentation, `snake_case` for functions, `StudlyCaps` for classes, `UPPER_SNAKE` for constants.
 - JS uses ES modules. `assets/js/democracy.mjs` is main file; `assets/js/democracy.min.js` is build artifact of main file.
+- Use `snake_case` for all JavaScript `element.dataset` property names and their corresponding HTML `data-*` attributes. Keep the name identical on both sides so it can be found by exact text search without camelCase/kebab-case conversion. Example: `element.dataset.vote_check_done` corresponds to `data-vote_check_done`.
 - CSS themes in `styles/` are lower-case filenames; avoid inline edits to generated assets.
 
 ## Testing Guidelines

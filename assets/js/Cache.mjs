@@ -8,7 +8,7 @@ export default class Cache {
 	static actionsHandler
 
 	static initAll(){
-		const cacheBlocks = document.querySelectorAll( '.dem-cache-screens' )
+		const cacheBlocks = document.querySelectorAll( '.dem_cache_screens_js' )
 		if( ! cacheBlocks.length ){
 			return
 		}
@@ -35,8 +35,8 @@ export default class Cache {
 		const isAnswrs = answrs && ! notVotedFlag
 
 		// choose which screen to show and how to handle it
-		const voteBlock = cacheBlock.querySelector( State.screenSel + '-cache.vote' )
-		const votedBlock = cacheBlock.querySelector( State.screenSel + '-cache.voted' )
+		const voteBlock = cacheBlock.querySelector( State.cacheScreenSel + '.vote' )
+		const votedBlock = cacheBlock.querySelector( State.cacheScreenSel + '.voted' )
 		const voteHTML = voteBlock ? voteBlock.innerHTML : ''
 		const votedHTML = votedBlock ? votedBlock.innerHTML : ''
 
@@ -72,13 +72,12 @@ export default class Cache {
 			const check__fn = function(){
 				tmout = setTimeout( function(){
 					// Run once!
-					if( dem.classList.contains( 'checkAnswDone' ) ){
+					if( dem._vote_check_done ){
 						return
 					}
+					dem._vote_check_done = true
 
-					dem.classList.add( 'checkAnswDone' )
-
-					const forDotsLoader = dem.querySelector( '.dem-link' )
+					const forDotsLoader = dem.querySelector( '.dem_link_js' )
 					if( forDotsLoader ){
 						Loader.setLoader( forDotsLoader )
 					}
@@ -120,11 +119,11 @@ export default class Cache {
 	}
 
 	static showNotice( screen, type ){
-		let notice = screen.querySelector( '.dem-youarevote' ) // "already voted"
+		let notice = screen.querySelector( '.dem_you_are_voted_js' ) // "already voted"
 
 		// If only logged-in users can vote
 		if( type === 'blocked_because_not_logged_note' ){
-			const revoteBtn = screen.querySelector( '.dem-revote-button' )
+			const revoteBtn = screen.querySelector( '.dem_revote_button_js' )
 			if( revoteBtn ){
 				revoteBtn.remove()
 			}
@@ -148,16 +147,13 @@ export default class Cache {
 
 		// results view
 		if( screen.classList.contains( 'voted' ) ){
-			const dema = screen.querySelector( '.dem-answers' )
-			const votedClass = dema ? dema.dataset.votedClass : ''
-			const votedtxt = dema ? dema.dataset.votedTxt : ''
+			const dema = screen.querySelector( '.dem_answers_list_js' )
+			const votedtxt = dema ? dema.dataset.voted_txt : ''
 
 			aids.forEach( aid => {
 				const nodes = Cache.queryAidNodes( screen, aid )
 				nodes.forEach( node => {
-					if( votedClass ){
-						node.classList.add( votedClass )
-					}
+					node.classList.add( 'dem-voted-this' )
 
 					const title = node.getAttribute( 'title' ) || ''
 					if( votedtxt ){
@@ -167,12 +163,12 @@ export default class Cache {
 			} )
 
 			// remove "Vote" button
-			screen.querySelectorAll( '.dem-vote-link' ).forEach( node => node.remove() )
+			screen.querySelectorAll( '.dem_vote_link_js' ).forEach( node => node.remove() )
 		}
 		// voting view
 		else{
 			const answerNodes = Array.from( screen.querySelectorAll( '[data-aid]' ) )
-			const btnVoted = screen.querySelector( '.dem-voted-button' )
+			const btnVoted = screen.querySelector( '.dem_voted_button_js' )
 
 			// set answers
 			aids.forEach( aid => {
@@ -192,7 +188,7 @@ export default class Cache {
 			} )
 
 			// remove voting button
-			screen.querySelectorAll( '.dem-vote-button' ).forEach( node => node.remove() )
+			screen.querySelectorAll( '.dem_vote_button_js' ).forEach( node => node.remove() )
 			//screen.querySelectorAll( '[data-dem-act="vote"]' ).forEach( node => node.remove() )
 
 			// if "already voted" button exists, revote is disabled
@@ -201,7 +197,7 @@ export default class Cache {
 			}
 			// show revote button
 			else{
-				screen.querySelectorAll( '.dem-revote-button-wrap' ).forEach( Utils.showElement )
+				screen.querySelectorAll( '.dem_revote_button_wrap_js' ).forEach( Utils.showElement )
 			}
 		}
 	}

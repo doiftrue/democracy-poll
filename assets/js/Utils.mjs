@@ -54,7 +54,7 @@ export default class Utils {
 			return
 		}
 
-		const el = screen.querySelector( '.dem-vote, .dem-answers' )
+		const el = screen.querySelector( '.dem_answers_list_js' )
 		const maxHeight = State.answMaxHeight
 		const maxHeightPx = Utils.heightToPixels( maxHeight, el )
 
@@ -71,7 +71,7 @@ export default class Utils {
 		if( diff > 100 ){
 			el.style.position = 'relative'
 
-			const overlay = Utils.newEl( '<span class="dem__collapser"><span class="arr"></span></span>' )
+			const overlay = Utils.newEl( '<span class="dem__collapser dem_collapser_js"><span class="arr"></span></span>' )
 			el.append( overlay )
 
 			const fn__expand = () => {
