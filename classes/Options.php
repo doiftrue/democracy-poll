@@ -51,9 +51,9 @@ class Options {
 
 	public const OPT_NAME = 'democracy_options';
 
-	private array $opt = [];
+	protected array $opt = [];
 
-	private array $default_options = [
+	protected array $default_options = [
 		'main'   => [
 			// Store logs in the database.
 			'keep_logs'              => 1,
