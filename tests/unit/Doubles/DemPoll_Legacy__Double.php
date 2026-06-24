@@ -1,10 +1,13 @@
 <?php
 
-namespace DemocracyPoll\Mocks;
+namespace DemocracyPoll\Doubles;
 
 use DemocracyPoll\Poll;
 
-class Testable_DemPoll_Legacy_Poll extends Poll {
+/**
+ * @see DemPoll_Legacy
+ */
+class DemPoll_Legacy__Double extends Poll {
 
 	public int $set_answers_calls = 0;
 

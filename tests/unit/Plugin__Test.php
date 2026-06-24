@@ -3,7 +3,7 @@
 namespace DemocracyPoll;
 
 use DemocracyPoll\Helpers\Messages;
-use DemocracyPoll\Mocks\Testable_Plugin;
+use DemocracyPoll\Doubles\Plugin__Double;
 use WP_Mock;
 
 class Plugin__Test extends DemocTestCase {
@@ -41,7 +41,7 @@ class Plugin__Test extends DemocTestCase {
 	 * @covers Plugin::set_access_caps()
 	 */
 	public function test__set_access_caps_grants_both_access_levels_to_administrator(): void {
-		$plugin = new Testable_Plugin( [ 'access_roles' => [ 'editor' ] ] );
+		$plugin = new Plugin__Double( [ 'access_roles' => [ 'editor' ] ] );
 
 		WP_Mock::userFunction( 'current_user_can' )->once()->with( 'manage_options' )->andReturn( true );
 		add_filter( 'dem_super_access', '__return_false' );
@@ -56,7 +56,7 @@ class Plugin__Test extends DemocTestCase {
 	 * @covers Plugin::set_access_caps()
 	 */
 	public function test__set_access_caps_grants_admin_access_to_configured_role(): void {
-		$plugin = new Testable_Plugin( [ 'access_roles' => [ 'editor' ] ] );
+		$plugin = new Plugin__Double( [ 'access_roles' => [ 'editor' ] ] );
 
 		WP_Mock::userFunction( 'current_user_can' )->once()->andReturn( false );
 		WP_Mock::userFunction( 'wp_get_current_user' )->once()
@@ -74,7 +74,7 @@ class Plugin__Test extends DemocTestCase {
 	 * @covers Plugin::set_access_caps()
 	 */
 	public function test__set_access_caps_filter_can_grant_only_super_access(): void {
-		$plugin = new Testable_Plugin( [ 'access_roles' => [ 'editor' ] ] );
+		$plugin = new Plugin__Double( [ 'access_roles' => [ 'editor' ] ] );
 
 		WP_Mock::userFunction( 'current_user_can' )->once()->andReturn( false );
 		WP_Mock::userFunction( 'wp_get_current_user' )->once()
@@ -92,7 +92,7 @@ class Plugin__Test extends DemocTestCase {
 	 * @covers Plugin::set_is_cachegear_on()
 	 */
 	public function test__set_is_cachegear_on_honors_forced_option(): void {
-		$plugin = new Testable_Plugin( [ 'force_cachegear' => 1 ] );
+		$plugin = new Plugin__Double( [ 'force_cachegear' => 1 ] );
 
 		$plugin->set_is_cachegear_on();
 
@@ -103,7 +103,7 @@ class Plugin__Test extends DemocTestCase {
 	 * @covers Plugin::set_is_cachegear_on()
 	 */
 	public function test__set_is_cachegear_on_uses_filtered_status(): void {
-		$plugin = new Testable_Plugin();
+		$plugin = new Plugin__Double();
 
 		add_filter( 'dem_cachegear_status', '__return_false' );
 
@@ -117,7 +117,7 @@ class Plugin__Test extends DemocTestCase {
 	 * @dataProvider cachegear_status_provider
 	 */
 	public function test__set_is_cachegear_on_casts_filtered_status( $status, bool $expected ): void {
-		$plugin = new Testable_Plugin();
+		$plugin = new Plugin__Double();
 
 		add_filter( 'dem_cachegear_status', static fn() => $status );
 

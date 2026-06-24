@@ -1,11 +1,11 @@
 <?php
 
-namespace DemocracyPoll\Mocks;
+namespace DemocracyPoll\Doubles;
 
 use DemocracyPoll\Poll;
 use DemocracyPoll\Poll_Cookies;
 
-class Testable_Poll_Cookies extends Poll_Cookies {
+class Poll_Cookies__Double extends Poll_Cookies {
 
 	public array $sent = [];
 	public int $set_calls = 0;

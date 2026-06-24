@@ -1,11 +1,11 @@
 <?php
 
-namespace DemocracyPoll\Mocks;
+namespace DemocracyPoll\Doubles;
 
 use DemocracyPoll\Options;
 use DemocracyPoll\Plugin;
 
-class Testable_Plugin extends Plugin {
+class Plugin__Double extends Plugin {
 
 	public function __construct( array $options = [] ) {
 

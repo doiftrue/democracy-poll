@@ -2,8 +2,8 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Mocks\Fake_Poll_Logs;
-use DemocracyPoll\Mocks\Testable_Poll_Cookies;
+use DemocracyPoll\Doubles\Poll_Logs__Double;
+use DemocracyPoll\Doubles\Poll_Cookies__Double;
 use RuntimeException;
 use WP_Mock;
 
@@ -155,7 +155,7 @@ class Poll_User_State__Test extends DemocTestCase {
 	 */
 	public function test__cookie_mutators_delegate_to_poll_cookie(): void {
 		$state = $this->state_with_dependencies( $this->poll( 10 ) );
-		/** @var Testable_Poll_Cookies $cookie */
+		/** @var Poll_Cookies__Double $cookie */
 		$cookie = $state->poll_cookie;
 
 		$state->set_vote_cookie();
@@ -183,8 +183,8 @@ class Poll_User_State__Test extends DemocTestCase {
 		array $logs = []
 	): Poll_User_State {
 		$state = new Poll_User_State( $poll );
-		$state->poll_cookie = new Testable_Poll_Cookies( $poll, $cookie_value, $is_not_voted );
-		$state->poll_logs = new Fake_Poll_Logs( $poll, $logs );
+		$state->poll_cookie = new Poll_Cookies__Double( $poll, $cookie_value, $is_not_voted );
+		$state->poll_logs = new Poll_Logs__Double( $poll, $logs );
 
 		return $state;
 	}

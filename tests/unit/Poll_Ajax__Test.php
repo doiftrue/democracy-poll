@@ -2,7 +2,7 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Mocks\Testable_Poll_Ajax;
+use DemocracyPoll\Doubles\Poll_Ajax__Double;
 use Mockery;
 use WP_Mock;
 
@@ -46,7 +46,7 @@ class Poll_Ajax__Test extends DemocTestCase {
 	 * @covers Poll_Ajax::init()
 	 */
 	public function test__registers_authenticated_and_public_ajax_handlers(): void {
-		$ajax = new Testable_Poll_Ajax( $this->poll, $this->renderer, $this->voting );
+		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
 		$ajax->init();
 
 		$this->assertSame( 10, has_action( 'wp_ajax_dem_ajax', [ $ajax, 'ajax_request_handler' ] ) );
@@ -73,7 +73,7 @@ class Poll_Ajax__Test extends DemocTestCase {
 		$this->expect_ajax_exit();
 		$this->expectOutputString( 'RESULTS' );
 
-		$ajax = new Testable_Poll_Ajax( $this->poll, $this->renderer, $this->voting );
+		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
 		$ajax->ajax_request_handler();
 	}
 
@@ -93,7 +93,7 @@ class Poll_Ajax__Test extends DemocTestCase {
 		$this->expect_ajax_exit();
 		$this->expectOutputString( 'RESULTS' );
 
-		$ajax = new Testable_Poll_Ajax( $this->poll, $this->renderer, $this->voting );
+		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
 		$ajax->ajax_request_handler();
 	}
 
@@ -120,7 +120,7 @@ class Poll_Ajax__Test extends DemocTestCase {
 		$this->expect_ajax_exit();
 		$this->expectOutputString( 'VOTE' );
 
-		$ajax = new Testable_Poll_Ajax( $this->poll, $this->renderer, $this->voting );
+		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
 		$ajax->ajax_request_handler();
 	}
 
@@ -148,7 +148,7 @@ class Poll_Ajax__Test extends DemocTestCase {
 		$this->expect_ajax_exit();
 		$this->expectOutputString( 'RESULTS' );
 
-		$ajax = new Testable_Poll_Ajax( $this->poll, $this->renderer, $this->voting );
+		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
 		$ajax->ajax_request_handler();
 	}
 
@@ -164,7 +164,7 @@ class Poll_Ajax__Test extends DemocTestCase {
 
 		$this->expect_ajax_exit( 'error: unknown action' );
 
-		$ajax = new Testable_Poll_Ajax( $this->poll, $this->renderer, $this->voting );
+		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
 		$ajax->ajax_request_handler();
 	}
 

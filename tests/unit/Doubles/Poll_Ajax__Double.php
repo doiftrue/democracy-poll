@@ -1,13 +1,13 @@
 <?php
 
-namespace DemocracyPoll\Mocks;
+namespace DemocracyPoll\Doubles;
 
 use DemocracyPoll\Poll;
 use DemocracyPoll\Poll_Ajax;
 use DemocracyPoll\Poll_Renderer;
 use DemocracyPoll\Poll_Voting_Service;
 
-class Testable_Poll_Ajax extends Poll_Ajax {
+class Poll_Ajax__Double extends Poll_Ajax {
 
 	public Poll $poll;
 	public Poll_Renderer $renderer;

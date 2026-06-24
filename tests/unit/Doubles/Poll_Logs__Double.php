@@ -1,11 +1,11 @@
 <?php
 
-namespace DemocracyPoll\Mocks;
+namespace DemocracyPoll\Doubles;
 
 use DemocracyPoll\Poll;
 use DemocracyPoll\Poll_Logs;
 
-class Fake_Poll_Logs extends Poll_Logs {
+class Poll_Logs__Double extends Poll_Logs {
 
 	/** @var object[] */
 	private array $logs;

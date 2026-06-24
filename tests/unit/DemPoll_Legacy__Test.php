@@ -2,7 +2,7 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Mocks\Testable_DemPoll_Legacy_Poll;
+use DemocracyPoll\Doubles\DemPoll_Legacy__Double;
 use RuntimeException;
 
 class DemPoll_Legacy__Test extends DemocTestCase {
@@ -105,7 +105,7 @@ class DemPoll_Legacy__Test extends DemocTestCase {
 	 * @covers DemPoll_Legacy::re_set_answers()
 	 */
 	public function test__re_set_answers_delegates_to_set_answers(): void {
-		$poll = new Testable_DemPoll_Legacy_Poll();
+		$poll = new DemPoll_Legacy__Double();
 
 		$poll->re_set_answers();
 

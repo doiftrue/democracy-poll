@@ -2,7 +2,7 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Mocks\Testable_Poll_Cookies;
+use DemocracyPoll\Doubles\Poll_Cookies__Double;
 use WP_Mock;
 
 class Poll_Cookies__Test extends DemocTestCase {
@@ -45,7 +45,7 @@ class Poll_Cookies__Test extends DemocTestCase {
 		$_COOKIE['demPoll'] = '9:10-' . Poll_Cookies::to_base36( $old_timestamp );
 		$timestamp_before = time();
 
-		$cookie = new Testable_Poll_Cookies( $this->get_poll( 12, '3,4' ) );
+		$cookie = new Poll_Cookies__Double( $this->get_poll( 12, '3,4' ) );
 		$cookie->set();
 		$timestamp_after = time();
 
@@ -67,7 +67,7 @@ class Poll_Cookies__Test extends DemocTestCase {
 		$_COOKIE['demPoll'] = '9:10-' . Poll_Cookies::to_base36( $vote_timestamp );
 		$timestamp_before = time();
 
-		$cookie = new Testable_Poll_Cookies( $this->get_poll( 12 ) );
+		$cookie = new Poll_Cookies__Double( $this->get_poll( 12 ) );
 		$cookie->set_not_voted();
 		$timestamp_after = time();
 
@@ -85,7 +85,7 @@ class Poll_Cookies__Test extends DemocTestCase {
 	 * @covers Poll_Cookies::set_not_voted()
 	 */
 	public function test__not_voted_only_cookie_expires_after_12_hours(): void {
-		$cookie = new Testable_Poll_Cookies( $this->get_poll( 12 ) );
+		$cookie = new Poll_Cookies__Double( $this->get_poll( 12 ) );
 		$cookie->set_not_voted();
 
 		$timestamp = Poll_Cookies::from_base36( substr( $_COOKIE['demPoll'], strrpos( $_COOKIE['demPoll'], '-' ) + 1 ) );
@@ -101,7 +101,7 @@ class Poll_Cookies__Test extends DemocTestCase {
 		$_COOKIE['demPoll'] = '12:1_2-' . Poll_Cookies::to_base36( $timestamp )
 			. '|13:3-' . Poll_Cookies::to_base36( $timestamp );
 
-		$cookie = new Testable_Poll_Cookies( $this->get_poll( 12 ) );
+		$cookie = new Poll_Cookies__Double( $this->get_poll( 12 ) );
 		$cookie->delete();
 
 		$this->assertSame( '13:3-' . Poll_Cookies::to_base36( $timestamp ), $_COOKIE['demPoll'] );

@@ -1,12 +1,12 @@
 <?php
 
-namespace DemocracyPoll\Mocks;
+namespace DemocracyPoll\Doubles;
 
 use DemocracyPoll\Poll;
 use DemocracyPoll\Poll_Answer;
 use ReflectionProperty;
 
-class Testable_Poll_For_Answers extends Poll {
+class Poll_With_Answers__Double extends Poll {
 
 	public int $set_answers_calls = 0;
 
