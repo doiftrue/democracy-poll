@@ -2,6 +2,7 @@
 
 namespace DemocracyPoll;
 
+use DemocracyPoll\Mocks\Testable_Poll_Cookies;
 use WP_Mock;
 
 class Poll_Cookies__Test extends DemocTestCase {

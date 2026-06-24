@@ -1,6 +1,10 @@
 <?php
 
-namespace DemocracyPoll;
+namespace DemocracyPoll\Mocks;
+
+use DemocracyPoll\Poll;
+use DemocracyPoll\Poll_Answer;
+use ReflectionProperty;
 
 class Testable_Poll_For_Answers extends Poll {
 
@@ -20,7 +24,7 @@ class Testable_Poll_For_Answers extends Poll {
 	public function set_answers(): void {
 		$this->set_answers_calls++;
 
-		$property = new \ReflectionProperty( Poll::class, 'answers' );
+		$property = new ReflectionProperty( Poll::class, 'answers' );
 		$property->setAccessible( true );
 		$property->setValue( $this, $this->answers_stub );
 	}

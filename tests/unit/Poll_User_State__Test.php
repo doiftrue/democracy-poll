@@ -2,6 +2,8 @@
 
 namespace DemocracyPoll;
 
+use DemocracyPoll\Mocks\Fake_Poll_Logs;
+use DemocracyPoll\Mocks\Testable_Poll_Cookies;
 use RuntimeException;
 use WP_Mock;
 

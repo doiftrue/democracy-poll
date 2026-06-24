@@ -2,6 +2,7 @@
 
 namespace DemocracyPoll;
 
+use DemocracyPoll\Mocks\Testable_Poll_Ajax;
 use Mockery;
 use WP_Mock;
 

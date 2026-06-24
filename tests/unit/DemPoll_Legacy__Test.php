@@ -2,6 +2,7 @@
 
 namespace DemocracyPoll;
 
+use DemocracyPoll\Mocks\Testable_DemPoll_Legacy_Poll;
 use RuntimeException;
 
 class DemPoll_Legacy__Test extends DemocTestCase {

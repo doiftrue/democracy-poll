@@ -1,6 +1,11 @@
 <?php
 
-namespace DemocracyPoll;
+namespace DemocracyPoll\Mocks;
+
+use DemocracyPoll\Poll;
+use DemocracyPoll\Poll_Ajax;
+use DemocracyPoll\Poll_Renderer;
+use DemocracyPoll\Poll_Voting_Service;
 
 class Testable_Poll_Ajax extends Poll_Ajax {
 

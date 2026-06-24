@@ -1,6 +1,9 @@
 <?php
 
-namespace DemocracyPoll;
+namespace DemocracyPoll\Mocks;
+
+use DemocracyPoll\Poll;
+use DemocracyPoll\Poll_Cookies;
 
 class Testable_Poll_Cookies extends Poll_Cookies {
 

@@ -1,6 +1,9 @@
 <?php
 
-namespace DemocracyPoll;
+namespace DemocracyPoll\Mocks;
+
+use DemocracyPoll\Poll;
+use DemocracyPoll\Poll_Logs;
 
 class Fake_Poll_Logs extends Poll_Logs {
 

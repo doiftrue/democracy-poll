@@ -1,6 +1,8 @@
 <?php
 
-namespace DemocracyPoll;
+namespace DemocracyPoll\Mocks;
+
+use DemocracyPoll\Poll;
 
 class Testable_DemPoll_Legacy_Poll extends Poll {
 

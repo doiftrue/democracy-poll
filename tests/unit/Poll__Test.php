@@ -2,6 +2,7 @@
 
 namespace DemocracyPoll;
 
+use DemocracyPoll\Mocks\Testable_Poll_For_Answers;
 use WP_Mock;
 
 class Poll__Test extends DemocTestCase {
@@ -147,7 +148,7 @@ class Poll__Test extends DemocTestCase {
 		$this->assertSame( 1, $poll->set_answers_calls );
 		$this->assertSame( [ $answer ], $poll->answers );
 
-		$poll->answers;
+		$poll->answers; // set magic property
 
 		$this->assertSame( 1, $poll->set_answers_calls );
 	}
