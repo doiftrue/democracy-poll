@@ -13,12 +13,12 @@ class Poll_Utils {
 	 *
 	 * @param int $poll_id  Poll ID
 	 */
-	public static function edit_poll_url( $poll_id ): string {
+	public static function edit_poll_url( int $poll_id ): string {
 		return plugin()->admin_page_url . '&edit_poll=' . (int) $poll_id;
 	}
 
 	/**
-	 * Check whether current user can edit a specified poll.
+	 * Check whether the current user can edit a specified poll.
 	 *
 	 * @param Poll|object|int $poll  Poll object or poll id.
 	 */
@@ -38,6 +38,9 @@ class Poll_Utils {
 		return $poll && (int) $poll->added_user === (int) get_current_user_id();
 	}
 
+	/**
+	 * @internal
+	 */
 	public static function get_minified_styles_once(): string {
 		static $once = 0;
 		if( $once++ ){
@@ -52,6 +55,9 @@ class Poll_Utils {
 			: '';
 	}
 
+	/**
+	 * @internal
+	 */
 	public static function enqueue_js_once(): void {
 		static $once = 0;
 		if( $once++ ){
@@ -63,6 +69,16 @@ class Poll_Utils {
 			'in_footer' => true,
 			'strategy'  => 'defer',
 		] );
+	}
+
+	/**
+	 * @internal
+	 * @return int[]
+	 */
+	public static function parse_voted_str( string $answer_ids ): array {
+		return array_values( array_filter(
+			array_map( 'intval', explode( ',', $answer_ids ) )
+		) );
 	}
 
 }

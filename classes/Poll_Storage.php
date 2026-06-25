@@ -90,7 +90,7 @@ class Poll_Storage {
 	public static function increment_votes( Poll $poll, string $voted_for ): bool {
 		global $wpdb;
 
-		$aids = self::get_aids_from_str( $voted_for );
+		$aids = Poll_Utils::parse_voted_str( $voted_for );
 		if( ! $aids ){
 			return false;
 		}
@@ -123,7 +123,7 @@ class Poll_Storage {
 	public static function decrement_votes( Poll $poll, string $voted_for ): bool {
 		global $wpdb;
 
-		$aids = self::get_aids_from_str( $voted_for );
+		$aids = Poll_Utils::parse_voted_str( $voted_for );
 		if( ! $aids ){
 			return false;
 		}
@@ -185,17 +185,6 @@ class Poll_Storage {
 		] );
 
 		return $inserted ? $wpdb->insert_id : 0;
-	}
-
-	/**
-	 * @return int[]
-	 */
-	public static function get_aids_from_str( string $aids_str ): array {
-		$aids = explode( ',', $aids_str );
-		$aids = array_map( 'trim', $aids );
-		$aids = array_map( 'intval', $aids );
-
-		return array_filter( $aids );
 	}
 
 }

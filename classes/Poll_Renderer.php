@@ -37,13 +37,13 @@ class Poll_Renderer {
 	 *
 	 * @param string $show_screen  Which screen to display: vote, voted, force_vote.
 	 *
-	 * @return string|false HTML.
+	 * @return string HTML. Empty string if poll is not found.
 	 */
-	public function get_screen( string $show_screen = 'vote', string $before_title = '', string $after_title = '' ) {
-		$opt = options();
+	public function render_poll( string $show_screen = 'vote', string $before_title = '', string $after_title = '' ): string {
+		$opt = options(); // simplify
 		$poll = $this->poll; // simplify
 		if( ! $poll->id ){
-			return false;
+			return '';
 		}
 
 		$this->in_archive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) $opt->archive_page_id ) && is_singular();
@@ -71,19 +71,24 @@ class Poll_Renderer {
 
 		// changeable part
 		$html .= $this->get_screen_basis( $show_screen );
-		// / changeable part
 
-		$html .= $poll->note ? '<div class="dem-poll-note">' . wpautop( $poll->note ) . '</div>' : '';
+		$html .= $poll->note ? sprintf( '<div class="dem-poll-note">%s</div>', wpautop( Kses::kses_html( $poll->note ) ) ) : '';
 
 		if( Poll_Utils::cuser_can_edit_poll( $poll ) ){
-			$html .= '<a class="dem-edit-link" href="' . Poll_Utils::edit_poll_url( $poll->id ) . '" title="' . __( 'Edit poll', 'democracy-poll' ) . '"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1.5em" height="100%" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve"><path d="M617.8,203.4l175.8,175.8l-445,445L172.9,648.4L617.8,203.4z M927,161l-78.4-78.4c-30.3-30.3-79.5-30.3-109.9,0l-75.1,75.1 l175.8,175.8l87.6-87.6C950.5,222.4,950.5,184.5,927,161z M80.9,895.5c-3.2,14.4,9.8,27.3,24.2,23.8L301,871.8L125.3,696L80.9,895.5z"/></svg></a>';
+			$html .= strtr( '<a class="dem-edit-link" href="{HREF}" title="{TITLE}">{SVG}</a>', [
+				'{HREF}'  => esc_url( Poll_Utils::edit_poll_url( $poll->id ) ),
+				'{TITLE}' => esc_attr__( 'Edit poll', 'democracy-poll' ),
+				'{SVG}'   => '<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="1.5em" viewBox="0 0 1000 1000"><path d="m617.8 203.4 175.8 175.8-445 445-175.7-175.8zM927 161l-78.4-78.4c-30.3-30.3-79.5-30.3-109.9 0l-75.1 75.1 175.8 175.8 87.6-87.6c23.5-23.5 23.5-61.4 0-84.9M80.9 895.5c-3.2 14.4 9.8 27.3 24.2 23.8L301 871.8 125.3 696z"/></svg>',
+			] );
 		}
 
 		// loader
 		if( $opt->loader_fname ){
-			static $loader; // Output the loader markup only once per page.
+			static $loader; // once per page.
 			if( ! $loader ){
-				$loader = '<div class="dem-loader dem_loader_js"><div>' . file_get_contents( plugin()->dir . '/assets/styles/loaders/' . $opt->loader_fname ) . '</div></div>';
+				$loader = sprintf( '<div class="dem-loader dem_loader_js"><div>%s</div></div>',
+					file_get_contents( plugin()->dir . "/assets/styles/loaders/" . basename( $opt->loader_fname ) )
+				);
 				$html .= $loader;
 			}
 		}
@@ -112,12 +117,12 @@ class Poll_Renderer {
 		$html = '';
 		// voted screen
 		if( ! $this->not_show_results ){
-			$html .= self::minify_html( $this->get_screen_basis( 'voted' ) );
+			$html .= $this->get_screen_basis( 'voted' );
 		}
 
 		// vote screen
 		if( $poll->open ){
-			$html .= self::minify_html( $this->get_screen_basis( 'force_vote' ) );
+			$html .= $this->get_screen_basis( 'force_vote' );
 		}
 
 		$this->for_cache = false;
@@ -349,9 +354,8 @@ class Poll_Renderer {
 	private function results_body( array $answers, int $max_votes, int $total_votes ): string {
 		$poll = $this->poll;
 
-		$voted_class = 'dem-voted-this';
 		$voted_txt = _x( 'This is your vote.', 'front', 'democracy-poll' );
-		$voted_aids = Poll_Storage::get_aids_from_str( $poll->user_state->voted_for );
+		$voted_aids = Poll_Utils::parse_voted_str( $poll->user_state->voted_for );
 
 		$list_html = '';
 		foreach( $answers as $answer ){
@@ -363,33 +367,39 @@ class Poll_Renderer {
 			$answer = apply_filters( 'dem_result_screen_answer', $answer );
 
 			$is_voted_this = ( $poll->user_state->has_voted && in_array( $answer->aid, $voted_aids, true ) );
+
+			// class
 			$is_winner     = ( $max_votes === $answer->votes );
 			$novoted_class = $answer->votes ? '' : ' dem-novoted';
-			$li_class      = trim( ( $is_winner ? 'dem-winner' : '' ) . ( $is_voted_this ? " $voted_class" : '' ) . $novoted_class );
+			$li_class      = trim( ( $is_winner ? 'dem-winner' : '' ) . ( $is_voted_this ? " dem-voted-this" : '' ) . $novoted_class );
 			$li_class_attr = $li_class ? " class=\"$li_class\"" : '';
 
+			// percent
 			$percent = ( $answer->votes > 0 ) ? round( $answer->votes / $total_votes * 100 ) : 0;
-
 			$percent_txt = sprintf(
 				_x( '%s - %s%% of all votes', 'front', 'democracy-poll' ),
 				self::pluralize( $answer->votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ) ),
 				$percent
 			);
 
+			// title
 			$title = trim( ( $is_voted_this ? $voted_txt : '' ) . ' ' . $percent_txt );
 			$title_attr = 'title="' . esc_attr( $title ) . '"';
 
-			$votes_txt = "$answer->votes " . '<span class="votxt">' . self::pluralize( $answer->votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ), false ) . '</span>';
+			// label
+			$votes_txt = strtr( '{VOTES_NUM} <span class="votxt">{VOTES_WORD}</span>', [
+				'{VOTES_NUM}'  => $answer->votes,
+				'{VOTES_WORD}' => self::pluralize( $answer->votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ), false ),
+			] );
 			$label_perc_txt = "$percent%, $votes_txt";
 
 			$graph_percent = ( ! options()->graph_from_total && $percent ) ? round( $answer->votes / $max_votes * 100 ) : $percent;
 			$graph_percent = $graph_percent ? "$graph_percent%" : '1px';
 			$width_attr    = options()->line_anim_speed
-				? 'data-width="' . $graph_percent . '"'
-				: 'style="width:' . $graph_percent . '"';
+				? 'data-width="' . esc_attr( $graph_percent ) . '"'
+				: 'style="width:' . esc_attr( $graph_percent ) . '"';
 
 			$percent_html  = $percent ? "<span class=\"dem-votes-txt-percent\">$percent%</span>" : '';
-
 
 			$mark = $answer->added_by
 				? '<sup class="dem-star" title="' . esc_attr_x( 'The answer was added by a visitor', 'front', 'democracy-poll' ) . '">*</sup>'
@@ -577,12 +587,12 @@ class Poll_Renderer {
 	/**
 	 * Note: you have already voted
 	 */
-	public static function voted_notice_html( $msg = '' ): string {
+	public static function voted_notice_html( $message = '' ): string {
 		$js = <<<'JS'
 			let el = this.parentElement; el.animate([{ opacity:1 }, { opacity:0 }], { duration:300 }).onfinish = () => { el.style.display = 'none' }
 			JS;
 
-		if( ! $msg ){
+		if( ! $message ){
 			return strtr( <<<'HTML'
 				<div class="dem-notice dem-youarevote dem_you_are_voted_js" style="display:none;">
 					<div class="dem-notice-close" onclick="{JS}">&times;</div>
@@ -591,18 +601,18 @@ class Poll_Renderer {
 				HTML,
 				[
 					'{JS}' => esc_attr( $js ),
-					'{MESSAGE}' => _x( 'You or your IP have already voted.', 'front', 'democracy-poll' )
+					'{MESSAGE}' => esc_html_x( 'You or your IP have already voted.', 'front', 'democracy-poll' )
 				]
 			);
 		}
 
 		return strtr( <<<'HTML'
-				<div class="dem-notice">
-					<div class="dem-notice-close" onclick="{JS}">&times;</div>
-					{MESSAGE}
-				</div>
-				HTML,
-			[ '{JS}' => esc_attr( $js ), '{MESSAGE}' => $msg ]
+			<div class="dem-notice">
+				<div class="dem-notice-close" onclick="{JS}">&times;</div>
+				{MESSAGE}
+			</div>
+			HTML,
+			[ '{JS}' => esc_attr( $js ), '{MESSAGE}' => wp_kses_post( $message ) ]
 		);
 	}
 
@@ -615,23 +625,24 @@ class Poll_Renderer {
 	 *
 	 * @return string The pluralized title.
 	 */
-	protected static function pluralize( $number, $titles, $add_num = true ): string {
-		$titles = explode( ',', $titles );
+	protected static function pluralize( $number, string $joined_titles, $add_num = true ): string {
+		$titles = explode( ',', $joined_titles );
 
 		if( 2 === count( $titles ) ){
 			$titles[2] = $titles[1];
 		}
 
 		$cases = [ 2, 0, 1, 1, 1, 2 ];
+		$index = ( $number % 100 > 4 && $number % 100 < 20 ) ? 2 : $cases[ min( $number % 10, 5 ) ];
 
-		return ( $add_num ? "$number " : '' ) . $titles[ ( $number % 100 > 4 && $number % 100 < 20 ) ? 2 : $cases[ min( $number % 10, 5 ) ] ];
+		return ( $add_num ? "$number " : '' ) . $titles[ $index ];
 	}
 
-	protected static function minify_html( string $html ): string {
-		$html = preg_replace( '~\s+~u', ' ', $html ); // remove extra spaces
-		$html = preg_replace( "~[\n\r\t]~u", '', $html ); // remove new lines and tabs
-
-		return $html;
+	/**
+	 * Legacy backcompat
+	 */
+	public function get_screen( string $show_screen = 'vote', string $before_title = '', string $after_title = '' ): string {
+		return $this->render_poll( $show_screen, $before_title, $after_title );
 	}
 
 }

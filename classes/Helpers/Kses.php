@@ -17,6 +17,8 @@ class Kses {
 			'name'   => true,
 			'target' => true,
 		],
+		'p'      => [],
+		'br'     => [],
 		'b'      => [],
 		'strong' => [],
 		'i'      => [],

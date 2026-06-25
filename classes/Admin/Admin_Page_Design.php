@@ -127,18 +127,18 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 					};
 
 					$html = <<<HTML
-						<div class="poll"><p class="tit">{RESULTS_TXT}</p>{VOTED_SCREEN}</div>
-						<div class="poll"><p class="tit">{VOTE_TXT}</p>{FORCE_VOTE_SCREEN}</div>
-						<div class="poll show-loader"><p class="tit">{AJAX_TXT}</p>{VOTE_SCREEN}</div>
+						<div class="poll"><p class="tit">{RESULTS_TXT}</p>{VOTED_POLL}</div>
+						<div class="poll"><p class="tit">{VOTE_TXT}</p>{FORCE_VOTE_POLL}</div>
+						<div class="poll show-loader"><p class="tit">{AJAX_TXT}</p>{VOTE_POLL}</div>
 						HTML;
 
 					echo strtr( $html, [
-						'{RESULTS_TXT}'       => __( 'Results view:', 'democracy-poll' ),
-						'{VOTE_TXT}'          => __( 'Vote view:', 'democracy-poll' ),
-						'{AJAX_TXT}'          => __( 'AJAX loader view:', 'democracy-poll' ),
-						'{VOTED_SCREEN}'      => $rm_disabled( $render->get_screen( 'voted' ) ),
-						'{FORCE_VOTE_SCREEN}' => $rm_disabled( $render->get_screen( 'force_vote' ) ),
-						'{VOTE_SCREEN}'       => $rm_disabled( $render->get_screen( 'vote' ) ),
+						'{RESULTS_TXT}'     => __( 'Results view:', 'democracy-poll' ),
+						'{VOTE_TXT}'        => __( 'Vote view:', 'democracy-poll' ),
+						'{AJAX_TXT}'        => __( 'AJAX loader view:', 'democracy-poll' ),
+						'{VOTED_POLL}'      => $rm_disabled( $render->render_poll( 'voted' ) ),
+						'{FORCE_VOTE_POLL}' => $rm_disabled( $render->render_poll( 'force_vote' ) ),
+						'{VOTE_POLL}'       => $rm_disabled( $render->render_poll( 'vote' ) ),
 					] );
 				}
 				else{

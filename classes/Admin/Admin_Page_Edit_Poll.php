@@ -298,7 +298,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 		}
 
 		/**
-		 * Allows to perform actions after a poll is inserted or updated.
+		 * Allows performing actions after a poll is inserted or updated.
 		 *
 		 * @param int  $poll_id The ID of the poll that was inserted or updated.
 		 * @param bool $update  Whether the poll was updated (true) or created (false).
