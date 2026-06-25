@@ -400,10 +400,12 @@ class Poll_Renderer {
 
 			// percent
 			$percent = ( $answer->votes > 0 ) ? round( $answer->votes / $total_votes * 100 ) : 0;
-			$percent_txt = sprintf(
-				_x( '%s - %s%% of all votes', 'front', 'democracy-poll' ),
-				self::pluralize( $answer->votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ) ),
-				$percent
+			$percent_txt = strtr(
+				_x( '{votes} - {percent}% of all votes', 'front', 'democracy-poll' ),
+				[
+					'{votes}'   => self::pluralize( $answer->votes, _x( 'vote,votes,votes', 'front', 'democracy-poll' ) ),
+					'{percent}' => $percent,
+				]
 			);
 
 			// title

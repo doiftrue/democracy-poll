@@ -18,6 +18,44 @@ class Helpers__Test extends DemocTestCase {
 		$this->assertContains( 'Vote', $texts );
 		$this->assertContains( 'Results', $texts );
 		$this->assertContains( 'Only registered users can vote. <a>Log in</a> to vote.', $texts );
+		$this->assertContains( '{votes} - {percent}% of all votes', $texts );
+		$this->assertNotContains( '%s - %s%% of all votes', $texts );
+	}
+
+	/**
+	 * @covers Admin_Page_l10n::normalize_l10n_options()
+	 */
+	public function test__normalize_l10n_options_maps_legacy_votes_percent_text(): void {
+		$this->assertSame(
+			[
+				'{votes} - {percent}% of all votes' => '{percent}% — {votes}',
+			],
+			Admin_Page_l10n::normalize_l10n_options( [
+				'%s - %s%% of all votes' => '%2$s%% — %1$s',
+			] )
+		);
+	}
+
+	/**
+	 * @covers Admin_Page_l10n::handle_front_l10n()
+	 * @covers Admin_Page_l10n::normalize_l10n_options()
+	 */
+	public function test__handle_front_l10n_uses_legacy_votes_percent_text_for_new_key(): void {
+		WP_Mock::userFunction( 'get_option' )->andReturn( [
+			'%s - %s%% of all votes' => '%2$s%% — %1$s',
+		] );
+
+		Admin_Page_l10n::handle_front_l10n( 'clear_cache' );
+
+		$this->assertSame(
+			'{percent}% — {votes}',
+			Admin_Page_l10n::handle_front_l10n(
+				'{votes} - {percent}% of all votes',
+				'{votes} - {percent}% of all votes',
+				'front',
+				'democracy-poll'
+			)
+		);
 	}
 
 	/**

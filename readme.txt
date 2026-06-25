@@ -127,7 +127,7 @@ See `COMPAT: ***` messages in the changelog below for any backward compatibility
 See `COMPAT: ***` messages in the changelog below for any backward compatibility changes that may require code updates if you use the plugin's public API or properties directly in your code.
 
 = 6.4.0 =
-* NEW: Added a global setting to sort answers on the results screen.
+* NEW: Added a global setting to sort order for answers on the results screen.
 * FIX: Shortcode `[democracy id=last]` for last poll did not work correctly in some cases. See [request](https://wordpress.org/support/topic/shortcode-to-last-poll-not-working/)
 * FIX: Users with plugin access roles could not create new polls. See [request](https://wordpress.org/support/topic/dempollget_db_data-poll-fails-when-editor-tries-to-add-new-poll-6-1-1/)
 * FIX: There was no way to add custom answer if "Hide vote button" option is on, and it is non-multiple poll with the revote option enabled.

@@ -26,7 +26,7 @@ defined( 'ABSPATH' ) || exit;
 			<tbody id="the-list">
 			<?php
 			$i = 0;
-			$_l10n = get_option( 'democracy_l10n' );
+			$_l10n = $this::normalize_l10n_options( get_option( 'democracy_l10n' ) );
 			$this::remove_gettext_filter();
 			foreach( $this::get_front_texts() as $str ){
 				$i++;

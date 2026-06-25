@@ -7,6 +7,9 @@ use function DemocracyPoll\plugin;
 
 class Admin_Page_l10n implements Admin_Subpage_Interface {
 
+	private const OLD_VOTES_PERCENT_TEXT = '%s - %s%% of all votes';
+	private const VOTES_PERCENT_TEXT = '{votes} - {percent}% of all votes';
+
 	private Admin_Page $admpage;
 
 	public function __construct( Admin_Page $admin_page ){
@@ -113,7 +116,7 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 	public static function handle_front_l10n( $text_translated, $text = '', $context = '', $domain = '' ) {
 		static $l10n_opt;
 		if( $l10n_opt === null || 'clear_cache' === $text_translated ){
-			$l10n_opt = get_option( 'democracy_l10n' );
+			$l10n_opt = self::normalize_l10n_options( get_option( 'democracy_l10n' ) );
 		}
 
 		if( 'democracy-poll' === $domain && 'front' === $context && ! empty( $l10n_opt[ $text ] ) ){
@@ -121,6 +124,22 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 		}
 
 		return $text_translated;
+	}
+
+	public static function normalize_l10n_options( $l10n_opt ): array {
+		$l10n_opt = is_array( $l10n_opt ) ? $l10n_opt : [];
+
+		if( empty( $l10n_opt[ self::VOTES_PERCENT_TEXT ] ) && ! empty( $l10n_opt[ self::OLD_VOTES_PERCENT_TEXT ] ) ){
+			$l10n_opt[ self::VOTES_PERCENT_TEXT ] = sprintf(
+				$l10n_opt[ self::OLD_VOTES_PERCENT_TEXT ],
+				'{votes}',
+				'{percent}'
+			);
+		}
+
+		unset( $l10n_opt[ self::OLD_VOTES_PERCENT_TEXT ] );
+
+		return $l10n_opt;
 	}
 
 }
