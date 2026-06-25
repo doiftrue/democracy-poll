@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-21 03:47+0500\n"
+"POT-Creation-Date: 2026-06-26 04:30+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: includes/theme-functions.php:86
+#: includes/theme-functions.php:84
 msgid "Poll results hidden for now..."
 msgstr ""
 
-#: includes/theme-functions.php:312
+#: includes/theme-functions.php:305
 msgid "From posts:"
 msgstr ""
 
@@ -53,107 +53,111 @@ msgstr ""
 msgid "Which poll to show?"
 msgstr ""
 
-#: classes/Poll_Renderer.php:79 classes/Admin/List_Table_Logs.php:176
+#: classes/Poll_Renderer.php:101 classes/Admin/List_Table_Logs.php:176
 #: classes/Admin/List_Table_Logs.php:276
 msgid "Edit poll"
 msgstr ""
 
-#: classes/Poll_Renderer.php:211
+#: classes/Poll_Renderer.php:269
 msgctxt "front"
 msgid "Add your answer"
 msgstr ""
 
-#: classes/Poll_Renderer.php:217
+#: classes/Poll_Renderer.php:290
 msgctxt "front"
 msgid "Already voted..."
 msgstr ""
 
-#: classes/Poll_Renderer.php:218 classes/Poll_Renderer.php:468
+#: classes/Poll_Renderer.php:301 classes/Poll_Renderer.php:544
 msgctxt "front"
 msgid "Vote"
 msgstr ""
 
-#: classes/Poll_Renderer.php:257
+#: classes/Poll_Renderer.php:328
 msgctxt "front"
 msgid "Results"
 msgstr ""
 
-#: classes/Poll_Renderer.php:305
+#: classes/Poll_Renderer.php:381
 msgctxt "front"
 msgid "This is your vote."
 msgstr ""
 
-#: classes/Poll_Renderer.php:323
+#: classes/Poll_Renderer.php:404
 msgctxt "front"
-msgid "The answer was added by a visitor"
+msgid "{votes} - {percent}% of all votes"
 msgstr ""
 
-#: classes/Poll_Renderer.php:329
-#, php-format
-msgctxt "front"
-msgid "%s - %s%% of all votes"
-msgstr ""
-
-#: classes/Poll_Renderer.php:330 classes/Poll_Renderer.php:337
+#: classes/Poll_Renderer.php:406 classes/Poll_Renderer.php:418
 msgctxt "front"
 msgid "vote,votes,votes"
 msgstr ""
 
-#: classes/Poll_Renderer.php:373
+#: classes/Poll_Renderer.php:431
+msgctxt "front"
+msgid "The answer was added by a visitor"
+msgstr ""
+
+#: classes/Poll_Renderer.php:464
 #, php-format
 msgctxt "front"
 msgid "Total Votes: %s"
 msgstr ""
 
-#: classes/Poll_Renderer.php:374
+#: classes/Poll_Renderer.php:465
 msgctxt "front"
 msgid "Begin"
 msgstr ""
 
-#: classes/Poll_Renderer.php:375
+#: classes/Poll_Renderer.php:466
 msgctxt "front"
 msgid "End"
 msgstr ""
 
-#: classes/Poll_Renderer.php:381
+#: classes/Poll_Renderer.php:472
 #, php-format
 msgctxt "front"
 msgid "Voters: %s"
 msgstr ""
 
-#: classes/Poll_Renderer.php:386
+#: classes/Poll_Renderer.php:477
 msgctxt "front"
 msgid " - added by visitor"
 msgstr ""
 
-#: classes/Poll_Renderer.php:389
+#: classes/Poll_Renderer.php:480
 msgctxt "front"
 msgid "Voting is closed"
 msgstr ""
 
-#: classes/Poll_Renderer.php:392
+#: classes/Poll_Renderer.php:483
 msgctxt "front"
 msgid "Polls Archive"
 msgstr ""
 
-#: classes/Poll_Renderer.php:512
+#: classes/Poll_Renderer.php:579
 msgctxt "front"
 msgid "Revote"
 msgstr ""
 
-#: classes/Poll_Renderer.php:514
+#: classes/Poll_Renderer.php:581
 msgctxt "front"
 msgid "Are you sure you want to cancel the votes?"
 msgstr ""
 
-#: classes/Poll_Renderer.php:534
+#: classes/Poll_Renderer.php:605
+msgctxt "front"
+msgid "Only registered users can vote. <a>Log in</a> to vote."
+msgstr ""
+
+#: classes/Poll_Renderer.php:615
 msgctxt "front"
 msgid "You or your IP have already voted."
 msgstr ""
 
-#: classes/Poll_Renderer.php:549
+#: classes/Poll_Renderer.php:619
 msgctxt "front"
-msgid "Only registered users can vote. <a>Log in</a> to vote."
+msgid "Close"
 msgstr ""
 
 #: classes/Utils/Activator.php:51
@@ -184,106 +188,106 @@ msgstr ""
 msgid "ERROR: You selected more answers than allowed."
 msgstr ""
 
-#: classes/Admin/tpl/design.php:30
+#: classes/Admin/tpl/design.php:31
 msgid "Choose Theme"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:35
+#: classes/Admin/tpl/design.php:36
 msgid "No theme"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:54
+#: classes/Admin/tpl/design.php:63 classes/Admin/tpl/design.php:193
+msgid "No (default)"
+msgstr ""
+
+#: classes/Admin/tpl/design.php:118
 msgid "Other settings"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:57
+#: classes/Admin/tpl/design.php:121
 msgid "Max poll height (in em, rem, px, ...). Leave empty to disable."
 msgstr ""
 
-#: classes/Admin/tpl/design.php:61
+#: classes/Admin/tpl/design.php:125
 msgid "Animation speed (in milliseconds)."
 msgstr ""
 
-#: classes/Admin/tpl/design.php:68
+#: classes/Admin/tpl/design.php:131
 msgid "Progress line"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:70
+#: classes/Admin/tpl/design.php:133
 msgid "How to fill (paint) the progress of each answer:"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:74
+#: classes/Admin/tpl/design.php:137
 msgid "winner - 100%, others as % of the winner"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:80
+#: classes/Admin/tpl/design.php:143
 msgid "as percent of all votes"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:87
+#: classes/Admin/tpl/design.php:150
 msgid "Line Color"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:93
+#: classes/Admin/tpl/design.php:156
 msgid "Line color (for voted user)"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:99
+#: classes/Admin/tpl/design.php:162
 msgid "Background color"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:109
+#: classes/Admin/tpl/design.php:172
 msgid "Line height (in px if unit not set)"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:116
+#: classes/Admin/tpl/design.php:179
 msgid ""
 "Progress line animation effect speed (default 1500). Set 0 to disable "
 "animation."
 msgstr ""
 
-#: classes/Admin/tpl/design.php:132 classes/Admin/tpl/design.php:195
-msgid "No (default)"
-msgstr ""
-
-#: classes/Admin/tpl/design.php:248
+#: classes/Admin/tpl/design.php:246
 msgid ""
 "These colors may not affect all button styles. You can fully customize "
 "button styles in the \"Additional CSS styles\" field below."
 msgstr ""
 
-#: classes/Admin/tpl/design.php:254
+#: classes/Admin/tpl/design.php:252
 msgid "Button colors"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:257 classes/Admin/tpl/design.php:279
+#: classes/Admin/tpl/design.php:255 classes/Admin/tpl/design.php:277
 #: classes/Admin/Admin_Page_Design.php:111
 msgid "Bg color"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:263 classes/Admin/tpl/design.php:285
+#: classes/Admin/tpl/design.php:261 classes/Admin/tpl/design.php:283
 msgid "Text Color"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:269 classes/Admin/tpl/design.php:291
+#: classes/Admin/tpl/design.php:267 classes/Admin/tpl/design.php:289
 msgid "Border Color"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:276
+#: classes/Admin/tpl/design.php:274
 msgid "Hover button colors"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:301
+#: classes/Admin/tpl/design.php:299
 msgid ""
 "An additional css class for all buttons in the poll. When the template has a "
 "special class for buttons, for example:"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:319
+#: classes/Admin/tpl/design.php:317
 msgid "No (dots...)"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:360
+#: classes/Admin/tpl/design.php:358
 msgid ""
 "AJAX Loader. If you choose \"NO\", loader is replaced by dots \"...\" which "
 "are appended to a link/button text. SVG images animations don't work in IE "
@@ -291,11 +295,11 @@ msgid ""
 "statistics)."
 msgstr ""
 
-#: classes/Admin/tpl/design.php:371
+#: classes/Admin/tpl/design.php:369
 msgid "Custom/Additional CSS styles"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:376
+#: classes/Admin/tpl/design.php:373
 msgid ""
 "In this field you can add some additional css properties or completely "
 "replace current css theme. Write here css and it will be added at the bottom "
@@ -303,37 +307,37 @@ msgid ""
 "and describe all styles."
 msgstr ""
 
-#: classes/Admin/tpl/design.php:377
+#: classes/Admin/tpl/design.php:374
 msgid ""
 "This field must be cleared manually, if you reset options of this page or "
 "change/set another theme, the field will not be touched."
 msgstr ""
 
-#: classes/Admin/tpl/design.php:387
+#: classes/Admin/tpl/design.php:384
 msgid "Save All Changes"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:391 classes/Admin/tpl/settings.php:253
+#: classes/Admin/tpl/design.php:388 classes/Admin/tpl/settings.php:253
 #: classes/Admin/tpl/l10n.php:54
 msgid "Reset Options"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:392
+#: classes/Admin/tpl/design.php:389
 msgid "are you sure?"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:398
+#: classes/Admin/tpl/design.php:395
 msgid "All CSS styles currently in use"
 msgstr ""
 
-#: classes/Admin/tpl/design.php:407
+#: classes/Admin/tpl/design.php:404
 msgid ""
 "These are all collected CSS styles: theme, button, options. You can copy "
 "these styles to the \"Custom/Additional CSS styles:\" field, disable theme "
 "and edit them manually."
 msgstr ""
 
-#: classes/Admin/tpl/design.php:416
+#: classes/Admin/tpl/design.php:413
 msgid "Minified version (used to include it in HTML)"
 msgstr ""
 
@@ -786,12 +790,12 @@ msgstr ""
 msgid "Shortcodes replaced: %s"
 msgstr ""
 
-#: classes/Admin/Admin_Page_l10n.php:38 classes/Admin/Admin_Page_Design.php:51
+#: classes/Admin/Admin_Page_l10n.php:41 classes/Admin/Admin_Page_Design.php:51
 #: classes/Admin/Admin_Page_Settings.php:35
 msgid "Updated"
 msgstr ""
 
-#: classes/Admin/Admin_Page_l10n.php:39 classes/Admin/Admin_Page_Design.php:52
+#: classes/Admin/Admin_Page_l10n.php:42 classes/Admin/Admin_Page_Design.php:52
 #: classes/Admin/Admin_Page_Settings.php:36
 msgid "Nothing was updated"
 msgstr ""
@@ -878,11 +882,11 @@ msgstr ""
 msgid "Lines deleted: %s"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Logs.php:205 classes/Admin/Admin_Page_Logs.php:283
+#: classes/Admin/Admin_Page_Logs.php:205 classes/Admin/Admin_Page_Logs.php:250
 msgid "Failed to delete"
 msgstr ""
 
-#: classes/Admin/Admin_Page_Logs.php:280
+#: classes/Admin/Admin_Page_Logs.php:247
 #, php-format
 msgid "Removed logs: %d. Removed answers:%d. Removed users %d."
 msgstr ""
