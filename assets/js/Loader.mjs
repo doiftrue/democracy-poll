@@ -20,8 +20,8 @@ export default class Loader {
 
 	static unsetLoader( target ){
 		if( State.$loader ){
-			const screen = target.closest( State.screenSel )
-			screen.querySelectorAll( '.dem_loader_js' ).forEach( node => node.remove() )
+			const poll = target.closest( State.mainSel )
+			poll.querySelectorAll( '.dem_loader_js' ).forEach( node => node.remove() )
 		}
 		else{
 			clearTimeout( State.loaderTmr )

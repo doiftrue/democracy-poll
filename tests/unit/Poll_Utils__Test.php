@@ -70,43 +70,35 @@ class Poll_Utils__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers Poll_Utils::get_minified_styles_once()
-	 * @runInSeparateProcess  Because of static variable `static $once`.
-	 * @preserveGlobalState disabled
+	 * @covers Poll_Utils::get_minified_styles()
 	 */
-	public function test__get_minified_styles_once_returns_configured_css_only_once(): void {
+	public function test__get_minified_styles_returns_configured_css_on_each_call(): void {
 		WP_Mock::userFunction( 'get_option' )
 			->with( 'democracy_css' )
 			->andReturn( [ 'minify' => '.democracy{color:red}' ] );
 
 		$expected = "\n<style id=\"democracy-poll-css\">.democracy{color:red}</style>\n";
-		$this->assertSame( $expected, Poll_Utils::get_minified_styles_once() );
-		$this->assertSame( '', Poll_Utils::get_minified_styles_once() );
+		$this->assertSame( $expected, Poll_Utils::get_minified_styles() );
 	}
 
 	/**
-	 * @covers Poll_Utils::get_minified_styles_once()
-	 * @runInSeparateProcess  Because of static variable `static $once`.
-	 * @preserveGlobalState disabled
+	 * @covers Poll_Utils::get_minified_styles()
 	 */
-	public function test__get_minified_styles_once_returns_empty_string_without_css(): void {
+	public function test__get_minified_styles_returns_empty_string_without_css(): void {
 		WP_Mock::userFunction( 'get_option' )->with( 'democracy_css' )->andReturn( [] );
 
-		$this->assertSame( '', Poll_Utils::get_minified_styles_once() );
+		$this->assertSame( '', Poll_Utils::get_minified_styles() );
 	}
 
 	/**
-	 * @covers Poll_Utils::enqueue_js_once()
-	 * @runInSeparateProcess  Because of static variable `static $once`.
-	 * @preserveGlobalState disabled
+	 * @covers Poll_Utils::enqueue_js()
 	 */
-	public function test__enqueue_js_once_enqueues_deferred_script_only_once(): void {
+	public function test__enqueue_js_repeated_calls_do_not_duplicate_deferred_script(): void {
 		WP_Mock::userFunction( 'DemocracyPoll\plugin' )->andReturn( (object) [
 			'url' => 'https://test.com/path/to/plugin',
 			'ver' => '6.3.1',
 		] );
-		Poll_Utils::enqueue_js_once();
-		Poll_Utils::enqueue_js_once();
+		Poll_Utils::enqueue_js();
 
 		$scripts = wp_scripts();
 		$script = $scripts->registered['democracy'];

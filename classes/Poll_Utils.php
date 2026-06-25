@@ -41,12 +41,7 @@ class Poll_Utils {
 	/**
 	 * @internal
 	 */
-	public static function get_minified_styles_once(): string {
-		static $once = 0;
-		if( $once++ ){
-			return '';
-		}
-
+	public static function get_minified_styles(): string {
 		$demcss = get_option( 'democracy_css' );
 		$minified = $demcss['minify'] ?? '';
 
@@ -58,12 +53,7 @@ class Poll_Utils {
 	/**
 	 * @internal
 	 */
-	public static function enqueue_js_once(): void {
-		static $once = 0;
-		if( $once++ ){
-			return;
-		}
-
+	public static function enqueue_js(): void {
 		// inline HTML
 		wp_enqueue_script( 'democracy', plugin()->url . '/assets/js/democracy.min.js', [], plugin()->ver, [
 			'in_footer' => true,

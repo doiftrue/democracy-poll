@@ -42,19 +42,29 @@ class Poll_Renderer {
 	public function render_poll( string $show_screen = 'vote', string $before_title = '', string $after_title = '' ): string {
 		$opt = options(); // simplify
 		$poll = $this->poll; // simplify
-		if( ! $poll->id ){
+		if( ! $this->poll->id ){
 			return '';
 		}
 
+		$once_data = $this->get_poll_assets_once();
+		$styles      = $once_data['styles'] ?? '';
+		$loader_html = $once_data['loader_html'] ?? '';
+
 		$this->in_archive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) $opt->archive_page_id ) && is_singular();
 
-		if( $poll->user_state->voting_blocked && $show_screen !== 'force_vote' ){
-			$show_screen = 'voted';
-		}
+		$title_html = ( $before_title ?: $opt->before_title ) .
+		              Kses::kses_html( $poll->question ) .
+		              ( $after_title ?: $opt->after_title );
 
-		$html = '';
+		// ! before get_cache_screens() because of filters
+		$poll_body_html = $this->get_poll_body( $show_screen );
 
-		$js_opts = [
+		// for page cache // not use caching mechanism in admin
+		$cache_screens = ( ! $this->in_archive && ! is_admin() && plugin()->is_cachegear_on )
+			? $this->get_cache_screens()
+			: '';
+
+		$opts_json = esc_attr( wp_json_encode( [
 			'ajax_url'         => plugin()->poll_ajax->ajax_url,
 			'pid'              => (int) $poll->id,
 			'cookie_days'      => (float) $opt->cookie_days,
@@ -62,56 +72,67 @@ class Poll_Renderer {
 			'answs_max_height' => is_numeric( $opt->answs_max_height ) ? "{$opt->answs_max_height}px" : $opt->answs_max_height,
 			'anim_speed'       => (int) $opt->anim_speed,
 			'line_anim_speed'  => (int) $opt->line_anim_speed,
-		];
+		] ) );
 
-		$html .= sprintf( '<div id="democracy-%d" class="democracy democracy_js" data-opts=\'%s\' >', $poll->id, json_encode( $js_opts ) );
-		$html .= $before_title ?: $opt->before_title;
-		$html .= Kses::kses_html( $poll->question );
-		$html .= $after_title ?: $opt->after_title;
+		return <<<HTML
+			$styles
+			$loader_html
+			<div id="democracy-$poll->id" class="democracy democracy_js" data-opts='$opts_json' >
+				$title_html
+				$poll_body_html
+			</div><!--democracy-->
+			$cache_screens
+			HTML;
+	}
+
+	protected function get_poll_body( string $show_screen ): string {
+		$poll = $this->poll; // simplify
+
+		if( $poll->user_state->voting_blocked && $show_screen !== 'force_vote' ){
+			$show_screen = 'voted';
+		}
 
 		// changeable part
-		$html .= $this->get_screen_basis( $show_screen );
+		$screen_html = $this->get_screen_basis( $show_screen );
 
-		$html .= $poll->note ? sprintf( '<div class="dem-poll-note">%s</div>', wpautop( Kses::kses_html( $poll->note ) ) ) : '';
+		$note_html = $poll->note ? sprintf( '<div class="dem-poll-note">%s</div>', wpautop( Kses::kses_html( $poll->note ) ) ) : '';
 
-		if( Poll_Utils::cuser_can_edit_poll( $poll ) ){
-			$html .= strtr( '<a class="dem-edit-link" href="{HREF}" title="{TITLE}">{SVG}</a>', [
+		$edit_link_html = Poll_Utils::cuser_can_edit_poll( $poll )
+			? strtr( '<a class="dem-edit-link" href="{HREF}" title="{TITLE}">{SVG}</a>', [
 				'{HREF}'  => esc_url( Poll_Utils::edit_poll_url( $poll->id ) ),
 				'{TITLE}' => esc_attr__( 'Edit poll', 'democracy-poll' ),
 				'{SVG}'   => '<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="1.5em" viewBox="0 0 1000 1000"><path d="m617.8 203.4 175.8 175.8-445 445-175.7-175.8zM927 161l-78.4-78.4c-30.3-30.3-79.5-30.3-109.9 0l-75.1 75.1 175.8 175.8 87.6-87.6c23.5-23.5 23.5-61.4 0-84.9M80.9 895.5c-3.2 14.4 9.8 27.3 24.2 23.8L301 871.8 125.3 696z"/></svg>',
-			] );
+			] )
+			: '';
+
+		return
+			$screen_html .
+			$note_html .
+			$edit_link_html;
+	}
+
+	protected function get_poll_assets_once(): array {
+		static $once = 0;
+		if( $once++ ){
+			return [];
 		}
 
-		// loader
-		if( $opt->loader_fname ){
-			static $loader; // once per page.
-			if( ! $loader ){
-				$loader = sprintf( '<div class="dem-loader dem_loader_js"><div>%s</div></div>',
-					file_get_contents( plugin()->dir . "/assets/styles/loaders/" . basename( $opt->loader_fname ) )
-				);
-				$html .= $loader;
-			}
-		}
+		Poll_Utils::enqueue_js();
 
-		$html .= "</div><!--democracy-->";
-
-		// for page cache
-		// never use a poll caching mechanism in admin
-		if( ! $this->in_archive && ! is_admin() && plugin()->is_cachegear_on ){
-			$html .= $this->get_cache_screens();
-		}
-
-		Poll_Utils::enqueue_js_once();
-
-		return Poll_Utils::get_minified_styles_once() . $html;
+		return [
+			'loader_html' => $this->get_loader_html(),
+			'styles'      => Poll_Utils::get_minified_styles(),
+		];
 	}
 
 	protected function get_cache_screens(): string {
 		$poll = $this->poll; // simplify
-		$saved_voted_for = $poll->user_state->voted_for;
-		$saved_has_voted = $poll->user_state->has_voted;
-		$poll->user_state->voted_for = '';
-		$poll->user_state->has_voted = false;
+		$ustate = $poll->user_state;
+
+		$saved_voted_for = $ustate->voted_for;
+		$saved_has_voted = $ustate->has_voted;
+		$ustate->voted_for = '';
+		$ustate->has_voted = false;
 		$this->for_cache = true;
 
 		$html = '';
@@ -126,8 +147,8 @@ class Poll_Renderer {
 		}
 
 		$this->for_cache = false;
-		$poll->user_state->voted_for = $saved_voted_for;
-		$poll->user_state->has_voted = $saved_has_voted;
+		$ustate->voted_for = $saved_voted_for;
+		$ustate->has_voted = $saved_has_voted;
 
 		$is_keep_logs = options()->keep_logs ? 1 : 0;
 		return <<<HTML
@@ -276,14 +297,13 @@ class Poll_Renderer {
 			]
 		);
 
-		$for_users_alert = $this->registered_only_alert_html();
-
 		$html = '';
+		$login_required_alert = $this->registered_only_alert_html();
 
 		// add for cache
 		if( $this->for_cache ){
 			$html .= self::voted_notice_html();
-			$html .= $this->registered_only_alert_html( true );
+			$html .= $login_required_alert;
 			$html .= $poll->revote
 				? preg_replace( '/(<[^>]+)/', '$1 style="display:none;"', $this->revote_btn_html(), 1 )
 				: substr_replace( $voted_btn, '<div style="display:none;"', 0, 4 );
@@ -291,8 +311,8 @@ class Poll_Renderer {
 			$html .= $vote_btn;
 		}
 		// not for cache
-		elseif( $for_users_alert ){
-			$html .= $for_users_alert;
+		elseif( $login_required_alert ){
+			$html .= $login_required_alert;
 		}
 		else{
 			$html .= $poll->user_state->has_voted
@@ -512,35 +532,33 @@ class Poll_Renderer {
 		$html = '';
 
 		if( $poll->open ){
-
 			// back to voting
 			$vote_btn = sprintf( '<button type="button" class="dem-button dem-vote-link dem_vote_link_js %s" data-dem-act="voteScreen">%s</button>',
 				options()->btn_class,
 				_x( 'Vote', 'front', 'democracy-poll' )
 			);
 
+			$login_required_alert = $this->registered_only_alert_html();
+
 			// for cache
 			if( $this->for_cache ){
 				$html .= self::voted_notice_html();
-				$html .= $this->registered_only_alert_html( true );
+				$html .= $login_required_alert;
 				$html .= $poll->revote
 					? $this->revote_btn_html()
 					: $vote_btn;
 			}
 			// not for cache
+			elseif( $login_required_alert ){
+				$html .= $login_required_alert;
+			}
+			elseif( $poll->user_state->has_voted ){
+				if( $poll->revote ){
+					$html .= $this->revote_btn_html();
+				}
+			}
 			else{
-				$for_users_alert = $this->registered_only_alert_html();
-				if( $for_users_alert ){
-					$html .= $for_users_alert;
-				}
-				elseif( $poll->user_state->has_voted ){
-					if( $poll->revote ){
-						$html .= $this->revote_btn_html();
-					}
-				}
-				else{
-					$html .= $vote_btn;
-				}
+				$html .= $vote_btn;
 			}
 		}
 
@@ -564,7 +582,7 @@ class Poll_Renderer {
 	/**
 	 * Note for unregistered users.
 	 */
-	protected function registered_only_alert_html( bool $for_cache = false ): string {
+	protected function registered_only_alert_html(): string {
 		if( ! $this->poll->user_state->blocked_by_not_logged ){
 			return '';
 		}
@@ -573,14 +591,11 @@ class Poll_Renderer {
 		$login_url = wp_login_url( $_SERVER['REQUEST_URI'] );
 		$text = str_replace( '<a', sprintf( '<a href="%s" rel="nofollow"', esc_url( $login_url ) ), $text );
 
-		$classes = $for_cache
-			? 'dem-notice dem_only_users_js'
-			: 'dem-notice-inline dem_only_users_js';
-
-		$attrs = $for_cache ? 'style="display:none;"' : '';
+		$classes = $this->for_cache ? 'dem-notice' : 'dem-notice-inline';
+		$attrs = $this->for_cache ? 'style="display:none;"' : '';
 
 		return <<<HTML
-		<div $attrs class="$classes">$text</div>
+		<div $attrs class="$classes dem_only_users_js">$text</div>
 		HTML;
 	}
 
@@ -613,6 +628,17 @@ class Poll_Renderer {
 			</div>
 			HTML,
 			[ '{JS}' => esc_attr( $js ), '{MESSAGE}' => wp_kses_post( $message ) ]
+		);
+	}
+
+	protected function get_loader_html(): string {
+		$loader_fname = options()->loader_fname;
+		if( ! $loader_fname ){
+			return '';
+		}
+
+		return sprintf( '<div class="dem-loader dem_loader_js"><div>%s</div></div>',
+			file_get_contents( plugin()->dir . "/assets/styles/loaders/" . basename( $loader_fname ) )
 		);
 	}
 
