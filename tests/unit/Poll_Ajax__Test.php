@@ -178,6 +178,81 @@ class Poll_Ajax__Test extends DemocTestCase {
 	/**
 	 * @covers Poll_Ajax::ajax_request_handler()
 	 */
+	public function test__get_voted_ids_returns_vote_and_notice(): void {
+		$_POST = [
+			'dem_act' => 'getVotedIds',
+			'dem_pid' => 12,
+		];
+
+		$this->poll = new Poll( 0 );
+		$this->poll->user_state->voted_for = '1,2';
+		$this->poll->user_state->poll_cookie = Mockery::mock( Poll_Cookies::class );
+		$this->poll->user_state->poll_cookie->shouldReceive( 'set' )->once();
+
+		$this->expect_json_response( $this->response(
+			'',
+			[
+				'status' => 'already_voted',
+				'html'   => 'You or your IP have already voted.',
+			],
+			'1,2'
+		) );
+
+		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
+		$ajax->ajax_request_handler();
+	}
+
+	/**
+	 * @covers Poll_Ajax::ajax_request_handler()
+	 */
+	public function test__get_voted_ids_returns_login_required_notice(): void {
+		$_POST = [
+			'dem_act' => 'getVotedIds',
+			'dem_pid' => 12,
+		];
+
+		$this->poll = new Poll( 0 );
+		$this->poll->user_state->voted_for = '';
+		$this->poll->user_state->blocked_by_not_logged = true;
+		$this->renderer->shouldReceive( 'registered_only_notice_html' )
+			->andReturn( 'Only registered users can vote. <a href="/login">Log in</a> to vote.' );
+
+		$this->expect_json_response( $this->response(
+			'',
+			[
+				'status' => 'login_required',
+				'html'   => 'Only registered users can vote. <a href="/login">Log in</a> to vote.',
+			]
+		) );
+
+		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
+		$ajax->ajax_request_handler();
+	}
+
+	/**
+	 * @covers Poll_Ajax::ajax_request_handler()
+	 */
+	public function test__get_voted_ids_returns_empty_response_and_caches_missing_vote(): void {
+		$_POST = [
+			'dem_act' => 'getVotedIds',
+			'dem_pid' => 12,
+		];
+
+		$this->poll = new Poll( 0 );
+		$this->poll->user_state->voted_for = '';
+		$this->poll->user_state->blocked_by_not_logged = false;
+		$this->poll->user_state->poll_cookie = Mockery::mock( Poll_Cookies::class );
+		$this->poll->user_state->poll_cookie->shouldReceive( 'set_not_voted' )->once();
+
+		$this->expect_json_response( $this->response( '' ) );
+
+		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
+		$ajax->ajax_request_handler();
+	}
+
+	/**
+	 * @covers Poll_Ajax::ajax_request_handler()
+	 */
 	public function test__rejects_unknown_action(): void {
 		$_POST = [
 			'dem_act'    => 'unknown',

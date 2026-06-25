@@ -6,13 +6,13 @@ The main source of the markup is `classes/Poll_Renderer.php`. Some elements are 
 
 Notation:
 
-- `[...]` — an optional may exists may not - depends on related condition.
+- `[...]` — an optional may exist may not - depends on related condition.
 - `{{...}}` — integrated part that described in separate sections.
 
 ## Complete structure of a single poll
 
 ```html
-<div class="democracy" id="democracy-{POLL_ID}" data-opts='{ "pid": 123, "max_answs": 2, "answs_max_height": "35rem" }'>
+<div class="democracy" id="democracy-{POLL_ID}">
 	<strong class="dem-poll-title">Poll question</strong>
 
 	<div class="dem-screen vote|voted">
@@ -160,7 +160,6 @@ Styles should target the `.dem-screen` rather than relying only on `.dem-screen-
 	[<div class="dem-loader" style="display:table;">...</div>]
 </div>
 ```
-
 
 
 ## Notices

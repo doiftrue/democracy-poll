@@ -96,7 +96,10 @@ export default class Cache {
 							}
 
 							screen.dataset['expanded'] = 'true'
-							screen.innerHTML = response.voted_for && votedHTML ? votedHTML : voteHTML
+							const setVoted = response.voted_for && votedHTML
+							screen.innerHTML = setVoted ? votedHTML : voteHTML
+							screen.classList.remove( 'vote', 'voted' )
+							screen.classList.add( setVoted ? 'voted' : 'vote' )
 							Cache.setAnswers( screen, response.voted_for )
 							Cache.actionsHandler( screen )
 
