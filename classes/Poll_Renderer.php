@@ -47,8 +47,9 @@ class Poll_Renderer {
 		}
 
 		$once_data = $this->get_poll_assets_once();
-		$styles      = $once_data['styles'] ?? '';
-		$loader_html = $once_data['loader_html'] ?? '';
+		$styles               = $once_data['styles'] ?? '';
+		$loader_html          = $once_data['loader_html'] ?? '';
+		$notice_template_html = $once_data['notice_template_html'] ?? '';
 
 		$this->in_archive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) $opt->archive_page_id ) && is_singular();
 
@@ -65,18 +66,15 @@ class Poll_Renderer {
 			: '';
 
 		$opts_json = esc_attr( wp_json_encode( [
-			'ajax_url'         => plugin()->poll_ajax->ajax_url,
 			'pid'              => (int) $poll->id,
-			'cookie_days'      => (float) $opt->cookie_days,
 			'max_answs'        => (int) ( $poll->multiple ?: 0 ),
 			'answs_max_height' => is_numeric( $opt->answs_max_height ) ? "{$opt->answs_max_height}px" : $opt->answs_max_height,
-			'anim_speed'       => (int) $opt->anim_speed,
-			'line_anim_speed'  => (int) $opt->line_anim_speed,
 		] ) );
 
 		return <<<HTML
 			$styles
 			$loader_html
+			$notice_template_html
 			<div id="democracy-$poll->id" class="democracy democracy_js" data-opts='$opts_json' >
 				$title_html
 				$poll_body_html
@@ -111,6 +109,13 @@ class Poll_Renderer {
 			$edit_link_html;
 	}
 
+	/**
+	 * @return array{
+	 *     notice_template_html:string,
+	 *     loader_html:string,
+	 *     styles:string,
+	 * }
+	 */
 	protected function get_poll_assets_once(): array {
 		static $once = 0;
 		if( $once++ ){
@@ -120,8 +125,9 @@ class Poll_Renderer {
 		Poll_Utils::enqueue_js();
 
 		return [
-			'loader_html' => $this->get_loader_html(),
-			'styles'      => Poll_Utils::get_minified_styles(),
+			'notice_template_html' => $this->notice_template_html(),
+			'loader_html'          => $this->get_loader_html(),
+			'styles'               => Poll_Utils::get_minified_styles(),
 		];
 	}
 
@@ -302,8 +308,6 @@ class Poll_Renderer {
 
 		// add for cache
 		if( $this->for_cache ){
-			$html .= self::voted_notice_html();
-			$html .= $login_required_alert;
 			$html .= $poll->revote
 				? preg_replace( '/(<[^>]+)/', '$1 style="display:none;"', $this->revote_btn_html(), 1 )
 				: substr_replace( $voted_btn, '<div style="display:none;"', 0, 4 );
@@ -542,8 +546,6 @@ class Poll_Renderer {
 
 			// for cache
 			if( $this->for_cache ){
-				$html .= self::voted_notice_html();
-				$html .= $login_required_alert;
 				$html .= $poll->revote
 					? $this->revote_btn_html()
 					: $vote_btn;
@@ -583,52 +585,45 @@ class Poll_Renderer {
 	 * Note for unregistered users.
 	 */
 	protected function registered_only_alert_html(): string {
+		$text = $this->registered_only_notice_html();
+		if( ! $text ){
+			return '';
+		}
+
+		return <<<HTML
+		<div class="dem-notice-inline">$text</div>
+		HTML;
+	}
+
+	public function registered_only_notice_html(): string {
 		if( ! $this->poll->user_state->blocked_by_not_logged ){
 			return '';
 		}
 
 		$text = _x( 'Only registered users can vote. <a>Log in</a> to vote.', 'front', 'democracy-poll' );
 		$login_url = wp_login_url( $_SERVER['REQUEST_URI'] );
-		$text = str_replace( '<a', sprintf( '<a href="%s" rel="nofollow"', esc_url( $login_url ) ), $text );
 
-		$classes = $this->for_cache ? 'dem-notice' : 'dem-notice-inline';
-		$attrs = $this->for_cache ? 'style="display:none;"' : '';
-
-		return <<<HTML
-		<div $attrs class="$classes dem_only_users_js">$text</div>
-		HTML;
+		return str_replace( '<a', sprintf( '<a href="%s" rel="nofollow"', esc_url( $login_url ) ), $text );
 	}
 
 	/**
-	 * Note: you have already voted
+	 * Note: need to be in this file because of the "front" parser.
 	 */
-	public static function voted_notice_html( $message = '' ): string {
-		$js = <<<'JS'
-			let el = this.parentElement; el.animate([{ opacity:1 }, { opacity:0 }], { duration:300 }).onfinish = () => { el.style.display = 'none' }
-			JS;
+	public static function already_voted_notice_message(): string {
+		return _x( 'You or your IP have already voted.', 'front', 'democracy-poll' );
+	}
 
-		if( ! $message ){
-			return strtr( <<<'HTML'
-				<div class="dem-notice dem-youarevote dem_you_are_voted_js" style="display:none;">
-					<div class="dem-notice-close" onclick="{JS}">&times;</div>
-					{MESSAGE}
-				</div>
-				HTML,
-				[
-					'{JS}' => esc_attr( $js ),
-					'{MESSAGE}' => esc_html_x( 'You or your IP have already voted.', 'front', 'democracy-poll' )
-				]
-			);
-		}
+	protected function notice_template_html(): string {
+		$close_label = esc_attr_x( 'Close', 'front', 'democracy-poll' );
 
-		return strtr( <<<'HTML'
-			<div class="dem-notice">
-				<div class="dem-notice-close" onclick="{JS}">&times;</div>
-				{MESSAGE}
+		return <<<HTML
+		<template class="dem_notice_template_js">
+			<div class="dem-notice dem_notice_js">
+				<button type="button" class="dem-notice-close dem_notice_close_js" aria-label="$close_label">&times;</button>
+				<div class="dem-notice-message dem_notice_message_js"></div>
 			</div>
-			HTML,
-			[ '{JS}' => esc_attr( $js ), '{MESSAGE}' => wp_kses_post( $message ) ]
-		);
+		</template>
+		HTML;
 	}
 
 	protected function get_loader_html(): string {

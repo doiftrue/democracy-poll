@@ -1,23 +1,25 @@
 import Utils from './Utils.mjs'
-import State from './State.mjs'
 import Loader from './Loader.mjs'
 import Cache from './Cache.mjs'
+import Config from './Config.mjs'
+import PollState from './PollState.mjs'
+import Notice from './Notice.mjs'
 
 document.addEventListener( 'DOMContentLoaded', democracyInit )
 
 function democracyInit(){
-	const polls = document.querySelectorAll( State.mainSel )
+	const polls = document.querySelectorAll( Config.mainSel )
 	if( ! polls.length ){
 		return
 	}
 
-	State.$loader = document.querySelector( '.dem_loader_js' )
+	Config.$loader = document.querySelector( '.dem_loader_js' )
 
-	const opts = Cache.getOpts( polls[0] )
-	State.ajaxurl = opts.ajax_url
-	State.answMaxHeight = opts.answs_max_height
-	State.animSpeed = parseInt( opts.anim_speed )
-	State.lineAnimSpeed = parseInt( opts.line_anim_speed )
+	const config = window.democracyPollConfig || {}
+	Config.ajaxurl = config.ajax_url
+	Config.cookieDays = config.cookie_days
+	Config.animSpeed = parseInt( config.anim_speed )
+	Config.lineAnimSpeed = parseInt( config.line_anim_speed )
 
 	queueMicrotask( init ) // wait for functions
 
@@ -25,7 +27,8 @@ function democracyInit(){
 	function init(){
 		const demScreens = []
 		polls.forEach( poll => {
-			const screen = poll.querySelector( State.screenSel )
+			PollState.get( poll )
+			const screen = poll.querySelector( Config.screenSel )
 			if( screen && Utils.isVisible( screen ) ){
 				demScreens.push( screen )
 			}
@@ -74,9 +77,9 @@ function democracyInit(){
 		Utils.updateMaxAnswLimit( screen )
 
 		// animate filled bars - line_animation
-		if( State.lineAnimSpeed ){
+		if( Config.lineAnimSpeed ){
 			screen.querySelectorAll( '.dem_fill_js' ).forEach( fill => {
-				setTimeout( () => animateFill( fill ), State.animSpeed )
+				setTimeout( () => animateFill( fill ), Config.animSpeed )
 			} )
 		}
 
@@ -90,14 +93,14 @@ function democracyInit(){
 	}
 
 	function hideAutoVoteButton( screen ){
-		if( hasAutoVoteAnswers( screen ) && ! screen.querySelector( State.userAnswerSel ) ){
+		if( hasAutoVoteAnswers( screen ) && ! screen.querySelector( Config.userAnswerSel ) ){
 			screen.querySelectorAll( '.dem_vote_button_js' ).forEach( button => button.style.display = 'none' )
 		}
 	}
 
 	// Add user answer (link)
 	function addYourAnswerClickHandler( linkBtn ){
-		const screen = linkBtn.closest( State.screenSel )
+		const screen = linkBtn.closest( Config.screenSel )
 		const isMultiple = screen.querySelector( '[type=checkbox]' )
 		if( isMultiple && Utils.maxAnswLimitData( screen ).isMaxReached ){
 			Utils.demShake( linkBtn )
@@ -162,12 +165,12 @@ function democracyInit(){
 
 	// Collect answers and return as a string
 	function collectAnsw( the ){
-		const screen = the.closest( State.screenSel )
+		const screen = the.closest( Config.screenSel )
 		if( ! screen ){
 			return ''
 		}
 
-		const userTextInput = screen.querySelector( State.userAnswerSel )
+		const userTextInput = screen.querySelector( Config.userAnswerSel )
 		const userText = userTextInput ? userTextInput.value : ''
 		let answ = []
 
@@ -194,9 +197,9 @@ function democracyInit(){
 
 	// handle requests on click
 	function doAction( clickedEl, action ){
-		const poll = clickedEl.closest( State.mainSel )
+		const poll = clickedEl.closest( Config.mainSel )
 		const ajaxData = {
-			dem_pid: Cache.getOpts( poll ).pid,
+			dem_pid: PollState.get( poll ).pid,
 			dem_act: action,
 			action : 'dem_ajax'
 		}
@@ -227,16 +230,17 @@ function democracyInit(){
 		}
 
 		// AJAX
-		const screen = clickedEl.closest( State.screenSel )
+		const screen = clickedEl.closest( Config.screenSel )
 		if( ! screen ){
 			return false
 		}
 
 		Loader.setLoader( clickedEl )
-		Cache.post( State.ajaxurl, ajaxData )
+		Cache.post( Config.ajaxurl, ajaxData )
 			.finally( () => Loader.unsetLoader( screen ) )
-			.then( html => {
-				if( ! html ){
+			.then( response => {
+				if( ! response.screen_html ){
+					Notice.set( poll, response.notice )
 					return
 				}
 
@@ -246,8 +250,9 @@ function democracyInit(){
 				screen.style.transition = `opacity ${fadeDuration}ms ease`
 				screen.style.opacity = 0
 				setTimeout( () => {
-					screen.innerHTML = html
+					screen.innerHTML = response.screen_html
 					initScreen( screen ) // rebind events
+					Notice.set( poll, response.notice )
 					isElemVisibleInViewport( poll ) || poll.scrollIntoView( { behavior: 'smooth', block: 'start' } )
 					screen.style.opacity = 1
 				}, fadeDuration )
@@ -275,7 +280,7 @@ function democracyInit(){
 				{ width: window.getComputedStyle( fill ).width },
 				{ width: targetWidth }
 			],
-			{ duration: State.lineAnimSpeed, easing: 'linear', fill: 'forwards' }
+			{ duration: Config.lineAnimSpeed, easing: 'linear', fill: 'forwards' }
 		)
 		.onfinish = () => fill.style.width = targetWidth
 	}

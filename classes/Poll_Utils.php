@@ -54,11 +54,27 @@ class Poll_Utils {
 	 * @internal
 	 */
 	public static function enqueue_js(): void {
-		// inline HTML
-		wp_enqueue_script( 'democracy', plugin()->url . '/assets/js/democracy.min.js', [], plugin()->ver, [
+		$plugin = plugin();
+		$handle = 'democracy';
+
+		wp_enqueue_script( $handle, $plugin->url . '/assets/js/democracy.min.js', [], $plugin->ver, [
 			'in_footer' => true,
 			'strategy'  => 'defer',
 		] );
+
+		$opt = options();
+		$config = [
+			'ajax_url'        => $plugin->poll_ajax->ajax_url,
+			'cookie_days'     => (float) $opt->cookie_days,
+			'anim_speed'      => (int) $opt->anim_speed,
+			'line_anim_speed' => (int) $opt->line_anim_speed,
+		];
+
+		wp_add_inline_script(
+			$handle,
+			'window.democracyPollConfig = ' . wp_json_encode( $config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . ';',
+			'before'
+		);
 	}
 
 	/**

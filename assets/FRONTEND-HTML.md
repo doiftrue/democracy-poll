@@ -12,7 +12,7 @@ Notation:
 ## Complete structure of a single poll
 
 ```html
-<div class="democracy" id="democracy-{POLL_ID}" data-opts='{ "ajax_url": "...", "pid": 123, ... }'>
+<div class="democracy" id="democracy-{POLL_ID}" data-opts='{ "pid": 123, "max_answs": 2, "answs_max_height": "35rem" }'>
 	<strong class="dem-poll-title">Poll question</strong>
 
 	<div class="dem-screen vote|voted">
@@ -165,31 +165,18 @@ Styles should target the `.dem-screen` rather than relying only on `.dem-screen-
 
 ## Notices
 
-Previous-vote notice:
+The page contains one reusable notice template outside the poll blocks:
 
 ```html
-<div class="dem-notice dem-youarevote" style="display:none;">
-	<div class="dem-notice-close" onclick="...">&times;</div>
-	You or your IP have already voted.
-</div>
+<template class="dem_notice_template_js">
+	<div class="dem-notice dem_notice_js">
+		<button type="button" class="dem-notice-close dem_notice_close_js" aria-label="Close">&times;</button>
+		<div class="dem-notice-message dem_notice_message_js"></div>
+	</div>
+</template>
 ```
 
-Hidden cache notice for registered-users-only voting:
-
-```html
-<div class="dem-notice" style="display:none;">Only registered users can vote. <a href="...">Log in</a> to vote.</div>
-```
-
-Generic notice that may be returned by the server:
-
-```html
-<div class="dem-notice">
-	<div class="dem-notice-close" onclick="...">&times;</div>
-	Message
-</div>
-```
-
-Notices inside cache screens are initially hidden. JavaScript may show them, move them to the beginning of `.dem-screen`, and hide them again later.
+JavaScript stores the current notice status and HTML in per-poll state, clones this template, and prepends the notice to `.democracy_js`.
 
 
 

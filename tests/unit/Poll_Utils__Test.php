@@ -93,10 +93,18 @@ class Poll_Utils__Test extends DemocTestCase {
 	/**
 	 * @covers Poll_Utils::enqueue_js()
 	 */
-	public function test__enqueue_js_repeated_calls_do_not_duplicate_deferred_script(): void {
+	public function test__enqueue_js_adds_deferred_script_and_inline_config(): void {
 		WP_Mock::userFunction( 'DemocracyPoll\plugin' )->andReturn( (object) [
-			'url' => 'https://test.com/path/to/plugin',
-			'ver' => '6.3.1',
+			'url'       => 'https://test.com/path/to/plugin',
+			'ver'       => '6.3.1',
+			'poll_ajax' => (object) [
+				'ajax_url' => 'https://test.com/wp-admin/admin-ajax.php',
+			],
+		] );
+		WP_Mock::userFunction( 'DemocracyPoll\options' )->andReturn( (object) [
+			'cookie_days'     => 365,
+			'anim_speed'      => 400,
+			'line_anim_speed' => 1500,
 		] );
 		Poll_Utils::enqueue_js();
 
@@ -109,6 +117,15 @@ class Poll_Utils__Test extends DemocTestCase {
 		$this->assertSame( '6.3.1', $script->ver );
 		$this->assertSame( 1, $script->extra['group'] );
 		$this->assertSame( 'defer', $script->extra['strategy'] );
+		$inline_script = $scripts->get_inline_script_data( 'democracy', 'before' );
+		$expected_config = 'window.democracyPollConfig = ' . wp_json_encode( [
+			'ajax_url'        => 'https://test.com/wp-admin/admin-ajax.php',
+			'cookie_days'     => 365,
+			'anim_speed'      => 400,
+			'line_anim_speed' => 1500,
+		], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . ';';
+
+		$this->assertStringContainsString( $expected_config, $inline_script );
 	}
 
 	/**

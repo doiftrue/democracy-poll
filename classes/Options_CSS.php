@@ -72,10 +72,10 @@ class Options_CSS {
 		$d_fill_voted = $opt->line_fill_voted;
 
 		$css_vars = array_filter( [
-			$d_bg         ? "--dem-graph-bg: $d_bg"            : '',
-			$d_fill       ? "--dem-fill: $d_fill"              : '',
-			$d_height     ? "--dem-graph-height: $d_height"    : '',
-			$d_fill_voted ? "--dem-fill-voted: $d_fill_voted"  : '',
+			$d_bg         ? "--dem-graph-bg: $d_bg"                  : '',
+			$d_fill       ? "--dem-fill-color: $d_fill"              : '',
+			$d_height     ? "--dem-graph-height: $d_height"          : '',
+			$d_fill_voted ? "--dem-fill-voted-color: $d_fill_voted"  : '',
 		] );
 
 		if( $button ){

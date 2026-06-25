@@ -1,30 +1,30 @@
 import Utils from './Utils.mjs'
-import State from './State.mjs'
+import Config from './Config.mjs'
 
 export default class Loader {
 
 	static setLoader( target ){
-		if( State.$loader ){
-			const loaderClone = State.$loader.cloneNode( true )
+		if( Config.$loader ){
+			const loaderClone = Config.$loader.cloneNode( true )
 			loaderClone.style.display = 'table'
 
-			const screen = target.closest( State.screenSel )
+			const screen = target.closest( Config.screenSel )
 			if( screen ){
 				screen.append( loaderClone )
 			}
 		}
 		else{
-			State.loaderTmr = setTimeout( () => Utils.loadingDots( target ), 50 )
+			Config.loaderTmr = setTimeout( () => Utils.loadingDots( target ), 50 )
 		}
 	}
 
 	static unsetLoader( target ){
-		if( State.$loader ){
-			const poll = target.closest( State.mainSel )
+		if( Config.$loader ){
+			const poll = target.closest( Config.mainSel )
 			poll.querySelectorAll( '.dem_loader_js' ).forEach( node => node.remove() )
 		}
 		else{
-			clearTimeout( State.loaderTmr )
+			clearTimeout( Config.loaderTmr )
 		}
 	}
 

@@ -1,7 +1,9 @@
 import Cookies from 'js-cookie'
-import State from './State.mjs'
+import Config from './Config.mjs'
+import PollState from './PollState.mjs'
 import Loader from './Loader.mjs'
 import Utils from './Utils.mjs'
+import Notice from './Notice.mjs'
 
 export default class Cache {
 
@@ -23,20 +25,19 @@ export default class Cache {
 			return
 		}
 
-		const screen = dem.querySelector( State.screenSel )
+		const screen = dem.querySelector( Config.screenSel )
 		if( ! screen ){
 			return
 		}
 
-		const demOpts = Cache.getOpts( dem )
-		const demId = demOpts.pid
-		const answrs = Cache.getPollCookie( demId, demOpts.cookie_days )
+		const demId = PollState.get( dem ).pid
+		const answrs = Cache.getPollCookie( demId, Config.cookieDays )
 		const notVotedFlag = answrs === 'notVoted' // If we already checked that user hasn't voted, don't request again
 		const isAnswrs = answrs && ! notVotedFlag
 
 		// choose which screen to show and how to handle it
-		const voteBlock = cacheBlock.querySelector( State.cacheScreenSel + '.vote' )
-		const votedBlock = cacheBlock.querySelector( State.cacheScreenSel + '.voted' )
+		const voteBlock = cacheBlock.querySelector( Config.cacheScreenSel + '.vote' )
+		const votedBlock = cacheBlock.querySelector( Config.cacheScreenSel + '.voted' )
 		const voteHTML = voteBlock ? voteBlock.innerHTML : ''
 		const votedHTML = votedBlock ? votedBlock.innerHTML : ''
 
@@ -82,26 +83,27 @@ export default class Cache {
 						Loader.setLoader( forDotsLoader )
 					}
 
-					Cache.post( State.ajaxurl, {
+					Cache.post( Config.ajaxurl, {
 						dem_pid: demId,
 						dem_act: 'getVotedIds',
 						action : 'dem_ajax'
 					} )
-						.then( reply => {
+						.then( response => {
 							forDotsLoader && Loader.unsetLoader( screen )
 
-							// exit if there are no answers
-							if( ! reply ){
+							if( ! response.voted_for && ! response.notice ){
 								return
 							}
 
 							screen.dataset['expanded'] = 'true'
-							screen.innerHTML = votedHTML
-							Cache.setAnswers( screen, reply )
+							screen.innerHTML = response.voted_for && votedHTML ? votedHTML : voteHTML
+							Cache.setAnswers( screen, response.voted_for )
 							Cache.actionsHandler( screen )
 
-							// a message that you have voted or for users only
-							Cache.showNotice( screen, reply )
+							if( response.notice?.status === 'login_required' ){
+								screen.querySelector( '.dem_revote_button_js' )?.remove()
+							}
+							Notice.set( dem, response.notice, true )
 						} )
 						.catch( error => {
 							forDotsLoader && Loader.unsetLoader( screen )
@@ -116,29 +118,6 @@ export default class Cache {
 			dem.addEventListener( 'mouseleave', notcheck__fn )
 			dem.addEventListener( 'click', check__fn )
 		}
-	}
-
-	static showNotice( screen, type ){
-		let notice = screen.querySelector( '.dem_you_are_voted_js' ) // "already voted"
-
-		// If only logged-in users can vote
-		if( type === 'blocked_because_not_logged_note' ){
-			const revoteBtn = screen.querySelector( '.dem_revote_button_js' )
-			if( revoteBtn ){
-				revoteBtn.remove()
-			}
-
-			notice = screen.querySelector( '.dem_only_users_js' )
-		}
-
-		if( ! notice ){
-			return
-		}
-
-		Utils.showElement( notice )
-		screen.prepend( notice )
-		// hide
-		setTimeout( () => Cache.slideUp( notice, 600 ), 10000 )
 	}
 
 	// set user's answers in results/vote block
@@ -205,27 +184,13 @@ export default class Cache {
 	static findMainBlock( cacheBlock ){
 		let prev = cacheBlock.previousElementSibling
 		while( prev ){
-			if( prev.matches( State.mainSel ) ){
+			if( prev.matches( Config.mainSel ) ){
 				return prev
 			}
 			prev = prev.previousElementSibling
 		}
 
-		return cacheBlock.closest( State.mainSel )
-	}
-
-	static getOpts( el ){
-		const raw = el.dataset.opts
-		if( ! raw ){
-			return {}
-		}
-
-		try{
-			return JSON.parse( raw )
-		}
-		catch( e ){
-			return {}
-		}
+		return cacheBlock.closest( Config.mainSel )
 	}
 
 	static getPollCookie( pollId, cookieDays ){
@@ -262,33 +227,6 @@ export default class Cache {
 		return Array.from( screen.querySelectorAll( '[data-aid="' + safeAid + '"]' ) )
 	}
 
-	static slideUp( el, duration ){
-		const height = el.getBoundingClientRect().height
-		if( ! height ){
-			el.style.display = 'none'
-			return
-		}
-
-		el.style.overflow = 'hidden'
-		el.style.height = height + 'px'
-		el.style.transition = 'height ' + duration + 'ms ease'
-
-		requestAnimationFrame( () => {
-			el.style.height = '0px'
-		} )
-
-		const cleanup = () => {
-			el.style.display = 'none'
-			el.style.overflow = ''
-			el.style.height = ''
-			el.style.transition = ''
-			el.removeEventListener( 'transitionend', cleanup )
-		}
-
-		el.addEventListener( 'transitionend', cleanup )
-		setTimeout( cleanup, duration + 50 )
-	}
-
 	static post( url, data ){
 		const body = new URLSearchParams()
 		Object.keys( data ).forEach( key => body.append( key, data[ key ] ) )
@@ -305,7 +243,7 @@ export default class Cache {
 				if( ! response.ok ){
 					throw new Error( 'Bad network response' )
 				}
-				return response.text()
+				return response.json()
 			} )
 	}
 

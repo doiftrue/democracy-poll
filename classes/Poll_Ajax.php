@@ -53,9 +53,9 @@ class Poll_Ajax {
 		 * @see self::action__vote_screen()
 		 * @see self::action__get_voted_ids()
 		 */
-		$this->$method();
+		$response = $this->$method();
 
-		wp_die(); // required exit for AJAX requests
+		wp_send_json( $response );
 	}
 
 	/**
@@ -82,7 +82,7 @@ class Poll_Ajax {
 	/**
 	 * Vote and display results.
 	 */
-	private function action__vote(): void {
+	private function action__vote(): array {
 		$poll = $this->create_poll();
 		$render = $this->create_renderer( $poll );
 		$voting = $this->create_voting_service( $poll );
@@ -90,64 +90,98 @@ class Poll_Ajax {
 		$voted = $voting->vote( $this->answer_ids );
 
 		if( is_wp_error( $voted ) ){
-			echo $render::voted_notice_html( $voted->get_error_message() );
-			echo $render->get_vote_screen();
+			return $this->response(
+				$render->get_vote_screen(),
+				'error',
+				$voted->get_error_message()
+			);
 		}
-		elseif( $render->not_show_results ){
-			echo $render->get_vote_screen();
-		}
-		else{
-			echo $render->get_result_screen();
-		}
+
+		$screen_html = $render->not_show_results
+			? $render->get_vote_screen()
+			: $render->get_result_screen();
+
+		return $this->response( $screen_html );
 	}
 
 	// delete results
-	private function action__delete_vote(): void {
+	private function action__delete_vote(): array {
 		$poll = $this->create_poll();
 		$render = $this->create_renderer( $poll );
 		$voting = $this->create_voting_service( $poll );
 
 		$voting->delete_vote();
-		echo $render->get_vote_screen();
+
+		return $this->response( $render->get_vote_screen() );
 	}
 
 	// view results
-	private function action__view_results(): void {
+	private function action__view_results(): array {
 		$poll = $this->create_poll();
 		$render = $this->create_renderer( $poll );
 
-		if( $render->not_show_results ){
-			echo $render->get_vote_screen();
-		}
-		else{
-			echo $render->get_result_screen();
-		}
+		$screen_html = $render->not_show_results
+			? $render->get_vote_screen()
+			: $render->get_result_screen();
+
+		return $this->response( $screen_html );
 	}
 
 	// back to voting
-	private function action__vote_screen(): void {
+	private function action__vote_screen(): array {
 		$poll = $this->create_poll();
 		$render = $this->create_renderer( $poll );
 
-		echo $render->get_vote_screen();
+		return $this->response( $render->get_vote_screen() );
 	}
 
 	// request is only made if cookies are not set - 'checkAnswDone' not done
-	private function action__get_voted_ids(): void {
+	private function action__get_voted_ids(): array {
 		$poll = $this->create_poll();
+		$render = $this->create_renderer( $poll );
 
 		$ustate = $poll->user_state;
 		if( $ustate->voted_for ){
 			$ustate->set_vote_cookie();
-			echo $ustate->voted_for;
+
+			return $this->response(
+				'',
+				'already_voted',
+				Poll_Renderer::already_voted_notice_message(),
+				$ustate->voted_for
+			);
 		}
-		elseif( $ustate->blocked_by_not_logged ){
-			echo 'blocked_because_not_logged_note'; // to display a note
+
+		if( $ustate->blocked_by_not_logged ){
+			return $this->response(
+				'',
+				'login_required',
+				$render->registered_only_notice_html()
+			);
 		}
-		else{
-			// Cache a missing vote for half a day to avoid repeating this check.
-			$ustate->set_not_voted_cookie();
-		}
+
+		// Cache a missing vote for half a day to avoid repeating this check.
+		$ustate->set_not_voted_cookie();
+
+		return $this->response();
+	}
+
+	private function response(
+		string $screen_html = '',
+		string $notice_status = '',
+		string $notice_html = '',
+		string $voted_for = ''
+	): array {
+		return [
+			'screen_html' => $screen_html,
+			'notice'      => $notice_status
+				? [
+					'status' => $notice_status,
+					'html'   => wp_kses_post( $notice_html ),
+				]
+				: null,
+			'voted_for'   => $voted_for,
+		];
 	}
 
 }

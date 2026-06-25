@@ -19,4 +19,8 @@ class Poll_Renderer__Double extends Poll_Renderer {
 		return '<div class="loader">Loader</div>';
 	}
 
+	protected function notice_template_html(): string {
+		return '<template class="notice-template"></template>';
+	}
+
 }

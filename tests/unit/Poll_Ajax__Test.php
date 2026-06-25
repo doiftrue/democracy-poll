@@ -4,6 +4,7 @@ namespace DemocracyPoll;
 
 use DemocracyPoll\Doubles\Poll_Ajax__Double;
 use Mockery;
+use WP_Error;
 use WP_Mock;
 
 class Poll_Ajax_Exit extends \RuntimeException {}
@@ -70,8 +71,7 @@ class Poll_Ajax__Test extends DemocTestCase {
 		$this->renderer->shouldReceive( 'get_result_screen' )->once()->andReturn( 'RESULTS' );
 		$this->voting->shouldReceive( 'vote' )->once()->with( '1~New "answer"' )->andReturn( '1,2' );
 
-		$this->expect_ajax_exit();
-		$this->expectOutputString( 'RESULTS' );
+		$this->expect_json_response( $this->response( 'RESULTS' ) );
 
 		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
 		$ajax->ajax_request_handler();
@@ -90,8 +90,7 @@ class Poll_Ajax__Test extends DemocTestCase {
 		$this->renderer->not_show_results = false;
 		$this->renderer->shouldReceive( 'get_result_screen' )->once()->andReturn( 'RESULTS' );
 
-		$this->expect_ajax_exit();
-		$this->expectOutputString( 'RESULTS' );
+		$this->expect_json_response( $this->response( 'RESULTS' ) );
 
 		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
 		$ajax->ajax_request_handler();
@@ -117,8 +116,7 @@ class Poll_Ajax__Test extends DemocTestCase {
 
 		$this->renderer->shouldReceive( 'get_vote_screen' )->once()->andReturn( 'VOTE' );
 
-		$this->expect_ajax_exit();
-		$this->expectOutputString( 'VOTE' );
+		$this->expect_json_response( $this->response( 'VOTE' ) );
 
 		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
 		$ajax->ajax_request_handler();
@@ -145,8 +143,33 @@ class Poll_Ajax__Test extends DemocTestCase {
 		$this->renderer->shouldReceive( 'get_result_screen' )->once()->andReturn( 'RESULTS' );
 		$this->voting->shouldReceive( 'vote' )->once()->with( '1~2' )->andReturn( '1,2' );
 
-		$this->expect_ajax_exit();
-		$this->expectOutputString( 'RESULTS' );
+		$this->expect_json_response( $this->response( 'RESULTS' ) );
+
+		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
+		$ajax->ajax_request_handler();
+	}
+
+	/**
+	 * @covers Poll_Ajax::ajax_request_handler()
+	 */
+	public function test__returns_vote_error_as_structured_notice(): void {
+		$_POST = [
+			'dem_act'    => 'vote',
+			'answer_ids' => '1~2',
+			'dem_pid'    => 12,
+		];
+
+		$this->renderer->shouldReceive( 'get_vote_screen' )->once()->andReturn( 'VOTE' );
+		$this->voting->shouldReceive( 'vote' )->once()->with( '1~2' )
+			->andReturn( new WP_Error( 'vote_err', '<b>Invalid</b><script>alert(1)</script>' ) );
+
+		$this->expect_json_response( $this->response(
+			'VOTE',
+			[
+				'status' => 'error',
+				'html'   => '<b>Invalid</b>alert(1)',
+			]
+		) );
 
 		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
 		$ajax->ajax_request_handler();
@@ -174,6 +197,22 @@ class Poll_Ajax__Test extends DemocTestCase {
 		$expectation->andThrow( Poll_Ajax_Exit::class );
 
 		$this->expectException( Poll_Ajax_Exit::class );
+	}
+
+	private function expect_json_response( array $response ): void {
+		WP_Mock::userFunction( 'wp_send_json' )
+			->with( $response )
+			->andThrow( Poll_Ajax_Exit::class );
+
+		$this->expectException( Poll_Ajax_Exit::class );
+	}
+
+	private function response( string $screen_html, ?array $notice = null, string $voted_for = '' ): array {
+		return [
+			'screen_html' => $screen_html,
+			'notice'      => $notice,
+			'voted_for'   => $voted_for,
+		];
 	}
 
 }
