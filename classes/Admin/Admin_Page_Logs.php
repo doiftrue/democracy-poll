@@ -206,7 +206,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 		);
 
 		/**
-		 * Allows to do something after deleting logs.
+		 * Allows doing something after deleting logs.
 		 *
 		 * @param array|int $log_ids  Log IDs array or single log ID
 		 * @param int       $result   Result of the delete query, number of deleted rows
@@ -251,7 +251,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 		);
 
 		/**
-		 * Allows to do something after deleting logs and votes.
+		 * Allows doing something after deleting logs and votes.
 		 *
 		 * @param array|int $log_ids  Log IDs array or single log ID.
 		 * @param int       $result   Result of the delete query, number of deleted rows.

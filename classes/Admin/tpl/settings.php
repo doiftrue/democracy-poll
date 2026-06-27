@@ -45,13 +45,9 @@ $opt = options();
 			</div>
 
 			<div class="demoptions__block">
-				<label><?= esc_html__( 'HTML tags to wrap the poll title.', 'democracy-poll' ) ?></label><br>
-				<input type="text" size="35" value="<?= esc_attr( $opt->before_title ) ?>"
-				       name="dem[before_title]"/>
-				<i><?= esc_html__( 'poll\'s question', 'democracy-poll' ) ?></i>
-				<input type="text" size="15" value="<?= esc_attr( $opt->after_title ) ?>"
-				       name="dem[after_title]"/>
-				<em><?= wp_kses_post( __( 'Example: <code>&lt;h2&gt;</code> and <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>.', 'democracy-poll' ) ) ?></em>
+				<label><?= esc_html__( 'Poll title HTML template.', 'democracy-poll' ) ?></label><br>
+				<input type="text" size="70" value="<?= esc_attr( $opt->title_markup ) ?>" name="dem[title_markup]"/>
+				<em><?= wp_kses_post( __( 'Use <code>{question}</code> where the poll question should appear. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;{question}&lt;/strong&gt;</code>.', 'democracy-poll' ) ) ?></em>
 			</div>
 
 			<div class="demoptions__block">

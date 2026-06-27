@@ -126,6 +126,9 @@ See `COMPAT: ***` messages in the changelog below for any backward compatibility
 
 See `COMPAT: ***` messages in the changelog below for any backward compatibility changes that may require code updates if you use the plugin's public API or properties directly in your code.
 
+= 6.4.1 =
+* IMP: Combined the poll title wrapper settings into one HTML template using the `{question}` placeholder. Existing settings remain compatible.
+
 = 6.4.0 =
 * NEW: Added a global setting to sort order for answers on the results screen.
 * FIX: Shortcode `[democracy id=last]` for last poll did not work correctly in some cases. See [request](https://wordpress.org/support/topic/shortcode-to-last-poll-not-working/)

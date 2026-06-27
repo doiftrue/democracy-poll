@@ -50,6 +50,9 @@ class Options__Test extends DemocTestCase {
 
 		$this->assertSame( 0, $options->keep_logs );
 		$this->assertSame( 30, $options->cookie_days );
+		$this->assertSame( '<strong class="dem-poll-title">{question}</strong>', $options->title_markup );
+		$this->assertNull( $options->before_title );
+		$this->assertNull( $options->after_title );
 		$this->assertSame( '', $options->answs_max_height );
 		$this->assertSame( 'alternate.css', $options->css_file_name );
 		$this->assertFalse( isset( $options->keep_logs ) );
@@ -136,7 +139,8 @@ class Options__Test extends DemocTestCase {
 		WP_Mock::userFunction( 'update_option' )->once()
 			->with( Options::OPT_NAME, Mockery::on(
 				static function( array $options ): bool {
-					return '<strong>Title</strong>alert(1)' === $options['before_title']
+					return '<strong>Title</strong>alert(1){question}</strong>' === $options['title_markup']
+						&& ! isset( $options['before_title'], $options['after_title'] )
 						&& '30 days' === $options['cookie_days']
 						&& [ 'editor', 'badrole' ] === $options['access_roles']
 						&& '0' === $options['keep_logs'];
@@ -146,8 +150,8 @@ class Options__Test extends DemocTestCase {
 
 		$_POST = [
 			'dem' => [
-				'before_title' => '<strong>Title</strong><script>alert(1)</script>',
-				'cookie_days'  => ' 30 days ',
+				'title_markup' => '<strong>Title</strong><script>alert(1)</script>{question}</strong>',
+				'cookie_days' => ' 30 days ',
 				'access_roles' => [ 'Editor', 'Bad Role!' ],
 			],
 		];
@@ -156,7 +160,7 @@ class Options__Test extends DemocTestCase {
 		$options->set_opt();
 
 		$this->assertTrue( $options->update_options( 'main' ) );
-		$this->assertSame( '<strong>Title</strong>alert(1)', $options->before_title );
+		$this->assertSame( '<strong>Title</strong>alert(1){question}</strong>', $options->title_markup );
 		$this->assertSame( [ 'editor', 'badrole' ], $options->access_roles );
 		$this->assertSame( '0', $options->keep_logs );
 	}

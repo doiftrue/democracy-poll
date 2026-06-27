@@ -53,9 +53,12 @@ class Poll_Renderer {
 
 		$this->in_archive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) $opt->archive_page_id ) && is_singular();
 
-		$title_html = ( $before_title ?: $opt->before_title ) .
-		              Kses::kses_html( $poll->question ) .
-		              ( $after_title ?: $opt->after_title );
+		$question = Kses::kses_html( $poll->question );
+		[ $def_before_title, $def_after_title ] = explode( '{question}', $opt->title_markup ) + [ '', '' ];
+
+		$title_html = ( $before_title || $after_title )
+			? ( $before_title ?: $def_before_title ) . $question . ( $after_title ?: $def_after_title )
+			: str_replace( '{question}', $question, $opt->title_markup );
 
 		// ! before get_cache_screens() because of filters
 		$poll_body_html = $this->get_poll_body( $show_screen );

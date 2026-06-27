@@ -5,8 +5,7 @@ namespace DemocracyPoll;
 /**
  * Main:
  * @property-read int    $keep_logs              Eg: 1
- * @property-read string $before_title           Eg: '<strong class="dem-poll-title">'
- * @property-read string $after_title            Eg: '</strong>'
+ * @property-read string $title_markup           Eg: '<strong class="dem-poll-title">{question}</strong>'
  * @property-read int    $force_cachegear        Eg: 0
  * @property-read int    $archive_page_id        Eg: 0
  * @property-read string $order_answers          Eg: 'by_winner'
@@ -57,8 +56,7 @@ class Options {
 		'main'   => [
 			// Store logs in the database.
 			'keep_logs'              => 1,
-			'before_title'           => '<strong class="dem-poll-title">',
-			'after_title'            => '</strong>',
+			'title_markup'           => '<strong class="dem-poll-title">{question}</strong>',
 			'force_cachegear'        => 0,
 			'archive_page_id'        => 0,
 			'order_answers'          => 'by_winner',
@@ -145,6 +143,14 @@ class Options {
 			if( ! $this->opt ){
 				$this->reset_options( 'all' );
 			}
+			// backward compatibility: v6.4.1+
+			elseif( ! isset( $this->opt['title_markup'] ) ){
+				$before_title = $this->opt['before_title'] ?? '<strong class="dem-poll-title">';
+				$after_title  = $this->opt['after_title'] ?? '</strong>';
+				$this->opt['title_markup'] = "$before_title{question}$after_title";
+			}
+
+			unset( $this->opt['before_title'], $this->opt['after_title'] );
 		}
 
 		// append default values
@@ -223,7 +229,7 @@ class Options {
 		foreach( $this->default_options[ $type ] as $key => $v ){
 			$value = $request_data['dem'][ $key ] ?? 0; // Use 0/null rather than $v for checkboxes.
 
-			if( in_array( $key, [ 'before_title', 'after_title' ] ) ){
+			if( $key === 'title_markup' ){
 				$value = wp_kses( $value, 'post' );
 			}
 			elseif( $key === 'access_roles' ){
