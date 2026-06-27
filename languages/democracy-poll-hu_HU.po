@@ -53,10 +53,10 @@ msgid "Delete logs and votes"
 msgstr "Naplózás és szavazatok törlése"
 
 #: classes/Admin/List_Table_Logs.php:173
-msgid "Poll's logs: "
+msgid "Poll's logs:"
 msgstr "Szavazatok naplója:"
 
-#: classes/Poll_Renderer.php:101
+#: classes/Poll_Renderer.php:110
 #: classes/Admin/List_Table_Logs.php:176
 #: classes/Admin/List_Table_Logs.php:276
 msgid "Edit poll"
@@ -278,126 +278,118 @@ msgstr "Adatok naplózása és látogató IP címének figyelés? (ajánlott)"
 msgid "How many days to keep Cookies alive?"
 msgstr "Hány napig legyenek érvényben a cookie-k?"
 
-#: classes/Admin/tpl/settings.php:48
-msgid "HTML tags to wrap the poll title."
-msgstr "HTML tag-ek a szavazás címének formázásához."
-
-#: classes/Admin/tpl/settings.php:51
-msgid "poll's question"
-msgstr "szavazás kérdése"
-
-#: classes/Admin/tpl/settings.php:60
+#: classes/Admin/tpl/settings.php:56
 msgid "Polls archive page ID."
 msgstr "Szavazatok archív oldalának azonosítója (ID)."
 
-#: classes/Admin/tpl/settings.php:65
+#: classes/Admin/tpl/settings.php:61
 msgid "Go to archive page"
 msgstr "Ugrás az archív oldalra"
 
-#: classes/Admin/tpl/settings.php:71
+#: classes/Admin/tpl/settings.php:67
 msgid "Create/find archive page"
 msgstr "Archív oldal létrehozása/keresése"
 
-#: classes/Admin/tpl/settings.php:78
+#: classes/Admin/tpl/settings.php:74
 msgid "Global Polls options"
 msgstr "Általános szavazási beállítások"
 
-#: classes/Admin/tpl/settings.php:100
+#: classes/Admin/tpl/settings.php:96
 msgid "Only registered users allowed to vote (global option)"
 msgstr "Csak regisztrált felhasználók szavazhatnak (általános beállítás)"
 
-#: classes/Admin/tpl/settings.php:118
+#: classes/Admin/tpl/settings.php:114
 msgid "Remove the Revote possibility (global option)."
 msgstr "Újra szavazás lehetőségének kikapcsolása (általános beállítás)."
 
-#: classes/Admin/tpl/settings.php:127
+#: classes/Admin/tpl/settings.php:123
 msgid "Don't show poll results (global option)."
 msgstr "Szavazások eredményének megjelenítése kikapcsolva (általános beállítás)."
 
-#: classes/Admin/tpl/settings.php:129
+#: classes/Admin/tpl/settings.php:125
 msgid "If checked, user can't see poll results if voting is open."
 msgstr "Ha be van kapcsolva, a felhasználó nem láthatja a szavazás eredményét, ha még tart a szavazás."
 
-#: classes/Admin/tpl/settings.php:136
+#: classes/Admin/tpl/settings.php:132
 msgid "Don't show poll results link (global option)."
 msgstr "Ne mutassa a szavazás eredményére mutató linket (általános beállítás)."
 
-#: classes/Admin/tpl/settings.php:138
+#: classes/Admin/tpl/settings.php:134
 msgid "Users can see results after vote."
 msgstr "A felhasználók lássák az eredményt a szavazás után."
 
-#: classes/Admin/tpl/settings.php:145
+#: classes/Admin/tpl/settings.php:141
 msgid "Hide vote button."
 msgstr "Szavazás gomb elrejtése."
 
-#: classes/Admin/tpl/settings.php:147
+#: classes/Admin/tpl/settings.php:143
 msgid "Users can vote with one click on an answer. Works only for non-multiple polls with the revote option enabled."
 msgstr "Szavazógomb elrejtése, ha NEM  több válaszos (multiple) szavazásról van szó.  A szavazó így nem a gombra, hanem magára a válaszra kattintva adja le szavazatát."
 
-#: classes/Admin/tpl/settings.php:159
-#: classes/Admin/tpl/settings.php:258
+#: classes/Admin/tpl/settings.php:155
+#: classes/Admin/tpl/settings.php:254
 msgid "Others"
 msgstr "Egyebek"
 
-#: classes/Admin/tpl/settings.php:166
+#: classes/Admin/tpl/settings.php:162
 msgid "ON"
 msgstr "BE"
 
-#: classes/Admin/tpl/settings.php:167
+#: classes/Admin/tpl/settings.php:163
 msgid "OFF"
 msgstr "KI"
 
-#: classes/Admin/tpl/settings.php:181
+#: classes/Admin/tpl/settings.php:177
 msgid "Add plugin menu on the toolbar?"
 msgstr "Hozzáadja a plugin menüjét az eszköztárhoz?"
 
-#: classes/Admin/tpl/settings.php:183
+#: classes/Admin/tpl/settings.php:179
 msgid "Uncheck to remove the plugin menu from the toolbar."
 msgstr "Az eltávolításhoz szüntesse meg a plugin menüjét az eszköztárban."
 
-#: classes/Admin/tpl/settings.php:189
+#: classes/Admin/tpl/settings.php:185
 msgid "Add fast Poll insert button to WordPress visual editor (TinyMCE)?"
 msgstr "Hozzáadja a szavazás gombot a vizuális szerkesztő menüjéhez (TinyMCE)?"
 
-#: classes/Admin/tpl/settings.php:191
+#: classes/Admin/tpl/settings.php:187
 msgid "Uncheck to disable button in visual editor."
 msgstr "Szüntesse meg a kijelölést a vizuális szerkesztőnél az eltávolításhoz."
 
-#: classes/Admin/tpl/settings.php:230
+#: classes/Admin/tpl/settings.php:226
 msgid "Role names, except 'administrator' which will have access to manage plugin."
 msgstr "Szerepkörök, melyek hozzáférhetnek a szavazás modul kezeléséhez a rendszergazdákon kívül."
 
-#: classes/Admin/tpl/settings.php:235
+#: classes/Admin/tpl/settings.php:231
 msgid "Migration"
 msgstr "Eltávolítás"
 
-#: classes/Admin/tpl/settings.php:241
+#: classes/Admin/tpl/settings.php:237
 msgid "Migrate from WP Polls plugin"
 msgstr "Szavazás plugin eltávolítása a WP-ből."
 
-#: classes/Admin/tpl/settings.php:243
+#: classes/Admin/tpl/settings.php:239
 msgid "All polls, answers and logs of WP Polls will be added to Democracy Poll"
 msgstr "Minden szavazás, válasz és naplózás bekerül a Democracy Poll-ba"
 
-#: classes/Admin/tpl/settings.php:251
+#: classes/Admin/tpl/settings.php:247
 msgid "Save Options"
 msgstr "Beállítások mentése"
 
 #: classes/Admin/tpl/design.php:388
-#: classes/Admin/tpl/settings.php:253
+#: classes/Admin/tpl/settings.php:249
 #: classes/Admin/tpl/l10n.php:54
 msgid "Reset Options"
 msgstr "Beállítások visszaállítása"
 
-#: classes/Admin/tpl/settings.php:197
+#: classes/Admin/tpl/settings.php:193
 msgid "Widget"
 msgstr "Modul (widget)"
 
-#: classes/Admin/tpl/settings.php:199
+#: classes/Admin/tpl/settings.php:195
 msgid "Check to activate the widget."
 msgstr "Jelölje be a modul aktiválásához."
 
-#: classes/Admin/tpl/settings.php:264
+#: classes/Admin/tpl/settings.php:260
 msgid "Force plugin versions update (debug)"
 msgstr "Plugin frissítésének kényszerítése (debug)"
 
@@ -581,91 +573,91 @@ msgstr "Archív szavazások"
 msgid "Failed to delete"
 msgstr "Nem törölt"
 
-#: classes/Poll_Renderer.php:269
+#: classes/Poll_Renderer.php:278
 msgctxt "front"
 msgid "Add your answer"
 msgstr "Add le a szavazatod ..."
 
-#: classes/Poll_Renderer.php:290
+#: classes/Poll_Renderer.php:299
 msgctxt "front"
 msgid "Already voted..."
 msgstr "Már szavaztál ..."
 
-#: classes/Poll_Renderer.php:301
-#: classes/Poll_Renderer.php:544
+#: classes/Poll_Renderer.php:310
+#: classes/Poll_Renderer.php:553
 msgctxt "front"
 msgid "Vote"
 msgstr "Szavazás"
 
-#: classes/Poll_Renderer.php:328
+#: classes/Poll_Renderer.php:337
 msgctxt "front"
 msgid "Results"
 msgstr "Eredmény"
 
-#: classes/Poll_Renderer.php:381
+#: classes/Poll_Renderer.php:390
 msgctxt "front"
 msgid "This is your vote."
 msgstr "Ez a te szavazatod."
 
-#: classes/Poll_Renderer.php:431
+#: classes/Poll_Renderer.php:440
 msgctxt "front"
 msgid "The answer was added by a visitor"
 msgstr "A választ egy látogató adta le"
 
-#: classes/Poll_Renderer.php:406
-#: classes/Poll_Renderer.php:418
+#: classes/Poll_Renderer.php:415
+#: classes/Poll_Renderer.php:427
 msgctxt "front"
 msgid "vote,votes,votes"
 msgstr "szavazás, szavazat, szavazat"
 
-#: classes/Poll_Renderer.php:464
+#: classes/Poll_Renderer.php:473
 #, php-format
 msgctxt "front"
 msgid "Total Votes: %s"
 msgstr "Összes szavazat: %s"
 
-#: classes/Poll_Renderer.php:472
+#: classes/Poll_Renderer.php:481
 #, php-format
 msgctxt "front"
 msgid "Voters: %s"
 msgstr "Szavazók: %s"
 
-#: classes/Poll_Renderer.php:465
+#: classes/Poll_Renderer.php:474
 msgctxt "front"
 msgid "Begin"
 msgstr "Kezdődik"
 
-#: classes/Poll_Renderer.php:466
+#: classes/Poll_Renderer.php:475
 msgctxt "front"
 msgid "End"
 msgstr "Vége"
 
-#: classes/Poll_Renderer.php:477
+#: classes/Poll_Renderer.php:486
 msgctxt "front"
 msgid " - added by visitor"
 msgstr "- látogató által leadva"
 
-#: classes/Poll_Renderer.php:480
+#: classes/Poll_Renderer.php:489
 msgctxt "front"
 msgid "Voting is closed"
 msgstr "Szavazás zárva"
 
-#: classes/Poll_Renderer.php:483
+#: classes/Poll_Renderer.php:492
 msgctxt "front"
 msgid "Polls Archive"
 msgstr "Archív szavazások"
 
-#: classes/Poll_Renderer.php:579
+#: classes/Poll_Renderer.php:588
 msgctxt "front"
 msgid "Revote"
 msgstr "Újra szavazás"
 
-#: classes/Poll_Renderer.php:581
+#: classes/Poll_Renderer.php:590
 msgctxt "front"
 msgid "Are you sure you want to cancel the votes?"
 msgstr "Valóban törölni szeretnéd a szavazatodat?"
 
-#: classes/Poll_Renderer.php:615
+#: classes/Poll_Renderer.php:624
 msgctxt "front"
 msgid "You or your IP have already voted."
 msgstr "A te IP címedről már érkezett be szavazat."
@@ -694,23 +686,23 @@ msgstr " - Legutóbb megnyitott szavazás"
 msgid "Which poll to show?"
 msgstr "Melyik szavazást mutassam?"
 
-#: classes/Admin/tpl/settings.php:205
+#: classes/Admin/tpl/settings.php:201
 msgid "Check if you see something like \"no_IP__123\" in IP column on logs page. (not recommended)"
 msgstr "Ellenőrizze, hogy lát-e ilyet az IP oszlopban a naplóoldalon: „no_IP__123” (nem ajánlott)"
 
-#: classes/Admin/tpl/settings.php:208
+#: classes/Admin/tpl/settings.php:204
 msgid "Use this if your server does not detect the visitor IP correctly from REMOTE_ADDR. Note: this option may make vote cheating easier."
 msgstr "Használd ezt, ha a szerver nem érzékeli megfelelően a látogató IP-címét a REMOTE_ADDR alapján. Megjegyzés: ez a beállítás megkönnyítheti a szavazatokkal való visszaélést."
 
-#: includes/theme-functions.php:84
+#: includes/theme-functions.php:92
 msgid "Poll results hidden for now..."
 msgstr "A szavazás eredménye egyelőre rejtett..."
 
-#: includes/theme-functions.php:305
+#: includes/theme-functions.php:328
 msgid "From posts:"
 msgstr "Bejegyzésekből:"
 
-#: classes/Poll_Renderer.php:605
+#: classes/Poll_Renderer.php:614
 msgctxt "front"
 msgid "Only registered users can vote. <a>Log in</a> to vote."
 msgstr "Csak regisztrált felhasználók szavazhatnak. <a>Bejelentkezés</a> a szavazáshoz."
@@ -852,15 +844,15 @@ msgstr "Hány napig emlékezzen a böngésző a szavazatra (alapértelmezett: 36
 msgid "To set hours use float number - 0.04 = 1 hour."
 msgstr "Órához tizedes számot adj meg – 0.04 = 1 óra."
 
-#: classes/Admin/tpl/settings.php:154
+#: classes/Admin/tpl/settings.php:150
 msgid "Disable post metabox."
 msgstr "Metabox letiltása a bejegyzéseknél."
 
-#: classes/Admin/tpl/settings.php:156
+#: classes/Admin/tpl/settings.php:152
 msgid "Check this to disable polls metabox functionality for posts where you can attach a poll to a post."
 msgstr "Jelöld be, hogy letiltsd a szavazás metaboxot a bejegyzéseknél..."
 
-#: classes/Admin/tpl/settings.php:206
+#: classes/Admin/tpl/settings.php:202
 msgid "Or if IP detection is wrong. (for cloudflare)"
 msgstr "Vagy ha hibás az IP felismerése (pl. Cloudflare esetén)."
 
@@ -892,11 +884,7 @@ msgstr "Az adatbázisban tárolja a szavazási adatokat. Ez teszi lehetővé az 
 msgid "INFO: If a user is logged in, their vote is checked by their WP account. If a user is not logged in, their IP address is checked. The downside of IP checks is that a site may be visited from an enterprise network with a shared IP address, so all users from that network are allowed to vote only once."
 msgstr "INFORMÁCIÓ: Ha egy felhasználó be van jelentkezve, a szavazatát a WP-fiókja alapján ellenőrzi a rendszer. Ha nincs bejelentkezve, az IP-címét ellenőrzi. Az IP-alapú ellenőrzés hátránya, hogy előfordulhat, hogy a webhelyet közös IP-címet használó vállalati hálózatról látogatják, ezért az adott hálózat összes felhasználója együttesen csak egyszer szavazhat."
 
-#: classes/Admin/tpl/settings.php:54
-msgid "Example: <code>&lt;h2&gt;</code> and <code>&lt;/h2&gt;</code>. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>."
-msgstr "Például: <code>&lt;h2&gt;</code> és <code>&lt;/h2&gt;</code>. Alapértelmezett: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;</code> & <code>&lt;/strong&gt;</code>."
-
-#: classes/Admin/tpl/settings.php:175
+#: classes/Admin/tpl/settings.php:171
 msgid "Democracy Poll has a built-in mechanism for working with page cache plugins such as W3 Total Cache. It is enabled automatically when a supported plugin is active. If you use a different page cache plugin, you can force-enable this option."
 msgstr "A Democracy Poll beépített mechanizmussal működik együtt az olyan oldalgyorsítótár-bővítményekkel, mint a W3 Total Cache. Kompatibilis bővítmény esetén automatikusan bekapcsol. Más gyorsítótár-bővítmény használatakor ez a beállítás kényszerítve engedélyezhető."
 
@@ -904,15 +892,15 @@ msgstr "A Democracy Poll beépített mechanizmussal működik együtt az olyan o
 msgid "Max poll height (in em, rem, px, ...). Leave empty to disable."
 msgstr "Szavazás maximális magassága (em, rem, px, ...). Hagyd üresen a letiltáshoz."
 
-#: classes/Admin/tpl/settings.php:84
+#: classes/Admin/tpl/settings.php:80
 msgid "Answer order on vote screen (global option)"
 msgstr "Válaszok sorrendje a szavazási képernyőn (általános beállítás)"
 
-#: classes/Admin/tpl/settings.php:86
+#: classes/Admin/tpl/settings.php:82
 msgid "Option can be changed for each poll separately."
 msgstr "Az opció minden szavazásnál külön módosítható."
 
-#: classes/Admin/tpl/settings.php:93
+#: classes/Admin/tpl/settings.php:89
 msgid "Answer order on results screen (global option)"
 msgstr "Válaszok sorrendje az eredményképernyőn (általános beállítás)"
 
@@ -936,17 +924,17 @@ msgstr "Shortcode használata:"
 msgid "These colors may not affect all button styles. You can fully customize button styles in the \"Additional CSS styles\" field below."
 msgstr "Ezek a színek nem feltétlenül érintenek minden gombstílust. A gombstílusokat teljesen testreszabhatod az alábbi \"További CSS-stílusok\" mezőben."
 
-#: classes/Admin/tpl/settings.php:102
-#: classes/Admin/tpl/settings.php:111
-#: classes/Admin/tpl/settings.php:120
+#: classes/Admin/tpl/settings.php:98
+#: classes/Admin/tpl/settings.php:107
+#: classes/Admin/tpl/settings.php:116
 msgid "Can be changed for each poll separately."
 msgstr "Minden szavazásnál külön módosítható."
 
-#: classes/Admin/tpl/settings.php:109
+#: classes/Admin/tpl/settings.php:105
 msgid "Prohibit users to add new answers (global option)."
 msgstr "Új válaszok hozzáadásának tiltása a felhasználók számára (globális beállítás)."
 
-#: classes/Admin/tpl/settings.php:170
+#: classes/Admin/tpl/settings.php:166
 #, php-format
 msgid "Force-enable compatibility mode for page cache plugins. Current status: %s"
 msgstr "Oldalgyorsítótár-bővítményekkel való kompatibilitási mód kényszerített engedélyezése. Jelenlegi állapot: %s"
@@ -967,12 +955,20 @@ msgstr "ID szerint (hozzáadási sorrend)"
 msgid "Mixed (shuffled)"
 msgstr "Kevert (véletlenszerű)"
 
-#: classes/Poll_Renderer.php:404
+#: classes/Poll_Renderer.php:413
 msgctxt "front"
 msgid "{votes} - {percent}% of all votes"
 msgstr "{votes} - {percent}% az összes szavazat"
 
-#: classes/Poll_Renderer.php:619
+#: classes/Poll_Renderer.php:628
 msgctxt "front"
 msgid "Close"
 msgstr "Bezárás"
+
+#: classes/Admin/tpl/settings.php:48
+msgid "Poll title HTML template."
+msgstr ""
+
+#: classes/Admin/tpl/settings.php:50
+msgid "Use <code>{question}</code> where the poll question should appear. Default: <code>&lt;strong class=&quot;dem-poll-title&quot;&gt;{question}&lt;/strong&gt;</code>."
+msgstr ""
