@@ -3,22 +3,25 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Helpers\Messages;
 use DemocracyPoll\Poll_Storage;
 use DemocracyPoll\Poll_Utils;
 use DemocracyPoll\Poll;
-use function DemocracyPoll\plugin;
+use WP_List_Table;
 use function DemocracyPoll\options;
 
-class List_Table_Logs extends \WP_List_Table {
+class List_Table_Logs extends WP_List_Table {
 
 	private static array $cache;
 
 	public int $poll_id;
 
 	private Admin_Page_Logs $logs_page;
+	private Messages $messages;
 
-	public function __construct( Admin_Page_Logs $logs_page ) {
+	public function __construct( Admin_Page_Logs $logs_page, Messages $messages ) {
 		$this->logs_page = $logs_page;
+		$this->messages = $messages;
 
 		parent::__construct( [
 			'singular' => 'demlog',
@@ -50,7 +53,7 @@ class List_Table_Logs extends \WP_List_Table {
 		}
 
 		if( ! $log_ids = array_filter( array_map( 'intval', $_POST['logids'] ) ) ){
-			plugin()->msg->add_error( __( 'Nothing was selected.', 'democracy-poll' ) );
+			$this->messages->add_error( __( 'Nothing was selected.', 'democracy-poll' ) );
 
 			return;
 		}
@@ -169,8 +172,8 @@ class List_Table_Logs extends \WP_List_Table {
 			$this->cache( 'polls', $this->poll_id, $poll );
 		}
 
-		echo strtr( '<h2><small>{title}</small>{question} <small><a href="{url}">{link_text}</a></small></h2>', [
-			'{title}'     => __( 'Poll\'s logs: ', 'democracy-poll' ),
+		echo strtr( '<h2>{title} {question} <a href="{url}" class="button button-small">{link_text}</a></h2>', [
+			'{title}'     => __( 'Poll\'s logs:', 'democracy-poll' ),
 			'{question}'  => Kses::kses_html( $poll->question ),
 			'{url}'       => Poll_Utils::edit_poll_url( $this->poll_id ),
 			'{link_text}' => __( 'Edit poll', 'democracy-poll' ),

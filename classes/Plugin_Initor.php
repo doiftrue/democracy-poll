@@ -10,18 +10,27 @@ use DemocracyPoll\Admin\Admin_Page_l10n;
 
 class Plugin_Initor {
 
-	public function __construct() {
+	private Plugin $plugin;
+	private Options $options;
+	private Poll_Ajax $poll_ajax;
+	private Shortcodes $shortcodes;
+
+	public function __construct( Plugin $plugin, Options $options, Poll_Ajax $poll_ajax, Shortcodes $shortcodes ) {
+		$this->plugin = $plugin;
+		$this->options = $options;
+		$this->poll_ajax = $poll_ajax;
+		$this->shortcodes = $shortcodes;
 	}
 
 	public function basic_init(): void {
-		options()->set_opt();
+		$this->options->set_opt();
 
 		Activator::set_db_tables();
 		if( is_multisite() ){
 			add_action( 'switch_blog', [ Activator::class, 'set_db_tables' ] );
 		}
 
-		plugin()->set_access_caps();
+		$this->plugin->set_access_caps();
 		Kses::setup_allowed_tags();
 		$this->load_textdomain();
 	}
@@ -29,7 +38,7 @@ class Plugin_Initor {
 	public function plugin_init(): void {
 		$this->basic_init();
 
-		plugin()->set_is_cachegear_on();
+		$this->plugin->set_is_cachegear_on();
 
 		$this->admin_init();
 
@@ -46,18 +55,16 @@ class Plugin_Initor {
 
 	private function admin_init(): void {
 		if( is_admin() && ! wp_doing_ajax() ){
-			plugin()->admin = new Admin();
-			plugin()->admin->init();
+			container()->get( Admin::class )->init(); // lazy construct
 		}
 	}
 
 	private function init_shortcodes(): void {
-		( new Shortcodes() )->init();
+		$this->shortcodes->init();
 	}
 
 	private function init_ajax(): void {
-		plugin()->poll_ajax = new Poll_Ajax();
-		plugin()->poll_ajax->init();
+		$this->poll_ajax->init();
 
 		if( wp_doing_ajax() ){
 			Admin_Page_Logs::init_ajax();
@@ -65,11 +72,11 @@ class Plugin_Initor {
 	}
 
 	public function load_textdomain(): void {
-		load_plugin_textdomain( 'democracy-poll', false, basename( plugin()->dir ) . '/languages/build/' );
+		load_plugin_textdomain( 'democracy-poll', false, basename( $this->plugin->dir ) . '/languages/build/' );
 	}
 
 	private function init_wp_widget(): void {
-		if( options()->use_widget ){
+		if( $this->options->use_widget ){
 			add_action( 'widgets_init', static function() {
 				register_widget( Poll_Widget::class );
 			} );
@@ -77,8 +84,8 @@ class Plugin_Initor {
 	}
 
 	private function init_menu_in_toolbar(): void {
-		if( plugin()->admin_access && options()->toolbar_menu ){
-			add_action( 'admin_bar_menu', [ plugin()->initor, 'add_toolbar_node' ], 99 );
+		if( $this->plugin->admin_access && $this->options->toolbar_menu ){
+			add_action( 'admin_bar_menu', [ $this, 'add_toolbar_node' ], 99 );
 		}
 	}
 
@@ -111,7 +118,7 @@ class Plugin_Initor {
 		$toolbar->add_node( [
 			'id'    => 'dem_settings',
 			'title' => 'Democracy',
-			'href'  => plugin()->admin_page_url,
+			'href'  => $this->plugin->admin_page_url,
 		] );
 
 		$list = [
@@ -123,7 +130,7 @@ class Plugin_Initor {
 			'l10n'             => __( 'Text changes', 'democracy-poll' ),
 		];
 
-		if( ! plugin()->super_access ){
+		if( ! $this->plugin->super_access ){
 			unset( $list['general_settings'], $list['design'], $list['l10n'] );
 		}
 
@@ -132,7 +139,7 @@ class Plugin_Initor {
 				'parent' => 'dem_settings',
 				'id'     => $subpage ?: 'polls_list',
 				'title'  => $title,
-				'href'   => add_query_arg( [ 'subpage' => $subpage ], plugin()->admin_page_url ),
+				'href'   => add_query_arg( [ 'subpage' => $subpage ], $this->plugin->admin_page_url ),
 			] );
 		}
 	}

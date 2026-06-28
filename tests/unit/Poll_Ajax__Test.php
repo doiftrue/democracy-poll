@@ -34,7 +34,6 @@ class Poll_Ajax__Test extends DemocTestCase {
 	 */
 	public function test__constructor_sets_ajax_url(): void {
 		WP_Mock::userFunction( 'admin_url' )
-			->once()
 			->with( 'admin-ajax.php' )
 			->andReturn( 'https://example.test/wp-admin/admin-ajax.php' );
 

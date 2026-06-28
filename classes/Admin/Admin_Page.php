@@ -2,8 +2,12 @@
 
 namespace DemocracyPoll\Admin;
 
+use DemocracyPoll\Helpers\Messages;
+use DemocracyPoll\Infra\Container;
+use DemocracyPoll\Plugin;
 use DemocracyPoll\Poll_Utils;
-use function DemocracyPoll\plugin;
+use DemocracyPoll\Utils\Upgrader;
+use function DemocracyPoll\container;
 
 class Admin_Page {
 
@@ -17,7 +21,13 @@ class Admin_Page {
 
 	public int $edit_poll_id;
 
-	public function __construct() {
+	private Messages $messages;
+	private Plugin $plugin;
+
+	public function __construct( Messages $messages, Plugin $plugin ) {
+		$this->messages = $messages;
+		$this->plugin = $plugin;
+
 		$this->edit_poll_id = (int) ( $_GET['edit_poll'] ?? 0 );
 
 		$this->subpage = sanitize_key( $_GET['subpage'] ?? '' );
@@ -31,7 +41,7 @@ class Admin_Page {
 	}
 
 	public function init(): void {
-		if( ! plugin()->admin_access ){
+		if( ! $this->plugin->admin_access ){
 			return;
 		}
 
@@ -44,12 +54,12 @@ class Admin_Page {
 	}
 
 	public function register_option_page(): void {
-		if( ! plugin()->admin_access ){
+		if( ! $this->plugin->admin_access ){
 			return;
 		}
 
 		$title = __( 'Democracy Poll', 'democracy-poll' );
-		$hook_name = add_options_page( $title, $title, 'edit_posts', basename( plugin()->dir ), [ $this, 'admin_page_output' ] );
+		$hook_name = add_options_page( $title, $title, 'edit_posts', basename( $this->plugin->dir ), [ $this, 'admin_page_output' ] );
 		// notice: `edit_posts` (role more then subscriber) because capability tests inside the `admin_page.php` and `admin_page_load()`
 
 		add_action( "load-$hook_name", [ $this, 'admin_page_load' ] );
@@ -58,8 +68,8 @@ class Admin_Page {
 	public function admin_page_load(): void {
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 
-		wp_enqueue_script( self::ASSETS_ID, plugin()->url . '/assets/admin/admin.js', [ 'jquery' ], plugin()->ver, true );
-		wp_enqueue_style( self::ASSETS_ID, plugin()->url . '/assets/admin/admin.css', [], plugin()->ver );
+		wp_enqueue_script( self::ASSETS_ID, "{$this->plugin->url}/assets/admin/admin.js", [ 'jquery' ], $this->plugin->ver, true );
+		wp_enqueue_style( self::ASSETS_ID, "{$this->plugin->url}/assets/admin/admin.css", [], $this->plugin->ver );
 
 		$this->run_upgrade();
 
@@ -71,35 +81,35 @@ class Admin_Page {
 
 	private function set_subpage_obj(): void {
 		if( $this->edit_poll_id ){
-			$this->subpage_obj = new Admin_Page_Edit_Poll( $this );
+			$this->subpage_obj = container()->get( Admin_Page_Edit_Poll::class );
 			$this->subpage_obj->set_poll_id( $this->edit_poll_id );
+			return;
 		}
-		else {
-			$subpage_class = [
-				'polls_list'       => Admin_Page_Polls::class,
-				'add_new'          => Admin_Page_Edit_Poll::class,
-				'edit_poll'        => Admin_Page_Edit_Poll::class,
-				'logs'             => Admin_Page_Logs::class,
-				'general_settings' => Admin_Page_Settings::class,
-				'design'           => Admin_Page_Design::class,
-				'l10n'             => Admin_Page_l10n::class,
-				'migration'        => Admin_Page_Other_Migrations::class,
-			];
 
-			$this->subpage_obj = new $subpage_class[ $this->subpage ]( $this );
-		}
+		$subpage_class = [
+			'polls_list'       => Admin_Page_Polls::class, /** @see Admin_Page_Polls::__construct() */
+			'add_new'          => Admin_Page_Edit_Poll::class, /** @see Admin_Page_Edit_Poll::__construct() */
+			'edit_poll'        => Admin_Page_Edit_Poll::class, /** @see Admin_Page_Edit_Poll::__construct() */
+			'logs'             => Admin_Page_Logs::class, /** @see Admin_Page_Logs::__construct() */
+			'general_settings' => Admin_Page_Settings::class, /** @see Admin_Page_Settings::__construct() */
+			'design'           => Admin_Page_Design::class, /** @see Admin_Page_Design::__construct() */
+			'l10n'             => Admin_Page_l10n::class, /** @see Admin_Page_l10n::__construct() */
+			'migration'        => Admin_Page_Other_Migrations::class, /** @see Admin_Page_Other_Migrations::__construct() */
+		][ $this->subpage ];
+
+		$this->subpage_obj = container()->get( $subpage_class );
 	}
 
 	private function global_handle_request(): void {
 		// simplify
 		$_poll_id = 0;
-		$set_poll_id__cb = static function( $name ) use ( & $_poll_id ) {
+		$set_poll_id__cb = function( $name ) use ( & $_poll_id ) {
 			if( empty( $_REQUEST[ $name ] ) ){
 				return $_poll_id = 0;
 			}
 
 			if( ! Admin_Page::check_nonce() ){
-				plugin()->msg->add_error( 'Bad Nonce' );
+				$this->messages->add_error( 'Bad Nonce' );
 				return 0;
 			}
 
@@ -137,17 +147,16 @@ class Admin_Page {
 
 	private function run_upgrade(): void {
 		// maybe force upgrade
-		if( isset( $_POST['dem_forse_upgrade'] ) && plugin()->super_access ){
+		if( isset( $_POST['dem_forse_upgrade'] ) && $this->plugin->super_access ){
 
 			update_option( 'democracy_version', '0.1' ); // hack
-			( new \DemocracyPoll\Utils\Upgrader() )->upgrade();
+			container()->get( Upgrader::class )->upgrade();
 
 			wp_safe_redirect( $_SERVER['REQUEST_URI'] );
-
 			exit;
 		}
 
-		( new \DemocracyPoll\Utils\Upgrader() )->upgrade();
+		container()->get( Upgrader::class )->upgrade();
 	}
 
 	public static function check_nonce(): bool {
@@ -169,7 +178,7 @@ trait Admin_Page__Additional {
 	public function subpages_menu(): string {
 
 		$referer = self::back_link();
-		$main_page = wp_make_link_relative( plugin()->admin_page_url );
+		$main_page = wp_make_link_relative( $this->plugin->admin_page_url );
 
 		$current_class = function( $page ) {
 			return $this->subpage === $page ? ' nav-tab-active' : '';
@@ -192,7 +201,7 @@ trait Admin_Page__Additional {
 				$current_class( 'logs' ),
 				add_query_arg( [ 'subpage' => 'logs' ], $main_page ), __( 'Logs', 'democracy-poll' )
 			),
-			'general_settings' => plugin()->super_access ? (
+			'general_settings' => $this->plugin->super_access ? (
 				sprintf( '<a class="nav-tab %s" href="%s">%s</a>',
 					$current_class( 'general_settings' ),
 					add_query_arg( [ 'subpage' => 'general_settings' ], $main_page ),
@@ -213,16 +222,18 @@ trait Admin_Page__Additional {
 
 		$out = '<h2 class="nav-tab-wrapper" style="margin-bottom:1em;">' . implode( "\n", $buttons ) . '</h2>';
 
-		$out .= plugin()->msg->messages_html();
+		$out .= $this->messages->messages_html();
 
 		return $out;
 	}
 
 	private static function back_link(): string {
+		$plugin = container()->get( Plugin::class );
+
 		$request_uri = $_SERVER['REQUEST_URI'];
 
 		$transient = 'democracy_referer';
-		$main_page = wp_make_link_relative( plugin()->admin_page_url );
+		$main_page = wp_make_link_relative( $plugin->admin_page_url );
 		$referer = isset( $_SERVER['HTTP_REFERER'] ) ? wp_make_link_relative( $_SERVER['HTTP_REFERER'] ) : '';
 
 		// Handle updates from the current page.

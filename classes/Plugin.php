@@ -2,9 +2,7 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Admin\Admin;
 use DemocracyPoll\Helpers\Helpers;
-use DemocracyPoll\Helpers\Messages;
 
 class Plugin {
 
@@ -29,26 +27,22 @@ class Plugin {
 	/** Whether page caching is enabled */
 	public bool $is_cachegear_on;
 
-	public Plugin_Initor $initor;
+	protected Options $options;
 
+	/**
+	 * Backward compatibility since v6.4.1
+	 * @deprecated
+	 */
 	public Options $opt;
 
-	public Admin $admin;
+	public function __construct( string $main_file, Options $options ) {
+		$this->options = $this->opt = $options;
 
-	public Messages $msg;
-
-	public Poll_Ajax $poll_ajax;
-
-	public function __construct( string $main_file ) {
 		$this->ver = get_file_data( $main_file, [ 'ver' => 'Version' ] )['ver'];
 		$this->dir = dirname( $main_file );
 		$this->url = plugins_url( '', $main_file );
 
 		$this->admin_page_url = admin_url( 'options-general.php?page=' . basename( $this->dir ) );
-
-		$this->opt = container()->get( Options::class );
-		$this->msg = container()->get( Messages::class );
-		$this->initor = container()->get( Plugin_Initor::class );
 	}
 
 	public function set_access_caps(): void {
@@ -58,9 +52,9 @@ class Plugin {
 		$this->admin_access = $is_administrator;
 
 		// open admin manage access for other roles
-		if( ! $this->admin_access && $this->opt->access_roles ){
+		if( ! $this->admin_access && $this->options->access_roles ){
 			foreach( wp_get_current_user()->roles as $role ){
-				if( in_array( $role, $this->opt->access_roles, true ) ){
+				if( in_array( $role, $this->options->access_roles, true ) ){
 					$this->admin_access = true;
 					break;
 				}
@@ -79,7 +73,7 @@ class Plugin {
 	}
 
 	public function set_is_cachegear_on(): void {
-		if( $this->opt->force_cachegear ){
+		if( $this->options->force_cachegear ){
 			$this->is_cachegear_on = true;
 			return;
 		}
@@ -101,4 +95,3 @@ class Plugin {
 	}
 
 }
-

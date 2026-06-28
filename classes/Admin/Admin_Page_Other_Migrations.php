@@ -2,16 +2,18 @@
 
 namespace DemocracyPoll\Admin;
 
-use function DemocracyPoll\plugin;
-use function DemocracyPoll\options;
+use DemocracyPoll\Helpers\Messages;
+use DemocracyPoll\Utils\Migrator__WP_Polls;
 
 class Admin_Page_Other_Migrations implements Admin_Subpage_Interface {
 
-	/** @var Admin_Page */
-	private $admpage;
+	private Admin_Page $admpage;
 
-	public function __construct( Admin_Page $admin_page ) {
+	private Messages $messages;
+
+	public function __construct( Admin_Page $admin_page, Messages $messages ) {
 		$this->admpage = $admin_page;
+		$this->messages = $messages;
 	}
 
 	public function load(): void {
@@ -33,14 +35,14 @@ class Admin_Page_Other_Migrations implements Admin_Subpage_Interface {
 			if( $more_action === 'delete_wp_polls_info' ){
 				delete_option( 'democracy_migrated' );
 
-				plugin()->msg->add_ok( __( 'Data of migration deleted', 'democracy-poll' ) );
+				$this->messages->add_ok( __( 'Data of migration deleted', 'democracy-poll' ) );
 
 				return; // important!
 			}
 		}
 
 		if( ( $_GET['from'] ?? '' ) === 'wp-polls' ){
-			( new \DemocracyPoll\Utils\Migrator__WP_Polls() )->migrate();
+			( new Migrator__WP_Polls( $this->messages ) )->migrate();
 		}
 
 	}
@@ -127,7 +129,7 @@ class Admin_Page_Other_Migrations implements Admin_Subpage_Interface {
 			}
 		}
 
-		plugin()->msg->add_ok( sprintf( __( 'Shortcodes replaced: %s', 'democracy-poll' ), $count ) );
+		$this->messages->add_ok( sprintf( __( 'Shortcodes replaced: %s', 'democracy-poll' ), $count ) );
 	}
 
 }

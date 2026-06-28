@@ -2,18 +2,34 @@
 
 namespace DemocracyPoll\Admin;
 
+use DemocracyPoll\Helpers\Messages;
+use DemocracyPoll\Options;
+use DemocracyPoll\Plugin;
+use DemocracyPoll\Plugin_Initor;
 use DemocracyPoll\Poll;
 use DemocracyPoll\Poll_Renderer;
 use DemocracyPoll\Poll_Storage;
-use function DemocracyPoll\plugin;
-use function DemocracyPoll\options;
 
 class Admin_Page_Design implements Admin_Subpage_Interface {
 
 	private Admin_Page $admpage;
+	private Messages $messages;
+	private Plugin $plugin;
+	private Options $options;
+	private Plugin_Initor $plugin_initor;
 
-	public function __construct( Admin_Page $admin_page ) {
+	public function __construct(
+		Admin_Page $admin_page,
+		Messages $messages,
+		Plugin $plugin,
+		Options $options,
+		Plugin_Initor $plugin_initor
+	) {
 		$this->admpage = $admin_page;
+		$this->messages = $messages;
+		$this->plugin = $plugin;
+		$this->options = $options;
+		$this->plugin_initor = $plugin_initor;
 	}
 
 	public function load(): void {
@@ -34,42 +50,35 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 	}
 
 	public function request_handler(): void {
-		if( ! plugin()->super_access || ! Admin_Page::check_nonce() ){
+		if( ! $this->plugin->super_access || ! Admin_Page::check_nonce() ){
 			return;
 		}
 
 		$up = null;
 		if( isset( $_POST['dem_save_design_options'] ) ){
-			$up = options()->update_options( 'design' );
+			$up = $this->options->update_options( 'design' );
 		}
 		if( isset( $_POST['dem_reset_design_options'] ) ){
-			$up = options()->reset_options( 'design' );
+			$up = $this->options->reset_options( 'design' );
 		}
 
 		if( $up !== null ){
 			$up
-				? plugin()->msg->add_ok( __( 'Updated', 'democracy-poll' ) )
-				: plugin()->msg->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
+				? $this->messages->add_ok( __( 'Updated', 'democracy-poll' ) )
+				: $this->messages->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
 		}
 
 		// hack to immediately apply the option change
 		if( $up ){
-			options()->toolbar_menu
-				? add_action( 'admin_bar_menu', [ plugin()->initor, 'add_toolbar_node', ], 99 )
-				: remove_action( 'admin_bar_menu', [ plugin()->initor, 'add_toolbar_node' ], 99 );
+			$this->options->toolbar_menu
+				? add_action( 'admin_bar_menu', [ $this->plugin_initor, 'add_toolbar_node', ], 99 )
+				: remove_action( 'admin_bar_menu', [ $this->plugin_initor, 'add_toolbar_node' ], 99 );
 		}
 	}
 
 	public function render(): void {
-		if( ! plugin()->super_access ){
+		if( ! $this->plugin->super_access ){
 			return;
-		}
-
-		$opt = options();
-		$demcss = get_option( 'democracy_css' );
-		$additional = $demcss['additional_css'];
-		if( ! $demcss['base_css'] && $additional ){
-			$demcss['base_css'] = $additional; // Use additional CSS when no theme is selected.
 		}
 
 		echo $this->admpage->subpages_menu();
@@ -92,7 +101,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 
 	protected function _get_styles_files(): array {
 		$arr = [];
-		foreach( glob( plugin()->dir . '/assets/styles/*.css' ) as $file ){
+		foreach( glob( $this->plugin->dir . '/assets/styles/*.css' ) as $file ){
 			if( preg_match( '~\.min~', basename( $file ) ) ){
 				continue;
 			}

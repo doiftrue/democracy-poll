@@ -2,7 +2,6 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Helpers\Messages;
 use DemocracyPoll\Doubles\Plugin__Double;
 use WP_Mock;
 
@@ -18,7 +17,7 @@ class Plugin__Test extends DemocTestCase {
 	/**
 	 * @covers Plugin::__construct()
 	 */
-	public function test__constructor_sets_plugin_data_and_dependencies(): void {
+	public function test__constructor_sets_plugin_data(): void {
 		$main_file = THIS_PLUG_ROOT_DIR . '/democracy.php';
 		$admin_page_url = WP_ROOT_URL . '/wp-admin/options-general.php?page=democracy-poll';
 
@@ -26,15 +25,15 @@ class Plugin__Test extends DemocTestCase {
 			->with( 'options-general.php?page=democracy-poll' )
 			->andReturn( $admin_page_url );
 
-		$plugin = new Plugin( $main_file );
+		$plugin = new Plugin( $main_file, new Options() );
 
 		$this->assertSame( get_file_data( $main_file, [ 'ver' => 'Version' ] )['ver'], $plugin->ver );
 		$this->assertSame( THIS_PLUG_ROOT_DIR, $plugin->dir );
 		$this->assertSame( plugins_url( '', $main_file ), $plugin->url );
 		$this->assertSame( $admin_page_url, $plugin->admin_page_url );
+
+		// check legacy property
 		$this->assertInstanceOf( Options::class, $plugin->opt );
-		$this->assertInstanceOf( Messages::class, $plugin->msg );
-		$this->assertInstanceOf( Plugin_Initor::class, $plugin->initor );
 	}
 
 	/**

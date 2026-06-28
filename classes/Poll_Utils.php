@@ -64,7 +64,7 @@ class Poll_Utils {
 
 		$opt = options();
 		$config = [
-			'ajax_url'        => $plugin->poll_ajax->ajax_url,
+			'ajax_url'        => container()->get( Poll_Ajax::class )->ajax_url,
 			'cookie_days'     => (float) $opt->cookie_days,
 			'anim_speed'      => (int) $opt->anim_speed,
 			'line_anim_speed' => (int) $opt->line_anim_speed,

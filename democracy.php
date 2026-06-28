@@ -31,29 +31,33 @@ register_activation_hook( __FILE__, [ \DemocracyPoll\Utils\Activator::class, 'ac
 add_action( 'after_setup_theme', '\DemocracyPoll\init_plugin' );
 
 function init_plugin(): void {
-	plugin()->initor->plugin_init();
+	container()->get( Plugin_Initor::class )->plugin_init(); /** @see Plugin_Initor::__construct() */
+}
+
+function container(): \DemocracyPoll\Infra\Container {
+	static $container;
+	if( ! $container ){
+		$container = new \DemocracyPoll\Infra\Container();
+		$container->set( Plugin::class, new Plugin( __FILE__, $container->get( Options::class ) ) );
+	}
+
+	return $container;
 }
 
 /**
- * Gives access to the plugin instance and all it's components.
+ * Gives access to the plugin instance stored in the container.
+ *
+ * @deprecated Use {@see container()} instead.
  */
 function plugin(): Plugin {
-	static $inst;
-	$inst || $inst = new Plugin( __FILE__ );
-
-	return $inst;
+	return container()->get( Plugin::class );
 }
 
 /**
  * Helper function to conveniently get the plugin options.
+ *
+ * @deprecated Use {@see container()} instead.
  */
 function options(): Options {
 	return container()->get( Options::class );
-}
-
-function container(): \DemocracyPoll\Infra\Container {
-	static $inst;
-	$inst || $inst = new \DemocracyPoll\Infra\Container();
-
-	return $inst;
 }

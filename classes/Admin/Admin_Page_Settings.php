@@ -2,16 +2,19 @@
 
 namespace DemocracyPoll\Admin;
 
+use DemocracyPoll\Helpers\Messages;
 use function DemocracyPoll\plugin;
 use function DemocracyPoll\options;
 
 class Admin_Page_Settings implements Admin_Subpage_Interface {
 
-	/** @var Admin_Page */
-	private $admpage;
+	private Admin_Page $admpage;
 
-	public function __construct( Admin_Page $admin_page ){
+	private Messages $messages;
+
+	public function __construct( Admin_Page $admin_page, Messages $messages ){
 		$this->admpage = $admin_page;
+		$this->messages = $messages;
 	}
 
 	public function load(): void {
@@ -32,8 +35,8 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 		if( $up !== null ){
 			$up
-				? plugin()->msg->add_ok( __( 'Updated', 'democracy-poll' ) )
-				: plugin()->msg->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
+				? $this->messages->add_ok( __( 'Updated', 'democracy-poll' ) )
+				: $this->messages->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
 		}
 
 		// Handle the request to create an archive page.

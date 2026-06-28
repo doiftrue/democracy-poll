@@ -10,7 +10,7 @@ class Poll_Ajax {
 	private int    $poll_id;
 	private string $answer_ids;
 
-	public function __construct(){
+	public function __construct() {
 		$this->ajax_url = admin_url( 'admin-ajax.php' );
 	}
 
@@ -72,11 +72,11 @@ class Poll_Ajax {
 	}
 
 	protected function create_renderer( Poll $poll ): Poll_Renderer {
-		return container()->make( Poll_Renderer::class, [ 'poll' => $poll ] );
+		return container()->make( Poll_Renderer::class, [ 'poll' => $poll ] ); // as factory
 	}
 
 	protected function create_voting_service( Poll $poll ): Poll_Voting_Service {
-		return new Poll_Voting_Service( $poll );
+		return container()->make( Poll_Voting_Service::class, [ 'poll' => $poll ] ); // as factory
 	}
 
 	/**

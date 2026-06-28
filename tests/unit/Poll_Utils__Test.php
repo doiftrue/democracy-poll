@@ -94,12 +94,13 @@ class Poll_Utils__Test extends DemocTestCase {
 	 * @covers Poll_Utils::enqueue_js()
 	 */
 	public function test__enqueue_js_adds_deferred_script_and_inline_config(): void {
+		container()->set( Poll_Ajax::class, (object) [
+			'ajax_url' => 'https://test.com/wp-admin/admin-ajax.php',
+		] );
+
 		WP_Mock::userFunction( 'DemocracyPoll\plugin' )->andReturn( (object) [
 			'url'       => 'https://test.com/path/to/plugin',
 			'ver'       => '6.3.1',
-			'poll_ajax' => (object) [
-				'ajax_url' => 'https://test.com/wp-admin/admin-ajax.php',
-			],
 		] );
 		WP_Mock::userFunction( 'DemocracyPoll\options' )->andReturn( (object) [
 			'cookie_days'     => 365,

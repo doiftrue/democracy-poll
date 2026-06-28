@@ -2,7 +2,8 @@
 
 namespace DemocracyPoll\Utils;
 
-use function DemocracyPoll\plugin;
+use DemocracyPoll\Plugin_Initor;
+use function DemocracyPoll\container;
 
 class Activator {
 
@@ -14,7 +15,7 @@ class Activator {
 	}
 
 	public static function activate(): void {
-		plugin()->initor->basic_init();
+		container()->get( Plugin_Initor::class )->basic_init();
 
 		if( is_multisite() ){
 			$sites = get_sites();
@@ -78,7 +79,7 @@ class Activator {
 		$wpdb->update( $wpdb->democracy_q, [ 'users_voted' => $allvotes ], [ 'id' => $qid ] );
 	}
 
-	public static function db_schema(): string {
+	private static function db_schema(): string {
 		global $wpdb;
 
 		$charset_collate = '';
@@ -141,8 +142,3 @@ class Activator {
 	}
 
 }
-
-
-
-
-

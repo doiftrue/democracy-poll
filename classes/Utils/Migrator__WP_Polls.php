@@ -67,9 +67,15 @@
 
 namespace DemocracyPoll\Utils;
 
-use function DemocracyPoll\plugin;
+use DemocracyPoll\Helpers\Messages;
 
 class Migrator__WP_Polls {
+
+	private Messages $messages;
+
+	public function __construct( Messages $messages ) {
+		$this->messages = $messages;
+	}
 
 	public function migrate(): void {
 		global $wpdb;
@@ -85,7 +91,7 @@ class Migrator__WP_Polls {
 		$wppolls = $wpdb->get_results( "SELECT * FROM $wpdb->pollsq" );
 
 		if( ! $wppolls ){
-			plugin()->msg->add_warn( 'No WP Polls polls found.' );
+			$this->messages->add_warn( 'No WP Polls polls found.' );
 
 			return;
 		}
@@ -179,7 +185,6 @@ class Migrator__WP_Polls {
 
 		// options
 		// Options are not migrated because it is unnecessary work.
-
 	}
 
 }

@@ -3,6 +3,7 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Helpers\Messages;
 use function DemocracyPoll\plugin;
 
 class Admin_Page_l10n implements Admin_Subpage_Interface {
@@ -11,9 +12,11 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 	private const VOTES_PERCENT_TEXT = '{votes} - {percent}% of all votes';
 
 	private Admin_Page $admpage;
+	private Messages $messages;
 
-	public function __construct( Admin_Page $admin_page ){
+	public function __construct( Admin_Page $admin_page, Messages $messages ){
 		$this->admpage = $admin_page;
+		$this->messages = $messages;
 	}
 
 	public function load(): void {
@@ -38,8 +41,8 @@ class Admin_Page_l10n implements Admin_Subpage_Interface {
 			}
 
 			$up
-				? plugin()->msg->add_ok( __( 'Updated', 'democracy-poll' ) )
-				: plugin()->msg->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
+				? $this->messages->add_ok( __( 'Updated', 'democracy-poll' ) )
+				: $this->messages->add_notice( __( 'Nothing was updated', 'democracy-poll' ) );
 
 		}
 	}

@@ -126,9 +126,10 @@ See `COMPAT: ***` messages in the changelog below for any backward compatibility
 
 See `COMPAT: ***` messages in the changelog below for any backward compatibility changes that may require code updates if you use the plugin's public API or properties directly in your code.
 
-= 6.4.1 =
+= 6.5.0 =
 * IMP: Combined the poll title wrapper settings into one HTML template using the `{question}` placeholder. Existing settings remain compatible.
 * IMP: Poll rendering functions now accept a single title markup argument containing `{question}`. Legacy before/after arguments remain supported.
+* COMPAT: Internal `Plugin::$msg`, `$initor`, `$admin`, and `$poll_ajax` properties were removed. Use `container()->get()` to access these services. The commonly used `Plugin::$opt` property remains available for backward compatibility.
 
 = 6.4.0 =
 * NEW: Added a global setting to sort order for answers on the results screen.

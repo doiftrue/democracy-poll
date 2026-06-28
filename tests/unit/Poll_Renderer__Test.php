@@ -14,6 +14,8 @@ class Poll_Renderer__Test extends DemocTestCase {
 	 * @preserveGlobalState disabled
 	 */
 	public function test__get_poll_assets_once_returns_assets_only_for_first_renderer(): void {
+		container()->set( Poll_Ajax::class, (object) [ 'ajax_url' => '' ] );
+
 		WP_Mock::userFunction( 'DemocracyPoll\options' )->andReturn( (object) [
 			'dont_show_results' => false,
 			'cookie_days'       => 365,
