@@ -93,7 +93,7 @@ In your theme file (e.g. `sidebar.php`), add:
 To show the poll archive:
 
 `
-<?php democracy_archives( $hide_active, $before_title, $after_title ); ?>
+<?php democracy_archives( [ 'title_markup' => '<h2>{question}</h2>' ] ); ?>
 `
 
 
@@ -128,6 +128,7 @@ See `COMPAT: ***` messages in the changelog below for any backward compatibility
 
 = 6.4.1 =
 * IMP: Combined the poll title wrapper settings into one HTML template using the `{question}` placeholder. Existing settings remain compatible.
+* IMP: Poll rendering functions now accept a single title markup argument containing `{question}`. Legacy before/after arguments remain supported.
 
 = 6.4.0 =
 * NEW: Added a global setting to sort order for answers on the results screen.

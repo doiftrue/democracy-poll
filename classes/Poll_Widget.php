@@ -10,11 +10,9 @@ class Poll_Widget extends WP_Widget {
 
 	public function __construct() {
 		// Instantiate the parent object. Creates option 'Poll_Widget'
-		parent::__construct( 'democracy', 'Democracy Poll',
-			[
-				'description' => __( 'Democracy Poll Widget', 'democracy-poll' )
-			]
-		);
+		parent::__construct( 'democracy', 'Democracy Poll', [
+			'description' => __( 'Democracy Poll Widget', 'democracy-poll' )
+		] );
 	}
 
 	// front
@@ -40,12 +38,15 @@ class Poll_Widget extends WP_Widget {
 
 		if( isset( $instance['questionIsTitle'] ) ){
 			echo $before_widget;
-			echo get_democracy_poll( $poll_object, $before_title, $after_title );
+			echo get_democracy_poll( [
+				'poll'         => $poll_object,
+				'title_markup' => $before_title ? "$before_title{question}$after_title" : '',
+			] );
 			echo $after_widget;
 		}
 		else{
 			echo $before_widget . $before_title . $title . $after_title;
-			echo get_democracy_poll( $poll_object );
+			echo get_democracy_poll( [ 'poll' => $poll_object ] );
 			echo $after_widget;
 		}
 	}

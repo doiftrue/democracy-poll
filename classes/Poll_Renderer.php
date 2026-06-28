@@ -35,11 +35,15 @@ class Poll_Renderer {
 	/**
 	 * Gets the poll HTML.
 	 *
+	 * @since 6.4.1 `$before_title`, `$after_title` parameters replaced with `$title_markup`
+	 *               Old Signature `render_poll( $show_screen, $before_title, $after_title )`.
+	 *
 	 * @param string $show_screen  Which screen to display: vote, voted, force_vote.
+	 * @param string $title_markup Poll title markup containing the {question} placeholder.
 	 *
 	 * @return string HTML. Empty string if poll is not found.
 	 */
-	public function render_poll( string $show_screen = 'vote', string $before_title = '', string $after_title = '' ): string {
+	public function render_poll( string $show_screen = 'vote', string $title_markup = '' ): string {
 		$opt = options(); // simplify
 		$poll = $this->poll; // simplify
 		if( ! $this->poll->id ){
@@ -53,12 +57,16 @@ class Poll_Renderer {
 
 		$this->in_archive = ( (int) ( $GLOBALS['post']->ID ?? 0 ) === (int) $opt->archive_page_id ) && is_singular();
 
-		$question = Kses::kses_html( $poll->question );
-		[ $def_before_title, $def_after_title ] = explode( '{question}', $opt->title_markup ) + [ '', '' ];
+		// Legacy signature: `render_poll( $show_screen, $before_title, $after_title )`.
+		$is_legacy_call = func_num_args() > 2 || ( $title_markup && ! str_contains( $title_markup, '{question}' ) );
+		if( $is_legacy_call ){
+			[ $def_before_title, $def_after_title ] = explode( '{question}', $opt->title_markup, 2 ) + [ '', '' ];
+			$before_title = $title_markup ?: $def_before_title;
+			$after_title  = ( func_get_args()[2] ?? '' ) ?: $def_after_title;
+			$title_markup = "$before_title{question}$after_title";
+		}
 
-		$title_html = ( $before_title || $after_title )
-			? ( $before_title ?: $def_before_title ) . $question . ( $after_title ?: $def_after_title )
-			: str_replace( '{question}', $question, $opt->title_markup );
+		$title_html = str_replace( '{question}', Kses::kses_html( $poll->question ), $title_markup ?: $opt->title_markup );
 
 		// ! before get_cache_screens() because of filters
 		$poll_body_html = $this->get_poll_body( $show_screen );

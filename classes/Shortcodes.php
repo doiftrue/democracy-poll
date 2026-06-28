@@ -16,8 +16,9 @@ class Shortcodes {
 
 	public function democracy_archives_shortcode( $args ): string {
 		$args = shortcode_atts( [
-			'before_title'   => '',
-			'after_title'    => '',
+			// 'before_title' => '', // deprecated since 6.4.1
+			// 'after_title'  => '', // deprecated since 6.4.1
+			'title_markup'   => '',
 			'active'         => null,    // 1 (active), 0 (not active) or null (param not set).
 			'open'           => null,    // 1 (opened), 0 (closed) or null (param not set) polls.
 			'screen'         => 'voted',
@@ -48,7 +49,11 @@ class Shortcodes {
 			$poll = Poll_Storage::get_db_data( $poll );
 		}
 
-		return '<div class="dem-poll-shortcode">' . get_democracy_poll( $poll, '', '', $post_id ) . '</div>';
+		return '<div class="dem-poll-shortcode">' . get_democracy_poll( [
+			'poll'         => $poll,
+			'title_markup' => options()->title_markup,
+			'from_post'    => $post_id,
+		] ) . '</div>';
 	}
 
 	private static function normalize_poll_id_attr( $poll_id ): string {
