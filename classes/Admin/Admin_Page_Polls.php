@@ -2,16 +2,18 @@
 
 namespace DemocracyPoll\Admin;
 
-use function DemocracyPoll\plugin;
+use DemocracyPoll\Plugin;
 
 class Admin_Page_Polls implements Admin_Subpage_Interface {
 
 	public List_Table_Polls $list_table;
 
 	private Admin_Page $admpage;
+	private Plugin $plugin;
 
-	public function __construct( Admin_Page $admin_page ){
+	public function __construct( Plugin $plugin, Admin_Page $admin_page ){
 		$this->admpage = $admin_page;
+		$this->plugin = $plugin;
 	}
 
 	public function load(): void {
@@ -19,7 +21,7 @@ class Admin_Page_Polls implements Admin_Subpage_Interface {
 	}
 
 	public function request_handler(): void {
-		if( ! plugin()->admin_access ){
+		if( ! $this->plugin->admin_access ){
 			return;
 		}
 	}

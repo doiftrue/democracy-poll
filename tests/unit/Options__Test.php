@@ -126,15 +126,12 @@ class Options__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers Options::update_options()
-	 * @covers Options::sanitize_request_options()
+	 * @covers Options::handle_update_options()
+	 * @covers Options::sanitize_request_options_and_set_opt()
 	 */
 	public function test__update_main_options_sanitizes_request_and_missing_checkboxes(): void {
 		WP_Mock::userFunction( 'get_option' )->once()->andReturn(
 			[ 'access_roles' => [ 'editor' ] ]
-		);
-		WP_Mock::userFunction( 'DemocracyPoll\plugin' )->once()->andReturn(
-			(object) [ 'super_access' => true ]
 		);
 		WP_Mock::userFunction( 'update_option' )->once()
 			->with( Options::OPT_NAME, Mockery::on(
@@ -159,25 +156,23 @@ class Options__Test extends DemocTestCase {
 		$options = new Options();
 		$options->set_opt();
 
-		$this->assertTrue( $options->update_options( 'main' ) );
+		$this->assertTrue( $options->handle_update_options( 'main' ) );
 		$this->assertSame( '<strong>Title</strong>alert(1){question}</strong>', $options->title_markup );
 		$this->assertSame( [ 'editor', 'badrole' ], $options->access_roles );
 		$this->assertSame( '0', $options->keep_logs );
 	}
 
 	/**
-	 * @covers Options::update_options()
-	 * @covers Options::sanitize_request_options()
+	 * @covers Options::handle_update_options()
+	 * @covers Options::sanitize_request_options_and_set_opt()
 	 */
-	public function test__update_main_options_preserves_access_roles_without_super_access(): void {
+	public function test__update_main_options_replaces_access_roles(): void {
 		WP_Mock::userFunction( 'get_option' )->once()->andReturn( [
 			'access_roles' => [ 'administrator' ],
 		] );
-		WP_Mock::userFunction( 'DemocracyPoll\plugin' )->once()
-			->andReturn( (object) [ 'super_access' => false ] );
 		WP_Mock::userFunction( 'update_option' )->once()
 			->with( Options::OPT_NAME, Mockery::on(
-				fn( $options ) => ( [ 'administrator' ] === $options['access_roles'] )
+				fn( $options ) => ( [ 'subscriber' ] === $options['access_roles'] )
 			) )
 			->andReturn( true );
 
@@ -190,8 +185,8 @@ class Options__Test extends DemocTestCase {
 		$options = new Options();
 		$options->set_opt();
 
-		$this->assertTrue( $options->update_options( 'main' ) );
-		$this->assertSame( [ 'administrator' ], $options->access_roles );
+		$this->assertTrue( $options->handle_update_options( 'main' ) );
+		$this->assertSame( [ 'subscriber' ], $options->access_roles );
 	}
 
 }

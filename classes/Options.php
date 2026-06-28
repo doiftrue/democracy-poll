@@ -180,11 +180,11 @@ class Options {
 	/**
 	 * @param string $type  What group of option to update: main, design.
 	 */
-	public function update_options( string $type ): bool {
+	public function handle_update_options( string $type ): bool {
 		// sanitize on POST request
 		$POSTDATA = wp_unslash( $_POST ); // TODO: move it out of here
 		if( isset( $POSTDATA['dem'] ) && ( $type === 'main' || $type === 'design' ) ){
-			$this->sanitize_request_options( $POSTDATA, $type );
+			$this->sanitize_request_options_and_set_opt( $POSTDATA, $type );
 		}
 
 		// update css styles option
@@ -193,7 +193,7 @@ class Options {
 			$additional_css = $_POST['additional_css'] ?? '';
 			$additional = strip_tags( stripslashes( $additional_css ) );
 
-			( new \DemocracyPoll\Options_CSS() )->regenerate_democracy_css( $additional );
+			( new Options_CSS() )->regenerate_democracy_css( $additional );
 		}
 
 		return (bool) update_option( self::OPT_NAME, $this->opt );
@@ -214,7 +214,7 @@ class Options {
 			}
 
 			if( $type === 'design' ){
-				( new \DemocracyPoll\Options_CSS() )->regenerate_democracy_css( '' );
+				( new Options_CSS() )->regenerate_democracy_css( '' );
 			}
 		}
 
@@ -224,23 +224,18 @@ class Options {
 	/**
 	 * Updates {@see self::$opt} based on request data.
 	 * If the option is not passed, 0 will be written in its place.
+	 *
+	 * TODO: refactor
 	 */
-	private function sanitize_request_options( array $request_data, string $type ): void {
-		foreach( $this->default_options[ $type ] as $key => $v ){
-			$value = $request_data['dem'][ $key ] ?? 0; // Use 0/null rather than $v for checkboxes.
+	private function sanitize_request_options_and_set_opt( array $request_data, string $type ): void {
+		foreach( $this->default_options[ $type ] as $key => $foo ){
+			$value = $request_data['dem'][ $key ] ?? 0; // Use 0/null for checkboxes.
 
 			if( $key === 'title_markup' ){
 				$value = wp_kses( $value, 'post' );
 			}
 			elseif( $key === 'access_roles' ){
-				// sanitize anyway
-				if( plugin()->super_access ){
-					$value = array_map( 'sanitize_key', (array) $value );
-				}
-				// leave as it is - only admin can change 'access_roles'
-				else{
-					$value = (array) $this->opt[ $key ];
-				}
+				$value = array_map( 'sanitize_key', (array) $value );
 			}
 			else{
 				$value = is_array( $value )

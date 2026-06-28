@@ -87,13 +87,13 @@ class Admin_Page {
 		}
 
 		$subpage_class = [
-			'polls_list'       => Admin_Page_Polls::class, /** @see Admin_Page_Polls::__construct() */
-			'add_new'          => Admin_Page_Edit_Poll::class, /** @see Admin_Page_Edit_Poll::__construct() */
-			'edit_poll'        => Admin_Page_Edit_Poll::class, /** @see Admin_Page_Edit_Poll::__construct() */
-			'logs'             => Admin_Page_Logs::class, /** @see Admin_Page_Logs::__construct() */
-			'general_settings' => Admin_Page_Settings::class, /** @see Admin_Page_Settings::__construct() */
-			'design'           => Admin_Page_Design::class, /** @see Admin_Page_Design::__construct() */
-			'l10n'             => Admin_Page_l10n::class, /** @see Admin_Page_l10n::__construct() */
+			'polls_list'       => Admin_Page_Polls::class,            /** @see Admin_Page_Polls::__construct() */
+			'add_new'          => Admin_Page_Edit_Poll::class,        /** @see Admin_Page_Edit_Poll::__construct() */
+			'edit_poll'        => Admin_Page_Edit_Poll::class,        /** @see Admin_Page_Edit_Poll::__construct() */
+			'logs'             => Admin_Page_Logs::class,             /** @see Admin_Page_Logs::__construct() */
+			'general_settings' => Admin_Page_Settings::class,         /** @see Admin_Page_Settings::__construct() */
+			'design'           => Admin_Page_Design::class,           /** @see Admin_Page_Design::__construct() */
+			'l10n'             => Admin_Page_l10n::class,             /** @see Admin_Page_l10n::__construct() */
 			'migration'        => Admin_Page_Other_Migrations::class, /** @see Admin_Page_Other_Migrations::__construct() */
 		][ $this->subpage ];
 

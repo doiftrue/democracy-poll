@@ -3,7 +3,6 @@ namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Poll_Answer;
-use DemocracyPoll\Helpers\Kses;
 use function DemocracyPoll\options;
 use function DemocracyPoll\plugin;
 
@@ -15,9 +14,6 @@ defined( 'ABSPATH' ) || exit;
 
 $poll = $this->poll; // short
 $edit = (bool) $this->poll_id;
-
-echo $this->admpage->subpages_menu();
-
 
 // METADATA
 if( $this->poll_id ){

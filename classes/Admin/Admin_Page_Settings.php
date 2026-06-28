@@ -27,7 +27,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 		$up = null;
 		if( isset( $_POST['dem_save_main_options'] ) ){
-			$up = options()->update_options( 'main' );
+			$up = options()->handle_update_options( 'main' );
 		}
 		if( isset( $_POST['dem_reset_main_options'] ) ){
 			$up = options()->reset_options( 'main' );

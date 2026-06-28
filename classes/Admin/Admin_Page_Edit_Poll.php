@@ -77,6 +77,8 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 
 		$this->poll = new Poll( $this->poll_id );
 
+		echo $this->admpage->subpages_menu();
+
 		require __DIR__ . '/tpl/edit-poll.php';
 	}
 
@@ -122,37 +124,35 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	 *
 	 * @return bool True when added updated, False otherwise.
 	 */
-	public function insert_poll( array $data ): bool {
+	public function insert_poll( array $insert_data ): bool {
 		global $wpdb;
 
-		$orig_data = $data;
-
-		$poll_id = (int) ( $data['qid'] ?? 0 );
+		$poll_id = (int) ( $insert_data['qid'] ?? 0 );
 		$update = (bool) $poll_id;
 
 		// sanitize
-		$data = (object) $this->sanitize_poll_data( $data );
+		$data = $this->sanitize_poll_data( $insert_data );
 
-		if( ! $data->question ){
+		if( ! $data['question'] ){
 			$this->messages->add_warn( 'error: question not set' );
 
 			return false;
 		}
 
 		/// answers
-		$old_answers = (array) ( $data->old_answers ?? [] );
-		$new_answers = array_filter( (array) ( $data->new_answers ?? [] ) );
+		$old_answers = (array) ( $data['old_answers'] ?? [] );
+		$new_answers = array_filter( (array) ( $data['new_answers'] ?? [] ) );
 
 		// add data if insert new poll
 		if( ! $update ){
-			$data->added = current_time( 'timestamp' );
-			$data->added_user = get_current_user_id();
-			$data->open = 1; // poll is open by default
+			$data['added'] = current_time( 'timestamp' );
+			$data['added_user'] = get_current_user_id();
+			$data['open'] = 1; // poll is open by default
 		}
 
 		// Remove invalid for the table fields
 		$q_fields = wp_list_pluck( $wpdb->get_results( "SHOW COLUMNS FROM $wpdb->democracy_q" ), 'Field' );
-		$q_data = array_intersect_key( (array) $data, array_flip( $q_fields ) );
+		$q_data = array_intersect_key( $data, array_flip( $q_fields ) );
 
 		/**
 		 * Allows to modify the poll data before insert or update.
@@ -266,11 +266,11 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 			if( 1 ){ // @phpstan-ignore-line
 				$users_voted = 0;
 				// Calculate the value from the logs.
-				if( $data->multiple && ! $data->users_voted ){
+				if( $data['multiple'] && ! $data['users_voted'] ){
 					$users_voted = $wpdb->get_var( "SELECT count(*) FROM $wpdb->democracy_log WHERE qid = " . (int) $poll_id );
 				}
 				// Equal to the number of votes.
-				if( ! $data->multiple ){
+				if( ! $data['multiple'] ){
 					$users_voted = $wpdb->get_var( "SELECT SUM(votes) FROM $wpdb->democracy_a WHERE qid = " . (int) $poll_id );
 				}
 				//$users_voted = array_sum( wp_list_pluck($old_answers, 'votes') );
@@ -315,7 +315,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	/**
 	 * Sanitize all poll fields before save in db.
 	 */
-	public function sanitize_poll_data( $data ) {
+	public function sanitize_poll_data( array $data ): array {
 		$original_data = $data;
 
 		foreach( $data as $key => & $val ){
@@ -369,7 +369,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 		 * @param array $data          The sanitized poll data.
 		 * @param array $original_data The original data before sanitization.
 		 */
-		return apply_filters( 'demadmin_sanitize_poll_data', $data, $original_data );
+		return (array) apply_filters( 'demadmin_sanitize_poll_data', $data, $original_data );
 	}
 
 	public static function shortcode_html( $poll_id ): string {

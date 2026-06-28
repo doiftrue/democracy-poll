@@ -2,8 +2,8 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Options;
+use DemocracyPoll\Plugin;
 use function DemocracyPoll\container;
-use function DemocracyPoll\plugin;
 
 /**
  * @var Admin_Page_Design $this
@@ -12,6 +12,8 @@ use function DemocracyPoll\plugin;
 defined( 'ABSPATH' ) || exit;
 
 $opt = container()->get( Options::class );
+$plugin = container()->get( Plugin::class );
+
 $demcss = get_option( 'democracy_css' );
 $additional = $demcss['additional_css'];
 if( ! $demcss['base_css'] && $additional ){
@@ -67,7 +69,7 @@ if( ! $demcss['base_css'] && $additional ){
 				</div>
 				<?php
 				$data = [];
-				foreach( glob( plugin()->dir . '/assets/styles/checkbox-radio/*' ) as $file ){
+				foreach( glob( "$plugin->dir/assets/styles/checkbox-radio/*" ) as $file ){
 					if( is_dir( $file ) ){
 						continue;
 					}
@@ -197,7 +199,7 @@ if( ! $demcss['base_css'] && $additional ){
 
 					<?php
 					$i = 0;
-					foreach( glob( plugin()->dir . '/assets/styles/buttons/*' ) as $file ){
+					foreach( glob( "$plugin->dir/assets/styles/buttons/*" ) as $file ){
 						if( is_dir( $file ) ){
 							continue;
 						}
@@ -320,7 +322,7 @@ if( ! $demcss['base_css'] && $additional ){
 					<br>
 					<?php
 					$data = [];
-					foreach( glob( plugin()->dir . '/assets/styles/loaders/*' ) as $file ){
+					foreach( glob( "$plugin->dir/assets/styles/loaders/*" ) as $file ){
 						if( is_dir( $file ) ){
 							continue;
 						}
@@ -333,7 +335,7 @@ if( ! $demcss['base_css'] && $additional ){
 
 						// Adjust styles.
 						if( $opt->loader_fill ){
-							$loader_css = ".loader{ --dem-loader-color: " . $opt->loader_fill . "; }";
+							$loader_css = ".loader{ --dem-loader-color: $opt->loader_fill; }";
 							echo "<style>$loader_css</style>";
 						}
 
@@ -343,10 +345,8 @@ if( ! $demcss['base_css'] && $additional ){
 								<input type="radio" value="<?= $fname ?>"
 								       name="dem[loader_fname]" <?php checked( $opt->loader_fname, $fname ) ?>>
 								<span class="radio_content">
-											<div class="loader"><?= file_get_contents( $file ) ?></div>
-											<?php //echo $ex
-											?>
-										</span>
+									<div class="loader"><?= file_get_contents( $file ) ?></div>
+								</span>
 							</label>
 							<?php
 						}

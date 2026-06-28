@@ -56,7 +56,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 
 		$up = null;
 		if( isset( $_POST['dem_save_design_options'] ) ){
-			$up = $this->options->update_options( 'design' );
+			$up = $this->options->handle_update_options( 'design' );
 		}
 		if( isset( $_POST['dem_reset_design_options'] ) ){
 			$up = $this->options->reset_options( 'design' );
