@@ -3,7 +3,8 @@
 
 namespace DemocracyPoll\Admin;
 
-use function DemocracyPoll\plugin;
+use DemocracyPoll\Plugin;
+use function DemocracyPoll\container;
 
 class Tinymce_Button {
 
@@ -20,7 +21,7 @@ class Tinymce_Button {
 	}
 
 	public static function tinymce_plugin( $plugin_array ) {
-		$plugin_array['demTiny'] = plugin()->url . '/assets/admin/tinymce.js';
+		$plugin_array['demTiny'] = container()->get( Plugin::class )->url . '/assets/admin/tinymce.js';
 
 		return $plugin_array;
 	}

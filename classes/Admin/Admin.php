@@ -9,20 +9,25 @@ namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Options;
 use DemocracyPoll\Plugin;
-use function DemocracyPoll\container;
 
 class Admin {
 
 	private Options $options;
 	private Plugin $plugin;
+	private Admin_Page $admin_page;
 
-	public function __construct( Plugin $plugin, Options $options ) {
+	public function __construct(
+		Plugin $plugin,
+		Options $options,
+		Admin_Page $admin_page /** @see Admin_Page::__construct() */
+	) {
 		$this->plugin = $plugin;
 		$this->options = $options;
+		$this->admin_page = $admin_page;
 	}
 
 	public function init(): void {
-		container()->get( Admin_Page::class )->init(); /** @see Admin_Page::__construct() */
+		$this->admin_page->init();
 
 		add_filter( 'plugin_action_links', [ $this, '_plugin_action_setting_page_link' ], 10, 2 );
 

@@ -193,7 +193,7 @@ class Options {
 			$additional_css = $_POST['additional_css'] ?? '';
 			$additional = strip_tags( stripslashes( $additional_css ) );
 
-			( new Options_CSS() )->regenerate_democracy_css( $additional );
+			container()->get( Options_CSS::class )->regenerate_democracy_css( $additional );
 		}
 
 		return (bool) update_option( self::OPT_NAME, $this->opt );
@@ -214,7 +214,7 @@ class Options {
 			}
 
 			if( $type === 'design' ){
-				( new Options_CSS() )->regenerate_democracy_css( '' );
+				container()->get( Options_CSS::class )->regenerate_democracy_css( '' );
 			}
 		}
 

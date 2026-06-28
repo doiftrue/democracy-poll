@@ -3,7 +3,6 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Messages;
-use DemocracyPoll\Infra\Container;
 use DemocracyPoll\Plugin;
 use DemocracyPoll\Poll_Utils;
 use DemocracyPoll\Utils\Upgrader;
@@ -21,12 +20,15 @@ class Admin_Page {
 
 	public int $edit_poll_id;
 
-	private Messages $messages;
 	private Plugin $plugin;
+	private Messages $messages;
 
-	public function __construct( Messages $messages, Plugin $plugin ) {
-		$this->messages = $messages;
+	public function __construct(
+		Plugin $plugin,
+		Messages $messages
+	) {
 		$this->plugin = $plugin;
+		$this->messages = $messages;
 
 		$this->edit_poll_id = (int) ( $_GET['edit_poll'] ?? 0 );
 

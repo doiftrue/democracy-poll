@@ -2,28 +2,33 @@
 
 namespace DemocracyPoll\Utils;
 
-use function DemocracyPoll\plugin;
+use DemocracyPoll\Options_CSS;
+use DemocracyPoll\Plugin;
 
 class Upgrader {
 
+	private Plugin $plugin;
+	private Options_CSS $options_css;
 	private $old_ver;
 
 	/**
 	 * It should not be called on front-end to not load the server unnecessarily.
 	 */
-	public function __construct() {
+	public function __construct( Plugin $plugin, Options_CSS $options_css ) {
+		$this->plugin = $plugin;
+		$this->options_css = $options_css;
 	    $this->old_ver = get_option( 'democracy_version' );
 	}
 
 	public function upgrade(): void {
-		if( $this->old_ver === plugin()->ver ){
+		if( $this->old_ver === $this->plugin->ver ){
 			return;
 		}
 
 		// Regenerate CSS.
-		( new \DemocracyPoll\Options_CSS() )->regenerate_democracy_css( null );
+		$this->options_css->regenerate_democracy_css( null );
 
-		update_option( 'democracy_version', plugin()->ver );
+		update_option( 'democracy_version', $this->plugin->ver );
 
 		$this->run_staff();
 	}

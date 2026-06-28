@@ -2,10 +2,6 @@
 
 namespace DemocracyPoll;
 
-/**
- * Provides helper methods for accessing poll data, checking permissions,
- * formatting results, and other non-core functionality to support the {@see \DemPoll} class.
- */
 class Poll_Utils {
 
 	/**
@@ -14,7 +10,7 @@ class Poll_Utils {
 	 * @param int $poll_id  Poll ID
 	 */
 	public static function edit_poll_url( int $poll_id ): string {
-		return plugin()->admin_page_url . '&edit_poll=' . (int) $poll_id;
+		return container()->get( Plugin::class )->admin_page_url . '&edit_poll=' . (int) $poll_id;
 	}
 
 	/**
@@ -23,11 +19,13 @@ class Poll_Utils {
 	 * @param Poll|object|int $poll  Poll object or poll id.
 	 */
 	public static function cuser_can_edit_poll( $poll ): bool {
-		if( plugin()->super_access ){
+		$plugin = container()->get( Plugin::class );
+
+		if( $plugin->super_access ){
 			return true;
 		}
 
-		if( ! plugin()->admin_access ){
+		if( ! $plugin->admin_access ){
 			return false;
 		}
 
@@ -54,27 +52,24 @@ class Poll_Utils {
 	 * @internal
 	 */
 	public static function enqueue_js(): void {
-		$plugin = plugin();
-		$handle = 'democracy';
+		$plugin  = container()->get( Plugin::class );
+		$options = container()->get( Options::class );
 
-		wp_enqueue_script( $handle, $plugin->url . '/assets/js/democracy.min.js', [], $plugin->ver, [
+		$handle = 'democracy';
+		wp_enqueue_script( $handle, "$plugin->url/assets/js/democracy.min.js", [], $plugin->ver, [
 			'in_footer' => true,
 			'strategy'  => 'defer',
 		] );
 
-		$opt = options();
 		$config = [
 			'ajax_url'        => container()->get( Poll_Ajax::class )->ajax_url,
-			'cookie_days'     => (float) $opt->cookie_days,
-			'anim_speed'      => (int) $opt->anim_speed,
-			'line_anim_speed' => (int) $opt->line_anim_speed,
+			'cookie_days'     => (float) $options->cookie_days,
+			'anim_speed'      => (int) $options->anim_speed,
+			'line_anim_speed' => (int) $options->line_anim_speed,
 		];
 
-		wp_add_inline_script(
-			$handle,
-			'window.democracyPollConfig = ' . wp_json_encode( $config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . ';',
-			'before'
-		);
+		$json = wp_json_encode( $config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+		wp_add_inline_script( $handle, "window.democracyPollConfig = $json;", 'before' );
 	}
 
 	/**

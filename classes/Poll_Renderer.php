@@ -19,9 +19,11 @@ class Poll_Renderer {
 	public bool $not_show_results = false;
 
 	private Poll $poll;
+	private Plugin $plugin;
 
-	public function __construct( Poll $poll ) {
+	public function __construct( Poll $poll, Plugin $plugin ) {
 		$this->poll = $poll;
+		$this->plugin = $plugin;
 
 		if(
 			$poll->open
@@ -72,7 +74,7 @@ class Poll_Renderer {
 		$poll_body_html = $this->get_poll_body( $show_screen );
 
 		// for page cache // not use caching mechanism in admin
-		$cache_screens = ( ! $this->in_archive && ! is_admin() && plugin()->is_cachegear_on )
+		$cache_screens = ( ! $this->in_archive && ! is_admin() && $this->plugin->is_cachegear_on )
 			? $this->get_cache_screens()
 			: '';
 
@@ -646,7 +648,7 @@ class Poll_Renderer {
 		}
 
 		return sprintf( '<div class="dem-loader dem_loader_js"><div>%s</div></div>',
-			file_get_contents( plugin()->dir . "/assets/styles/loaders/" . basename( $loader_fname ) )
+			file_get_contents( $this->plugin->dir . "/assets/styles/loaders/" . basename( $loader_fname ) )
 		);
 	}
 

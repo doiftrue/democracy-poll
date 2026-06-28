@@ -228,7 +228,7 @@ class List_Table_Logs extends WP_List_Table {
 	 */
 	protected function column_cb( $item ): void {
 		$logid = (int) $item->logid;
-		echo '<label><input id="cb-select-' . $logid . '" type="checkbox" name="logids[]" value="' . $logid . '" /></label>';
+		echo '<input id="cb-select-' . $logid . '" type="checkbox" name="logids[]" value="' . $logid . '" />';
 	}
 
 	protected function column_ip_info( $log ) {

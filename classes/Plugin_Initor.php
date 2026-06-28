@@ -60,7 +60,7 @@ class Plugin_Initor {
 
 	private function admin_init(): void {
 		if( is_admin() && ! wp_doing_ajax() ){
-			container()->get( Admin::class )->init(); // lazy construct
+			container()->get( Admin::class )->init(); /** @see Admin_Page::__construct() lazy construct */
 		}
 	}
 

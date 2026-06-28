@@ -6,23 +6,25 @@ use DemocracyPoll\Helpers\Kses;
 use DemocracyPoll\Poll_Answer;
 use DemocracyPoll\Poll_Utils;
 use DemocracyPoll\Poll;
+use DemocracyPoll\Plugin;
 use WP_List_Table;
-use function DemocracyPoll\plugin;
 use function DemocracyPoll\options;
 
 class List_Table_Polls extends WP_List_Table {
 
-	private Admin_Page_Polls $polls_page;
+	private Plugin $plugin;
 
-	public function __construct( Admin_Page_Polls $polls_page ) {
-		$this->polls_page = $polls_page;
+	public function __construct( Plugin $plugin ) {
+		$this->plugin = $plugin;
 
 		parent::__construct( [
 			'singular' => 'dempoll',
 			'plural'   => 'dempolls',
 			'ajax'     => false,
 		] );
+	}
 
+	public function load(): void {
 		// Per-page screen option.
 		add_screen_option( 'per_page', [
 			'label'   => __( 'Show on page', 'democracy-poll' ),
@@ -124,7 +126,7 @@ class List_Table_Polls extends WP_List_Table {
 
 	private function col__question( Poll $poll ): string {
 		global $wpdb;
-		$admurl = plugin()->admin_page_url;
+		$admurl = $this->plugin->admin_page_url;
 
 		$statuses =
 			'<span class="statuses">' .

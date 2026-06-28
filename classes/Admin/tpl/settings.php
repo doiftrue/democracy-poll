@@ -3,7 +3,6 @@ namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Helpers;
 use function DemocracyPoll\options;
-use function DemocracyPoll\plugin;
 
 /**
  * @var Admin_Page_Settings $this
@@ -158,7 +157,7 @@ $opt = options();
 					<input type="checkbox" value="1"
 					       name="dem[force_cachegear]" <?php checked( $opt->force_cachegear, 1 ) ?> />
 					<?php
-					[ $cache_status, $cache_style ] = plugin()->is_cachegear_on
+					[ $cache_status, $cache_style ] = $this->plugin->is_cachegear_on
 						? [ __( 'ON', 'democracy-poll' ), 'color:#05A800' ]
 						: [ __( 'OFF', 'democracy-poll' ), 'color:#FF1427' ];
 

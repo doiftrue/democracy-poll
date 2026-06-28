@@ -5,7 +5,8 @@ namespace DemocracyPoll\Admin;
 use DemocracyPoll\Helpers\IP;
 use DemocracyPoll\Helpers\Messages;
 use DemocracyPoll\Poll_Utils;
-use function DemocracyPoll\plugin;
+use DemocracyPoll\Plugin;
+use function DemocracyPoll\container;
 use function DemocracyPoll\options;
 
 class Admin_Page_Logs implements Admin_Subpage_Interface {
@@ -14,18 +15,20 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 
 	private Admin_Page $admpage;
 	private Messages $messages;
+	private Plugin $plugin;
 
 	public List_Table_Logs $list_table;
 
 	private static ?string $flag_css = null;
 
-	public function __construct( Admin_Page $admin_page, Messages $messages ){
+	public function __construct( Admin_Page $admin_page, Messages $messages, Plugin $plugin ){
 		$this->admpage = $admin_page;
 		$this->messages = $messages;
+		$this->plugin = $plugin;
 	}
 
 	public function request_handler(): void {
-		if( ! plugin()->super_access || ! Admin_Page::check_nonce() ){
+		if( ! $this->plugin->super_access || ! Admin_Page::check_nonce() ){
 			return;
 		}
 
@@ -55,7 +58,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 	}
 
 	public static function ip_info_ajax_handler(): void {
-		if( ! plugin()->admin_access || ! check_ajax_referer( self::IP_INFO_AJAX_ACTION, 'nonce', false ) ){
+		if( ! container()->get( Plugin::class )->admin_access || ! check_ajax_referer( self::IP_INFO_AJAX_ACTION, 'nonce', false ) ){
 			wp_send_json_error( null, 403 );
 		}
 
@@ -96,6 +99,8 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 	}
 
 	public static function ip_info_html( string $ip_info ): string {
+		$plugin = container()->get( Plugin::class );
+
 		$country_img  = '';
 		$country_name = '';
 		$city         = '';
@@ -104,7 +109,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 			[ $country_name, $country_code, $city ] = explode( ',', $ip_info ) + [ '', '', '' ];
 
 			if( null === self::$flag_css ){
-				self::$flag_css = (string) file_get_contents( plugin()->dir . '/assets/admin/country_flags/flags.css' );
+				self::$flag_css = (string) file_get_contents( "$plugin->dir/assets/admin/country_flags/flags.css" );
 			}
 
 			preg_match( '~flag-' . strtolower( $country_code ) . ' \{([^}]+)\}~', self::$flag_css, $matches );
@@ -112,7 +117,14 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 
 			if( $bg_pos ){
 				$location = $country_name . ( $city ? ", $city" : '' );
-				$country_img = '<span title="' . esc_attr( $location ) . '" style="cursor:help; display:inline-block; width:16px; height:11px; background:url(' . plugin()->url . '/assets/admin/country_flags/flags.png) no-repeat; ' . $bg_pos . '"></span> ';
+				$country_img = strtr(
+					'<span title="{TITLE}" style="cursor:help; display:inline-block; width:16px; height:11px; background:url({FLAGS_URL}) no-repeat; {BG_POS}"></span>',
+					[
+						'{title}'     => esc_attr( $location ),
+						'{FLAGS_URL}' => esc_url( "$plugin->url/assets/admin/country_flags/flags.png" ),
+						'{BG_POS}'    => $bg_pos,
+					]
+				);
 			}
 		}
 
@@ -152,7 +164,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 	private function render_logs_buttons(): void {
 		global $wpdb;
 
-		if( ! plugin()->super_access ){
+		if( ! $this->plugin->super_access ){
 			return;
 		}
 

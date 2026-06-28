@@ -3,16 +3,21 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Messages;
-use function DemocracyPoll\plugin;
+use DemocracyPoll\Plugin;
 use function DemocracyPoll\options;
 
 class Admin_Page_Settings implements Admin_Subpage_Interface {
 
+	private Plugin $plugin;
 	private Admin_Page $admpage;
-
 	private Messages $messages;
 
-	public function __construct( Admin_Page $admin_page, Messages $messages ){
+	public function __construct(
+		Plugin $plugin,
+		Admin_Page $admin_page,
+		Messages $messages
+	){
+		$this->plugin = $plugin;
 		$this->admpage = $admin_page;
 		$this->messages = $messages;
 	}
@@ -21,7 +26,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 	}
 
 	public function request_handler(): void {
-		if( ! plugin()->super_access || ! Admin_Page::check_nonce() ){
+		if( ! $this->plugin->super_access || ! Admin_Page::check_nonce() ){
 			return;
 		}
 
@@ -48,7 +53,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 	public function render(): void {
 		echo $this->admpage->subpages_menu();
 
-		if( ! plugin()->super_access ){
+		if( ! $this->plugin->super_access ){
 			return;
 		}
 

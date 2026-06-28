@@ -7,7 +7,7 @@ use DemocracyPoll\Helpers\Messages;
 use DemocracyPoll\Poll;
 use DemocracyPoll\Poll_Storage;
 use DemocracyPoll\Poll_Utils;
-use function DemocracyPoll\plugin;
+use DemocracyPoll\Plugin;
 use function DemocracyPoll\container;
 
 class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
@@ -18,14 +18,16 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 
 	private Admin_Page $admpage;
 	private Messages $messages;
+	private Plugin $plugin;
+
+	public function __construct( Admin_Page $admin_page, Messages $messages, Plugin $plugin ) {
+		$this->admpage = $admin_page;
+		$this->messages = $messages;
+		$this->plugin = $plugin;
+	}
 
 	public function set_poll_id( int $poll_id ): void {
 		$this->poll_id = $poll_id;
-	}
-
-	public function __construct( Admin_Page $admin_page, Messages $messages ) {
-		$this->admpage = $admin_page;
-		$this->messages = $messages;
 	}
 
 	public function load(): void {
@@ -59,7 +61,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 			$this->insert_poll_handler( $poll_id );
 		}
 		elseif( $is_create ){
-			if( ! plugin()->admin_access ){
+			if( ! $this->plugin->admin_access ){
 				$this->messages->add_error( 'Low cap to create poll' );
 				return;
 			}
@@ -426,7 +428,7 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	public static function delete_button( $poll ): string {
 		return sprintf(
 			' <a href="%s" class="button" onclick="return confirm(\'%s\');" title="%s"><span class="dashicons dashicons-trash"></span></a>',
-			Admin_Page::add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], plugin()->admin_page_url ) ),
+			Admin_Page::add_nonce( add_query_arg( [ 'delete_poll' => $poll->id ], container()->get( Plugin::class )->admin_page_url ) ),
 			__( 'Are you sure?', 'democracy-poll' ),
 			__( 'Delete', 'democracy-poll' )
 		);

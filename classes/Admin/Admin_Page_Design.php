@@ -9,6 +9,7 @@ use DemocracyPoll\Plugin_Initor;
 use DemocracyPoll\Poll;
 use DemocracyPoll\Poll_Renderer;
 use DemocracyPoll\Poll_Storage;
+use function DemocracyPoll\container;
 
 class Admin_Page_Design implements Admin_Subpage_Interface {
 
@@ -125,7 +126,7 @@ class Admin_Page_Design implements Admin_Subpage_Interface {
 			<div class="demoptions__block polls-preview">
 				<?php
 				$poll = new Poll( Poll_Storage::get_db_data( 'rand' ) );
-				$render = new Poll_Renderer( $poll );
+				$render = container()->make( Poll_Renderer::class, [ 'poll' => $poll ] );
 
 				if( $poll->id ){
 					$answers = wp_list_pluck( $poll->answers, 'aid' );

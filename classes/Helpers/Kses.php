@@ -2,7 +2,8 @@
 
 namespace DemocracyPoll\Helpers;
 
-use function DemocracyPoll\plugin;
+use DemocracyPoll\Plugin;
+use function DemocracyPoll\container;
 
 class Kses {
 
@@ -64,16 +65,18 @@ class Kses {
 	}
 
 	/**
-	 * @param string|array $data      What to sanitize? If a string is passed, remove disallowed HTML tags from it.
-	 * @param string $filter_context  The type of filter applied. Can be used to differentiate between different sanitization contexts.
-	 *                                Passed to the `dem_sanitize_answer_data` filter.
+	 * @param string|array $data            What to sanitize? If a string is passed, remove disallowed HTML tags from it.
+	 * @param string       $filter_context  The type of filter applied. Can be used to differentiate between different sanitization contexts.
+	 *                                      Passed to the `dem_sanitize_answer_data` filter.
 	 *
 	 * @return string|array Clean data.
 	 */
-	public static function sanitize_answer_data( $data, $filter_context = '' ) {
+	public static function sanitize_answer_data( $data, string $filter_context = '' ) {
+		$plugin = container()->get( Plugin::class );
+
 		if( is_string( $data ) ){
 			$val = trim( $data );
-			$data = plugin()->admin_access ? self::kses_html( $val ) : wp_kses( $val, 'strip' );
+			$data = $plugin->admin_access ? self::kses_html( $val ) : wp_kses( $val, 'strip' );
 		}
 		else {
 			foreach( $data as $key => & $val ){
@@ -83,7 +86,7 @@ class Kses {
 
 				// allowed tags
 				if( $key === 'answer' ){
-					$val = plugin()->admin_access ? self::kses_html( $val ) : wp_kses( $val, 'strip' );
+					$val = $plugin->admin_access ? self::kses_html( $val ) : wp_kses( $val, 'strip' );
 				}
 				// numbers
 				elseif( in_array( $key, [ 'qid', 'aid', 'votes' ] ) ){

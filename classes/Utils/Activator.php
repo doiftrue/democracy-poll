@@ -37,7 +37,7 @@ class Activator {
 
 		self::add_sample_poll();
 
-		( new Upgrader() )->upgrade();
+		container()->get( Upgrader::class )->upgrade();
 	}
 
 	private static function add_sample_poll(): void {

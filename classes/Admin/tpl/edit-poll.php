@@ -4,7 +4,6 @@ namespace DemocracyPoll\Admin;
 use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Poll_Answer;
 use function DemocracyPoll\options;
-use function DemocracyPoll\plugin;
 
 /**
  * @var Admin_Page_Edit_Poll $this
@@ -20,7 +19,7 @@ if( $this->poll_id ){
 	$items = [];
 	$items['log_link'] = options()->keep_logs
 		? sprintf( '<a href="%s">%s</a>',
-			esc_url( add_query_arg( [ 'subpage' => 'logs', 'poll' => $this->poll->id ], plugin()->admin_page_url ) ),
+			esc_url( add_query_arg( [ 'subpage' => 'logs', 'poll' => $poll->id ], $this->plugin->admin_page_url ) ),
 			esc_html__( 'Poll logs', 'democracy-poll' ) )
 		: '';
 
@@ -277,4 +276,3 @@ if( $this->poll_id ){
 	}
 	?>
 </form>
-
