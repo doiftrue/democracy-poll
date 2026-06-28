@@ -95,11 +95,12 @@ class Container {
 	 * @template T of object
 	 * @param class-string<T> $id Identifier of the entry to look for.
 	 *
-	 * @return T
+	 * @return T NOTE: Do not add a native return type. Declaring `: object` prevents PhpStorm
+	 *           from reliably inferring the concrete return type from `class-string<T>`.
 	 *
 	 * @throws RuntimeException Error while retrieving the entry. No entry was found for identifier.
 	 */
-	public function get( string $id ): object {
+	public function get( string $id ) {
 		if ( array_key_exists( $id, $this->instances ) ) {
 			return $this->instances[ $id ];
 		}
@@ -116,12 +117,13 @@ class Container {
 	 * @param class-string<T>      $id         Identifier of the entry to look for.
 	 * @param array<string, mixed> $parameters Named parameters for the constructor.
 	 *
-	 * @return T
+	 * @return T NOTE: Do not add a native return type. Declaring `: object` prevents PhpStorm
+	 *           from reliably inferring the concrete return type from `class-string<T>`.
 	 *
 	 * @throws ReflectionException
 	 * @throws RuntimeException
 	 */
-	public function make( string $id, array $parameters = [] ): object {
+	public function make( string $id, array $parameters = [] ) {
 		$definition = $this->definitions[ $id ] ?? $id;
 
 		if( $definition instanceof Closure ){

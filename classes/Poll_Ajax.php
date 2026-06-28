@@ -72,7 +72,7 @@ class Poll_Ajax {
 	}
 
 	protected function create_renderer( Poll $poll ): Poll_Renderer {
-		return new Poll_Renderer( $poll );
+		return container()->make( Poll_Renderer::class, [ 'poll' => $poll ] );
 	}
 
 	protected function create_voting_service( Poll $poll ): Poll_Voting_Service {

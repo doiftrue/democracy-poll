@@ -55,7 +55,7 @@ abstract class DemPoll_Legacy {
 
 	public function __get( $name ) {
 		if( 'renderer' === $name ){
-			return $this->legacy_renderer ??= new Poll_Renderer( $this );
+			return $this->legacy_renderer ??= More ()->make( Poll_Renderer::class, [ 'poll' => $this ] );
 		}
 
 		if( 'voted_for' === $name || 'votedFor' === $name ){

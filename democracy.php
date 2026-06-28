@@ -48,5 +48,12 @@ function plugin(): Plugin {
  * Helper function to conveniently get the plugin options.
  */
 function options(): Options {
-	return plugin()->opt;
+	return container()->get( Options::class );
+}
+
+function container(): \DemocracyPoll\Infra\Container {
+	static $inst;
+	$inst || $inst = new \DemocracyPoll\Infra\Container();
+
+	return $inst;
 }

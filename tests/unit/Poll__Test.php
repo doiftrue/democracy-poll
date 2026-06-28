@@ -169,25 +169,4 @@ class Poll__Test extends DemocTestCase {
 			], $overrides ) );
 	}
 
-	private function db_poll_data( array $overrides = [] ): object {
-		return (object) array_merge( [
-			'id'            => 10,
-			'question'      => 'Question',
-			'added'         => 1,
-			'added_user'    => 2,
-			'end'           => 0,
-			'users_voted'   => 3,
-			'democratic'    => true,
-			'active'        => true,
-			'open'          => true,
-			'multiple'      => 0,
-			'forusers'      => false,
-			'revote'        => true,
-			'show_results'  => true,
-			'answers_order' => 'by_id',
-			'in_posts'      => '',
-			'note'          => '',
-		], $overrides );
-	}
-
 }

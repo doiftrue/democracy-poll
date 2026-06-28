@@ -7,8 +7,8 @@ use DemocracyPoll\Poll_Renderer;
 
 class Poll_Renderer__Double extends Poll_Renderer {
 
-	public function __construct() {
-		parent::__construct( new Poll( 0 ) );
+	public function __construct( ?Poll $poll = null ) {
+		parent::__construct( $poll ?? new Poll( 0 ) );
 	}
 
 	public function get_poll_assets_once(): array {

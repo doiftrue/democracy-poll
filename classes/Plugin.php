@@ -46,9 +46,9 @@ class Plugin {
 
 		$this->admin_page_url = admin_url( 'options-general.php?page=' . basename( $this->dir ) );
 
-		$this->opt = new Options();
-		$this->msg = new Messages();
-		$this->initor = new Plugin_Initor();
+		$this->opt = container()->get( Options::class );
+		$this->msg = container()->get( Messages::class );
+		$this->initor = container()->get( Plugin_Initor::class );
 	}
 
 	public function set_access_caps(): void {
