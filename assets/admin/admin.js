@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function(){
 	polls_list();
 
 	function logs_ip_info() {
-		const requestInterval = 700; // NOTE: provider rate limit - 60 requests per minute.
+		const requestInterval = 1000; // NOTE: provider rate limit - 60 requests per minute.
 		var $ipInfoElements = jQuery( '.dem-ip-info[data-log-id]' );
 		if( $ipInfoElements.length && window.democracyPollLogs ){
 			var requestQueue = [];
