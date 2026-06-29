@@ -17,7 +17,7 @@ class Poll_Renderer__Test extends DemocTestCase {
 	public function test__get_poll_assets_once_returns_assets_only_for_first_renderer(): void {
 		container()->set( Poll_Ajax::class, (object) [ 'ajax_url' => '' ] );
 
-		WP_Mock::userFunction( 'DemocracyPoll\options' )->andReturn( (object) [
+		$this->set_options( [
 			'dont_show_results' => false,
 			'cookie_days'       => 365,
 			'anim_speed'        => 400,
@@ -75,7 +75,7 @@ class Poll_Renderer__Test extends DemocTestCase {
 	}
 
 	private function create_renderer(): Poll_Renderer_Render__Double {
-		WP_Mock::userFunction( 'DemocracyPoll\options' )->andReturn( (object) [
+		$this->set_options( [
 			'democracy_off'     => false,
 			'keep_logs'         => true,
 			'revote_off'        => false,

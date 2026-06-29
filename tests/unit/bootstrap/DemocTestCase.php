@@ -53,4 +53,16 @@ class DemocTestCase extends TestCase {
 		], $overrides );
 	}
 
+	protected function set_options( array $options ): void {
+		$service = new class( $options ) extends Options {
+
+			public function __construct( array $options ) {
+				$this->opt = $options;
+			}
+
+		};
+
+		container()->set( Options::class, $service );
+	}
+
 }

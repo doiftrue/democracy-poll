@@ -27,7 +27,11 @@ class Poll__Test extends DemocTestCase {
 	 * @covers \DemocracyPoll\Poll::__construct()
 	 */
 	public function test__constructor_maps_db_object_to_typed_properties(): void {
-		$this->mock_options();
+		$this->set_options( [
+			'democracy_off' => false,
+			'keep_logs'     => true,
+			'revote_off'    => false,
+		] );
 
 		$poll = new Poll( $this->db_poll_data( [
 			'id'            => '12',
@@ -70,8 +74,10 @@ class Poll__Test extends DemocTestCase {
 	 * @covers \DemocracyPoll\Poll::__construct()
 	 */
 	public function test__constructor_respects_global_democracy_off_option(): void {
-		$this->mock_options( [
+		$this->set_options( [
 			'democracy_off' => true,
+			'keep_logs'     => true,
+			'revote_off'    => false,
 		] );
 
 		$poll = new Poll( $this->db_poll_data( [
@@ -86,9 +92,10 @@ class Poll__Test extends DemocTestCase {
 	 * @dataProvider data__revote_flags
 	 */
 	public function test__constructor_resolves_revote_from_options( bool $keep_logs, bool $revote_off, bool $db_revote, bool $expected ): void {
-		$this->mock_options( [
-			'keep_logs'  => $keep_logs,
-			'revote_off' => $revote_off,
+		$this->set_options( [
+			'democracy_off' => false,
+			'keep_logs'     => $keep_logs,
+			'revote_off'    => $revote_off,
 		] );
 
 		$poll = new Poll( $this->db_poll_data( [
@@ -101,9 +108,9 @@ class Poll__Test extends DemocTestCase {
 	public function data__revote_flags(): array {
 		return [
 			'enabled everywhere'  => [ true, false, true, true ],
-			'logs disabled'      => [ false, false, true, false ],
-			'revote disabled'    => [ true, true, true, false ],
-			'db revote disabled' => [ true, false, false, false ],
+			'logs disabled'       => [ false, false, true, false ],
+			'revote disabled'     => [ true, true, true, false ],
+			'db revote disabled'  => [ true, false, false, false ],
 		];
 	}
 
@@ -158,15 +165,6 @@ class Poll__Test extends DemocTestCase {
 	 */
 	public function test__unknown_get_returns_null(): void {
 		$this->assertNull( ( new Poll( 0 ) )->missing_poll_prop );
-	}
-
-	private function mock_options( array $overrides = [] ): void {
-		WP_Mock::userFunction( 'DemocracyPoll\options' )
-			->andReturn( (object) array_merge( [
-				'democracy_off' => false,
-				'keep_logs'     => true,
-				'revote_off'    => false,
-			], $overrides ) );
 	}
 
 }

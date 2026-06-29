@@ -53,7 +53,7 @@ class Theme_Functions__Test extends DemocTestCase {
 	}
 
 	private function set_up_test_environment(): void {
-		WP_Mock::userFunction( 'DemocracyPoll\options' )->andReturn( (object) [
+		$this->set_options( [
 			'democracy_off' => false,
 			'keep_logs'     => false,
 			'revote_off'    => false,

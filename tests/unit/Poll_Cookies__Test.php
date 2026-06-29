@@ -9,8 +9,7 @@ class Poll_Cookies__Test extends DemocTestCase {
 
 	public function setUp(): void {
 		parent::setUp();
-		WP_Mock::userFunction( 'DemocracyPoll\options' )
-			->andReturn( (object) [ 'cookie_days' => 2 ] );
+		$this->set_options( [ 'cookie_days' => 2 ] );
 		$_COOKIE = [];
 	}
 
