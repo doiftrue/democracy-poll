@@ -15,6 +15,22 @@ define( 'THIS_PLUG_ROOT_URL', str_replace( WP_ROOT_DIR, WP_ROOT_URL, THIS_PLUG_R
 
 // load
 
+$GLOBALS['stub_wp_options'] = (object) [
+	'home'            => 'https://unitest.loc',
+	'siteurl'         => 'https://unitest.loc',
+	'gmt_offset'      => 0,
+	'timezone_string' => 'UTC',
+	'language'        => 'en-US',
+	'blogdescription' => 'unitest runtime',
+	'admin_email'     => 'admin@unitest.loc',
+	'stylesheet'      => 'unitest',
+	'use_smilies'     => true,
+	'use_balanceTags' => true,
+	'WPLANG'          => '',
+	'blog_charset'    => 'UTF-8',
+	'html_type'       => 'text/html',
+];
+
 require_once THIS_PLUG_ROOT_DIR . '/vendor/autoload.php';
 \Unitest_WP_Copy\Bootstrap::init();
 require_once __DIR__ . '/DemocTestCase.php';

@@ -3,6 +3,7 @@
 namespace DemocracyPoll;
 
 use DemocracyPoll\Doubles\DemPoll_Legacy__Double;
+use DemocracyPoll\Doubles\Plugin__Double;
 use RuntimeException;
 
 class DemPoll_Legacy__Test extends DemocTestCase {

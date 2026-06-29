@@ -11,7 +11,7 @@ class Poll_Utils__Test extends DemocTestCase {
 	 * @covers Poll_Utils::edit_poll_url()
 	 */
 	public function test__edit_poll_url_appends_integer_poll_id(): void {
-		WP_Mock::userFunction( 'DemocracyPoll\plugin' )->once()->andReturn( (object) [
+		container()->set( Plugin::class, (object) [
 			'admin_page_url' => 'https://test.com/wp-admin/options-general.php?page=democracy-poll',
 		] );
 
@@ -25,7 +25,7 @@ class Poll_Utils__Test extends DemocTestCase {
 	 * @covers Poll_Utils::cuser_can_edit_poll()
 	 */
 	public function test__cuser_can_edit_poll_allows_super_admin(): void {
-		WP_Mock::userFunction( 'DemocracyPoll\plugin' )->andReturn( (object) [
+		container()->set( Plugin::class, (object) [
 			'super_access' => true,
 			'admin_access' => false,
 		] );
@@ -38,7 +38,7 @@ class Poll_Utils__Test extends DemocTestCase {
 	 * @covers Poll_Utils::cuser_can_edit_poll()
 	 */
 	public function test__cuser_can_edit_poll_denies_user_without_admin_access(): void {
-		WP_Mock::userFunction( 'DemocracyPoll\plugin' )->andReturn( (object) [
+		container()->set( Plugin::class, (object) [
 			'super_access' => false,
 			'admin_access' => false,
 		] );
@@ -52,7 +52,7 @@ class Poll_Utils__Test extends DemocTestCase {
 	 * @dataProvider cuser_can_edit_poll_compares_poll_owner_with_current_user__data
 	 */
 	public function test__cuser_can_edit_poll_compares_poll_owner_with_current_user( $poll, int $cuser_id, bool $expected ): void {
-		WP_Mock::userFunction( 'DemocracyPoll\plugin' )->andReturn( (object) [
+		container()->set( Plugin::class, (object) [
 			'super_access' => false,
 			'admin_access' => true,
 		] );
@@ -98,15 +98,15 @@ class Poll_Utils__Test extends DemocTestCase {
 			'ajax_url' => 'https://test.com/wp-admin/admin-ajax.php',
 		] );
 
-		WP_Mock::userFunction( 'DemocracyPoll\plugin' )->andReturn( (object) [
-			'url'       => 'https://test.com/path/to/plugin',
-			'ver'       => '6.3.1',
-		] );
-		WP_Mock::userFunction( 'DemocracyPoll\options' )->andReturn( (object) [
+		$plugin = new \DemocracyPoll\Doubles\Plugin__Double( [
 			'cookie_days'     => 365,
 			'anim_speed'      => 400,
 			'line_anim_speed' => 1500,
 		] );
+		$plugin->url = 'https://test.com/path/to/plugin';
+		$plugin->ver = '6.3.1';
+		container()->set( Plugin::class, $plugin );
+
 		Poll_Utils::enqueue_js();
 
 		$scripts = wp_scripts();

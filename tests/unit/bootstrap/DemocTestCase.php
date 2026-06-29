@@ -2,6 +2,7 @@
 
 namespace DemocracyPoll;
 
+use DemocracyPoll\Doubles\Plugin__Double;
 use DemocracyPoll\Infra\Container;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
@@ -10,11 +11,14 @@ class DemocTestCase extends TestCase {
 
 	public function setUp(): void {
 		WP_Mock::setUp();
-		$GLOBALS['democracy_poll_test_container'] = new Container();
+
+		$container = new Container();
+		$GLOBALS['dem_test_container'] = $container;
+		$container->set( Plugin::class, new Plugin__Double() );
 	}
 
 	public function tearDown(): void {
-		unset( $GLOBALS['democracy_poll_test_container'] );
+		unset( $GLOBALS['dem_test_container'] );
 		WP_Mock::tearDown();
 	}
 

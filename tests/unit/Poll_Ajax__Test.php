@@ -33,13 +33,9 @@ class Poll_Ajax__Test extends DemocTestCase {
 	 * @covers Poll_Ajax::__construct()
 	 */
 	public function test__constructor_sets_ajax_url(): void {
-		WP_Mock::userFunction( 'admin_url' )
-			->with( 'admin-ajax.php' )
-			->andReturn( 'https://example.test/wp-admin/admin-ajax.php' );
-
 		$ajax = new Poll_Ajax();
 
-		$this->assertSame( 'https://example.test/wp-admin/admin-ajax.php', $ajax->ajax_url );
+		$this->assertSame( admin_url( 'admin-ajax.php' ), $ajax->ajax_url );
 	}
 
 	/**

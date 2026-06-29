@@ -4,6 +4,7 @@ namespace DemocracyPoll;
 
 use DemocracyPoll\Doubles\Poll_Renderer__Double;
 use DemocracyPoll\Doubles\Poll_Renderer_Render__Double;
+use DemocracyPoll\Doubles\Plugin__Double;
 use WP_Mock;
 
 class Poll_Renderer__Test extends DemocTestCase {
@@ -22,13 +23,11 @@ class Poll_Renderer__Test extends DemocTestCase {
 			'anim_speed'        => 400,
 			'line_anim_speed'   => 1500,
 		] );
-		WP_Mock::userFunction( 'DemocracyPoll\plugin' )->andReturn( (object) [
-			'url'       => 'https://test.com/path/to/plugin',
-			'ver'       => '6.3.1',
-			'poll_ajax' => (object) [
-				'ajax_url' => 'https://test.com/wp-admin/admin-ajax.php',
-			],
-		] );
+
+		$plugin = container()->get( Plugin::class );
+		$plugin->url = 'https://test.com/path/to/plugin';
+		$plugin->ver = '6.3.1';
+
 		WP_Mock::userFunction( 'get_option' )
 			->with( 'democracy_css' )
 			->andReturn( [ 'minify' => '.democracy{color:red}' ] );
@@ -85,9 +84,10 @@ class Poll_Renderer__Test extends DemocTestCase {
 			'title_markup'      => '<strong class="dem-poll-title">{question}</strong>',
 			'answs_max_height'  => '',
 		] );
-		WP_Mock::userFunction( 'DemocracyPoll\plugin' )->andReturn( (object) [
-			'is_cachegear_on' => true,
-		] );
+
+		$plugin = container()->get( Plugin::class );
+		$plugin->is_cachegear_on = true;
+
 		WP_Mock::userFunction( 'is_singular' )->andReturn( false );
 		WP_Mock::userFunction( 'is_admin' )->andReturn( false );
 

@@ -19,18 +19,13 @@ class Plugin__Test extends DemocTestCase {
 	 */
 	public function test__constructor_sets_plugin_data(): void {
 		$main_file = THIS_PLUG_ROOT_DIR . '/democracy.php';
-		$admin_page_url = WP_ROOT_URL . '/wp-admin/options-general.php?page=democracy-poll';
-
-		WP_Mock::userFunction( 'admin_url' )->once()
-			->with( 'options-general.php?page=democracy-poll' )
-			->andReturn( $admin_page_url );
 
 		$plugin = new Plugin( $main_file, new Options() );
 
 		$this->assertSame( get_file_data( $main_file, [ 'ver' => 'Version' ] )['ver'], $plugin->ver );
 		$this->assertSame( THIS_PLUG_ROOT_DIR, $plugin->dir );
 		$this->assertSame( plugins_url( '', $main_file ), $plugin->url );
-		$this->assertSame( $admin_page_url, $plugin->admin_page_url );
+		$this->assertSame( admin_url( 'options-general.php?page=democracy-poll' ), $plugin->admin_page_url );
 
 		// check legacy property
 		$this->assertInstanceOf( Options::class, $plugin->opt );

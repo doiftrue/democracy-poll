@@ -19,7 +19,6 @@ class Plugin__Double extends Plugin {
 
 		container()->set( Options::class, $options );
 		$this->options = $options;
-
 	}
 
 }
