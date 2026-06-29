@@ -2,7 +2,6 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Helpers;
-use function DemocracyPoll\options;
 
 /**
  * @var Admin_Page_Settings $this
@@ -10,7 +9,7 @@ use function DemocracyPoll\options;
 
 defined( 'ABSPATH' ) || exit;
 
-$opt = options();
+$opt = $this->options;
 ?>
 
 <?= Admin_Page::info_sidebar() ?>

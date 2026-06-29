@@ -3,19 +3,21 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Options;
 use DemocracyPoll\Poll_Answer;
 use DemocracyPoll\Poll_Utils;
 use DemocracyPoll\Poll;
 use DemocracyPoll\Plugin;
 use WP_List_Table;
-use function DemocracyPoll\options;
 
 class List_Table_Polls extends WP_List_Table {
 
 	private Plugin $plugin;
+	private Options $options;
 
-	public function __construct( Plugin $plugin ) {
+	public function __construct( Plugin $plugin, Options $options ) {
 		$this->plugin = $plugin;
+		$this->options = $options;
 
 		parent::__construct( [
 			'singular' => 'dempoll',
@@ -149,7 +151,7 @@ class List_Table_Polls extends WP_List_Table {
 			);
 
 			// logs
-			$has_logs = options()->keep_logs && $wpdb->get_var( $wpdb->prepare( "SELECT qid FROM $wpdb->democracy_log WHERE qid=%d LIMIT 1", $poll->id ) );
+			$has_logs = $this->options->keep_logs && $wpdb->get_var( $wpdb->prepare( "SELECT qid FROM $wpdb->democracy_log WHERE qid=%d LIMIT 1", $poll->id ) );
 			if( $has_logs ){
 				$actions[] = sprintf(
 					'<span class="edit"><a href="%s">%s</a> | </span>',

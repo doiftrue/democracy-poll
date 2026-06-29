@@ -4,11 +4,11 @@ namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Kses;
 use DemocracyPoll\Helpers\Messages;
+use DemocracyPoll\Options;
 use DemocracyPoll\Poll_Storage;
 use DemocracyPoll\Poll_Utils;
 use DemocracyPoll\Poll;
 use WP_List_Table;
-use function DemocracyPoll\options;
 
 class List_Table_Logs extends WP_List_Table {
 
@@ -18,10 +18,16 @@ class List_Table_Logs extends WP_List_Table {
 
 	private Admin_Page_Logs $logs_page;
 	private Messages $messages;
+	private Options $options;
 
-	public function __construct( Admin_Page_Logs $logs_page, Messages $messages ) {
+	public function __construct(
+		Admin_Page_Logs $logs_page,
+		Messages $messages,
+		Options $options
+	) {
 		$this->logs_page = $logs_page;
 		$this->messages = $messages;
+		$this->options = $options;
 
 		parent::__construct( [
 			'singular' => 'demlog',
@@ -188,7 +194,7 @@ class List_Table_Logs extends WP_List_Table {
 			$newfilter = ( $_GET['filter'] ?? '' ) === 'new_answers';
 
 			$a = '';
-			if( ! options()->democracy_off ){
+			if( ! $this->options->democracy_off ){
 				$a = strtr( '<a class="button button-small" href="{URL}">{TITLE}</a>', [
 					'{URL}' => esc_url( add_query_arg( [ 'filter' => $newfilter ? null : 'new_answers' ] ) ),
 					'{TITLE}' => ( $newfilter ? ' &#215; ' : '' ) . __( 'NEW answers logs', 'democracy-poll' ),

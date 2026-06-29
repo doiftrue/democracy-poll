@@ -1,18 +1,14 @@
 <?php
 namespace DemocracyPoll\Admin;
 
-use DemocracyPoll\Options;
-use DemocracyPoll\Plugin;
-use function DemocracyPoll\container;
-
 /**
  * @var Admin_Page_Design $this
  */
 
 defined( 'ABSPATH' ) || exit;
 
-$opt = container()->get( Options::class );
-$plugin = container()->get( Plugin::class );
+$opt = $this->options;
+$plugin = $this->plugin;
 
 $demcss = get_option( 'democracy_css' );
 $additional = $demcss['additional_css'];

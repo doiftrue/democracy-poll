@@ -10,9 +10,11 @@ use WP_Error;
 class Poll_Voting_Service {
 
 	private Poll $poll;
+	private Options $options;
 
-	public function __construct( Poll $poll ) {
+	public function __construct( Poll $poll, Options $options ) {
 		$this->poll = $poll;
+		$this->options = $options;
 	}
 
 	/**
@@ -69,7 +71,7 @@ class Poll_Voting_Service {
 
 		$ustate->poll_cookie->set();
 
-		if( options()->keep_logs ){
+		if( $this->options->keep_logs ){
 			$ustate->poll_logs->insert_logs();
 		}
 
@@ -91,7 +93,7 @@ class Poll_Voting_Service {
 		$poll = $this->poll;
 		$ustate = $poll->user_state;
 
-		if( ! $poll->id || ! $poll->revote || ! options()->keep_logs ){
+		if( ! $poll->id || ! $poll->revote || ! $this->options->keep_logs ){
 			return;
 		}
 

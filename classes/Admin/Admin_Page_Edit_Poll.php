@@ -4,6 +4,7 @@ namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Kses;
 use DemocracyPoll\Helpers\Messages;
+use DemocracyPoll\Options;
 use DemocracyPoll\Poll;
 use DemocracyPoll\Poll_Storage;
 use DemocracyPoll\Poll_Utils;
@@ -19,11 +20,13 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	private Admin_Page $admpage;
 	private Messages $messages;
 	private Plugin $plugin;
+	private Options $options;
 
-	public function __construct( Admin_Page $admin_page, Messages $messages, Plugin $plugin ) {
+	public function __construct( Admin_Page $admin_page, Messages $messages, Plugin $plugin, Options $options ) {
 		$this->admpage = $admin_page;
 		$this->messages = $messages;
 		$this->plugin = $plugin;
+		$this->options = $options;
 	}
 
 	public function set_poll_id( int $poll_id ): void {

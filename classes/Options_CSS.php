@@ -5,9 +5,11 @@ namespace DemocracyPoll;
 class Options_CSS {
 
 	private Plugin $plugin;
+	private Options $options;
 
-	public function __construct( Plugin $plugin ){
+	public function __construct( Plugin $plugin, Options $options ){
 		$this->plugin = $plugin;
+		$this->options = $options;
 	}
 
 	/**
@@ -42,7 +44,7 @@ class Options_CSS {
 	 * @return string css styles code or empty string if the template is disabled.
 	 */
 	private function collect_base_css(): string {
-		$opt = options();
+		$opt = $this->options;
 		$tpl = $opt->css_file_name;
 
 		// Stop when no template is specified.

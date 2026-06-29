@@ -157,7 +157,7 @@ class Poll_Cookies {
 	private function get_value_expire( string $value, int $timestamp ): int {
 		return $timestamp + ( self::NOT_VOTED === $value
 			? self::NOT_VOTED_TTL
-			: (int) ( (float) options()->cookie_days * DAY_IN_SECONDS )
+			: (int) ( (float) container()->get( Options::class )->cookie_days * DAY_IN_SECONDS )
 		);
 	}
 

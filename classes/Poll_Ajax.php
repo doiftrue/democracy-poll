@@ -67,16 +67,19 @@ class Poll_Ajax {
 		$this->answer_ids = wp_unslash( $_POST['answer_ids'] ?? '' );
 	}
 
+	/** Mockable factory method */
 	protected function create_poll(): Poll {
 		return new Poll( $this->poll_id );
 	}
 
+	/** Mockable factory method */
 	protected function create_renderer( Poll $poll ): Poll_Renderer {
-		return container()->make( Poll_Renderer::class, [ 'poll' => $poll ] ); // as factory
+		return container()->make( Poll_Renderer::class, [ 'poll' => $poll ] ); /** @see Poll_Renderer::__construct() */
 	}
 
+	/** Mockable factory method */
 	protected function create_voting_service( Poll $poll ): Poll_Voting_Service {
-		return container()->make( Poll_Voting_Service::class, [ 'poll' => $poll ] ); // as factory
+		return container()->make( Poll_Voting_Service::class, [ 'poll' => $poll ] ); /** @see Poll_Voting_Service::__construct() */
 	}
 
 	/**

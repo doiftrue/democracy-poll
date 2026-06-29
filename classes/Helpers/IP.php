@@ -2,7 +2,8 @@
 
 namespace DemocracyPoll\Helpers;
 
-use function DemocracyPoll\options;
+use DemocracyPoll\Options;
+use function DemocracyPoll\container;
 
 class IP {
 
@@ -10,7 +11,7 @@ class IP {
 
 	public static function get_user_ip(): string {
 
-		if( options()->soft_ip_detect ){
+		if( container()->get( Options::class )->soft_ip_detect ){
 			$ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? ''; // cloudflare
 
 			filter_var( $ip, FILTER_VALIDATE_IP ) || ( $ip = $_SERVER['HTTP_CLIENT_IP'] ?? '' );

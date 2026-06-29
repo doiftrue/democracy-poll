@@ -28,7 +28,7 @@ class Poll_Widget extends WP_Widget {
 		$poll_id = $instance['show_poll'] ?? 0;
 
 		if( $post && is_singular()
-		    && ! options()->post_metabox_off
+		    && ! container()->get( Options::class )->post_metabox_off
 		    && ( $post_pid = Post_Metabox::get_post_poll_id( $post->ID ) )
 		){
 			$poll_id = $post_pid; // $poll_id may be: int, 'last', 'rand'

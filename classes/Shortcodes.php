@@ -6,7 +6,10 @@ use DemocracyPoll\Admin\Post_Metabox;
 
 class Shortcodes {
 
-	public function __construct(){
+	private Options $options;
+
+	public function __construct( Options $options ){
+		$this->options = $options;
 	}
 
 	public function init(): void {
@@ -51,7 +54,7 @@ class Shortcodes {
 
 		return '<div class="dem-poll-shortcode">' . get_democracy_poll( [
 			'poll'         => $poll,
-			'title_markup' => options()->title_markup,
+			'title_markup' => $this->options->title_markup,
 			'from_post'    => $post_id,
 		] ) . '</div>';
 	}

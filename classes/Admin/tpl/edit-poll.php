@@ -3,7 +3,6 @@ namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Helpers;
 use DemocracyPoll\Poll_Answer;
-use function DemocracyPoll\options;
 
 /**
  * @var Admin_Page_Edit_Poll $this
@@ -17,7 +16,7 @@ $edit = (bool) $this->poll_id;
 // METADATA
 if( $this->poll_id ){
 	$items = [];
-	$items['log_link'] = options()->keep_logs
+	$items['log_link'] = $this->options->keep_logs
 		? sprintf( '<a href="%s">%s</a>',
 			esc_url( add_query_arg( [ 'subpage' => 'logs', 'poll' => $poll->id ], $this->plugin->admin_page_url ) ),
 			esc_html__( 'Poll logs', 'democracy-poll' ) )
@@ -144,7 +143,7 @@ if( $this->poll_id ){
 			</label>
 		</div>
 
-		<?php if( ! options()->democracy_off ){ ?>
+		<?php if( ! $this->options->democracy_off ){ ?>
 			<div class="poll-options__row not__answer">
 				<label>
 					<span class="dashicons dashicons-megaphone"></span>
@@ -155,7 +154,7 @@ if( $this->poll_id ){
 				</label>
 			</div>
 		<?php } ?>
-		<?php if( ! options()->revote_off ){ ?>
+		<?php if( ! $this->options->revote_off ){ ?>
 			<div class="poll-options__row">
 				<label>
 					<span class="dashicons dashicons-update"></span>
@@ -167,7 +166,7 @@ if( $this->poll_id ){
 			</div>
 		<?php } ?>
 
-		<?php if( ! options()->only_for_users ){ ?>
+		<?php if( ! $this->options->only_for_users ){ ?>
 			<div class="poll-options__row">
 				<label>
 					<span class="dashicons dashicons-admin-users"></span>
@@ -178,7 +177,7 @@ if( $this->poll_id ){
 			</div>
 		<?php } ?>
 
-		<?php if( ! options()->dont_show_results ){ ?>
+		<?php if( ! $this->options->dont_show_results ){ ?>
 			<div class="poll-options__row">
 				<label>
 					<span class="dashicons dashicons-visibility"></span>
@@ -207,7 +206,7 @@ if( $this->poll_id ){
 			<select name="dmc_answers_order">
 				<option value="" <?php selected( $poll->answers_order ) ?>>
 					-- <?= esc_html__( 'as in settings', 'democracy-poll' ) ?>:
-					<?= Helpers::allowed_answers_orders()[ options()->order_answers ] ?> --
+					<?= Helpers::allowed_answers_orders()[ $this->options->order_answers ] ?> --
 				</option>
 				<?= Helpers::answers_order_select_options( $poll->answers_order ) ?>
 			</select>

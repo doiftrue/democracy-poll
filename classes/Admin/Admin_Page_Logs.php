@@ -4,10 +4,10 @@ namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\IP;
 use DemocracyPoll\Helpers\Messages;
+use DemocracyPoll\Options;
 use DemocracyPoll\Poll_Utils;
 use DemocracyPoll\Plugin;
 use function DemocracyPoll\container;
-use function DemocracyPoll\options;
 
 class Admin_Page_Logs implements Admin_Subpage_Interface {
 
@@ -16,15 +16,17 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 	private Admin_Page $admpage;
 	private Messages $messages;
 	private Plugin $plugin;
+	private Options $options;
 
 	public List_Table_Logs $list_table;
 
 	private static ?string $flag_css = null;
 
-	public function __construct( Admin_Page $admin_page, Messages $messages, Plugin $plugin ){
+	public function __construct( Admin_Page $admin_page, Messages $messages, Plugin $plugin, Options $options ){
 		$this->admpage = $admin_page;
 		$this->messages = $messages;
 		$this->plugin = $plugin;
+		$this->options = $options;
 	}
 
 	public function request_handler(): void {
@@ -48,7 +50,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 	}
 
 	public function load(): void {
-		$this->list_table = new List_Table_Logs( $this, $this->messages );
+		$this->list_table = new List_Table_Logs( $this, $this->messages, $this->options );
 
 		wp_add_inline_script( Admin_Page::ASSETS_ID, 'window.democracyPollLogs = ' . wp_json_encode( [
 			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
@@ -145,7 +147,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 			return;
 		}
 
-		if( ! options()->keep_logs ){
+		if( ! $this->options->keep_logs ){
 			$this->messages->add_warn( __( 'Logs records turned off in the settings - logs are not recorded.', 'democracy-poll' ) );
 		}
 
@@ -172,7 +174,7 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 			"SELECT count(*) FROM $wpdb->democracy_log WHERE qid IN (SELECT id FROM $wpdb->democracy_q WHERE open = 0)"
 		);
 
-		$del_new_marks_button = options()->democracy_off
+		$del_new_marks_button = $this->options->democracy_off
 			? ''
 			: sprintf( '<a class="button button-small" href="%s">%s</a>',
 				esc_url( Admin_Page::add_nonce( $_SERVER['REQUEST_URI'] . '&dem_del_new_mark' ) ),

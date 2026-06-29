@@ -62,7 +62,7 @@ class Poll_Storage {
 			$answers = wp_list_sort( $answers, [ 'aorder' => 'asc' ] );
 		}
 		else{
-			$order = $poll->answers_order ?: options()->order_answers;
+			$order = $poll->answers_order ?: container()->get( Options::class )->order_answers;
 
 			if( $order === 'by_winner' || $order == 1 ){
 				$answers = wp_list_sort( $answers, [ 'votes' => 'desc' ] );

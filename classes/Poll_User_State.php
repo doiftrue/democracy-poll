@@ -46,7 +46,7 @@ class Poll_User_State {
 
 		if( 'blocked_by_not_logged' === $name ){ /** @see self::$blocked_by_not_logged - get */
 			return $this->blocked_by_not_logged ??= $this->poll->id
-				&& ( options()->only_for_users || $this->poll->forusers )
+				&& ( container()->get( Options::class )->only_for_users || $this->poll->forusers )
 				&& ! is_user_logged_in();
 		}
 
@@ -102,7 +102,7 @@ class Poll_User_State {
 		// NOTE: update cookies if they do not match. Because in different browsers they can be different. Does not work,
 		// because cookies need to be set before outputting data, and in general, this should not be done, because checking
 		// by cookies becomes unnecessary overall...
-		if( options()->keep_logs && ( $logs = $this->poll_logs->get_user_vote_logs() ) ){
+		if( container()->get( Options::class )->keep_logs && ( $logs = $this->poll_logs->get_user_vote_logs() ) ){
 			return (string) reset( $logs )->aids;
 		}
 

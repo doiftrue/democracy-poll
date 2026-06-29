@@ -3,23 +3,26 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Helpers\Messages;
+use DemocracyPoll\Options;
 use DemocracyPoll\Plugin;
-use function DemocracyPoll\options;
 
 class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 	private Plugin $plugin;
 	private Admin_Page $admpage;
 	private Messages $messages;
+	private Options $options;
 
 	public function __construct(
 		Plugin $plugin,
 		Admin_Page $admin_page,
-		Messages $messages
+		Messages $messages,
+		Options $options
 	){
 		$this->plugin = $plugin;
 		$this->admpage = $admin_page;
 		$this->messages = $messages;
+		$this->options = $options;
 	}
 
 	public function load(): void {
@@ -32,10 +35,10 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 
 		$up = null;
 		if( isset( $_POST['dem_save_main_options'] ) ){
-			$up = options()->handle_update_options( 'main' );
+			$up = $this->options->handle_update_options( 'main' );
 		}
 		if( isset( $_POST['dem_reset_main_options'] ) ){
-			$up = options()->reset_options( 'main' );
+			$up = $this->options->reset_options( 'main' );
 		}
 
 		if( $up !== null ){
@@ -94,7 +97,7 @@ class Admin_Page_Settings implements Admin_Subpage_Interface {
 		}
 
 		// update option
-		options()->update_single_option( 'archive_page_id', $page_id );
+		$this->options->update_single_option( 'archive_page_id', $page_id );
 
 		wp_redirect( remove_query_arg( 'dem_create_archive_page' ) );
 	}
