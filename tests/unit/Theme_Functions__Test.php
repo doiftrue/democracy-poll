@@ -64,7 +64,7 @@ class Theme_Functions__Test extends DemocTestCase {
 			->shouldReceive( 'render_poll' ) /** @see Poll_Renderer::render_poll() */
 			->andReturnUsing( static fn( $show_screen, $title_markup ) => "$show_screen|$title_markup" );
 
-		container()->set( Poll_Renderer::class, $renderer );
+		container()->set( Poll_Renderer::class, static fn( Poll $poll ) => $renderer );
 
 		$GLOBALS['wpdb'] = new class {
 
