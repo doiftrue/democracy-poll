@@ -8,7 +8,7 @@ use WP_Mock;
 class Poll__Test extends DemocTestCase {
 
 	/**
-	 * @covers \DemocracyPoll\Poll::__construct()
+	 * @covers Poll::__construct()
 	 */
 	public function test__empty_constructor_initializes_user_state_and_defaults(): void {
 		$poll = new Poll( 0 );
@@ -24,7 +24,7 @@ class Poll__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers \DemocracyPoll\Poll::__construct()
+	 * @covers Poll::__construct()
 	 */
 	public function test__constructor_maps_db_object_to_typed_properties(): void {
 		$this->set_options( [
@@ -71,7 +71,7 @@ class Poll__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers \DemocracyPoll\Poll::__construct()
+	 * @covers Poll::__construct()
 	 */
 	public function test__constructor_respects_global_democracy_off_option(): void {
 		$this->set_options( [
@@ -88,7 +88,7 @@ class Poll__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers \DemocracyPoll\Poll::__construct()
+	 * @covers Poll::__construct()
 	 * @dataProvider data__revote_flags
 	 */
 	public function test__constructor_resolves_revote_from_options( bool $keep_logs, bool $revote_off, bool $db_revote, bool $expected ): void {
@@ -115,7 +115,7 @@ class Poll__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers \DemocracyPoll\Poll::__construct()
+	 * @covers Poll::__construct()
 	 */
 	public function test__constructor_keeps_defaults_when_db_object_has_no_id(): void {
 		$poll = new Poll( (object) [ 'id' => 0 ] );
@@ -126,7 +126,7 @@ class Poll__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers \DemocracyPoll\Poll::__isset()
+	 * @covers Poll::__isset()
 	 */
 	public function test__isset_resolves_regular_properties(): void {
 		$poll = new Poll( 0 );
@@ -137,8 +137,8 @@ class Poll__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers \DemocracyPoll\Poll::__get()
-	 * @covers \DemocracyPoll\Poll::__isset()
+	 * @covers Poll::__get()
+	 * @covers Poll::__isset()
 	 */
 	public function test__answers_are_lazy_loaded_once(): void {
 		$answer = new Poll_Answer( [
@@ -161,7 +161,7 @@ class Poll__Test extends DemocTestCase {
 	}
 
 	/**
-	 * @covers \DemocracyPoll\Poll::__get()
+	 * @covers Poll::__get()
 	 */
 	public function test__unknown_get_returns_null(): void {
 		$this->assertNull( ( new Poll( 0 ) )->missing_poll_prop );

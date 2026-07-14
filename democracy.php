@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/autoload.php';
 
-register_activation_hook( __FILE__, [ \DemocracyPoll\Utils\Activator::class, 'activate' ] );
+register_activation_hook( __FILE__, [ Utils\Activator::class, 'activate' ] );
 
 /**
  * NOTE: Init the plugin later on the 'after_setup_theme' hook to
@@ -34,10 +34,10 @@ function init_plugin(): void {
 	container()->get( Plugin_Initor::class )->init_plugin(); /** @see Plugin_Initor::__construct() */
 }
 
-function container(): \DemocracyPoll\Libs\Container {
+function container(): Libs\Container {
 	static $container;
 	if( ! $container ){
-		$container = new \DemocracyPoll\Libs\Container();
+		$container = new Libs\Container();
 		$container->set( Plugin::class, new Plugin( __FILE__, $container->get( Options::class ) ) );
 	}
 

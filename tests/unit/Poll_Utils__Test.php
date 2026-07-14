@@ -98,7 +98,7 @@ class Poll_Utils__Test extends DemocTestCase {
 			'ajax_url' => 'https://test.com/wp-admin/admin-ajax.php',
 		] );
 
-		$plugin = new \DemocracyPoll\Doubles\Plugin__Double( [
+		$plugin = new Doubles\Plugin__Double( [
 			'cookie_days'     => 365,
 			'anim_speed'      => 400,
 			'line_anim_speed' => 1500,
