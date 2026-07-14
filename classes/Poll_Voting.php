@@ -7,7 +7,7 @@ use WP_Error;
 /**
  * Handles voting use-cases for a poll.
  */
-class Poll_Voting_Service {
+class Poll_Voting {
 
 	private Poll $poll;
 	private Options $options;

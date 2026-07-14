@@ -13,7 +13,7 @@ class Poll_Ajax__Test extends DemocTestCase {
 
 	private Poll $poll;
 	private Poll_Renderer $renderer;
-	private Poll_Voting_Service $voting;
+	private Poll_Voting $voting;
 
 	public function setUp(): void {
 		parent::setUp();
@@ -21,7 +21,7 @@ class Poll_Ajax__Test extends DemocTestCase {
 		$_POST = [];
 		$this->poll = Mockery::mock( Poll::class );
 		$this->renderer = Mockery::mock( Poll_Renderer::class );
-		$this->voting = Mockery::mock( Poll_Voting_Service::class );
+		$this->voting = Mockery::mock( Poll_Voting::class );
 	}
 
 	public function tearDown(): void {

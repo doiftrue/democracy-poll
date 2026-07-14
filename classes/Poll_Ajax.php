@@ -78,8 +78,8 @@ class Poll_Ajax {
 	}
 
 	/** Mockable factory method */
-	protected function create_voting_service( Poll $poll ): Poll_Voting_Service {
-		return container()->make( Poll_Voting_Service::class, [ 'poll' => $poll ] ); /** @see Poll_Voting_Service::__construct() */
+	protected function create_voting_service( Poll $poll ): Poll_Voting {
+		return container()->make( Poll_Voting::class, [ 'poll' => $poll ] ); /** @see Poll_Voting::__construct() */
 	}
 
 	/**
