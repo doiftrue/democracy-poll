@@ -34,10 +34,10 @@ function init_plugin(): void {
 	container()->get( Plugin_Initor::class )->init_plugin(); /** @see Plugin_Initor::__construct() */
 }
 
-function container(): \DemocracyPoll\Infra\Container {
+function container(): \DemocracyPoll\Libs\Container {
 	static $container;
 	if( ! $container ){
-		$container = new \DemocracyPoll\Infra\Container();
+		$container = new \DemocracyPoll\Libs\Container();
 		$container->set( Plugin::class, new Plugin( __FILE__, $container->get( Options::class ) ) );
 	}
 

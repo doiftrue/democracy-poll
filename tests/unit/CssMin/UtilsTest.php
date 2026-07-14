@@ -1,16 +1,12 @@
 <?php
 
-namespace tubalmartin\CssMin\Tests;
-
+use DemocracyPoll\Libs\CssMin\Utils;
 use PHPUnit\Framework\TestCase;
-use tubalmartin\CssMin\Utils;
-
-require_once dirname( __DIR__, 3 ) . '/assets/admin/CssMin/cssmin.php';
 
 class UtilsTest extends TestCase {
 
 	/**
-	 * @covers \tubalmartin\CssMin\Utils::clampNumber()
+	 * @covers \DemocracyPoll\Libs\CssMin\Utils::clampNumber()
 	 * @dataProvider clamp_number__data
 	 */
 	public function test__clamp_number_limits_value_to_range( $number, $min, $max, $expected ): void {
@@ -26,7 +22,7 @@ class UtilsTest extends TestCase {
 	}
 
 	/**
-	 * @covers \tubalmartin\CssMin\Utils::clampNumberSrgb()
+	 * @covers \DemocracyPoll\Libs\CssMin\Utils::clampNumberSrgb()
 	 * @dataProvider srgb_number__data
 	 */
 	public function test__clamp_number_srgb_limits_value_to_color_channel( $number, $expected ): void {
@@ -42,7 +38,7 @@ class UtilsTest extends TestCase {
 	}
 
 	/**
-	 * @covers \tubalmartin\CssMin\Utils::normalizeInt()
+	 * @covers \DemocracyPoll\Libs\CssMin\Utils::normalizeInt()
 	 * @dataProvider normalized_integer__data
 	 */
 	public function test__normalize_int_converts_php_size_values( $value, int $expected ): void {
@@ -61,7 +57,7 @@ class UtilsTest extends TestCase {
 	}
 
 	/**
-	 * @covers \tubalmartin\CssMin\Utils::hslToRgb()
+	 * @covers \DemocracyPoll\Libs\CssMin\Utils::hslToRgb()
 	 * @dataProvider hsl_to_rgb__data
 	 */
 	public function test__hsl_to_rgb_converts_and_normalizes_color_values( array $hsl, array $expected ): void {
@@ -79,7 +75,7 @@ class UtilsTest extends TestCase {
 	}
 
 	/**
-	 * @covers \tubalmartin\CssMin\Utils::hueToRgb()
+	 * @covers \DemocracyPoll\Libs\CssMin\Utils::hueToRgb()
 	 * @dataProvider hue_to_rgb__data
 	 */
 	public function test__hue_to_rgb_selects_channel_value( float $hue, float $expected ): void {
@@ -98,7 +94,7 @@ class UtilsTest extends TestCase {
 	}
 
 	/**
-	 * @covers \tubalmartin\CssMin\Utils::rgbPercentageToRgbInteger()
+	 * @covers \DemocracyPoll\Libs\CssMin\Utils::rgbPercentageToRgbInteger()
 	 * @dataProvider rgb_percentage__data
 	 */
 	public function test__rgb_percentage_to_rgb_integer_normalizes_channel( $channel, int $expected ): void {
@@ -114,7 +110,7 @@ class UtilsTest extends TestCase {
 	}
 
 	/**
-	 * @covers \tubalmartin\CssMin\Utils::rgbToHex()
+	 * @covers \DemocracyPoll\Libs\CssMin\Utils::rgbToHex()
 	 * @dataProvider rgb_to_hex__data
 	 */
 	public function test__rgb_to_hex_converts_percentages_and_clips_channels( array $rgb, array $expected ): void {
@@ -130,7 +126,7 @@ class UtilsTest extends TestCase {
 	}
 
 	/**
-	 * @covers \tubalmartin\CssMin\Utils::roundNumber()
+	 * @covers \DemocracyPoll\Libs\CssMin\Utils::roundNumber()
 	 * @dataProvider rounded_number__data
 	 */
 	public function test__round_number_uses_nearest_integer( $number, int $expected ): void {

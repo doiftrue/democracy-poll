@@ -3,7 +3,7 @@
 namespace DemocracyPoll;
 
 use DemocracyPoll\Doubles\Plugin__Double;
-use DemocracyPoll\Infra\Container;
+use DemocracyPoll\Libs\Container;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
 

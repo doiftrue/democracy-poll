@@ -1,6 +1,6 @@
 <?php
 
-namespace tubalmartin\CssMin;
+namespace DemocracyPoll\Libs\CssMin;
 
 class Utils {
 

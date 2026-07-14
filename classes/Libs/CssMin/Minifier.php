@@ -23,7 +23,7 @@
  * by Yahoo! Inc. under the BSD (revised) open source license.
  */
 
-namespace tubalmartin\CssMin;
+namespace DemocracyPoll\Libs\CssMin;
 
 class Minifier {
 
@@ -353,13 +353,13 @@ class Minifier {
 		$css = $this->processAtRulesAndSelectors( $css );
 
 		// Restore preserved rule bodies before splitting
-		$css = strtr( $css, $this->ruleBodies );
+		$css = \strtr( $css, $this->ruleBodies );
 
 		// Split long lines in output if required
 		$css = $this->processLongLineSplitting( $css );
 
 		// Restore preserved comments and strings
-		$css = strtr( $css, $this->preservedTokens );
+		$css = \strtr( $css, $this->preservedTokens );
 
 		return trim( $css );
 	}
@@ -394,7 +394,7 @@ class Minifier {
 				$token = substr( $css, $dataStartIndex, $matchEndIndex - $dataStartIndex );
 
 				// Remove all spaces only for base64 encoded URLs.
-				if( stripos( $token, 'base64,' ) !== false ){
+				if( \stripos( $token, 'base64,' ) !== false ){
 					$token = preg_replace( '/\s+/S', '', $token );
 				}
 
@@ -450,7 +450,7 @@ class Minifier {
 		// maybe the string contains a comment-like substring?
 		// one, maybe more? put'em back then
 		if( strpos( $match, self::COMMENT_TOKEN_START ) !== false ){
-			$match = strtr( $match, $this->comments );
+			$match = \strtr( $match, $this->comments );
 		}
 
 		// minify alpha opacity in filter strings

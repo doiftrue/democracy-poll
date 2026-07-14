@@ -17,7 +17,7 @@ This is WordPress plugin that distributed to oficial WordPress plugin repository
 
 ## Build, Test, and Development Commands
 - `composer install` installs PHP dev dependencies.
-- `composer run phpunit` runs the PHPUnit suite using `phpunit.xml`.
+- Always run the PHPUnit suite with `make phpunit`, which uses the project's Docker environment. Do not check for or attempt to use a host-installed `php` first.
 - `npm install` installs JS build dependencies (Node >= 24.12).
 - `npm run build` bundles `assets/js/democracy.mjs` into `assets/js/democracy.min.js` (with sourcemap).
 - `npm run watch` rebuilds JS on changes.

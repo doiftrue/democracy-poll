@@ -13,7 +13,7 @@
  * Version: 1.3.0
  */
 
-namespace DemocracyPoll\Infra;
+namespace DemocracyPoll\Libs;
 
 use ReflectionClass;
 use ReflectionFunction;

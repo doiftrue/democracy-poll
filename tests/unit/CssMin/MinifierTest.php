@@ -1,16 +1,12 @@
 <?php
 
-namespace tubalmartin\CssMin\Tests;
-
+use DemocracyPoll\Libs\CssMin\Minifier;
 use PHPUnit\Framework\TestCase;
-use tubalmartin\CssMin\Minifier;
-
-require_once dirname( __DIR__, 3 ) . '/assets/admin/CssMin/cssmin.php';
 
 class MinifierTest extends TestCase {
 
 	/**
-	 * @covers \tubalmartin\CssMin\Minifier::run()
+	 * @covers \DemocracyPoll\Libs\CssMin\Minifier::run()
 	 * @dataProvider run_minifies_css__data
 	 */
 	public function test__run_minifies_css( string $css, string $expected ): void {
@@ -77,7 +73,7 @@ class MinifierTest extends TestCase {
 	}
 
 	/**
-	 * @covers \tubalmartin\CssMin\Minifier::run()
+	 * @covers \DemocracyPoll\Libs\CssMin\Minifier::run()
 	 */
 	public function test__run_returns_empty_string_for_unsupported_input(): void {
 		$minifier = new Minifier( false );
@@ -87,8 +83,8 @@ class MinifierTest extends TestCase {
 	}
 
 	/**
-	 * @covers \tubalmartin\CssMin\Minifier::run()
-	 * @covers \tubalmartin\CssMin\Minifier::removeImportantComments()
+	 * @covers \DemocracyPoll\Libs\CssMin\Minifier::run()
+	 * @covers \DemocracyPoll\Libs\CssMin\Minifier::removeImportantComments()
 	 */
 	public function test__important_comments_can_be_kept_or_removed(): void {
 		$minifier = new Minifier( false );
@@ -102,8 +98,8 @@ class MinifierTest extends TestCase {
 	}
 
 	/**
-	 * @covers \tubalmartin\CssMin\Minifier::keepSourceMapComment()
-	 * @covers \tubalmartin\CssMin\Minifier::run()
+	 * @covers \DemocracyPoll\Libs\CssMin\Minifier::keepSourceMapComment()
+	 * @covers \DemocracyPoll\Libs\CssMin\Minifier::run()
 	 */
 	public function test__source_map_comment_can_be_preserved(): void {
 		$minifier = new Minifier( false );
@@ -116,8 +112,8 @@ class MinifierTest extends TestCase {
 	}
 
 	/**
-	 * @covers \tubalmartin\CssMin\Minifier::run()
-	 * @covers \tubalmartin\CssMin\Minifier::setLineBreakPosition()
+	 * @covers \DemocracyPoll\Libs\CssMin\Minifier::run()
+	 * @covers \DemocracyPoll\Libs\CssMin\Minifier::setLineBreakPosition()
 	 */
 	public function test__long_output_can_be_split_between_rules(): void {
 		$minifier = new Minifier( false );
