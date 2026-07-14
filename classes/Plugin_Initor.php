@@ -40,7 +40,7 @@ class Plugin_Initor {
 		$this->load_textdomain();
 	}
 
-	public function plugin_init(): void {
+	public function init_plugin(): void {
 		$this->basic_init();
 
 		$this->plugin->set_is_cachegear_on();

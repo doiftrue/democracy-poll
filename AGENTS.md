@@ -21,8 +21,8 @@ This is WordPress plugin that distributed to oficial WordPress plugin repository
 - `npm install` installs JS build dependencies (Node >= 24.12).
 - `npm run build` bundles `assets/js/democracy.mjs` into `assets/js/democracy.min.js` (with sourcemap).
 - `npm run watch` rebuilds JS on changes.
-- `make i18n_update_po` regenerates `languages/democracy-poll.pot` (requires `xgettext`).
-- `make i18n_make_mo_php` generates `languages/democracy-poll.mo` and `languages/democracy-poll.l10n.php` from the PO files.
+- `make i18n.update-po` regenerates `languages/democracy-poll.pot` (requires `xgettext`).
+- `make i18n.make-mo-php` generates `languages/democracy-poll.mo` and `languages/democracy-poll.l10n.php` from the PO files.
 - `make npm.build`, `make phpunit`, etc. use Docker helpers with local paths; adjust the Makefile before relying on them.
 
 ## Coding Style & Naming Conventions
@@ -38,6 +38,7 @@ This is WordPress plugin that distributed to oficial WordPress plugin repository
 - In PHPUnit tests, place each data provider method immediately after the test method that uses it.
 - Test observable behavior, logic, and return values rather than implementation details. Do not assert how many times a function is called unless the call count is part of the required behavior; safe refactoring should not break tests.
 - There is no explicit coverage threshold configured.
+- `classes/Infra/Container.php` - should not be covered with tests, because it third-party code that already covered by PHPUnit. 
 
 ## Commit & Pull Request Guidelines
 - Commit messages typically use short prefixes like `IMP:`, `FIX:`, `NEW:`, `CHG:` or version tags like `v6.1.0`.

@@ -31,7 +31,7 @@ register_activation_hook( __FILE__, [ \DemocracyPoll\Utils\Activator::class, 'ac
 add_action( 'after_setup_theme', '\DemocracyPoll\init_plugin' );
 
 function init_plugin(): void {
-	container()->get( Plugin_Initor::class )->plugin_init(); /** @see Plugin_Initor::__construct() */
+	container()->get( Plugin_Initor::class )->init_plugin(); /** @see Plugin_Initor::__construct() */
 }
 
 function container(): \DemocracyPoll\Infra\Container {

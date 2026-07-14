@@ -7,6 +7,12 @@
   "scripts": {
     "phpunit": "./vendor/bin/phpunit"
   },
+  "autoload": {},
+  "require": {},
+  "require-dev": {
+    "doiftrue/unitest-wp-copy": "6.9.*",
+    "10up/wp_mock": "*"
+  },
   "authors": [
     {
       "name": "Kama",
@@ -14,11 +20,5 @@
       "homepage": "https://wp-kama.ru/plugin/democracy-poll",
       "role": "Developer"
     }
-  ],
-  "autoload": {},
-  "require": {},
-  "require-dev": {
-    "doiftrue/unitest-wp-copy": "6.9.*",
-    "10up/wp_mock": "*"
-  }
+  ]
 }

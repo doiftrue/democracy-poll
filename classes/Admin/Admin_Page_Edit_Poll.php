@@ -22,7 +22,12 @@ class Admin_Page_Edit_Poll implements Admin_Subpage_Interface {
 	private Plugin $plugin;
 	private Options $options;
 
-	public function __construct( Admin_Page $admin_page, Messages $messages, Plugin $plugin, Options $options ) {
+	public function __construct(
+		Admin_Page $admin_page,
+		Messages $messages,
+		Plugin $plugin,
+		Options $options
+	) {
 		$this->admpage = $admin_page;
 		$this->messages = $messages;
 		$this->plugin = $plugin;
