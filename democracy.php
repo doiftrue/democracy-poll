@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/autoload.php';
 
-register_activation_hook( __FILE__, [ Utils\Activator::class, 'activate' ] );
+register_activation_hook( __FILE__, [ System\Activator::class, 'activate' ] );
 
 /**
  * NOTE: Init the plugin later on the 'after_setup_theme' hook to
@@ -31,17 +31,21 @@ register_activation_hook( __FILE__, [ Utils\Activator::class, 'activate' ] );
 add_action( 'after_setup_theme', '\DemocracyPoll\init_plugin' );
 
 function init_plugin(): void {
-	container()->get( Plugin_Initor::class )->init_plugin(); /** @see Plugin_Initor::__construct() */
+	$container = new Libs\Container();
+	$container->set( Plugin::class, [ 'main_file' => __FILE__ ] ); /** @see Plugin::__construct() */
+	container( $container ); // set the container globally
+
+	$initor = $container->get( System\Plugin_Initor::class ); /** @see System\Plugin_Initor::__construct() */
+    $initor->init_plugin();
 }
 
-function container(): Libs\Container {
-	static $container;
-	if( ! $container ){
-		$container = new Libs\Container();
-		$container->set( Plugin::class, new Plugin( __FILE__, $container->get( Options::class ) ) );
-	}
-
-	return $container;
+/**
+ * Returns the container instance.
+ * Or sets the container instance globally if a container is provided.
+ */
+function container( Libs\Container $container = null ): Libs\Container {
+	static $c;
+	return $container ? ( $c = $container ) : $c;
 }
 
 /**
