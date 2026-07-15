@@ -59,7 +59,8 @@ class Minifier {
 	private string $shortenTwoZeroesRegex;
 	private string $shortenThreeZeroesRegex;
 	private string $shortenFourZeroesRegex;
-	private string $unitsGroupRegex = '(?:ch|cm|em|ex|gd|in|mm|px|pt|pc|q|rem|vh|vmax|vmin|vw|%)';
+	private string $unitsGroupRegex = '(?:cap|ch|em|ex|ic|lh|rem|rex|rcap|rch|ric|rlh|' .
+		'(?:s|l|d)?v(?:w|h|i|b|min|max)|cq(?:w|h|i|b|min|max)|cm|mm|in|px|pt|pc|q|gd|%)';
 
 	/**
 	 * @param bool|int $raisePhpLimits  If true, PHP settings will be raised if needed

@@ -65,6 +65,10 @@ class MinifierTest extends TestCase {
 				'@layer reset, components; @layer components { .card { container-type: inline-size; } } @container (width > 30rem) { .card { display: grid; } }',
 				'@layer reset,components;@layer components{.card{container-type:inline-size}}@container (width>30rem){.card{display:grid}}',
 			],
+			'modern length units' => [
+				'.units { width: 0cqw; height: 0dvh; top: 0svmin; left: 0lvmax; margin: 0rex; padding: 0rcap; right: 0ric; bottom: 0rlh; }',
+				'.units{width:0;height:0;top:0;left:0;margin:0;padding:0;right:0;bottom:0}',
+			],
 			'property registration and feature query' => [
 				'@property --angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; } @supports (selector(:has(*))) { .card:has(img) { display: grid; } }',
 				'@property --angle{syntax:"<angle>";inherits:false;initial-value:0deg}@supports (selector(:has(*))){.card:has(img){display:grid}}',
