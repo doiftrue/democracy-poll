@@ -5,7 +5,7 @@ namespace DemocracyPoll\Admin;
 use DemocracyPoll\Support\Messages;
 use DemocracyPoll\Plugin;
 use DemocracyPoll\Poll_Utils;
-use DemocracyPoll\Utils\Upgrader;
+use DemocracyPoll\System\Upgrader;
 use function DemocracyPoll\container;
 
 class Admin_Page {

@@ -1,8 +1,7 @@
 <?php
 
-namespace DemocracyPoll\Utils;
+namespace DemocracyPoll\System;
 
-use DemocracyPoll\Plugin_Initor;
 use function DemocracyPoll\container;
 
 class Activator {

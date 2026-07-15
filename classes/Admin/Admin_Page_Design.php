@@ -5,7 +5,7 @@ namespace DemocracyPoll\Admin;
 use DemocracyPoll\Support\Messages;
 use DemocracyPoll\Options;
 use DemocracyPoll\Plugin;
-use DemocracyPoll\Plugin_Initor;
+use DemocracyPoll\System\Plugin_Initor;
 use DemocracyPoll\Poll;
 use DemocracyPoll\Poll_Renderer;
 use DemocracyPoll\Poll_Storage;

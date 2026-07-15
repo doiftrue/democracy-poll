@@ -1,12 +1,17 @@
 <?php
 
-namespace DemocracyPoll;
+namespace DemocracyPoll\System;
 
+use DemocracyPoll\Options;
+use DemocracyPoll\Plugin;
+use DemocracyPoll\Poll_Ajax;
+use DemocracyPoll\Poll_Widget;
+use DemocracyPoll\Shortcodes;
 use DemocracyPoll\Support\Kses;
-use DemocracyPoll\Utils\Activator;
 use DemocracyPoll\Admin\Admin;
 use DemocracyPoll\Admin\Admin_Page_Logs;
 use DemocracyPoll\Admin\Admin_Page_l10n;
+use function DemocracyPoll\container;
 
 class Plugin_Initor {
 
@@ -17,7 +22,7 @@ class Plugin_Initor {
 
 	public function __construct(
 		Plugin $plugin,
-		Options $options,      /** @see Options::__construct() */
+		Options $options,
 		Poll_Ajax $poll_ajax,  /** @see Poll_Ajax::__construct() */
 		Shortcodes $shortcodes /** @see Shortcodes::__construct() */
 	) {

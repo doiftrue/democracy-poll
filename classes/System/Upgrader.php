@@ -1,6 +1,6 @@
 <?php
 
-namespace DemocracyPoll\Utils;
+namespace DemocracyPoll\System;
 
 use DemocracyPoll\Options_CSS;
 use DemocracyPoll\Plugin;

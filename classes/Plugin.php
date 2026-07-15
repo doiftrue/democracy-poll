@@ -35,7 +35,10 @@ class Plugin {
 	 */
 	public Options $opt;
 
-	public function __construct( string $main_file, Options $options ) {
+	public function __construct(
+		string $main_file,
+		Options $options /** @see Options::__construct() */
+	) {
 		$this->options = $this->opt = $options;
 
 		$this->ver = get_file_data( $main_file, [ 'ver' => 'Version' ] )['ver'];

@@ -65,7 +65,7 @@
  *         widget_polls-widget
  */
 
-namespace DemocracyPoll\Utils;
+namespace DemocracyPoll\System;
 
 use DemocracyPoll\Support\Messages;
 

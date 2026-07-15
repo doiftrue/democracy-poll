@@ -3,7 +3,7 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Support\Messages;
-use DemocracyPoll\Utils\Migrator__WP_Polls;
+use DemocracyPoll\System\Migrator__WP_Polls;
 
 class Admin_Page_Other_Migrations implements Admin_Subpage_Interface {
 
