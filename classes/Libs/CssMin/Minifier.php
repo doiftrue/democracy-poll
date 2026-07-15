@@ -34,37 +34,37 @@ class Minifier {
 	const PRESERVED_TOKEN = '_CSSMIN_PTK_%d_';
 
 	// Token lists
-	private $comments = [];
-	private $ruleBodies = [];
-	private $preservedTokens = [];
+	private array $comments = [];
+	private array $ruleBodies = [];
+	private array $preservedTokens = [];
 
 	// Output options
-	private $keepImportantComments = true;
-	private $keepSourceMapComment = false;
-	private $linebreakPosition = 0;
+	private bool $keepImportantComments = true;
+	private bool $keepSourceMapComment = false;
+	private int $linebreakPosition = 0;
 
 	// PHP ini limits
-	private $raisePhpLimits;
-	private $memoryLimit;
-	private $maxExecutionTime = 60; // 1 min
-	private $pcreBacktrackLimit;
-	private $pcreRecursionLimit;
+	private bool $raisePhpLimits;
+	private int $memoryLimit;
+	private int $maxExecutionTime = 60; // 1 min
+	private int $pcreBacktrackLimit;
+	private int $pcreRecursionLimit;
 
 	// Color maps
-	private $hexToNamedColorsMap;
-	private $namedToHexColorsMap;
+	private array $hexToNamedColorsMap;
+	private array $namedToHexColorsMap;
 
 	// Regexes
-	private $numRegex;
-	private $charsetRegex = '/@charset [^;]+;/Si';
-	private $importRegex = '/@import [^;]+;/Si';
-	private $namespaceRegex = '/@namespace [^;]+;/Si';
-	private $namedToHexColorsRegex;
-	private $shortenOneZeroesRegex;
-	private $shortenTwoZeroesRegex;
-	private $shortenThreeZeroesRegex;
-	private $shortenFourZeroesRegex;
-	private $unitsGroupRegex = '(?:ch|cm|em|ex|gd|in|mm|px|pt|pc|q|rem|vh|vmax|vmin|vw|%)';
+	private string $numRegex;
+	private string $charsetRegex = '/@charset [^;]+;/Si';
+	private string $importRegex = '/@import [^;]+;/Si';
+	private string $namespaceRegex = '/@namespace [^;]+;/Si';
+	private string $namedToHexColorsRegex;
+	private string $shortenOneZeroesRegex;
+	private string $shortenTwoZeroesRegex;
+	private string $shortenThreeZeroesRegex;
+	private string $shortenFourZeroesRegex;
+	private string $unitsGroupRegex = '(?:ch|cm|em|ex|gd|in|mm|px|pt|pc|q|rem|vh|vmax|vmin|vw|%)';
 
 	/**
 	 * @param bool|int $raisePhpLimits  If true, PHP settings will be raised if needed
@@ -174,7 +174,7 @@ class Minifier {
 	/**
 	 * Builds regular expressions needed for shortening zero values
 	 */
-	private function setShortenZeroValuesRegexes() {
+	private function setShortenZeroValuesRegexes(): void {
 		$zeroRegex = '0' . $this->unitsGroupRegex;
 		$numOrPosRegex = '(' . $this->numRegex . '|top|left|bottom|right|center) ';
 		$oneZeroSafeProperties = [
@@ -207,7 +207,7 @@ class Minifier {
 	/**
 	 * Resets properties whose value may change between runs
 	 */
-	private function resetRunProperties() {
+	private function resetRunProperties(): void {
 		$this->comments = [];
 		$this->ruleBodies = [];
 		$this->preservedTokens = [];
@@ -215,9 +215,8 @@ class Minifier {
 
 	/**
 	 * Tries to configure PHP to use at least the suggested minimum settings
-	 * @return void
 	 */
-	private function doRaisePhpLimits() {
+	private function doRaisePhpLimits(): void {
 		$phpLimits = [
 			'memory_limit'         => $this->memoryLimit,
 			'max_execution_time'   => $this->maxExecutionTime,
@@ -249,12 +248,8 @@ class Minifier {
 
 	/**
 	 * Registers a preserved token
-	 *
-	 * @param string $token
-	 *
-	 * @return string The token ID string
 	 */
-	private function registerPreservedToken( $token ) {
+	private function registerPreservedToken( string $token ): string {
 		$tokenId = sprintf( self::PRESERVED_TOKEN, count( $this->preservedTokens ) );
 		$this->preservedTokens[ $tokenId ] = $token;
 
@@ -263,12 +258,8 @@ class Minifier {
 
 	/**
 	 * Registers a candidate comment token
-	 *
-	 * @param string $comment
-	 *
-	 * @return string The comment token ID string
 	 */
-	private function registerCommentToken( $comment ) {
+	private function registerCommentToken( string $comment ): string {
 		$tokenId = sprintf( self::COMMENT_TOKEN, count( $this->comments ) );
 		$this->comments[ $tokenId ] = $comment;
 
@@ -279,10 +270,8 @@ class Minifier {
 	 * Registers a rule body token
 	 *
 	 * @param string $body  the minified rule body
-	 *
-	 * @return string The rule body token ID string
 	 */
-	private function registerRuleBodyToken( $body ) {
+	private function registerRuleBodyToken( $body ): string {
 		if( empty( $body ) ){
 			return '';
 		}
@@ -415,34 +404,22 @@ class Minifier {
 
 	/**
 	 * Registers all comments found as candidates to be preserved.
-	 *
-	 * @param array $matches
-	 *
-	 * @return string
 	 */
-	private function processCommentsCallback( $matches ) {
+	private function processCommentsCallback( array $matches ): string {
 		return '/*' . $this->registerCommentToken( $matches[1] ) . '*/';
 	}
 
 	/**
 	 * Preserves old IE Matrix string definition
-	 *
-	 * @param array $matches
-	 *
-	 * @return string
 	 */
-	private function processOldIeSpecificMatrixDefinitionCallback( $matches ) {
+	private function processOldIeSpecificMatrixDefinitionCallback( array $matches ): string {
 		return 'filter:progid:DXImageTransform.Microsoft.Matrix(' . $this->registerPreservedToken( $matches[1] ) . ')';
 	}
 
 	/**
 	 * Preserves strings found
-	 *
-	 * @param array $matches
-	 *
-	 * @return string
 	 */
-	private function processStringsCallback( $matches ) {
+	private function processStringsCallback( array $matches ): string {
 		$match = $matches[0];
 		$quote = substr( $match, 0, 1 );
 		$match = substr( $match, 1, -1 );
@@ -462,12 +439,8 @@ class Minifier {
 	/**
 	 * Searches & replaces all import at-rule unquoted urls with tokens so URI reserved characters such as a semicolon
 	 * may be used safely in a URL.
-	 *
-	 * @param array $matches
-	 *
-	 * @return string
 	 */
-	private function processImportUnquotedUrlAtRulesCallback( $matches ) {
+	private function processImportUnquotedUrlAtRulesCallback( array $matches ): string {
 		return '@import url(' . $this->registerPreservedToken( $matches[1] ) . ')' . $matches[2];
 	}
 
@@ -845,12 +818,8 @@ class Minifier {
 
 	/**
 	 * Converts hsl() & rgb() colors to HEX format.
-	 *
-	 * @param $matches
-	 *
-	 * @return string
 	 */
-	private function shortenHslAndRgbToHexCallback( $matches ) {
+	private function shortenHslAndRgbToHexCallback( array $matches ): string {
 		$type = $matches[1];
 		$values = explode( ',', $matches[2] );
 		$terminator = $matches[3];
@@ -872,12 +841,8 @@ class Minifier {
 
 	/**
 	 * Compresses HEX color values of the form #AABBCC to #ABC or short color name.
-	 *
-	 * @param $matches
-	 *
-	 * @return string
 	 */
-	private function shortenHexColorsCallback( $matches ) {
+	private function shortenHexColorsCallback( array $matches ): string {
 		$hex = $matches[1];
 
 		// Shorten suitable 6 chars HEX colors
@@ -897,23 +862,15 @@ class Minifier {
 	/**
 	 * Shortens all named colors with a shorter HEX counterpart for a set of safe properties
 	 * e.g. white -> #fff
-	 *
-	 * @param array $matches
-	 *
-	 * @return string
 	 */
-	private function shortenNamedColorsCallback( $matches ) {
+	private function shortenNamedColorsCallback( array $matches ): string {
 		return $matches[1] . $this->namedToHexColorsMap[ strtolower( $matches[2] ) ] . $matches[3];
 	}
 
 	/**
 	 * Makes a string lowercase
-	 *
-	 * @param array $matches
-	 *
-	 * @return string
 	 */
-	private function strtolowerCallback( $matches ) {
+	private function strtolowerCallback( array $matches ): string {
 		return strtolower( $matches[0] );
 	}
 

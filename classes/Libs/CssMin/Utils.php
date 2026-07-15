@@ -30,18 +30,14 @@ class Utils {
 
 	/**
 	 * Converts a HSL color into a RGB color
-	 *
-	 * @param array $hslValues
-	 *
-	 * @return array
 	 */
-	public static function hslToRgb( $hslValues ) {
-		$h = floatval( $hslValues[0] );
-		$s = floatval( str_replace( '%', '', $hslValues[1] ) );
-		$l = floatval( str_replace( '%', '', $hslValues[2] ) );
+	public static function hslToRgb( array $hslValues ): array {
+		$h = (float) $hslValues[0];
+		$s = (float) str_replace( '%', '', $hslValues[1] );
+		$l = (float) str_replace( '%', '', $hslValues[2] );
 
 		// Wrap and clamp, then fraction!
-		$h = ( ( ( $h % 360 ) + 360 ) % 360 ) / 360;
+		$h = fmod( fmod( $h, 360 ) + 360, 360 ) / 360;
 		$s = self::clampNumber( $s, 0, 100 ) / 100;
 		$l = self::clampNumber( $l, 0, 100 ) / 100;
 
@@ -61,10 +57,6 @@ class Utils {
 
 	/**
 	 * Tests and selects the correct formula for each RGB color channel
-	 *
-	 * @param $v1
-	 * @param $v2
-	 * @param $vh
 	 *
 	 * @return mixed
 	 */
@@ -90,13 +82,11 @@ class Utils {
 	 * Convert strings like "64M" or "30" to int values
 	 *
 	 * @param mixed $size
-	 *
-	 * @return int
 	 */
-	public static function normalizeInt( $size ) {
+	public static function normalizeInt( $size ): int {
 		if( is_string( $size ) ){
 			$letter = substr( $size, -1 );
-			$size = intval( $size );
+			$size = (int) $size;
 			switch( $letter ){
 				case 'M':
 				case 'm':
@@ -115,27 +105,19 @@ class Utils {
 
 	/**
 	 * Converts a string containing and RGB percentage value into a RGB integer value i.e. '90%' -> 229.5
-	 *
-	 * @param $rgbPercentage
-	 *
-	 * @return int
 	 */
-	public static function rgbPercentageToRgbInteger( $rgbPercentage ) {
+	public static function rgbPercentageToRgbInteger( $rgbPercentage ): int {
 		if( strpos( $rgbPercentage, '%' ) !== false ){
-			$rgbPercentage = self::roundNumber( floatval( str_replace( '%', '', $rgbPercentage ) ) * 2.55 );
+			$rgbPercentage = self::roundNumber( (float) str_replace( '%', '', $rgbPercentage ) * 2.55 );
 		}
 
-		return intval( $rgbPercentage, 10 );
+		return (int) $rgbPercentage;
 	}
 
 	/**
 	 * Converts a RGB color into a HEX color
-	 *
-	 * @param array $rgbColors
-	 *
-	 * @return array
 	 */
-	public static function rgbToHex( $rgbColors ) {
+	public static function rgbToHex( array $rgbColors ): array {
 		$hexColors = [];
 
 		// Values outside the sRGB color space should be clipped (0-255)
@@ -148,12 +130,8 @@ class Utils {
 
 	/**
 	 * Rounds a number to its closest integer
-	 *
-	 * @param $n
-	 *
-	 * @return int
 	 */
-	public static function roundNumber( $n ) {
+	public static function roundNumber( $n ): int {
 		return (int) round( (float) $n );
 	}
 

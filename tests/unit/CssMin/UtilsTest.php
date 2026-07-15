@@ -67,6 +67,7 @@ class UtilsTest extends TestCase {
 	public function hsl_to_rgb__data(): array {
 		return [
 			'red'                => [ [ 0, '100%', '50%' ], [ 255, 0, 0 ] ],
+			'fractional hue'     => [ [ 30.5, '100%', '50%' ], [ 255, 130, 0 ] ],
 			'green'              => [ [ 120, '100%', '50%' ], [ 0, 255, 0 ] ],
 			'gray'               => [ [ 0, '0%', '50%' ], [ 128, 128, 128 ] ],
 			'wrapped hue'        => [ [ -240, '100%', '50%' ], [ 0, 255, 0 ] ],
