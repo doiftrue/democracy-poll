@@ -2,7 +2,7 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Helpers\Messages;
+use DemocracyPoll\Support\Messages;
 
 class Messages__Test extends DemocTestCase {
 

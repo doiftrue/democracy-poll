@@ -2,7 +2,7 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Helpers\Helpers;
+use DemocracyPoll\Support\Helpers;
 
 class Plugin {
 

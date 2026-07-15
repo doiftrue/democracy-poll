@@ -2,8 +2,8 @@
 
 namespace DemocracyPoll\Admin;
 
-use DemocracyPoll\Helpers\IP;
-use DemocracyPoll\Helpers\Messages;
+use DemocracyPoll\Support\IP;
+use DemocracyPoll\Support\Messages;
 use DemocracyPoll\Options;
 use DemocracyPoll\Poll_Utils;
 use DemocracyPoll\Plugin;

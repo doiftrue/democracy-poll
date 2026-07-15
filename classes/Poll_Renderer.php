@@ -2,7 +2,7 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Support\Kses;
 
 /**
  * Handles rendering the poll HTML for display on the front-end.

@@ -2,7 +2,8 @@
 
 namespace DemocracyPoll\Admin;
 
-use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Support\Helpers;
+use DemocracyPoll\Support\Kses;
 use DemocracyPoll\Options;
 use DemocracyPoll\Poll_Answer;
 use DemocracyPoll\Poll_Utils;
@@ -177,7 +178,7 @@ class List_Table_Polls extends WP_List_Table {
 	}
 
 	private function col__in_posts( Poll $poll ): string {
-		if( ! $posts = \DemocracyPoll\Helpers\Helpers::get_posts_with_poll( $poll ) ){
+		if( ! $posts = Helpers::get_posts_with_poll( $poll ) ){
 			return '';
 		}
 

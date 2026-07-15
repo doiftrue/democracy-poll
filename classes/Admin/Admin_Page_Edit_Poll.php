@@ -2,8 +2,8 @@
 
 namespace DemocracyPoll\Admin;
 
-use DemocracyPoll\Helpers\Kses;
-use DemocracyPoll\Helpers\Messages;
+use DemocracyPoll\Support\Kses;
+use DemocracyPoll\Support\Messages;
 use DemocracyPoll\Options;
 use DemocracyPoll\Poll;
 use DemocracyPoll\Poll_Storage;

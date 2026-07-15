@@ -2,7 +2,7 @@
 
 namespace DemocracyPoll\Admin;
 
-use DemocracyPoll\Helpers\Messages;
+use DemocracyPoll\Support\Messages;
 use DemocracyPoll\Plugin;
 use DemocracyPoll\Poll_Utils;
 use DemocracyPoll\Utils\Upgrader;

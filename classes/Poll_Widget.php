@@ -3,7 +3,7 @@
 namespace DemocracyPoll;
 
 use DemocracyPoll\Admin\Post_Metabox;
-use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Support\Kses;
 use WP_Widget;
 
 class Poll_Widget extends WP_Widget {

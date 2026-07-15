@@ -3,6 +3,7 @@
 use DemocracyPoll\Admin\Post_Metabox;
 use DemocracyPoll\Poll;
 use DemocracyPoll\Poll_Renderer;
+use DemocracyPoll\Support\Helpers;
 use function DemocracyPoll\container;
 
 /**
@@ -365,7 +366,7 @@ function get_dem_polls( $args = [] ) {
 		// in posts
 		if(
 			$rg->add_from_posts &&
-			( $posts = \DemocracyPoll\Helpers\Helpers::get_posts_with_poll( $poll ) )
+			( $posts = Helpers::get_posts_with_poll( $poll ) )
 		){
 			$links = [];
 			foreach( $posts as $post ){

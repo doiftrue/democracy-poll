@@ -2,7 +2,7 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Helpers\IP;
+use DemocracyPoll\Support\IP;
 
 class Poll_Logs {
 

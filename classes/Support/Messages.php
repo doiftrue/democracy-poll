@@ -1,6 +1,6 @@
 <?php
 
-namespace DemocracyPoll\Helpers;
+namespace DemocracyPoll\Support;
 
 class Messages {
 

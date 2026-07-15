@@ -2,8 +2,8 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Helpers\IP;
-use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Support\IP;
+use DemocracyPoll\Support\Kses;
 
 /**
  * Stores and retrieves poll data.

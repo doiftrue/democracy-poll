@@ -1,7 +1,7 @@
 <?php
 namespace DemocracyPoll\Admin;
 
-use DemocracyPoll\Helpers\Helpers;
+use DemocracyPoll\Support\Helpers;
 use DemocracyPoll\Poll_Answer;
 
 /**

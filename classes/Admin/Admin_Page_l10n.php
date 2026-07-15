@@ -2,8 +2,8 @@
 
 namespace DemocracyPoll\Admin;
 
-use DemocracyPoll\Helpers\Kses;
-use DemocracyPoll\Helpers\Messages;
+use DemocracyPoll\Support\Kses;
+use DemocracyPoll\Support\Messages;
 use DemocracyPoll\Plugin;
 
 class Admin_Page_l10n implements Admin_Subpage_Interface {

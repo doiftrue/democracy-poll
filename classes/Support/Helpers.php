@@ -1,6 +1,6 @@
 <?php
 
-namespace DemocracyPoll\Helpers;
+namespace DemocracyPoll\Support;
 
 use DemocracyPoll\Poll;
 use WP_Post;

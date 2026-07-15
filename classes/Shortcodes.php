@@ -2,8 +2,6 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Admin\Post_Metabox;
-
 class Shortcodes {
 
 	private Options $options;
@@ -45,7 +43,7 @@ class Shortcodes {
 		$poll = self::normalize_poll_id_attr( $atts['id'] );
 
 		if( $poll === 'current' ){
-			$poll = Post_Metabox::get_post_poll_id( $post_id ) ?: 'rand';
+			$poll = Admin\Post_Metabox::get_post_poll_id( $post_id ) ?: 'rand';
 		}
 
 		if( $poll === 'last' || $poll === 'rand' ){

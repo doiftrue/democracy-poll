@@ -2,7 +2,7 @@
 
 namespace DemocracyPoll;
 
-use DemocracyPoll\Helpers\Kses;
+use DemocracyPoll\Support\Kses;
 use DemocracyPoll\Utils\Activator;
 use DemocracyPoll\Admin\Admin;
 use DemocracyPoll\Admin\Admin_Page_Logs;

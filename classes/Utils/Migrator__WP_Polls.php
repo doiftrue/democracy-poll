@@ -67,7 +67,7 @@
 
 namespace DemocracyPoll\Utils;
 
-use DemocracyPoll\Helpers\Messages;
+use DemocracyPoll\Support\Messages;
 
 class Migrator__WP_Polls {
 
