@@ -4,14 +4,22 @@
 namespace DemocracyPoll\Admin;
 
 use DemocracyPoll\Plugin;
-use function DemocracyPoll\container;
 
 class Tinymce_Button {
 
-	public static function init() {
-		add_filter( 'mce_external_plugins', [ __CLASS__, 'tinymce_plugin' ] );
-		add_filter( 'mce_buttons', [ __CLASS__, 'tinymce_register_button' ] );
-		add_filter( 'wp_mce_translation', [ __CLASS__, 'tinymce_l10n' ] );
+	private Plugin $plugin;
+
+	public function __construct( Plugin $plugin ) {
+		$this->plugin = $plugin;
+	}
+
+	/**
+	 * Registers callbacks with explicitly injected dependencies.
+	 */
+	public function register(): void {
+		add_filter( 'mce_external_plugins', [ $this, 'add_tinymce_plugin' ] );
+		add_filter( 'mce_buttons', [ self::class, 'tinymce_register_button' ] );
+		add_filter( 'wp_mce_translation', [ self::class, 'tinymce_l10n' ] );
 	}
 
 	public static function tinymce_register_button( $buttons ) {
@@ -20,8 +28,8 @@ class Tinymce_Button {
 		return $buttons;
 	}
 
-	public static function tinymce_plugin( $plugin_array ) {
-		$plugin_array['demTiny'] = container()->get( Plugin::class )->url . '/assets/admin/tinymce.js';
+	public function add_tinymce_plugin( $plugin_array ) {
+		$plugin_array['demTiny'] = $this->plugin->url . '/assets/admin/tinymce.js';
 
 		return $plugin_array;
 	}

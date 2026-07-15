@@ -179,7 +179,7 @@ trait Admin_Page__Additional {
 	 */
 	public function subpages_menu(): string {
 
-		$referer = self::back_link();
+		$referer = $this->back_link();
 		$main_page = wp_make_link_relative( $this->plugin->admin_page_url );
 
 		$current_class = function( $page ) {
@@ -229,13 +229,11 @@ trait Admin_Page__Additional {
 		return $out;
 	}
 
-	private static function back_link(): string {
-		$plugin = container()->get( Plugin::class );
-
+	private function back_link(): string {
 		$request_uri = $_SERVER['REQUEST_URI'];
 
 		$transient = 'democracy_referer';
-		$main_page = wp_make_link_relative( $plugin->admin_page_url );
+		$main_page = wp_make_link_relative( $this->plugin->admin_page_url );
 		$referer = isset( $_SERVER['HTTP_REFERER'] ) ? wp_make_link_relative( $_SERVER['HTTP_REFERER'] ) : '';
 
 		// Handle updates from the current page.

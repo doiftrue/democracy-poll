@@ -15,15 +15,19 @@ class Admin {
 	private Options $options;
 	private Plugin $plugin;
 	private Admin_Page $admin_page;
+	private Tinymce_Button $tinymce_button;
 
 	public function __construct(
 		Plugin $plugin,
 		Options $options,
-		Admin_Page $admin_page /** @see Admin_Page::__construct() */
+		/** @see Admin_Page::__construct() */
+		Admin_Page $admin_page,
+		Tinymce_Button $tinymce_button
 	) {
 		$this->plugin = $plugin;
 		$this->options = $options;
 		$this->admin_page = $admin_page;
+		$this->tinymce_button = $tinymce_button;
 	}
 
 	public function init(): void {
@@ -33,7 +37,7 @@ class Admin {
 
 		// TinyMCE button WP 2.5+
 		if( $this->options->tinymce_button ){
-			Tinymce_Button::init();
+			$this->tinymce_button->register();
 		}
 
 		if( ! $this->options->post_metabox_off ){
