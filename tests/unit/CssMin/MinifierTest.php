@@ -31,7 +31,7 @@ class MinifierTest extends TestCase {
 			],
 			'quoted content remains intact' => [
 				'.icon { content: "a  b; /* text */"; color: white; }',
-				'.icon{content:"a  b; /* text */";color:#fff}',
+				'.icon{content:"a  b; /* text */";color:white}',
 			],
 			'critical at-rules are ordered first' => [
 				'.x { color: red; } @namespace svg url(http://example.com); @import url(theme.css); @charset "UTF-8";',
@@ -39,7 +39,7 @@ class MinifierTest extends TestCase {
 			],
 			'nested selectors' => [
 				'.card { color: white; & > .title { font-weight: bold; } &:hover { color: rgb(255, 0, 0); } }',
-				'.card{color:white;&>.title{font-weight:700}&:hover{color:red}}',
+				'.card{color:white;&>.title{font-weight:700}&:hover{color:#f00}}',
 			],
 			'nested conditional rule' => [
 				'.card { display: block; @media (width >= 40rem) { display: grid; gap: 0px; } }',
@@ -47,7 +47,7 @@ class MinifierTest extends TestCase {
 			],
 			'custom properties and variable fallbacks' => [
 				':root { --brand-color: #ff0000; --space: 1rem; } .button { color: var(--brand-color, currentColor); padding-inline: var(--space); }',
-				':root{--brand-color:red;--space:1rem}.button{color:var(--brand-color,currentColor);padding-inline:var(--space)}',
+				':root{--brand-color:#f00;--space:1rem}.button{color:var(--brand-color,currentColor);padding-inline:var(--space)}',
 			],
 			'custom property names remain case-sensitive' => [
 				':root { --BrandColor: red; } .button { color: var(--BrandColor); }',

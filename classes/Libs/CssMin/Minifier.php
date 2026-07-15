@@ -50,16 +50,11 @@ class Minifier {
 	private int $pcreBacktrackLimit;
 	private int $pcreRecursionLimit;
 
-	// Color maps
-	private array $hexToNamedColorsMap;
-	private array $namedToHexColorsMap;
-
 	// Regexes
 	private string $numRegex;
 	private string $charsetRegex = '/@charset [^;]+;/Si';
 	private string $importRegex = '/@import [^;]+;/Si';
 	private string $namespaceRegex = '/@namespace [^;]+;/Si';
-	private string $namedToHexColorsRegex;
 	private string $shortenOneZeroesRegex;
 	private string $shortenTwoZeroesRegex;
 	private string $shortenThreeZeroesRegex;
@@ -74,12 +69,6 @@ class Minifier {
 		$this->memoryLimit = 128 * 1048576; // 128MB in bytes
 		$this->pcreBacktrackLimit = 1000 * 1000;
 		$this->pcreRecursionLimit = 500 * 1000;
-		$this->hexToNamedColorsMap = Colors::getHexToNamedMap();
-		$this->namedToHexColorsMap = Colors::getNamedToHexMap();
-		$this->namedToHexColorsRegex = sprintf(
-			'/([:,( ])(%s)( |,|\)|;|$)/Si',
-			implode( '|', array_keys( $this->namedToHexColorsMap ) )
-		);
 		$this->numRegex = sprintf( '-?\d*\.?\d+%s?', $this->unitsGroupRegex );
 		$this->setShortenZeroValuesRegexes();
 	}
@@ -582,19 +571,11 @@ class Minifier {
 			$body
 		);
 
-		// Shorten colors from #AABBCC to #ABC or shorter color name:
+		// Shorten colors from #AABBCC to #ABC:
 		// - Look for hex colors which don't have a "=" in front of them (to avoid MSIE filters)
 		$body = preg_replace_callback(
 			'/(?<!=)#([0-9a-f]{3,6})( |,|\)|;|$)/Si',
 			[ $this, 'shortenHexColorsCallback' ],
-			$body
-		);
-
-		// Shorten long named colors with a shorter HEX counterpart: white -> #fff.
-		// Run at least 2 times to cover most cases
-		$body = preg_replace_callback(
-			[ $this->namedToHexColorsRegex, $this->namedToHexColorsRegex ],
-			[ $this, 'shortenNamedColorsCallback' ],
 			$body
 		);
 
@@ -840,7 +821,7 @@ class Minifier {
 	}
 
 	/**
-	 * Compresses HEX color values of the form #AABBCC to #ABC or short color name.
+	 * Compresses HEX color values of the form #AABBCC to #ABC.
 	 */
 	private function shortenHexColorsCallback( array $matches ): string {
 		$hex = $matches[1];
@@ -853,18 +834,7 @@ class Minifier {
 		// Lowercase
 		$hex = '#' . strtolower( $hex );
 
-		// Replace Hex colors with shorter color names
-		$color = array_key_exists( $hex, $this->hexToNamedColorsMap ) ? $this->hexToNamedColorsMap[ $hex ] : $hex;
-
-		return $color . $matches[2];
-	}
-
-	/**
-	 * Shortens all named colors with a shorter HEX counterpart for a set of safe properties
-	 * e.g. white -> #fff
-	 */
-	private function shortenNamedColorsCallback( array $matches ): string {
-		return $matches[1] . $this->namedToHexColorsMap[ strtolower( $matches[2] ) ] . $matches[3];
+		return $hex . $matches[2];
 	}
 
 	/**
