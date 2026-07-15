@@ -31,9 +31,9 @@ register_activation_hook( __FILE__, [ System\Activator::class, 'activate' ] );
 add_action( 'after_setup_theme', '\DemocracyPoll\init_plugin' );
 
 function init_plugin(): void {
-	$container = new Libs\Container();
+	$container = container( new Libs\Container() ); // set the container globally
+
 	$container->set( Plugin::class, [ 'main_file' => __FILE__ ] ); /** @see Plugin::__construct() */
-	container( $container ); // set the container globally
 
 	$initor = $container->get( System\Plugin_Initor::class ); /** @see System\Plugin_Initor::__construct() */
     $initor->init_plugin();

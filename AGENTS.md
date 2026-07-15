@@ -41,6 +41,7 @@ This is WordPress plugin that distributed to oficial WordPress plugin repository
 - `classes/Infra/Container.php` - should not be covered with tests, because it third-party code that already covered by PHPUnit. 
 
 ## Commit & Pull Request Guidelines
+- Do not commit changes automatically. Leave all changes uncommitted so the user can review and commit them manually.
 - Commit messages typically use short prefixes like `IMP:`, `FIX:`, `NEW:`, `CHG:` or version tags like `v6.1.0`.
 - PRs should describe the user impact and include screenshots/GIFs for admin UI changes.
 

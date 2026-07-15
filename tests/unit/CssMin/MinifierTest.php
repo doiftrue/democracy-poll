@@ -38,8 +38,8 @@ class MinifierTest extends TestCase {
 				'@charset "UTF-8";@import url(theme.css);@namespace svg url(http://example.com);.x{color:red}',
 			],
 			'nested selectors' => [
-				'.card { color: white; & > .title { font-weight: bold; } &:hover { color: rgb(255, 0, 0); } }',
-				'.card{color:white;&>.title{font-weight:700}&:hover{color:#f00}}',
+				'.card { color: white; > .title { font-weight: bold; } .meta { color: gray; } &:hover { color: rgb(255, 0, 0); } }',
+				'.card{color:white;>.title{font-weight:700}.meta{color:gray}&:hover{color:#f00}}',
 			],
 			'nested conditional rule' => [
 				'.card { display: block; @media (width >= 40rem) { display: grid; gap: 0px; } }',
