@@ -5,30 +5,6 @@ namespace DemocracyPoll\Libs\CssMin;
 class Utils {
 
 	/**
-	 * Clamps a number between a minimum and a maximum value.
-	 *
-	 * @param int|float $n    the number to clamp
-	 * @param int|float $min  the lower end number allowed
-	 * @param int|float $max  the higher end number allowed
-	 *
-	 * @return int|float
-	 */
-	public static function clampNumber( $n, $min, $max ) {
-		return min( max( $n, $min ), $max );
-	}
-
-	/**
-	 * Clamps a RGB color number outside the sRGB color space
-	 *
-	 * @param int|float $n  the number to clamp
-	 *
-	 * @return int|float
-	 */
-	public static function clampNumberSrgb( $n ) {
-		return self::clampNumber( $n, 0, 255 );
-	}
-
-	/**
 	 * Converts a HSL color into a RGB color
 	 */
 	public static function hslToRgb( array $hslValues ): array {
@@ -79,6 +55,44 @@ class Utils {
 	}
 
 	/**
+	 * Converts a RGB color into a HEX color
+	 */
+	public static function rgbToHex( array $rgbColors ): array {
+		$hexColors = [];
+
+		// Values outside the sRGB color space should be clipped (0-255)
+		for( $i = 0, $l = count( $rgbColors ); $i < $l; $i++ ){
+			$hexColors[ $i ] = sprintf( "%02x", self::clampNumberSrgb( self::rgbPercentageToRgbInteger( $rgbColors[ $i ] ) ) );
+		}
+
+		return $hexColors;
+	}
+
+	/**
+	 * Clamps a number between a minimum and a maximum value.
+	 *
+	 * @param int|float $n    the number to clamp
+	 * @param int|float $min  the lower end number allowed
+	 * @param int|float $max  the higher end number allowed
+	 *
+	 * @return int|float
+	 */
+	public static function clampNumber( $n, $min, $max ) {
+		return min( max( $n, $min ), $max );
+	}
+
+	/**
+	 * Clamps a RGB color number outside the sRGB color space
+	 *
+	 * @param int|float $n  the number to clamp
+	 *
+	 * @return int|float
+	 */
+	public static function clampNumberSrgb( $n ) {
+		return self::clampNumber( $n, 0, 255 );
+	}
+
+	/**
 	 * Convert strings like "64M" or "30" to int values
 	 *
 	 * @param mixed $size
@@ -112,20 +126,6 @@ class Utils {
 		}
 
 		return (int) $rgbPercentage;
-	}
-
-	/**
-	 * Converts a RGB color into a HEX color
-	 */
-	public static function rgbToHex( array $rgbColors ): array {
-		$hexColors = [];
-
-		// Values outside the sRGB color space should be clipped (0-255)
-		for( $i = 0, $l = count( $rgbColors ); $i < $l; $i++ ){
-			$hexColors[ $i ] = sprintf( "%02x", self::clampNumberSrgb( self::rgbPercentageToRgbInteger( $rgbColors[ $i ] ) ) );
-		}
-
-		return $hexColors;
 	}
 
 	/**
