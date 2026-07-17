@@ -54,9 +54,9 @@ class Theme_Functions__Test extends DemocTestCase {
 
 	private function set_up_test_environment(): void {
 		$this->set_options( [
-			'democracy_off' => false,
-			'keep_logs'     => false,
-			'revote_off'    => false,
+			'democracy_off'       => false,
+			'allow_same_ip_votes' => false,
+			'revote_off'          => false,
 		] );
 
 		$renderer = Mockery::mock( Poll_Renderer::class );

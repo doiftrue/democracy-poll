@@ -90,7 +90,6 @@ class Poll_User_State__Test extends DemocTestCase {
 	public function test__blocked_by_not_logged_uses_global_and_poll_user_only_flags(): void {
 		$this->set_options( [
 			'only_for_users' => false,
-			'keep_logs'      => false,
 		] );
 		WP_Mock::userFunction( 'is_user_logged_in' )->andReturn( false );
 
@@ -103,10 +102,9 @@ class Poll_User_State__Test extends DemocTestCase {
 	/**
 	 * @covers Poll_User_State::__get()
 	 */
-	public function test__voted_for_prefers_logs_over_cookie_when_logs_are_enabled(): void {
+	public function test__voted_for_prefers_logs_over_cookie(): void {
 		$this->set_options( [
 			'only_for_users' => false,
-			'keep_logs'      => true,
 		] );
 
 		$state = $this->state_with_dependencies( $this->poll( 10 ), '1,2', false, [ (object) [ 'aids' => '7,8' ] ] );
@@ -118,10 +116,9 @@ class Poll_User_State__Test extends DemocTestCase {
 	/**
 	 * @covers Poll_User_State::__get()
 	 */
-	public function test__voted_for_uses_cookie_when_logs_are_disabled(): void {
+	public function test__voted_for_uses_cookie_before_server_identity_is_resolved(): void {
 		$this->set_options( [
 			'only_for_users' => false,
-			'keep_logs'      => false,
 		] );
 
 		$state = $this->state_with_dependencies( $this->poll( 10 ), '3,4', false );
@@ -133,10 +130,23 @@ class Poll_User_State__Test extends DemocTestCase {
 	/**
 	 * @covers Poll_User_State::__get()
 	 */
+	public function test__voted_for_ignores_cookie_after_server_identity_has_no_matching_log(): void {
+		$this->set_options( [
+			'only_for_users' => false,
+		] );
+
+		$state = $this->state_with_dependencies( $this->poll( 10 ), '3,4', false, [], true );
+
+		$this->assertSame( '', $state->voted_for );
+		$this->assertFalse( $state->has_voted );
+	}
+
+	/**
+	 * @covers Poll_User_State::__get()
+	 */
 	public function test__voted_for_ignores_not_voted_cookie_marker(): void {
 		$this->set_options( [
 			'only_for_users' => false,
-			'keep_logs'      => false,
 		] );
 
 		$state = $this->state_with_dependencies( $this->poll( 10 ), Poll_Cookies::NOT_VOTED, true );
@@ -176,11 +186,12 @@ class Poll_User_State__Test extends DemocTestCase {
 		Poll $poll,
 		string $cookie_value = '',
 		bool $is_not_voted = false,
-		array $logs = []
+		array $logs = [],
+		bool $identity_resolved = false
 	): Poll_User_State {
 		$state = new Poll_User_State( $poll );
 		$state->poll_cookie = new Poll_Cookies__Double( $poll, $cookie_value, $is_not_voted );
-		$state->poll_logs = new Poll_Logs__Double( $poll, $logs );
+		$state->poll_logs = new Poll_Logs__Double( $poll, $logs, $identity_resolved );
 
 		return $state;
 	}

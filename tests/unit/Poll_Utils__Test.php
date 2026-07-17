@@ -106,6 +106,7 @@ class Poll_Utils__Test extends DemocTestCase {
 		$plugin->url = 'https://test.com/path/to/plugin';
 		$plugin->ver = '6.3.1';
 		container()->set( Plugin::class, $plugin );
+		WP_Mock::userFunction( 'is_user_logged_in' )->andReturn( true );
 
 		Poll_Utils::enqueue_js();
 
@@ -120,10 +121,11 @@ class Poll_Utils__Test extends DemocTestCase {
 		$this->assertSame( 'defer', $script->extra['strategy'] );
 		$inline_script = $scripts->get_inline_script_data( 'democracy', 'before' );
 		$expected_config = 'window.democracyPollConfig = ' . wp_json_encode( [
-			'ajax_url'        => 'https://test.com/wp-admin/admin-ajax.php',
-			'cookie_days'     => 365,
-			'anim_speed'      => 400,
-			'line_anim_speed' => 1500,
+			'ajax_url'          => 'https://test.com/wp-admin/admin-ajax.php',
+			'cookie_days'       => 365,
+			'anim_speed'        => 400,
+			'line_anim_speed'   => 1500,
+			'is_user_logged_in' => true,
 		], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . ';';
 
 		$this->assertStringContainsString( $expected_config, $inline_script );

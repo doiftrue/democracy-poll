@@ -60,11 +60,14 @@ class Poll_Ajax__Test extends DemocTestCase {
 			'dem_act'    => '<b>vote</b>',
 			'dem_pid'    => '12foo',
 			'answer_ids' => '1\\~New \\"answer\\"',
+			'fingerprint' => 'v1:' . str_repeat( 'a', 64 ),
 		];
 
 		$this->renderer->not_show_results = false;
 		$this->renderer->shouldReceive( 'get_result_screen' )->once()->andReturn( 'RESULTS' );
-		$this->voting->shouldReceive( 'vote' )->once()->with( '1~New "answer"' )->andReturn( '1,2' );
+		$this->voting->shouldReceive( 'vote' )->once()
+			->with( '1~New "answer"', 'v1:' . str_repeat( 'a', 64 ) )
+			->andReturn( '1,2' );
 
 		$this->expect_json_response( $this->response( 'RESULTS' ) );
 
@@ -136,7 +139,7 @@ class Poll_Ajax__Test extends DemocTestCase {
 
 		$this->renderer->not_show_results = false;
 		$this->renderer->shouldReceive( 'get_result_screen' )->once()->andReturn( 'RESULTS' );
-		$this->voting->shouldReceive( 'vote' )->once()->with( '1~2' )->andReturn( '1,2' );
+		$this->voting->shouldReceive( 'vote' )->once()->with( '1~2', '' )->andReturn( '1,2' );
 
 		$this->expect_json_response( $this->response( 'RESULTS' ) );
 
@@ -155,7 +158,7 @@ class Poll_Ajax__Test extends DemocTestCase {
 		];
 
 		$this->renderer->shouldReceive( 'get_vote_screen' )->once()->andReturn( 'VOTE' );
-		$this->voting->shouldReceive( 'vote' )->once()->with( '1~2' )
+		$this->voting->shouldReceive( 'vote' )->once()->with( '1~2', '' )
 			->andReturn( new WP_Error( 'vote_err', '<b>Invalid</b><script>alert(1)</script>' ) );
 
 		$this->expect_json_response( $this->response(
@@ -183,9 +186,11 @@ class Poll_Ajax__Test extends DemocTestCase {
 		$this->poll->user_state->voted_for = '1,2';
 		$this->poll->user_state->poll_cookie = Mockery::mock( Poll_Cookies::class );
 		$this->poll->user_state->poll_cookie->shouldReceive( 'set' )->once();
+		$this->renderer->not_show_results = false;
+		$this->renderer->shouldReceive( 'get_result_screen' )->once()->andReturn( 'RESULTS' );
 
 		$this->expect_json_response( $this->response(
-			'',
+			'RESULTS',
 			[
 				'status' => 'already_voted',
 				'html'   => 'You or your IP have already voted.',
@@ -238,8 +243,9 @@ class Poll_Ajax__Test extends DemocTestCase {
 		$this->poll->user_state->blocked_by_not_logged = false;
 		$this->poll->user_state->poll_cookie = Mockery::mock( Poll_Cookies::class );
 		$this->poll->user_state->poll_cookie->shouldReceive( 'set_not_voted' )->once();
+		$this->renderer->shouldReceive( 'get_vote_screen' )->once()->andReturn( 'VOTE' );
 
-		$this->expect_json_response( $this->response( '' ) );
+		$this->expect_json_response( $this->response( 'VOTE' ) );
 
 		$ajax = new Poll_Ajax__Double( $this->poll, $this->renderer, $this->voting );
 		$ajax->ajax_request_handler();

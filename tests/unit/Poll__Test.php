@@ -29,7 +29,6 @@ class Poll__Test extends DemocTestCase {
 	public function test__constructor_maps_db_object_to_typed_properties(): void {
 		$this->set_options( [
 			'democracy_off' => false,
-			'keep_logs'     => true,
 			'revote_off'    => false,
 		] );
 
@@ -76,7 +75,6 @@ class Poll__Test extends DemocTestCase {
 	public function test__constructor_respects_global_democracy_off_option(): void {
 		$this->set_options( [
 			'democracy_off' => true,
-			'keep_logs'     => true,
 			'revote_off'    => false,
 		] );
 
@@ -91,10 +89,9 @@ class Poll__Test extends DemocTestCase {
 	 * @covers Poll::__construct()
 	 * @dataProvider data__revote_flags
 	 */
-	public function test__constructor_resolves_revote_from_options( bool $keep_logs, bool $revote_off, bool $db_revote, bool $expected ): void {
+	public function test__constructor_resolves_revote_from_options( bool $revote_off, bool $db_revote, bool $expected ): void {
 		$this->set_options( [
 			'democracy_off' => false,
-			'keep_logs'     => $keep_logs,
 			'revote_off'    => $revote_off,
 		] );
 
@@ -107,10 +104,9 @@ class Poll__Test extends DemocTestCase {
 
 	public function data__revote_flags(): array {
 		return [
-			'enabled everywhere'  => [ true, false, true, true ],
-			'logs disabled'       => [ false, false, true, false ],
-			'revote disabled'     => [ true, true, true, false ],
-			'db revote disabled'  => [ true, false, false, false ],
+			'enabled everywhere' => [ false, true, true ],
+			'revote disabled'    => [ true, true, false ],
+			'db revote disabled' => [ false, false, false ],
 		];
 	}
 

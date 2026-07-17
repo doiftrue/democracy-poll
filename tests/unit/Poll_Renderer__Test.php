@@ -31,6 +31,7 @@ class Poll_Renderer__Test extends DemocTestCase {
 		WP_Mock::userFunction( 'get_option' )
 			->with( 'democracy_css' )
 			->andReturn( [ 'minify' => '.democracy{color:red}' ] );
+		WP_Mock::userFunction( 'is_user_logged_in' )->andReturn( false );
 
 		$first_renderer = new Poll_Renderer__Double();
 		$second_renderer = new Poll_Renderer__Double();
@@ -76,13 +77,13 @@ class Poll_Renderer__Test extends DemocTestCase {
 
 	private function create_renderer(): Poll_Renderer_Render__Double {
 		$this->set_options( [
-			'democracy_off'     => false,
-			'keep_logs'         => true,
-			'revote_off'        => false,
-			'dont_show_results' => false,
-			'archive_page_id'   => 0,
-			'title_markup'      => '<strong class="dem-poll-title">{question}</strong>',
-			'answs_max_height'  => '',
+			'democracy_off'       => false,
+			'allow_same_ip_votes' => false,
+			'revote_off'          => false,
+			'dont_show_results'   => false,
+			'archive_page_id'     => 0,
+			'title_markup'        => '<strong class="dem-poll-title">{question}</strong>',
+			'answs_max_height'    => '',
 		] );
 
 		$plugin = container()->get( Plugin::class );
