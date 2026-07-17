@@ -62,10 +62,11 @@ class Poll_Utils {
 		] );
 
 		$config = [
-			'ajax_url'        => container()->get( Poll_Ajax::class )->ajax_url,
-			'cookie_days'     => (float) $options->cookie_days,
-			'anim_speed'      => (int) $options->anim_speed,
-			'line_anim_speed' => (int) $options->line_anim_speed,
+			'ajax_url'          => container()->get( Poll_Ajax::class )->ajax_url,
+			'cookie_days'       => (float) $options->cookie_days,
+			'anim_speed'        => (int) $options->anim_speed,
+			'line_anim_speed'   => (int) $options->line_anim_speed,
+			'is_user_logged_in' => is_user_logged_in(),
 		];
 
 		$json = wp_json_encode( $config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );

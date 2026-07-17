@@ -32,7 +32,7 @@ Notation:
 (Page-cache markup. JS copies the selected cache screen into `.dem-screen`.
 Styles should target the `.dem-screen` rather than relying only on `.dem-screen-cache`.)
 [ 
-	<div class="dem-cache-screens" style="display:none;" data-opt_logs="1">
+	<div class="dem-cache-screens" style="display:none;">
 		<div class="dem-screen-cache voted">...</div>
 		<div class="dem-screen-cache vote">...</div>
 	</div>

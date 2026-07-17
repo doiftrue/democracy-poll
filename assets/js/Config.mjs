@@ -24,4 +24,7 @@ export default class Config {
 	/** @type {number} */
 	static lineAnimSpeed = 0
 
+	/** @type {boolean} */
+	static isUserLoggedIn = false
+
 }

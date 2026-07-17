@@ -121,7 +121,7 @@ class Poll extends DemPoll_Legacy {
 		$this->open          = (bool) $dbdata->open;
 		$this->multiple      = (int) $dbdata->multiple;
 		$this->forusers      = (bool) $dbdata->forusers;
-		$this->revote        = (bool) ( $options->keep_logs && ! $options->revote_off && $dbdata->revote );
+		$this->revote        = (bool) ( ! $options->revote_off && $dbdata->revote );
 		$this->show_results  = (bool) $dbdata->show_results;
 		$this->answers_order = (string) $dbdata->answers_order;
 		$this->in_posts      = (string) $dbdata->in_posts;

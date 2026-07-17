@@ -4,7 +4,7 @@ namespace DemocracyPoll;
 
 /**
  * Main:
- * @property-read int    $keep_logs              Eg: 1
+ * @property-read int    $allow_same_ip_votes    Eg: 0
  * @property-read string $title_markup           Eg: '<strong class="dem-poll-title">{question}</strong>'
  * @property-read int    $force_cachegear        Eg: 0
  * @property-read int    $archive_page_id        Eg: 0
@@ -54,8 +54,8 @@ class Options {
 
 	protected array $default_options = [
 		'main'   => [
-			// Store logs in the database.
-			'keep_logs'              => 1,
+			// Allow guests with different browser fingerprints to vote from the same IP address.
+			'allow_same_ip_votes'    => 0,
 			'title_markup'           => '<strong class="dem-poll-title">{question}</strong>',
 			'force_cachegear'        => 0,
 			'archive_page_id'        => 0,
@@ -143,14 +143,23 @@ class Options {
 			if( ! $this->opt ){
 				$this->reset_options( 'all' );
 			}
-			// backward compatibility: v6.4.1+
-			elseif( ! isset( $this->opt['title_markup'] ) ){
-				$before_title = $this->opt['before_title'] ?? '<strong class="dem-poll-title">';
-				$after_title  = $this->opt['after_title'] ?? '</strong>';
-				$this->opt['title_markup'] = "$before_title{question}$after_title";
+			else {
+				// backward compatibility: v6.4.1+
+				if( ! isset( $this->opt['title_markup'] ) ){
+					$before_title = $this->opt['before_title'] ?? '<strong class="dem-poll-title">';
+					$after_title  = $this->opt['after_title'] ?? '</strong>';
+					$this->opt['title_markup'] = "$before_title{question}$after_title";
+				}
+
+				// `keep_logs` previously controlled both logging and repeat-vote checks.
+				if( ! isset( $this->opt['allow_same_ip_votes'] ) ){
+					$this->opt['allow_same_ip_votes'] = isset( $this->opt['keep_logs'] )
+						? (int) empty( $this->opt['keep_logs'] )
+						: 0;
+				}
 			}
 
-			unset( $this->opt['before_title'], $this->opt['after_title'] );
+			unset( $this->opt['before_title'], $this->opt['after_title'], $this->opt['keep_logs'] );
 		}
 
 		// append default values

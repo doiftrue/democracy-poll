@@ -7,9 +7,21 @@ use DemocracyPoll\Support\IP;
 class Poll_Logs {
 
 	private Poll $poll;
+	private string $fingerprint = '';
+	private bool $fingerprint_resolved = false;
+	private bool $identity_resolved = false;
 
 	public function __construct( Poll $poll ) {
 		$this->poll = $poll;
+	}
+
+	public function set_fingerprint( string $fingerprint ): void {
+		$this->fingerprint = $fingerprint ? hash( 'sha256', $fingerprint ) : '';
+		$this->fingerprint_resolved = true;
+	}
+
+	public function is_identity_resolved(): bool {
+		return $this->identity_resolved;
 	}
 
 	/**
@@ -29,11 +41,26 @@ class Poll_Logs {
 		// Check the user and IP address separately.
 		// Otherwise, anonymous users all have ID 0 and would match one another.
 		if( $user_id ){
+			$this->identity_resolved = true;
 			// For registered users only; the IP address is ignored.
 			// A user who voted anonymously can vote again after logging in.
 			$WHERE[] = $wpdb->prepare( 'userid = %d', $user_id );
 		}
+		elseif( container()->get( Options::class )->allow_same_ip_votes ){
+			if( $this->fingerprint ){
+				$this->identity_resolved = true;
+				$WHERE[] = $wpdb->prepare( 'userid = 0 AND fingerprint = %s', $this->fingerprint );
+			}
+			elseif( ! $this->fingerprint_resolved ){
+				return [];
+			}
+			else {
+				$this->identity_resolved = true;
+				$WHERE[] = $wpdb->prepare( 'userid = 0 AND ip = %s', IP::get_user_ip() );
+			}
+		}
 		else {
+			$this->identity_resolved = true;
 			$WHERE[] = $wpdb->prepare( 'userid = 0 AND ip = %s', IP::get_user_ip() );
 		}
 
@@ -44,7 +71,7 @@ class Poll_Logs {
 		return $wpdb->get_results( $sql );
 	}
 
-	public function insert_logs() {
+	public function insert_logs(): bool {
 		global $wpdb;
 
 		$poll = $this->poll;
@@ -53,15 +80,17 @@ class Poll_Logs {
 		}
 
 		$options = container()->get( Options::class );
+		$user_id = (int) get_current_user_id();
 
-		return $wpdb->insert( $wpdb->democracy_log, [
-			'qid'     => $poll->id,
-			'aids'    => $poll->user_state->voted_for,
-			'userid'  => (int) get_current_user_id(),
-			'date'    => current_time( 'mysql' ),
-			'expire'  => current_time( 'timestamp', $utc = true ) + (int) ( (float) $options->cookie_days * DAY_IN_SECONDS ),
-			'ip'      => IP::get_user_ip(),
-			'ip_info' => '',
+		return (bool) $wpdb->insert( $wpdb->democracy_log, [
+			'qid'         => $poll->id,
+			'aids'        => $poll->user_state->voted_for,
+			'userid'      => $user_id,
+			'date'        => current_time( 'mysql' ),
+			'expire'      => current_time( 'timestamp', $utc = true ) + (int) ( (float) $options->cookie_days * DAY_IN_SECONDS ),
+			'ip'          => IP::get_user_ip(),
+			'ip_info'     => '',
+			'fingerprint' => ( ! $user_id && $options->allow_same_ip_votes ) ? $this->fingerprint : '',
 		] );
 	}
 

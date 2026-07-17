@@ -20,6 +20,7 @@ function democracyInit(){
 	Config.cookieDays = config.cookie_days
 	Config.animSpeed = parseInt( config.anim_speed )
 	Config.lineAnimSpeed = parseInt( config.line_anim_speed )
+	Config.isUserLoggedIn = Boolean( config.is_user_logged_in )
 
 	queueMicrotask( init ) // wait for functions
 
@@ -35,6 +36,7 @@ function democracyInit(){
 		} )
 
 		demScreens.forEach( screen => initScreen( screen ) )
+		polls.forEach( poll => initFingerprintVoteCheck( poll ) )
 
 		const setScreenHeight = () => demScreens.forEach( screen => Utils.setHeight( screen ) )
 		window.addEventListener( 'load', setScreenHeight ) // update height once more
@@ -198,8 +200,9 @@ function democracyInit(){
 	// handle requests on click
 	function doAction( clickedEl, action ){
 		const poll = clickedEl.closest( Config.mainSel )
+		const pollState = PollState.get( poll )
 		const ajaxData = {
-			dem_pid: PollState.get( poll ).pid,
+			dem_pid: pollState.pid,
 			dem_act: action,
 			action : 'dem_ajax'
 		}
@@ -236,7 +239,8 @@ function democracyInit(){
 		}
 
 		Loader.setLoader( clickedEl )
-		Cache.post( Config.ajaxurl, ajaxData )
+		const useFingerprint = pollState.allowSameIpVotes && ! Config.isUserLoggedIn
+		Cache.postWithFingerprint( Config.ajaxurl, ajaxData, useFingerprint )
 			.finally( () => Loader.unsetLoader( screen ) )
 			.then( response => {
 				if( ! response.screen_html ){
@@ -263,6 +267,62 @@ function democracyInit(){
 			} )
 
 		return false
+	}
+
+	function initFingerprintVoteCheck( poll ){
+		const state = PollState.get( poll )
+		const cookie = Cache.getPollCookie( state.pid, Config.cookieDays )
+		if( Config.isUserLoggedIn || ! state.allowSameIpVotes || cookie === 'notVoted' ){
+			return
+		}
+
+		// Cache.initAll() owns the same check when cached screen templates are present.
+		if( poll.nextElementSibling?.matches( '.dem_cache_screens_js' ) ){
+			return
+		}
+
+		let timer
+		let done = false
+		const cancel = () => clearTimeout( timer )
+		const check = () => {
+			cancel()
+			timer = setTimeout( async () => {
+				if( done ){
+					return
+				}
+				done = true
+
+				try{
+					const response = await Cache.postWithFingerprint( Config.ajaxurl, {
+						dem_pid: state.pid,
+						dem_act: 'getVotedIds',
+						action: 'dem_ajax'
+					}, true )
+					if( ! response.screen_html ){
+						return
+					}
+
+					const screen = poll.querySelector( Config.screenSel )
+					if( ! screen ){
+						return
+					}
+
+					screen.innerHTML = response.screen_html
+					screen.classList.remove( 'vote', 'voted' )
+					screen.classList.add( response.voted_for ? 'voted' : 'vote' )
+					initScreen( screen )
+					Notice.set( poll, response.notice, true )
+				}
+				catch( error ){
+					console.warn( 'Democracy: Vote fingerprint check failed', error )
+				}
+			}, 700 )
+		}
+
+		poll.addEventListener( 'mouseenter', check )
+		poll.addEventListener( 'mouseleave', cancel )
+		poll.addEventListener( 'focusin', check, { once: true } )
+		poll.addEventListener( 'touchstart', check, { once: true, passive: true } )
 	}
 
 	function animateFill( fill ){

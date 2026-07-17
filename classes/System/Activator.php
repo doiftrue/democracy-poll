@@ -124,17 +124,18 @@ class Activator {
 		) $charset_collate;
 
 		CREATE TABLE $wpdb->democracy_log (
-			logid    bigint(20)   unsigned NOT NULL auto_increment,
-			ip       varchar(100)          NOT NULL default '',
-			qid      bigint(20)   unsigned NOT NULL default 0,
-			aids     text                  NOT NULL default '',
-			userid   bigint(20)   unsigned NOT NULL default 0,
-			date     DATETIME              NOT NULL default '0000-00-00 00:00:00',
-			expire   bigint(20)   unsigned NOT NULL default 0,
-			ip_info  text                  NOT NULL default '',
+			logid       bigint(20)   unsigned NOT NULL auto_increment,
+			ip          varchar(100)          NOT NULL default '',
+			qid         bigint(20)   unsigned NOT NULL default 0,
+			aids        text                  NOT NULL default '',
+			userid      bigint(20)   unsigned NOT NULL default 0,
+			date        DATETIME              NOT NULL default '0000-00-00 00:00:00',
+			expire      bigint(20)   unsigned NOT NULL default 0,
+			ip_info     text                  NOT NULL default '',
+			fingerprint char(64)              NOT NULL default '',
 			PRIMARY KEY  (logid),
 			KEY ip (ip,qid),
-			KEY qid (qid),
+			KEY qid_fingerprint (qid,fingerprint),
 			KEY userid (userid)
 		) $charset_collate;
 		";

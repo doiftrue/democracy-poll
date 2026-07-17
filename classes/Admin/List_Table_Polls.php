@@ -152,7 +152,7 @@ class List_Table_Polls extends WP_List_Table {
 			);
 
 			// logs
-			$has_logs = $this->options->keep_logs && $wpdb->get_var( $wpdb->prepare( "SELECT qid FROM $wpdb->democracy_log WHERE qid=%d LIMIT 1", $poll->id ) );
+			$has_logs = $wpdb->get_var( $wpdb->prepare( "SELECT qid FROM $wpdb->democracy_log WHERE qid=%d LIMIT 1", $poll->id ) );
 			if( $has_logs ){
 				$actions[] = sprintf(
 					'<span class="edit"><a href="%s">%s</a> | </span>',

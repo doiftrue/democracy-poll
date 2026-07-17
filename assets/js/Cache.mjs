@@ -4,6 +4,7 @@ import PollState from './PollState.mjs'
 import Loader from './Loader.mjs'
 import Utils from './Utils.mjs'
 import Notice from './Notice.mjs'
+import BrowserFingerprint from './BrowserFingerprint.mjs'
 
 export default class Cache {
 
@@ -63,9 +64,8 @@ export default class Cache {
 			return // exit if it has already been checked that the user has not voted.
 		}
 
-		// If there are no votes in cookies and the plugin option keep_logs is enabled,
-		// send a request to the database for checking, by event (mouse over a block).
-		if( ! isAnswrs && parseInt( cacheBlock.dataset.opt_logs, 10 ) === 1 ){
+		// Validate the cached browser state against the server identity on first interaction.
+		{
 			let tmout
 			const notcheck__fn = function(){
 				clearTimeout( tmout )
@@ -83,17 +83,13 @@ export default class Cache {
 						Loader.setLoader( forDotsLoader )
 					}
 
-					Cache.post( Config.ajaxurl, {
+					Cache.postWithFingerprint( Config.ajaxurl, {
 						dem_pid: demId,
 						dem_act: 'getVotedIds',
 						action : 'dem_ajax'
-					} )
+					}, PollState.get( dem ).allowSameIpVotes && ! Config.isUserLoggedIn )
 						.then( response => {
 							forDotsLoader && Loader.unsetLoader( screen )
-
-							if( ! response.voted_for && ! response.notice ){
-								return
-							}
 
 							screen.dataset['expanded'] = 'true'
 							const setVoted = response.voted_for && votedHTML
@@ -248,6 +244,16 @@ export default class Cache {
 				}
 				return response.json()
 			} )
+	}
+
+	static postWithFingerprint( url, data, useFingerprint ){
+		if( ! useFingerprint ){
+			return Cache.post( url, data )
+		}
+
+		return BrowserFingerprint.get().then( fingerprint => {
+			return Cache.post( url, { ...data, fingerprint } )
+		} )
 	}
 
 }

@@ -22,11 +22,10 @@ $opt = $this->options;
 			<div class="demoptions__block">
 				<label>
 					<input type="checkbox" value="1"
-					       name="dem[keep_logs]" <?php checked( $opt->keep_logs, 1 ) ?> />
-					<?= esc_html__( 'Log data & take visitor IP into consideration? (recommended)', 'democracy-poll' ) ?>
+					       name="dem[allow_same_ip_votes]" <?php checked( $opt->allow_same_ip_votes, 1 ) ?> />
+					<?= esc_html__( 'Allow multiple votes from the same IP address.', 'democracy-poll' ) ?>
 				</label>
-				<em><?= esc_html__( 'Saves voting data in the database. This enables the re-voting mechanism and prevents logged-in users from voting multiple times, or non-logged-in users from voting multiple times from the same IP address. If this option is disabled, voting is checked by cookies only.', 'democracy-poll' ) ?></em>
-				<em><?= esc_html__( 'INFO: If a user is logged in, their vote is checked by their WP account. If a user is not logged in, their IP address is checked. The downside of IP checks is that a site may be visited from an enterprise network with a shared IP address, so all users from that network are allowed to vote only once.', 'democracy-poll' ) ?></em>
+				<em><?= esc_html__( 'When enabled, guests sharing an IP address are distinguished by a browser fingerprint. Each browser can still vote only once. Logged-in users are always identified by their WordPress account.', 'democracy-poll' ) ?></em>
 			</div>
 
 			<div class="demoptions__block">
@@ -36,7 +35,7 @@ $opt = $this->options;
 					<?= esc_html__( 'How many days to keep Cookies alive?', 'democracy-poll' ) ?>
 				</label>
 				<em>
-					<?= esc_html__( 'How many days the user\'s browser remembers the votes. Default: 365. Note: works together with IP log.', 'democracy-poll' ) ?>
+					<?= esc_html__( 'How many days the browser and server remember votes. Default: 365.', 'democracy-poll' ) ?>
 					<br>
 					<?= esc_html__( 'To set hours use float number - 0.04 = 1 hour.', 'democracy-poll' ) ?>
 				</em>

@@ -147,10 +147,6 @@ class Admin_Page_Logs implements Admin_Subpage_Interface {
 			return;
 		}
 
-		if( ! $this->options->keep_logs ){
-			$this->messages->add_warn( __( 'Logs records turned off in the settings - logs are not recorded.', 'democracy-poll' ) );
-		}
-
 		echo $this->admpage->subpages_menu();
 
 		$this->list_table->table_title(); // title of single poll

@@ -16,11 +16,9 @@ $edit = (bool) $this->poll_id;
 // METADATA
 if( $this->poll_id ){
 	$items = [];
-	$items['log_link'] = $this->options->keep_logs
-		? sprintf( '<a href="%s">%s</a>',
-			esc_url( add_query_arg( [ 'subpage' => 'logs', 'poll' => $poll->id ], $this->plugin->admin_page_url ) ),
-			esc_html__( 'Poll logs', 'democracy-poll' ) )
-		: '';
+	$items['log_link'] = sprintf( '<a href="%s">%s</a>',
+		esc_url( add_query_arg( [ 'subpage' => 'logs', 'poll' => $poll->id ], $this->plugin->admin_page_url ) ),
+		esc_html__( 'Poll logs', 'democracy-poll' ) );
 
 	$items['shortcode'] = $this::shortcode_html( $this->poll_id ) . ' — ' . __( 'shortcode for use in post content', 'democracy-poll' );
 

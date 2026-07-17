@@ -3,6 +3,7 @@
 namespace DemocracyPoll\System;
 
 use DemocracyPoll\Options_CSS;
+use DemocracyPoll\Options;
 use DemocracyPoll\Plugin;
 
 class Upgrader {
@@ -65,7 +66,21 @@ class Upgrader {
 			$wpdb->query( "ALTER TABLE $wpdb->democracy_log ADD `aids`   text NOT NULL;" );
 			$wpdb->query( "ALTER TABLE $wpdb->democracy_log ADD `userid` bigint(20) UNSIGNED NOT NULL DEFAULT 0;" );
 			$wpdb->query( "ALTER TABLE $wpdb->democracy_log ADD KEY userid (userid)" );
-			$wpdb->query( "ALTER TABLE $wpdb->democracy_log ADD KEY qid (qid)" );
+		}
+
+		if( ! in_array( 'fingerprint', $fields_log, true ) ){
+			$wpdb->query( "ALTER TABLE $wpdb->democracy_log ADD `fingerprint` char(64) NOT NULL DEFAULT '';" );
+			$wpdb->query( "ALTER TABLE $wpdb->democracy_log DROP INDEX qid" );
+			$wpdb->query( "ALTER TABLE $wpdb->democracy_log ADD KEY qid_fingerprint (qid,fingerprint)" );
+		}
+
+		$options = get_option( Options::OPT_NAME, [] );
+		if( isset( $options['keep_logs'] ) ){
+			if( ! isset( $options['allow_same_ip_votes'] ) ){
+				$options['allow_same_ip_votes'] = (int) empty( $options['keep_logs'] );
+			}
+			unset( $options['keep_logs'] );
+			update_option( Options::OPT_NAME, $options );
 		}
 	}
 

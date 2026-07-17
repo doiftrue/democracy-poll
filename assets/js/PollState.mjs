@@ -12,6 +12,9 @@ export default class PollState {
 	/** @type {string} */
 	answsMaxHeight = ''
 
+	/** @type {boolean} */
+	allowSameIpVotes = false
+
 	/** @type {string} */
 	noticeStatus = ''
 
@@ -33,6 +36,7 @@ export default class PollState {
 		this.pid = parseInt( opts.pid, 10 ) || 0
 		this.maxAnsws = parseInt( opts.max_answs, 10 ) || 0
 		this.answsMaxHeight = String( opts.answs_max_height || '' )
+		this.allowSameIpVotes = parseInt( opts.allow_same_ip_votes, 10 ) === 1
 	}
 
 	/**

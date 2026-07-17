@@ -81,9 +81,10 @@ class Poll_Renderer {
 			: '';
 
 		$opts_json = esc_attr( wp_json_encode( [
-			'pid'              => (int) $poll->id,
-			'max_answs'        => (int) ( $poll->multiple ?: 0 ),
-			'answs_max_height' => is_numeric( $opt->answs_max_height ) ? "{$opt->answs_max_height}px" : $opt->answs_max_height,
+			'pid'                 => (int) $poll->id,
+			'max_answs'           => (int) ( $poll->multiple ?: 0 ),
+			'answs_max_height'    => is_numeric( $opt->answs_max_height ) ? "{$opt->answs_max_height}px" : $opt->answs_max_height,
+			'allow_same_ip_votes' => (int) $opt->allow_same_ip_votes,
 		] ) );
 
 		return <<<HTML
@@ -171,10 +172,9 @@ class Poll_Renderer {
 		$ustate->voted_for = $saved_voted_for;
 		$ustate->has_voted = $saved_has_voted;
 
-		$is_keep_logs = $this->options->keep_logs ? 1 : 0;
 		return <<<HTML
 			<!--noindex-->
-			<div class="dem-cache-screens dem_cache_screens_js" style="display:none;" data-opt_logs="$is_keep_logs">$html</div>
+			<div class="dem-cache-screens dem_cache_screens_js" style="display:none;">$html</div>
 			<!--/noindex-->
 			HTML;
 	}

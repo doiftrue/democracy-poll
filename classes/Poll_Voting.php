@@ -23,9 +23,10 @@ class Poll_Voting {
 	 *
 	 * @return WP_Error|string IDs separated by commas.
 	 */
-	public function vote( $aids ) {
+	public function vote( $aids, string $fingerprint = '' ) {
 		$poll = $this->poll;
 		$ustate = $poll->user_state;
+		$ustate->poll_logs->set_fingerprint( $fingerprint );
 		if( ! $poll->id ){
 			return new WP_Error( 'vote_err', 'ERROR: no id' );
 		}
@@ -67,13 +68,21 @@ class Poll_Voting {
 		$ustate->has_voted = true;
 		$ustate->voting_blocked = true;
 
+		if( ! $ustate->poll_logs->insert_logs() ){
+			Poll_Storage::decrement_votes( $poll, $voted_for );
+			$poll->users_voted--;
+			$ustate->voted_for = '';
+			$ustate->has_voted = false;
+			$ustate->voting_blocked = ! $poll->open;
+
+			$poll->set_answers();
+
+			return new WP_Error( 'vote_err', 'Internal ERROR: Vote log was not saved. Contact developer.' );
+		}
+
 		$poll->set_answers();
 
 		$ustate->poll_cookie->set();
-
-		if( $this->options->keep_logs ){
-			$ustate->poll_logs->insert_logs();
-		}
 
 		/**
 		 * Allows to perform actions after the user has voted.
@@ -89,11 +98,12 @@ class Poll_Voting {
 	/**
 	 * Deletes the user's voting data.
 	 */
-	public function delete_vote(): void {
+	public function delete_vote( string $fingerprint = '' ): void {
 		$poll = $this->poll;
 		$ustate = $poll->user_state;
+		$ustate->poll_logs->set_fingerprint( $fingerprint );
 
-		if( ! $poll->id || ! $poll->revote || ! $this->options->keep_logs ){
+		if( ! $poll->id || ! $poll->revote ){
 			return;
 		}
 

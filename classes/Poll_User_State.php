@@ -102,8 +102,12 @@ class Poll_User_State {
 		// NOTE: update cookies if they do not match. Because in different browsers they can be different. Does not work,
 		// because cookies need to be set before outputting data, and in general, this should not be done, because checking
 		// by cookies becomes unnecessary overall...
-		if( container()->get( Options::class )->keep_logs && ( $logs = $this->poll_logs->get_user_vote_logs() ) ){
+		if( $logs = $this->poll_logs->get_user_vote_logs() ){
 			return (string) reset( $logs )->aids;
+		}
+
+		if( $this->poll_logs->is_identity_resolved() ){
+			return '';
 		}
 
 		if( ! $this->poll_cookie->is_not_voted() ){
