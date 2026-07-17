@@ -35,3 +35,5 @@
 * Добавить возможность менять текст и добавлять ссылку в текст "Only registered users can vote". I want non-registered users on my site to be directed to a specific (https://accradailypost.com/register) when they click on >> Only registered users can vote. Login to vote.<< not the default WordPress login page. How do I do this? Please help me. https://wordpress.org/support/topic/default-login-link-for-non-voters/
 
 * P5: Быстрая привязка и создание опроса для поста: https://wordpress.org/support/topic/auto-generation-of-unique-poll-per-post/ подумать, типа у каждого поста должен быть опрос, как его создавать быстро...
+
+* Add option to set additional CSS class for poll wrapper. Do not replace existing plugin classes because they are used by JS/CSS. Only allow adding extra custom class.
