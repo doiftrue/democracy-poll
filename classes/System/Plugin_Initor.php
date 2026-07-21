@@ -61,6 +61,10 @@ class Plugin_Initor {
 		$this->init_menu_in_toolbar();
 		$this->init_hide_form_indexing();
 		$this->init_wp_widget();
+
+		if( get_option( Upgrader::VER_OPT_NAME ) !== $this->plugin->ver ){
+			container()->get( Upgrader::class )->upgrade(); /** @see Upgrader::__construct */
+		}
 	}
 
 	private function admin_init(): void {

@@ -35,6 +35,9 @@ class Plugin_Lifecycle__Test extends DemocTestCase {
 		WP_Mock::userFunction( 'get_option' )
 			->with( Options::OPT_NAME, [] )
 			->andReturn( [ 'use_widget' => 0, 'toolbar_menu' => 0 ] );
+		WP_Mock::userFunction( 'get_option' )
+			->with( System\Upgrader::VER_OPT_NAME )
+			->andReturn( container()->get( Plugin::class )->ver );
 		WP_Mock::userFunction( 'is_multisite' )->andReturn( false );
 		WP_Mock::userFunction( 'current_user_can' )->andReturn( false );
 		WP_Mock::userFunction( 'wp_get_current_user' )->andReturn( (object) [ 'roles' => [ 'subscriber' ] ] );

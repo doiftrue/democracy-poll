@@ -73,12 +73,19 @@ class Admin_Page {
 		wp_enqueue_script( self::ASSETS_ID, "{$this->plugin->url}/assets/admin/admin.js", [ 'jquery' ], $this->plugin->ver, true );
 		wp_enqueue_style( self::ASSETS_ID, "{$this->plugin->url}/assets/admin/admin.css", [], $this->plugin->ver );
 
-		$this->run_upgrade();
-
+		$this->handle_force_upgrade_request();
 		$this->global_handle_request();
 		$this->set_subpage_obj();
 		$this->subpage_obj->load();
 		$this->subpage_obj->request_handler();
+	}
+
+	private function handle_force_upgrade_request(): void {
+		if( isset( $_POST['dem_forse_upgrade'] ) && $this->plugin->super_access ){
+			container()->get( Upgrader::class )->upgrade_force(); /** @see Upgrader::__construct */
+			wp_safe_redirect( $_SERVER['REQUEST_URI'] );
+			exit;
+		}
 	}
 
 	private function set_subpage_obj(): void {
@@ -145,21 +152,6 @@ class Admin_Page {
 			<?php $this->subpage_obj->render(); ?>
 		</div>
 		<?php
-	}
-
-	private function run_upgrade(): void {
-		$upgrader = container()->get( Upgrader::class ); /** @see Upgrader::__construct */
-
-		// maybe force upgrade
-		if( isset( $_POST['dem_forse_upgrade'] ) && $this->plugin->super_access ){
-			update_option( 'democracy_version', '0.1' ); // hack
-			$upgrader->upgrade();
-
-			wp_safe_redirect( $_SERVER['REQUEST_URI'] );
-			exit;
-		}
-
-		$upgrader->upgrade();
 	}
 
 	public static function check_nonce(): bool {

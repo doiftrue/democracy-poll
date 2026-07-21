@@ -58,6 +58,7 @@ class Uninstall__Test extends DemocTestCase {
 			'widget_democracy',
 			'democracy_options',
 			'democracy_version',
+			'democracy_upgrade_lock',
 			'democracy_css',
 			'democracy_l10n',
 			'democracy_migrated',

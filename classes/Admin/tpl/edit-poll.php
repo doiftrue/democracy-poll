@@ -39,8 +39,6 @@ if( $this->poll_id ){
 
 	<?= apply_filters( 'demadmin_after_question', '', $poll ) ?>
 
-	<?= __( 'Answers:', 'democracy-poll' ) ?>
-
 	<ol class="dem-edit-poll__answers">
 		<?php
 		$is_answers_order = (bool) ( $poll->answers[0]->aorder ?? false );

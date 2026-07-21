@@ -8,17 +8,25 @@ use DemocracyPoll\Plugin;
 
 class Upgrader {
 
+	public const VER_OPT_NAME = 'democracy_version';
+
+	private const LOCK_OPT_NAME = 'democracy_upgrade_lock';
+	private const LOCK_TIMEOUT = 300;
+
 	private Plugin $plugin;
 	private Options_CSS $options_css;
 	private $old_ver;
 
-	/**
-	 * It should not be called on front-end to not load the server unnecessarily.
-	 */
 	public function __construct( Plugin $plugin, Options_CSS $options_css ) {
 		$this->plugin = $plugin;
 		$this->options_css = $options_css;
-	    $this->old_ver = get_option( 'democracy_version' );
+		$this->old_ver = get_option( self::VER_OPT_NAME );
+	}
+
+	public function upgrade_force(): void {
+		$this->old_ver = '0.1';
+		update_option( self::VER_OPT_NAME, $this->old_ver );
+		$this->upgrade();
 	}
 
 	public function upgrade(): void {
@@ -26,15 +34,46 @@ class Upgrader {
 			return;
 		}
 
-		// Regenerate CSS.
-		$this->options_css->regenerate_democracy_css( null );
+		if( ! $this->acquire_lock() ){
+			return;
+		}
 
-		update_option( 'democracy_version', $this->plugin->ver );
+		try {
+			// Another request may have completed the upgrade before we acquired the lock.
+			if( get_option( self::VER_OPT_NAME ) === $this->plugin->ver ){
+				return;
+			}
 
-		$this->run_staff();
+			$this->options_css->regenerate_democracy_css( null );
+			$this->run_migrations();
+
+			update_option( self::VER_OPT_NAME, $this->plugin->ver );
+		}
+		finally {
+			delete_option( self::LOCK_OPT_NAME );
+		}
 	}
 
-	private function run_staff(){
+	/**
+	 * Creates a lock for the upgrade.
+	 * Returns false if another request already created the lock.
+	 */
+	private function acquire_lock(): bool {
+		if( add_option( self::LOCK_OPT_NAME, time(), '', false ) ){
+			return true;
+		}
+
+		$lock_time = (int) get_option( self::LOCK_OPT_NAME );
+		if( $lock_time + self::LOCK_TIMEOUT >= time() ){
+			return false;
+		}
+
+		delete_option( self::LOCK_OPT_NAME );
+
+		return (bool) add_option( self::LOCK_OPT_NAME, time(), '', false );
+	}
+
+	private function run_migrations(): void {
 		global $wpdb;
 
 		$cols_q = $wpdb->get_results( "SHOW COLUMNS FROM $wpdb->democracy_q", OBJECT_K );
