@@ -21,7 +21,7 @@ class Plugin_Initor {
 	private Shortcodes $shortcodes;
 
 	public function __construct(
-		Plugin $plugin,
+		Plugin $plugin,        /** @see Plugin::__construct() */
 		Options $options,
 		Poll_Ajax $poll_ajax,  /** @see Poll_Ajax::__construct() */
 		Shortcodes $shortcodes /** @see Shortcodes::__construct() */

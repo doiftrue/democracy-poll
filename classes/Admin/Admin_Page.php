@@ -60,7 +60,7 @@ class Admin_Page {
 			return;
 		}
 
-		$title = __( 'Democracy Poll', 'democracy-poll' );
+		$title = 'Democracy Poll';
 		$hook_name = add_options_page( $title, $title, 'edit_posts', basename( $this->plugin->dir ), [ $this, 'admin_page_output' ] );
 		// notice: `edit_posts` (role more then subscriber) because capability tests inside the `admin_page.php` and `admin_page_load()`
 
@@ -148,17 +148,18 @@ class Admin_Page {
 	}
 
 	private function run_upgrade(): void {
+		$upgrader = container()->get( Upgrader::class ); /** @see Upgrader::__construct */
+
 		// maybe force upgrade
 		if( isset( $_POST['dem_forse_upgrade'] ) && $this->plugin->super_access ){
-
 			update_option( 'democracy_version', '0.1' ); // hack
-			container()->get( Upgrader::class )->upgrade();
+			$upgrader->upgrade();
 
 			wp_safe_redirect( $_SERVER['REQUEST_URI'] );
 			exit;
 		}
 
-		container()->get( Upgrader::class )->upgrade();
+		$upgrader->upgrade();
 	}
 
 	public static function check_nonce(): bool {

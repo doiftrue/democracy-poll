@@ -22,6 +22,15 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/autoload.php';
 
+
+/// SETUP
+
+$container = container( new Libs\Container() ); // set the container globally
+$container->set( Plugin::class, [ 'main_file' => __FILE__ ] );
+
+
+/// UNIT
+
 register_activation_hook( __FILE__, [ System\Activator::class, 'activate' ] );
 
 /**
@@ -30,12 +39,11 @@ register_activation_hook( __FILE__, [ System\Activator::class, 'activate' ] );
  */
 add_action( 'after_setup_theme', '\DemocracyPoll\init_plugin' );
 
+
+/// FUNCTIONS
+
 function init_plugin(): void {
-	$container = container( new Libs\Container() ); // set the container globally
-
-	$container->set( Plugin::class, [ 'main_file' => __FILE__ ] ); /** @see Plugin::__construct() */
-
-	$initor = $container->get( System\Plugin_Initor::class ); /** @see System\Plugin_Initor::__construct() */
+	$initor = container()->get( System\Plugin_Initor::class ); /** @see System\Plugin_Initor::__construct() */
     $initor->init_plugin();
 }
 

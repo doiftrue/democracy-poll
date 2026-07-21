@@ -14,29 +14,29 @@ class Activator {
 	}
 
 	public static function activate(): void {
-		container()->get( Plugin_Initor::class )->basic_init();
+		container()->get( Plugin_Initor::class )->basic_init(); /** @see Plugin_Initor::__construct */
 
 		if( is_multisite() ){
 			$sites = get_sites();
 			foreach( $sites as $site ){
 				switch_to_blog( $site->blog_id );
-				self::_activate();
+				self::activate_for_blog();
 				restore_current_blog();
 			}
 		}
 		else{
-			self::_activate();
+			self::activate_for_blog();
 		}
 	}
 
-	private static function _activate(): void {
+	private static function activate_for_blog(): void {
 		// create tables
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( self::db_schema() );
 
 		self::add_sample_poll();
 
-		container()->get( Upgrader::class )->upgrade();
+		container()->get( Upgrader::class )->upgrade(); /** @see Upgrader::__construct */
 	}
 
 	private static function add_sample_poll(): void {

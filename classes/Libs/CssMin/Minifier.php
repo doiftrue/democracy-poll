@@ -838,9 +838,6 @@ class Minifier {
 		return $hex . $matches[2];
 	}
 
-	/**
-	 * Makes a string lowercase
-	 */
 	private function strtolowerCallback( array $matches ): string {
 		return strtolower( $matches[0] );
 	}
