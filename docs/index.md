@@ -6,7 +6,7 @@ hero:
   text: Flexible polls for WordPress
   tagline: Create engaging polls, accept custom answers, control voting rules, and integrate polls into any theme.
   image:
-    src: /logo.svg
+    src: /poster-logo.avif
     alt: Democracy Poll
   actions:
     - theme: brand
