@@ -1,0 +1,23 @@
+:root {
+	--vp-c-brand-1: #3858e9;
+	--vp-c-brand-2: #2f4ac7;
+	--vp-c-brand-3: #243ba5;
+	--vp-c-brand-soft: rgb(56 88 233 / 14%);
+}
+
+.dark {
+	--vp-c-brand-1: #8dddff;
+	--vp-c-brand-2: #7189f4;
+	--vp-c-brand-3: #5872dc;
+	--vp-c-brand-soft: rgb(141 162 255 / 16%);
+}
+
+.VPImage.image-src {
+	max-height: 17.5rem;
+}
+
+.doc-screenshot {
+	border: 0.0625rem solid var(--vp-c-divider);
+	border-radius: 0.5rem;
+	box-shadow: var(--vp-shadow-2);
+}

@@ -4,6 +4,7 @@
 /vendor/
 /node_modules/
 /_TODO/
+/docs/
 /Makefile
 /languages/make-pot.sh
 /composer.json

@@ -57,6 +57,10 @@ Democracy Poll is a modern version of the original, well-regarded plugin by the 
 
 Multisite support has been available since version 5.2.4.
 
+### Documentation ###
+
+See the [complete Democracy Poll documentation](https://doiftrue.github.io/democracy-poll/) for setup instructions, user guides, shortcode reference, and developer integration points.
+
 
 
 == Usage ==

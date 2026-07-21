@@ -5,6 +5,7 @@
 /vendor/               export-ignore
 /node_modules/         export-ignore
 /_TODO/                export-ignore
+/docs/                 export-ignore
 
 /.distignore           export-ignore
 /.editorconfig         export-ignore

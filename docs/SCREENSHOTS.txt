@@ -1,0 +1,34 @@
+DEMOCRACY POLL DOCUMENTATION SCREENSHOTS
+
+Replace the placeholder files in docs/public/screenshots/ with real PNG
+screenshots. Keep the filenames unchanged so no Markdown edits are required.
+
+Use an English WordPress Admin interface. Capture at 1920 px wide and normally
+1024 px high; use a greater height for long pages. Include the full WordPress
+Admin screen but not the browser chrome. Use fictional poll content, users, IP
+addresses, and other personal data.
+
+admin-polls-list.png
+  Polls list with representative open, closed, active, and inactive polls.
+
+admin-edit-poll.png
+  Add or edit screen with a question, several answers, and poll options visible.
+
+admin-settings.png
+  Complete settings page; a tall capture is expected.
+
+admin-design.png
+  Complete design page with the selected theme and preview visible; a tall
+  capture is expected.
+
+admin-logs.png
+  Logs containing fictional voter and IP data only.
+
+frontend-vote.png
+  Published poll before voting, preferably within realistic site content.
+
+frontend-results.png
+  The same poll after voting, with progress bars and totals visible.
+
+Optimize the final PNG files before committing them, while keeping interface
+text readable at the documentation content width.

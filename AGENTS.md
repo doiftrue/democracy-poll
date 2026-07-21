@@ -12,6 +12,7 @@ This is WordPress plugin that distributed to oficial WordPress plugin repository
 - `assets/js/` stores ES modules and the compiled bundle.
 - `languages/` contains translations and the POT build script.
 - `tests/unit/` contains PHPUnit tests and bootstrap.
+- `docs/` contains the standalone VitePress documentation. Never inspect, search, analyze, or modify this directory while developing the plugin unless the user explicitly asks to work with the documentation.
 - `vendor/` and `node_modules/` are generated dependencies.
 - `.distignore` lists files to exclude from the WordPress.org ZIP package.
 
