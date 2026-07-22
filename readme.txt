@@ -1,6 +1,6 @@
 === Democracy Poll ===
 Stable tag: trunk
-Tested up to: 7.0
+Tested up to: 7.0.2
 Contributors: Tkama
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -8,6 +8,8 @@ Tags: democracy, polls, vote, survey, review
 
 
 WordPress polls plugin with multiple-choice, custom answers, cache compatibility, widgets, and shortcodes.
+
+[Documentation](https://doiftrue.github.io/democracy-poll/)
 
 
 == Description ==
