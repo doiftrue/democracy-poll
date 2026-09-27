@@ -145,6 +145,13 @@ export default class Cache {
 		}
 		// voting view
 		else{
+			// The visitor has not voted: leave the vote form alone. Without this guard the
+			// cache-gear identity check (getVotedIds with an empty voted_for) disabled every
+			// answer and swapped the Vote button for "Already voted..." until a reload.
+			if( ! aids.length ){
+				return
+			}
+
 			const answerNodes = Array.from( screen.querySelectorAll( '[data-aid]' ) )
 			const btnVoted = screen.querySelector( '.dem_voted_button_js' )
 
