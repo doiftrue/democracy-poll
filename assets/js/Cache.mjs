@@ -91,6 +91,13 @@ export default class Cache {
 						.then( response => {
 							forDotsLoader && Loader.unsetLoader( screen )
 
+							// Not voted and nothing to tell: keep whatever the visitor is looking at.
+							// Re-rendering here replaced a results view opened via the "Results" link
+							// within the 700 ms delay with the vote screen again.
+							if( ! response.voted_for && ! response.notice ){
+								return
+							}
+
 							screen.dataset['expanded'] = 'true'
 							const setVoted = response.voted_for && votedHTML
 							screen.innerHTML = setVoted ? votedHTML : voteHTML
