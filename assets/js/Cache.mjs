@@ -91,6 +91,13 @@ export default class Cache {
 						.then( response => {
 							forDotsLoader && Loader.unsetLoader( screen )
 
+							// Not voted and nothing to tell: keep whatever the visitor is looking at.
+							// Re-rendering here replaced a results view opened via the "Results" link
+							// within the 700 ms delay with the vote screen again.
+							if( ! response.voted_for && ! response.notice ){
+								return
+							}
+
 							screen.dataset['expanded'] = 'true'
 							const setVoted = response.voted_for && votedHTML
 							screen.innerHTML = setVoted ? votedHTML : voteHTML
@@ -145,6 +152,13 @@ export default class Cache {
 		}
 		// voting view
 		else{
+			// The visitor has not voted: leave the vote form alone. Without this guard the
+			// cache-gear identity check (getVotedIds with an empty voted_for) disabled every
+			// answer and swapped the Vote button for "Already voted..." until a reload.
+			if( ! aids.length ){
+				return
+			}
+
 			const answerNodes = Array.from( screen.querySelectorAll( '[data-aid]' ) )
 			const btnVoted = screen.querySelector( '.dem_voted_button_js' )
 
