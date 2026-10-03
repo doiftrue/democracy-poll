@@ -2,10 +2,10 @@
 
 namespace DemocracyPoll;
 
-use Unitest_WP_Copy\WPDB_Runtime;
+use Unitest_WP_Copy\wpdb__Runtime;
 use WP_Mock;
 
-class Poll_Logs_Wpdb__Double extends WPDB_Runtime {
+class Poll_Logs_Wpdb__Double extends wpdb__Runtime {
 
 	public string $democracy_log = 'wp_democracy_log';
 	public array $inserted_data = [];

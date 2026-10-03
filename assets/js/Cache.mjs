@@ -91,15 +91,16 @@ export default class Cache {
 						.then( response => {
 							forDotsLoader && Loader.unsetLoader( screen )
 
-							// Not voted and nothing to tell: keep whatever the visitor is looking at.
-							// Re-rendering here replaced a results view opened via the "Results" link
-							// within the 700 ms delay with the vote screen again.
+							// NOTE: The visitor may open the results while this request is pending.
+							//   Re-rendering here replaced a results view opened via the "Results" link
+							//   within the 700 ms delay with the vote screen again.
 							if( ! response.voted_for && ! response.notice ){
 								return
 							}
 
 							screen.dataset['expanded'] = 'true'
 							const setVoted = response.voted_for && votedHTML
+
 							screen.innerHTML = setVoted ? votedHTML : voteHTML
 							screen.classList.remove( 'vote', 'voted' )
 							screen.classList.add( setVoted ? 'voted' : 'vote' )
@@ -151,14 +152,10 @@ export default class Cache {
 			screen.querySelectorAll( '.dem_vote_link_js' ).forEach( node => node.remove() )
 		}
 		// voting view
-		else{
-			// The visitor has not voted: leave the vote form alone. Without this guard the
-			// cache-gear identity check (getVotedIds with an empty voted_for) disabled every
-			// answer and swapped the Vote button for "Already voted..." until a reload.
-			if( ! aids.length ){
-				return
-			}
-
+		// NOTE: The visitor has not voted: leave the vote form alone.
+		//   Without this guard the cache-gear identity check (getVotedIds with an empty voted_for)
+		//   disabled every answer and swapped the Vote button for "Already voted..." until a reload.
+		else if( aids.length ){
 			const answerNodes = Array.from( screen.querySelectorAll( '[data-aid]' ) )
 			const btnVoted = screen.querySelector( '.dem_voted_button_js' )
 

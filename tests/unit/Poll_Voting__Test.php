@@ -4,11 +4,11 @@ namespace DemocracyPoll;
 
 use DemocracyPoll\Doubles\Poll_Cookies__Double;
 use DemocracyPoll\Doubles\Poll_With_Answers__Double;
-use Unitest_WP_Copy\WPDB_Runtime;
+use Unitest_WP_Copy\wpdb__Runtime;
 use WP_Error;
 use WP_Mock;
 
-class Poll_Voting_Wpdb__Double extends WPDB_Runtime {
+class Poll_Voting_Wpdb__Double extends wpdb__Runtime {
 
 	public string $democracy_a = 'wp_democracy_a';
 	public string $democracy_q = 'wp_democracy_q';

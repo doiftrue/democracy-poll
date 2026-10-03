@@ -17,31 +17,31 @@ composer.update:
 
 
 define node_run
-	docker run $(1) --rm -it  --name DEMOCRACY_node  --user node  -v ./:/usr/src/app  node:24-alpine  sh -c "cd /usr/src/app ; $(2)"
+	docker run $(1) --rm -it  --name DEMOCRACY_node  --user node  -v ./:/usr/src/app  node:26-alpine  sh -c "cd /usr/src/app ; $(2)"
 endef
 
 node.connect:
 	$(call node_run,, sh)
 
-npm.install:
+npm.ci:      ## Installs dependencies from package-lock.json (with removing node_modules)
+	$(call node_run,, npm ci)
+npm.install: ## Installs dependencies and updates package-lock.json
 	$(call node_run,, npm install)
-npm.update:
+npm.update:  ## Updates dependencies and package-lock.json
 	$(call node_run,, npm update)
 
-npm.watch:
+npm.watch:   ## Watches for changes and rebuilds assets
 	$(call node_run,, npm run watch)
-npm.build:
+npm.build:   ## Builds assets for production
 	$(call node_run,, npm run build)
 
 docs.install:
 	$(call node_run,, npm --prefix docs install)
-
 docs.build:
 	$(call node_run,, npm --prefix docs run build)
-
 docs.dev:
 	$(call node_run, -p 127.0.0.1:5173:5173, npm --prefix docs run dev -- --host 0.0.0.0)
-	@echo "See: http://localhost:5173/democracy-poll/"
+
 
 #########################################################
 #                       i18n                            #

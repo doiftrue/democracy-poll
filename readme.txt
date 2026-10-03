@@ -1,6 +1,6 @@
 === Democracy Poll ===
 Stable tag: trunk
-Tested up to: 7.0.2
+Tested up to: 7.1.2
 Contributors: Tkama
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -131,6 +131,9 @@ See `COMPAT: ***` messages in the changelog below for any backward compatibility
 == Changelog ==
 
 See `COMPAT: ***` messages in the changelog below for any backward compatibility changes that may require code updates if you use the plugin's public API or properties directly in your code.
+
+= 6.5.1 =
+* FIX: In page-cache compatibility mode, visitors who have not voted can vote on their first visit and keep the results screen open. Props to [Daniel van Dorp](https://github.com/djvdorp) for the [fix](https://github.com/doiftrue/democracy-poll/pull/3).
 
 = 6.5.0 =
 * NEW: Added an option allowing different guest browsers to vote from the same IP address. Repeat votes are identified by a lightweight browser fingerprint when enabled.
